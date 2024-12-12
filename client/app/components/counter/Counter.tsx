@@ -8,7 +8,7 @@ export const Counter = () => {
 
   const createUserClick = () => {
     dispatch(
-      createUser({ username: "saltyPeter", password: "123", favExercise: "squats" })
+      createUser({ username: "JojiJohn", password: "321", favExercise: "deadlifts" })
     );
   };
 
