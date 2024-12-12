@@ -10,10 +10,11 @@ import { Server } from 'socket.io';
 import * as http from 'http';
 
 import { FitnessLogSocket } from './types';
+import userController from './controllers/user';
 
 dotenv.config();
 
-const MONGO_URL = `${process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017'}/fitnesslog`;
+const MONGO_URL = `${process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017'}`;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
 const port = parseInt(process.env.PORT || '8000');
 
@@ -63,6 +64,8 @@ app.get('/', (req: Request, res: Response) => {
   res.send('hello world');
   res.end();
 });
+
+app.use("/user", userController(socket));
 
 // Export the app instance
 export { app, server, startServer };
