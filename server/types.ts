@@ -4,7 +4,9 @@ import { Server } from "socket.io";
 
 export type FitnessLogSocket = Server<ServerToClientEvents>;
 
-export interface ServerToClientEvents { }
+export interface ServerToClientEvents {
+  usersUpdate: (username: string) => void;
+}
 
 export interface User {
     _id?: ObjectId;
@@ -17,6 +19,12 @@ export interface CreateUserRequest extends Request {
   body: User;
 }
 
+export interface DeleteUserRequest extends Request {
+  query: {
+    username: string
+  };
+}
+
 export interface GetUserRequest extends Request {
   body: {
     username: string
@@ -24,3 +32,7 @@ export interface GetUserRequest extends Request {
 }
 
 export type UserResponse = User | { error: string };
+
+export type UsersResponse = User[] | {error: string};
+
+export type DeleteResponse = { acknowledged: boolean; deletedCount: number } | { error: string }

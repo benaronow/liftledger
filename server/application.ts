@@ -1,18 +1,31 @@
 import UserModel from "./models/user";
-import { User, UserResponse } from "./types";
+import { DeleteResponse, User, UserResponse, UsersResponse } from "./types";
 
 export const createUser = async (user: User): Promise<UserResponse> => {
   try {
     const newUser = await UserModel.create(user);
     if (newUser === null) {
-      throw new Error("Error when saving a user");
+      throw new Error("Cannot create user");
     }
 
     return newUser;
-  } catch (error) {
-    return { error: "Error when saving a user" };
+  } catch (error: any) {
+    return { error: error };
   }
 };
+
+export const deleteUser = async (username: string): Promise<DeleteResponse> => {
+  try {
+    const res = await UserModel.deleteOne({ username: username });
+    if (res === null) {
+      throw new Error(`Cannot delete user ${username}`);
+    }
+
+    return res;
+  } catch (error: any) {
+    return { error: username };
+  }
+}
 
 export const getUser = async (username: string): Promise<UserResponse> => {
   try {
@@ -27,11 +40,15 @@ export const getUser = async (username: string): Promise<UserResponse> => {
   }
 };
 
-export const getAllUsers = async (): Promise<UserResponse[]> => {
+export const getAllUsers = async (): Promise<UsersResponse> => {
   try {
-    const result = await UserModel.find();
-    return result;
-  } catch (error) {
-    return [{ error: "Error when fetching all users" }];
+    const users = await UserModel.find();
+    if (users === null) {
+      throw new Error('Cannot get all users')
+    }
+
+    return users;
+  } catch (error: any) {
+    return { error: error };
   }
 };

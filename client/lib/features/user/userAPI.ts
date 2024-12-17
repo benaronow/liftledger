@@ -15,18 +15,25 @@ export const createUserRequest = async (
     favExercise: favExercise,
   };
   const res = await api.post(`${USER_API_URL}/createUser`, user);
-  const result: User = await res.data.json();
+  const result: User = await res.data;
   return result;
 };
 
+export const deleteUserRequest = async (username: string) => {
+  const res = await api.delete(`${USER_API_URL}/deleteUser/?username=${username}`);
+  const result: User = await res.data;
+  return result;
+}
+
 export const getUserRequest = async (username: string) => {
   const res = await api.get(`${USER_API_URL}/getUser/${username}`);
-  const result: User = await res.data.json();
+  const result: User = await res.data;
   return result;
 };
 
 export const getAllUsersRequest = async () => {
   const res = await api.get(`${USER_API_URL}/getAllUsers`);
-  const result: User[] = await res.data.json();
+  const result: User[] = await res.data;
+  console.log(result);
   return result;
 };
