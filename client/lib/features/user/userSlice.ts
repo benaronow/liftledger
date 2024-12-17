@@ -47,7 +47,7 @@ export const userSlice = createAppSlice({
     ),
     deleteUser: create.asyncThunk(
       async (username: string) => {
-        const response: User = await deleteUserRequest(username);
+        const response: { acknowledged: boolean, deletedCount: number } = await deleteUserRequest(username);
 
         return response;
       },
@@ -85,7 +85,6 @@ export const userSlice = createAppSlice({
     getAllUsers: create.asyncThunk(
       async () => {
         const response: User[] = await getAllUsersRequest();
-        console.log(response);
         return response;
       },
       {

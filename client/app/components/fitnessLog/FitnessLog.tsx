@@ -1,28 +1,31 @@
 import {
   createUser,
   deleteUser,
+  getAllUsers,
+  getUser,
   selectUsers,
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { FitnessLogSocket, User } from "@/types";
-import { ChangeEvent, useState } from "react";
+import { User } from "@/types";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useFitnessLog } from "./useFitnessLog";
 import { Button, Input, styled } from "@mui/material";
+import { socket } from "@/socket";
 
 const UserInput = styled(Input)({
-  border: 'solid',
-  borderWidth: '1px',
-  borderRadius: '5px',
-  marginBottom: '5px',
+  border: "solid",
+  borderWidth: "1px",
+  borderRadius: "5px",
+  marginBottom: "5px",
 });
 
 const UserButton = styled(Button)({
-  border: 'solid',
-  borderWidth: '1px',
+  border: "solid",
+  borderWidth: "1px",
 });
 
-export const FitnessLog = ({ socket }: { socket: FitnessLogSocket | null }) => {
-  const { curUser } = useFitnessLog(socket);
+export const FitnessLog = () => {
+  const { curUser } = useFitnessLog();
 
   const dispatch = useAppDispatch();
   const users: User[] = useAppSelector(selectUsers);
@@ -31,8 +34,20 @@ export const FitnessLog = ({ socket }: { socket: FitnessLogSocket | null }) => {
   const [favExercise, setFavExercise] = useState("");
   const [removeUsername, setRemoveUsername] = useState("");
 
+  useEffect(() => {
+    dispatch(getAllUsers());
+  }, []);
+
   const handleAddUser = () => {
     dispatch(createUser({ username, password, favExercise }));
+    socket.emit('usersUpdate', username);
+    setUsername("");
+    setPassword("");
+    setFavExercise("");
+  };
+
+  const handleGetUser = () => {
+    dispatch(getUser(username));
     setUsername("");
     setPassword("");
     setFavExercise("");
@@ -40,6 +55,7 @@ export const FitnessLog = ({ socket }: { socket: FitnessLogSocket | null }) => {
 
   const handleRemoveUser = () => {
     dispatch(deleteUser(removeUsername));
+    socket.emit('usersUpdate', removeUsername);
     setRemoveUsername("");
   };
 
@@ -63,8 +79,12 @@ export const FitnessLog = ({ socket }: { socket: FitnessLogSocket | null }) => {
     <>
       <UserInput value={username} onChange={handleUsernameChange}></UserInput>
       <UserInput value={password} onChange={handlePasswordChange}></UserInput>
-      <UserInput value={favExercise} onChange={handleFavExerciseChange}></UserInput>
+      <UserInput
+        value={favExercise}
+        onChange={handleFavExerciseChange}
+      ></UserInput>
       <UserButton onClick={handleAddUser}>Add User</UserButton>
+      <UserButton onClick={handleGetUser}>Get User</UserButton>
       <br />
       <UserInput
         value={removeUsername}

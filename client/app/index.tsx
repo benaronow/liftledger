@@ -11,7 +11,7 @@ export const App = () => {
   const serverURL = process.env.NEXT_PUBLIC_SERVER_URL;
 
   if (serverURL === undefined) {
-    throw new Error("Env variable 'NEXT_PUBLIC_SERVER_URL' must be defined");
+    throw new Error("Env variable 'SERVER_URL' must be defined");
   }
 
   useEffect(() => {
@@ -26,5 +26,5 @@ export const App = () => {
     };
   }, [socket, serverURL]);
 
-  return <FitnessLog socket={socket} />;
+  return <FitnessLog socket={socket}/>;
 };

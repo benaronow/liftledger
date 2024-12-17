@@ -1,9 +1,7 @@
 import api from "@/lib/config";
 import { User } from "@/types";
+import { socket } from "@/socket";
 
-const USER_API_URL = `${process.env.NEXT_PUBLIC_SERVER_URL}/user`;
-
-// A mock function to mimic making an async request for data
 export const createUserRequest = async (
   username: string,
   password: string,
@@ -14,26 +12,27 @@ export const createUserRequest = async (
     password: password,
     favExercise: favExercise,
   };
-  const res = await api.post(`${USER_API_URL}/createUser`, user);
+  const res = await api.post(`http://localhost:3000/api/user`, user);
   const result: User = await res.data;
+  socket.emit('usersUpdate', username);
   return result;
 };
 
 export const deleteUserRequest = async (username: string) => {
-  const res = await api.delete(`${USER_API_URL}/deleteUser/?username=${username}`);
-  const result: User = await res.data;
+  const res = await api.delete(`http://localhost:3000/api/user?username=${username}`);
+  const result: { acknowledged: boolean, deletedCount: number } = await res.data;
+  socket.emit('usersUpdate', username);
   return result;
 }
 
 export const getUserRequest = async (username: string) => {
-  const res = await api.get(`${USER_API_URL}/getUser/${username}`);
+  const res = await api.get(`http://localhost:3000/api/user/${username}`);
   const result: User = await res.data;
   return result;
 };
 
 export const getAllUsersRequest = async () => {
-  const res = await api.get(`${USER_API_URL}/getAllUsers`);
-  const result: User[] = await res.data;
-  console.log(result);
+  const res = await api.get(`http://localhost:3000/api/users`);
+  const result: User[] = await res.data.data;
   return result;
 };
