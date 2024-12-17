@@ -1,5 +1,10 @@
 import { createAppSlice } from "@/lib/createAppSlice";
-import { createUserRequest, deleteUserRequest, getAllUsersRequest, getUserRequest } from "./userAPI";
+import {
+  createUserRequest,
+  deleteUserRequest,
+  getAllUsersRequest,
+  getUserRequest,
+} from "./userAPI";
 import { User } from "@/types";
 
 export interface UserSliceState {
@@ -47,7 +52,8 @@ export const userSlice = createAppSlice({
     ),
     deleteUser: create.asyncThunk(
       async (username: string) => {
-        const response: { acknowledged: boolean, deletedCount: number } = await deleteUserRequest(username);
+        const response: { acknowledged: boolean; deletedCount: number } =
+          await deleteUserRequest(username);
 
         return response;
       },
@@ -63,7 +69,7 @@ export const userSlice = createAppSlice({
         },
       }
     ),
-    getUser: create.asyncThunk(
+    setUser: create.asyncThunk(
       async (username: string) => {
         const response: User = await getUserRequest(username);
 
@@ -82,6 +88,9 @@ export const userSlice = createAppSlice({
         },
       }
     ),
+    clearUser: create.reducer((state) => {
+      state.curUser = undefined;
+    }),
     getAllUsers: create.asyncThunk(
       async () => {
         const response: User[] = await getAllUsersRequest();
@@ -110,6 +119,7 @@ export const userSlice = createAppSlice({
   },
 });
 
-export const { createUser, deleteUser, getUser, getAllUsers } = userSlice.actions;
+export const { createUser, deleteUser, setUser, clearUser, getAllUsers } =
+  userSlice.actions;
 
 export const { selectCurUser, selectUsers, selectStatus } = userSlice.selectors;

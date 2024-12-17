@@ -11,5 +11,5 @@ export const GET = async (req: NextRequest, { params }: GetParams) => {
 
     const user = await UserModel.findOne({ username: (await params).id });
 
-    return NextResponse.json({ data: user });
+    return NextResponse.json(user);
 };

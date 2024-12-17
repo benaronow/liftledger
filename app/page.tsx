@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { FitnessLog } from "./components/fitnessLog/FitnessLog";
+import { FitnessLog } from "./components/fitnessLog";
 
 export default function IndexPage() {
   return <FitnessLog />;

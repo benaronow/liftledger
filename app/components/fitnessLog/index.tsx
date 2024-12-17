@@ -1,10 +1,11 @@
 "use client";
 
 import {
+  clearUser,
   createUser,
   deleteUser,
   getAllUsers,
-  getUser,
+  setUser,
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -31,6 +32,7 @@ export const FitnessLog = () => {
   const [password, setPassword] = useState("");
   const [favExercise, setFavExercise] = useState("");
   const [removeUsername, setRemoveUsername] = useState("");
+  const [loginUsername, setLoginUsername] = useState("");
 
   useEffect(() => {
     dispatch(getAllUsers());
@@ -38,13 +40,6 @@ export const FitnessLog = () => {
 
   const handleAddUser = () => {
     dispatch(createUser({ username, password, favExercise }));
-    setUsername("");
-    setPassword("");
-    setFavExercise("");
-  };
-
-  const handleGetUser = () => {
-    dispatch(getUser(username));
     setUsername("");
     setPassword("");
     setFavExercise("");
@@ -71,8 +66,37 @@ export const FitnessLog = () => {
     setRemoveUsername(e.target.value);
   };
 
+  const handleLoginUser = () => {
+    dispatch(setUser(loginUsername));
+    setLoginUsername("");
+  };
+
+  const handleLoginUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setLoginUsername(e.target.value);
+  };
+
+  const handleLogout = () => {
+    dispatch(clearUser());
+  };
+
   return (
     <>
+      <UserInput
+        value={loginUsername}
+        onChange={handleLoginUsernameChange}
+      ></UserInput>
+      <UserButton onClick={handleLoginUser}>Login User</UserButton>
+      <UserButton onClick={handleLogout}>Logout</UserButton>
+      <span>User:</span>
+      {curUser ? (
+        <>
+          <span>{`Username: ${curUser?.username || "None"}`}</span>
+          <span>{`Favorite Exercise: ${curUser?.favExercise || "None"}`}</span>
+        </>
+      ) : (
+        <span>Not signed in</span>
+      )}
+      <br />
       <UserInput value={username} onChange={handleUsernameChange}></UserInput>
       <UserInput value={password} onChange={handlePasswordChange}></UserInput>
       <UserInput
@@ -80,7 +104,6 @@ export const FitnessLog = () => {
         onChange={handleFavExerciseChange}
       ></UserInput>
       <UserButton onClick={handleAddUser}>Add User</UserButton>
-      <UserButton onClick={handleGetUser}>Get User</UserButton>
       <br />
       <UserInput
         value={removeUsername}
@@ -88,10 +111,6 @@ export const FitnessLog = () => {
       ></UserInput>
       <UserButton onClick={handleRemoveUser}>Remove User</UserButton>
       <br />
-      <span>User:</span>
-      <span>{curUser?.username}</span>
-      <span>{curUser?.password}</span>
-      <span>{curUser?.favExercise}</span>
       <span>Users:</span>
       <ol>
         {users.map((user, idx) => (
