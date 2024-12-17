@@ -7,6 +7,19 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { FitnessLogSocket, User } from "@/types";
 import { ChangeEvent, useState } from "react";
 import { useFitnessLog } from "./useFitnessLog";
+import { Button, Input, styled } from "@mui/material";
+
+const UserInput = styled(Input)({
+  border: 'solid',
+  borderWidth: '1px',
+  borderRadius: '5px',
+  marginBottom: '5px',
+});
+
+const UserButton = styled(Button)({
+  border: 'solid',
+  borderWidth: '1px',
+});
 
 export const FitnessLog = ({ socket }: { socket: FitnessLogSocket | null }) => {
   const { curUser } = useFitnessLog(socket);
@@ -48,16 +61,16 @@ export const FitnessLog = ({ socket }: { socket: FitnessLogSocket | null }) => {
 
   return (
     <>
-      <input value={username} onChange={handleUsernameChange}></input>
-      <input value={password} onChange={handlePasswordChange}></input>
-      <input value={favExercise} onChange={handleFavExerciseChange}></input>
-      <button onClick={handleAddUser}>Add User</button>
+      <UserInput value={username} onChange={handleUsernameChange}></UserInput>
+      <UserInput value={password} onChange={handlePasswordChange}></UserInput>
+      <UserInput value={favExercise} onChange={handleFavExerciseChange}></UserInput>
+      <UserButton onClick={handleAddUser}>Add User</UserButton>
       <br />
-      <input
+      <UserInput
         value={removeUsername}
         onChange={handleRemoveUsernameChange}
-      ></input>
-      <button onClick={handleRemoveUser}>Remove User</button>
+      ></UserInput>
+      <UserButton onClick={handleRemoveUser}>Remove User</UserButton>
       <br />
       <span>Users:</span>
       <ol>
