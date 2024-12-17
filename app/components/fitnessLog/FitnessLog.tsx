@@ -1,16 +1,15 @@
+"use client";
+
 import {
   createUser,
   deleteUser,
   getAllUsers,
   getUser,
-  selectUsers,
 } from "@/lib/features/user/userSlice";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { User } from "@/types";
+import { useAppDispatch } from "@/lib/hooks";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useFitnessLog } from "./useFitnessLog";
 import { Button, Input, styled } from "@mui/material";
-import { socket } from "@/socket";
 
 const UserInput = styled(Input)({
   border: "solid",
@@ -25,10 +24,9 @@ const UserButton = styled(Button)({
 });
 
 export const FitnessLog = () => {
-  const { curUser } = useFitnessLog();
+  const { curUser, users } = useFitnessLog();
 
   const dispatch = useAppDispatch();
-  const users: User[] = useAppSelector(selectUsers);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [favExercise, setFavExercise] = useState("");
@@ -40,7 +38,6 @@ export const FitnessLog = () => {
 
   const handleAddUser = () => {
     dispatch(createUser({ username, password, favExercise }));
-    socket.emit('usersUpdate', username);
     setUsername("");
     setPassword("");
     setFavExercise("");
@@ -55,7 +52,6 @@ export const FitnessLog = () => {
 
   const handleRemoveUser = () => {
     dispatch(deleteUser(removeUsername));
-    socket.emit('usersUpdate', removeUsername);
     setRemoveUsername("");
   };
 
@@ -92,6 +88,10 @@ export const FitnessLog = () => {
       ></UserInput>
       <UserButton onClick={handleRemoveUser}>Remove User</UserButton>
       <br />
+      <span>User:</span>
+      <span>{curUser?.username}</span>
+      <span>{curUser?.password}</span>
+      <span>{curUser?.favExercise}</span>
       <span>Users:</span>
       <ol>
         {users.map((user, idx) => (

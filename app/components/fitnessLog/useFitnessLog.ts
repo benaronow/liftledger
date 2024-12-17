@@ -1,29 +1,20 @@
 import {
   getAllUsers,
   selectCurUser,
+  selectUsers,
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { User } from "@/types";
 import { useEffect } from "react";
-import { socket } from "@/socket";
 
 export const useFitnessLog = () => {
   const dispatch = useAppDispatch();
   const curUser = useAppSelector(selectCurUser);
+  const users: User[] = useAppSelector(selectUsers);
 
   useEffect(() => {
     dispatch(getAllUsers());
   }, []);
 
-  useEffect(() => {
-    const handleUsersUpdate = () => {
-      dispatch(getAllUsers());
-    };
-
-    socket.on("usersUpdate", handleUsersUpdate);
-    return () => {
-      socket.off("usersUpdate", handleUsersUpdate);
-    };
-  }, [socket]);
-
-  return { curUser };
+  return { curUser, users };
 };

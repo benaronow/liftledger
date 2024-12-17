@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { App } from ".";
+import { FitnessLog } from "./components/fitnessLog/FitnessLog";
 
 export default function IndexPage() {
-  return <App />;
+  return <FitnessLog />;
 }
 
 export const metadata: Metadata = {
