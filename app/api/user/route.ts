@@ -1,10 +1,9 @@
-
-import { connect } from "@/app/dbConnect";
+import { connectDB } from "@/app/connectDB";
 import UserModel from "@/app/models/user";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async () => {
-  await connect();
+  await connectDB();
 
   const users = await UserModel.find();
 
@@ -12,20 +11,20 @@ export const GET = async () => {
 };
 
 export const POST = async (req: NextRequest) => {
-    await connect();
+  await connectDB();
 
-    const user = await req.json();
-    const newUser = await UserModel.create(user);
+  const user = await req.json();
+  const newUser = await UserModel.create(user);
 
-    return NextResponse.json(newUser)
-}
+  return NextResponse.json(newUser);
+};
 
 export const DELETE = async (req: NextRequest) => {
-    await connect();
+  await connectDB();
 
-    const { searchParams } = new URL(req.url);
-    const username = searchParams.get('username');
-    const deleteInfo = await UserModel.deleteOne({ username: username });
+  const { searchParams } = new URL(req.url);
+  const username = searchParams.get("username");
+  const deleteInfo = await UserModel.deleteOne({ username: username });
 
-    return NextResponse.json(deleteInfo)
-}
+  return NextResponse.json(deleteInfo);
+};

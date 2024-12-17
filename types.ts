@@ -4,3 +4,7 @@ export interface User {
   password: string;
   favExercise: string;
 }
+
+export interface GetParams {
+  params: Promise<{ id: string }>;
+}
