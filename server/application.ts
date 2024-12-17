@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import UserModel from "./models/user";
 import { DeleteResponse, User, UserResponse, UsersResponse } from "./types";
 
@@ -23,7 +25,7 @@ export const deleteUser = async (username: string): Promise<DeleteResponse> => {
 
     return res;
   } catch (error: any) {
-    return { error: username };
+    return { error: error };
   }
 }
 

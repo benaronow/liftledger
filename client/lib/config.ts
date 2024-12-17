@@ -13,7 +13,6 @@ const handleRes = (res: AxiosResponse) => res;
  * Function to handle errors
  */
 const handleErr = (err: AxiosError) => {
-  // eslint-disable-next-line no-console
   console.log(err);
   return Promise.reject(err);
 };

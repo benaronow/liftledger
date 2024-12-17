@@ -1,6 +1,4 @@
 import { createAppSlice } from "@/lib/createAppSlice";
-import type { AppThunk } from "@/lib/store";
-import type { PayloadAction } from "@reduxjs/toolkit";
 import { createUserRequest, deleteUserRequest, getAllUsersRequest, getUserRequest } from "./userAPI";
 import { User } from "@/types";
 

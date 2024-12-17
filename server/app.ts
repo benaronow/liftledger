@@ -35,10 +35,10 @@ function startServer() {
 }
 
 socket.on('connection', socket => {
-  console.log('A user connected ->', socket.id);
+  console.log('Socket connected:', socket.id);
 
   socket.on('disconnect', () => {
-    console.log('User disconnected');
+    console.log('Socket disconnected:', socket.id);
   });
 });
 
