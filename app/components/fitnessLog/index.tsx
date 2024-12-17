@@ -79,8 +79,17 @@ export const FitnessLog = () => {
     dispatch(clearUser());
   };
 
+  const LoginButton = () => {
+    return (
+      <a className="button__login" href="/api/auth/login">
+        Log In
+      </a>
+    );
+  };
+
   return (
     <>
+      <LoginButton />
       <UserInput
         value={loginUsername}
         onChange={handleLoginUsernameChange}
