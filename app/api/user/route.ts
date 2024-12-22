@@ -23,8 +23,8 @@ export const DELETE = async (req: NextRequest) => {
   await connectDB();
 
   const { searchParams } = new URL(req.url);
-  const username = searchParams.get("username");
-  const deleteInfo = await UserModel.deleteOne({ username: username });
+  const email = searchParams.get("email");
+  const deleteInfo = await UserModel.deleteOne({ email });
 
   return NextResponse.json(deleteInfo);
 };

@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { FitnessLog } from "./components/fitnessLog";
+import { LiftLedger } from "./components/liftLedger";
 import { auth0 } from "@/lib/auth0";
-import { Login } from "./components/login";
 
 export default async function IndexPage() {
   const session = await auth0.getSession();
-  return session ? <FitnessLog session={session} /> : <Login />;
+  return <LiftLedger session={session} />;
 }
 
 export const metadata: Metadata = {

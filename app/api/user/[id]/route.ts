@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const GET = async (req: NextRequest, { params }: GetParams) => {
   await connectDB();
 
-  const user = await UserModel.findOne({ username: (await params).id });
+  const user = await UserModel.findOne({ email: (await params).id });
 
   return NextResponse.json(user);
 };

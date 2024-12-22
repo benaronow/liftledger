@@ -2,18 +2,34 @@ import { Schema } from "mongoose";
 
 const userSchema: Schema = new Schema(
   {
-    username: {
+    email: {
       type: String,
       required: true,
       unique: true,
     },
-    password: {
+    firstName: {
       type: String,
-      required: true,
+      required: false,
     },
-    favExercise: {
+    lastName: {
       type: String,
-      required: true,
+      required: false,
+    },
+    birthday: {
+      type: Date,
+      required: false,
+    },
+    curBenchMax: {
+      type: Number,
+      required: false,
+    },
+    curDeadMax: {
+      type: Number,
+      required: false,
+    },
+    curSquatMax: {
+      type: Number,
+      required: false,
     },
   },
   { collection: "User" }
