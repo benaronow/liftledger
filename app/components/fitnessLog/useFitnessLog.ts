@@ -1,20 +1,20 @@
 import {
   getAllUsers,
   selectCurUser,
-  selectUsers,
+  loginUser,
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { User } from "@/types";
 import { useEffect } from "react";
 
-export const useFitnessLog = () => {
+export const useFitnessLog = (auth0_name: string) => {
   const dispatch = useAppDispatch();
-  const curUser = useAppSelector(selectCurUser);
-  const users: User[] = useAppSelector(selectUsers);
-
   useEffect(() => {
+    if (auth0_name) dispatch(loginUser(auth0_name));
     dispatch(getAllUsers());
   }, []);
 
-  return { curUser, users };
+  const curUser: User | undefined = useAppSelector(selectCurUser);
+
+  return { curUser };
 };

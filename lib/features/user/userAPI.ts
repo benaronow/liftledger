@@ -9,9 +9,19 @@ export const getAllUsersRequest = async () => {
   return result;
 };
 
-export const getUserRequest = async (username: string) => {
+export const loginUserRequest = async (username: string) => {
   const res = await api.get(`${USER_API_URL}/${username}`);
   const result: User = await res.data;
+  if (result === null) {
+    const user: User = {
+      username: username,
+      password: "123",
+      favExercise: "none",
+    };
+    const res2 = await api.post(`${USER_API_URL}`, user);
+    const result2: User = await res2.data;
+    return result2;
+  }
   return result;
 };
 

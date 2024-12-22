@@ -3,7 +3,7 @@ import {
   createUserRequest,
   deleteUserRequest,
   getAllUsersRequest,
-  getUserRequest,
+  loginUserRequest,
 } from "./userAPI";
 import { User } from "@/types";
 
@@ -69,10 +69,9 @@ export const userSlice = createAppSlice({
         },
       }
     ),
-    setUser: create.asyncThunk(
+    loginUser: create.asyncThunk(
       async (username: string) => {
-        const response: User = await getUserRequest(username);
-
+        const response: User = await loginUserRequest(username);
         return response;
       },
       {
@@ -119,7 +118,7 @@ export const userSlice = createAppSlice({
   },
 });
 
-export const { createUser, deleteUser, setUser, clearUser, getAllUsers } =
+export const { createUser, deleteUser, loginUser, clearUser, getAllUsers } =
   userSlice.actions;
 
 export const { selectCurUser, selectUsers, selectStatus } = userSlice.selectors;
