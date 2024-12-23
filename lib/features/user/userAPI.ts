@@ -1,7 +1,7 @@
 import api from "@/lib/config";
 import { User } from "@/types";
 
-const USER_API_URL = "https://liftledger.app/api/user";
+const USER_API_URL = "/api/user";
 
 export const loginUserRequest = async (email: string) => {
   const res = await api.get(`${USER_API_URL}/${email}`);
