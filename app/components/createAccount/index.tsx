@@ -1,8 +1,13 @@
+"use client";
+
 import { createUser } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { User } from "@/types";
+import { SessionData } from "@auth0/nextjs-auth0/server";
 import { Input, styled } from "@mui/material";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
+import { useCreateAccount } from "./useCreateAccount";
 
 const AccountEntry = styled("div")({
   display: "flex",
@@ -14,11 +19,16 @@ const AccountInput = styled(Input)({
 });
 
 type CreateAccountProps = {
-  email: string;
+  session: SessionData | null;
 };
 
-export const CreateAccount = ({ email }: CreateAccountProps) => {
+export const CreateAccount = ({ session }: CreateAccountProps) => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  const email = session?.user.email || "";
+  const { attemptedLogin, curUser } = useCreateAccount(email);
+  if (attemptedLogin && curUser) router.push("/dashboard");
 
   const [input, setInput] = useState({
     firstName: "",
@@ -55,6 +65,7 @@ export const CreateAccount = ({ email }: CreateAccountProps) => {
     e.preventDefault();
     const user: User = { email, ...input };
     dispatch(createUser(user));
+    router.push("/dashboard");
   };
 
   return (
