@@ -18,6 +18,7 @@ export const Login = ({ session }: LoginProps) => {
   const router = useRouter();
   const auth0_email = session?.user.email || "";
   const { attemptedLogin, curUser } = useLogin(auth0_email);
+  console.log('random change');
 
   if (attemptedLogin && curUser) router.push("/dashboard");
   if (attemptedLogin && !curUser) router.push("/createAccount");
