@@ -8,5 +8,5 @@ export default async function IndexPage() {
 }
 
 export const metadata: Metadata = {
-  title: "Fitness Log",
+  title: "LiftLedger",
 };

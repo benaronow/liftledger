@@ -54,7 +54,6 @@ export const CreateAccount = ({ email }: CreateAccountProps) => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const user: User = { email, ...input };
-    console.log(email);
     dispatch(createUser(user));
   };
 
