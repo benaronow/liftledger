@@ -10,18 +10,18 @@ interface Props {
 
 export default function RootLayout({ children }: Props) {
   return (
-      <StoreProvider>
-        <html lang="en">
+    <StoreProvider>
+      <html lang="en">
         <body>
-            <section className={styles.container}>
-              <header className={styles.header}></header>
+          <section className={styles.container}>
+            <header className={styles.header}></header>
 
-              <main className={styles.main}>{children}</main>
+            <main className={styles.main}>{children}</main>
 
-              <footer className={styles.footer}></footer>
-            </section>
-          </body>
-        </html>
-      </StoreProvider>
+            <footer className={styles.footer}></footer>
+          </section>
+        </body>
+      </html>
+    </StoreProvider>
   );
 }
