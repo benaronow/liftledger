@@ -28,6 +28,7 @@ export const CreateAccount = ({ session }: CreateAccountProps) => {
 
   const email = session?.user.email || "";
   const { attemptedLogin, curUser } = useCreateAccount(email);
+  if (!email) router.push("/");
   if (attemptedLogin && curUser) router.push("/dashboard");
 
   const [input, setInput] = useState({
