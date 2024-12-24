@@ -5,6 +5,7 @@ const MONGO_URL = `${
 }`;
 
 export const connectDB = async () => {
+  console.log(MONGO_URL);
   mongoose
     .connect(MONGO_URL)
     .catch((err) => console.log("MongoDB connection error: ", err));
