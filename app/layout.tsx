@@ -32,7 +32,6 @@ export default function RootLayout({ children }: Props) {
           />
           <link rel="manifest" href="/site.webmanifest" />
           <meta name="apple-mobile-web-app-title" content="LiftLedger" />
-          <meta name="apple-mobile-web-app-capable" content="yes" />
         </head>
         <body>
           <section className={styles.container}>
