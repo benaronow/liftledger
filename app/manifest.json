@@ -1,6 +1,11 @@
 {
   "name": "LiftLedger",
   "short_name": "LiftLedger",
+  "start_url": "/",
+  "scope": "/",
+  "theme_color": "#a3248d",
+  "background_color": "#58595b",
+  "display": "standalone",
   "icons": [
     {
       "src": "icon/icon-48.png",
@@ -37,10 +42,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "start_url": "/",
-  "scope": "/",
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
-  "display": "standalone"
+  ]
 }

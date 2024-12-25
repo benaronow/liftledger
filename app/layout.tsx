@@ -19,6 +19,7 @@ export default function RootLayout({ children }: Props) {
           ></meta>
           <meta name="viewport" content="width=device-width,initial-scale=1" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="theme-color" content="#a3248d" />
           <link rel="apple-touch-icon" href="icon/icon-48.png" />
           <link rel="apple-touch-icon" sizes="96x96" href="icon/icon-96.png" />
           <link
