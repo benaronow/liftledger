@@ -20,6 +20,7 @@ export default function RootLayout({ children }: Props) {
           <meta name="viewport" content="width=device-width,initial-scale=1" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta name="theme-color" content="#a3248d" />
+          <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
           <link
             rel="shortcut icon"
             href="img/favicon.ico"
