@@ -52,7 +52,12 @@ export default function RootLayout({ children }: Props) {
             href="/img/favicon-144.png"
             type="image/png"
           />
-          <link rel="apple-touch-icon" href="/apple-icon.png" />
+          <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="/apple-icon.png"
+            type="image/png"
+          />
           <link rel="manifest" href="/manifest.json" />
         </head>
         <body>
