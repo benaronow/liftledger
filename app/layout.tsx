@@ -17,15 +17,16 @@ export default function RootLayout({ children }: Props) {
             name="description"
             content="An app for tracking resistance-training progression."
           ></meta>
-          <meta name="apple-mobile-web-app-title" content="LiftLedger" />
+          <meta name="viewport" content="width=device-width,initial-scale=1" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
-          <link rel="apple-touch-icon" href="img/icon-48.png" />
+          <link rel="apple-touch-icon" href="icon/icon-48.png" />
           <link rel="apple-touch-icon" sizes="96x96" href="icon/icon-96.png" />
           <link
             rel="apple-touch-icon"
             sizes="196x196"
             href="icon/icon-196.png"
           />
+          <link rel="icon" href="favicon.ico" type="image/x-icon" />
           <link
             rel="icon"
             type="image/png"
