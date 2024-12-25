@@ -20,26 +20,43 @@ export default function RootLayout({ children }: Props) {
           <meta name="viewport" content="width=device-width,initial-scale=1" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta name="theme-color" content="#a3248d" />
-          <link rel="apple-touch-icon" href="icon/icon-48.png" />
-          <link rel="apple-touch-icon" sizes="96x96" href="icon/icon-96.png" />
+          <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
           <link
-            rel="apple-touch-icon"
-            sizes="196x196"
-            href="icon/icon-196.png"
-          />
-          <link rel="icon" href="favicon.ico" type="image/x-icon" />
-          <link
-            rel="icon"
-            type="image/png"
-            sizes="32x32"
-            href="icon/favicon-32x32.png"
+            rel="shortcut icon"
+            href="img/favicon.ico"
+            type="image/x-icon"
           />
           <link
             rel="icon"
-            type="image/png"
             sizes="16x16"
-            href="icon/favicon-16x16.png"
+            href="img/favicon-16.png"
+            type="image/png"
           />
+          <link
+            rel="icon"
+            sizes="32x32"
+            href="img/favicon-32.png"
+            type="image/png"
+          />
+          <link
+            rel="icon"
+            sizes="48x48"
+            href="img/favicon-48.png"
+            type="image/png"
+          />
+          <link
+            rel="icon"
+            sizes="96x96"
+            href="img/favicon-96.png"
+            type="image/png"
+          />
+          <link
+            rel="icon"
+            sizes="144x144"
+            href="img/favicon-144.png"
+            type="image/png"
+          />
+
           <link rel="manifest" href="manifest.json" />
         </head>
         <body>
