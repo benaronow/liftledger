@@ -20,42 +20,41 @@ export default function RootLayout({ children }: Props) {
           <meta name="viewport" content="width=device-width,initial-scale=1" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta name="theme-color" content="#a3248d" />
-          <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-          <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+          <link rel="icon" href="/favicon.ico" sizes="any" />
           <link
             rel="icon"
             sizes="16x16"
-            href="/img/favicon-16.png"
+            href="/images/icon1.png"
             type="image/png"
           />
           <link
             rel="icon"
             sizes="32x32"
-            href="/img/favicon-32.png"
+            href="/images/icon2.png"
             type="image/png"
           />
           <link
             rel="icon"
             sizes="48x48"
-            href="/img/favicon-48.png"
+            href="/images/icon3.png"
             type="image/png"
           />
           <link
             rel="icon"
             sizes="96x96"
-            href="/img/favicon-96.png"
+            href="/images/icon4.png"
             type="image/png"
           />
           <link
             rel="icon"
             sizes="144x144"
-            href="/img/favicon-144.png"
+            href="/images/icon5.png"
             type="image/png"
           />
           <link
             rel="apple-touch-icon"
             sizes="180x180"
-            href="/apple-icon.png"
+            href="/images/apple-icon.png"
             type="image/png"
           />
           <link rel="manifest" href="/manifest.json" />
