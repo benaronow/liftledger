@@ -21,6 +21,7 @@ export default function RootLayout({ children }: Props) {
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta name="theme-color" content="#a3248d" />
           <link rel="icon" href="favicon.ico" type="image/x-icon" />
+          <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
           <link
             rel="icon"
             sizes="16x16"
@@ -53,13 +54,7 @@ export default function RootLayout({ children }: Props) {
           />
           <link
             rel="apple-touch-icon"
-            sizes="96x96"
-            href="img/favicon-96.png"
-          />
-          <link
-            rel="apple-touch-icon"
-            sizes="196x196"
-            href="img/favicon-196.png"
+            href="apple-touch-icon.png"
           />
           <link rel="manifest" href="manifest.json" />
         </head>
