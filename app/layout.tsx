@@ -22,11 +22,6 @@ export default function RootLayout({ children }: Props) {
           <meta name="theme-color" content="#a3248d" />
           <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
           <link
-            rel="shortcut icon"
-            href="img/favicon.ico"
-            type="image/x-icon"
-          />
-          <link
             rel="icon"
             sizes="16x16"
             href="img/favicon-16.png"
@@ -56,7 +51,16 @@ export default function RootLayout({ children }: Props) {
             href="img/favicon-144.png"
             type="image/png"
           />
-          <link rel="apple-touch-icon" href="img/favicon-196.png" />
+          <link
+            rel="apple-touch-icon"
+            sizes="96x96"
+            href="img/favicon-96.png"
+          />
+          <link
+            rel="apple-touch-icon"
+            sizes="196x196"
+            href="img/favicon-196.png"
+          />
           <link rel="manifest" href="manifest.json" />
         </head>
         <body>
