@@ -19,6 +19,7 @@ export default function RootLayout({ children }: Props) {
           ></meta>
           <meta name="apple-mobile-web-app-title" content="LiftLedger" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
+          <link rel="apple-touch-icon" href="img/icon-48.png" />
           <link rel="apple-touch-icon" sizes="96x96" href="icon/icon-96.png" />
           <link
             rel="apple-touch-icon"

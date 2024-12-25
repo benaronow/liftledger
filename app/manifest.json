@@ -3,6 +3,11 @@
   "short_name": "LiftLedger",
   "icons": [
     {
+      "src": "icon/icon-48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
       "src": "icon/icon-96.png",
       "sizes": "96x96",
       "type": "image/png"
@@ -33,7 +38,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "https://www.liftledger.app/",
+  "start_url": "/",
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "display": "standalone"
