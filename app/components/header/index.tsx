@@ -35,9 +35,9 @@ export const Header = () => {
         <LLTitle fontFamily="Anta" fontWeight="400">
           2. LiftLedger
         </LLTitle>
-        <LLTitle fontFamily="Bowlby One SC" fontWeight="400">
+        {/* <LLTitle fontFamily="Bowlby One SC" fontWeight="400">
           3. LiftLedger
-        </LLTitle>
+        </LLTitle> */}
         <LLTitle fontFamily="Belanosima" fontWeight="600">
           4. LiftLedger
         </LLTitle>
@@ -50,21 +50,21 @@ export const Header = () => {
         <LLTitle fontFamily="Edu AU VIC WA NT Guides" fontWeight="700">
           7. LiftLedger
         </LLTitle>
-        <LLTitle fontFamily="Alkatra" fontWeight="600">
+        {/* <LLTitle fontFamily="Alkatra" fontWeight="600">
           8. LiftLedger
-        </LLTitle>
-        <LLTitle fontFamily="Shrikhand" fontWeight="400">
+        </LLTitle> */}
+        {/* <LLTitle fontFamily="Shrikhand" fontWeight="400">
           9. LiftLedger
-        </LLTitle>
-        <LLTitle fontFamily="Contrail One" fontWeight="400">
+        </LLTitle> */}
+        {/* <LLTitle fontFamily="Contrail One" fontWeight="400">
           10. LiftLedger
-        </LLTitle>
+        </LLTitle> */}
         <LLTitle fontFamily="Zen Dots" fontWeight="400">
           11. LiftLedger
         </LLTitle>
-        <LLTitle fontFamily="Iceberg" fontWeight="400">
+        {/* <LLTitle fontFamily="Iceberg" fontWeight="400">
           12. LiftLedger
-        </LLTitle>
+        </LLTitle> */}
         <LLTitle fontFamily="Jockey One" fontWeight="400">
           13. LiftLedger
         </LLTitle>
@@ -80,15 +80,15 @@ export const Header = () => {
         <LLTitle fontFamily="Mina" fontWeight="700">
           17. LiftLedger
         </LLTitle>
-        <LLTitle fontFamily="Odibee Sans" fontWeight="400">
+        {/* <LLTitle fontFamily="Odibee Sans" fontWeight="400">
           18. LiftLedger
-        </LLTitle>
+        </LLTitle> */}
         <LLTitle fontFamily="Baumans" fontWeight="400">
           19. LiftLedger
         </LLTitle>
-        <LLTitle fontFamily="Keania One" fontWeight="400">
+        {/* <LLTitle fontFamily="Keania One" fontWeight="400">
           20. LiftLedger
-        </LLTitle>
+        </LLTitle> */}
       </LLHeader>
     </>
   );
