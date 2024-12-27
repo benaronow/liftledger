@@ -66,7 +66,6 @@ export const CreateAccount = ({ session }: CreateAccountProps) => {
     e.preventDefault();
     const user: User = { email, ...input };
     dispatch(createUser(user));
-    router.push("/dashboard");
   };
 
   return (

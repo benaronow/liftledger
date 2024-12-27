@@ -4,6 +4,7 @@ import { StoreProvider } from "./StoreProvider";
 import "./styles/globals.css";
 import styles from "./styles/layout.module.css";
 import { Header } from "./components/header";
+import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
 
 interface Props {
   readonly children: ReactNode;
@@ -69,7 +70,9 @@ export default function RootLayout({ children }: Props) {
         <body>
           <section className={styles.container}>
             <header>
-              <Header />
+              <NextAppDirEmotionCacheProvider options={{ key: "css" }}>
+                <Header />
+              </NextAppDirEmotionCacheProvider>
             </header>
 
             <main className={styles.main}>{children}</main>

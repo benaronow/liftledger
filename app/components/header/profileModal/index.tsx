@@ -11,10 +11,10 @@ const useStyles = makeStyles()({
     alignItems: "center",
   },
   email: {
-    margin: '10px 10px 10px 10px',
+    margin: "10px 10px 10px 10px",
   },
   accountButton: {
-    margin: '10px 10px 10px 10px',
+    margin: "10px 10px 10px 10px",
     border: "solid",
     borderWidth: "1px",
   },
@@ -54,17 +54,27 @@ export const ProfileModal = ({ open, onClose, session }: ProfileModalProps) => {
     >
       <Box sx={boxStyle}>
         <div className={classes.modalContent}>
-          <span className={classes.email}>{session?.user.email}</span>
-          <Button className={classes.accountButton} href="/auth/logout">
-            Log out
-          </Button>
-          <Button
-            className={classes.accountButton}
-            href="/auth/logout"
-            onClick={handleDelete}
-          >
-            Delete Account
-          </Button>
+          {session ? (
+            <>
+              <span className={classes.email}>{session?.user.email}</span>
+              <Button className={classes.accountButton} href="/auth/logout">
+                Log out
+              </Button>
+              <Button
+                className={classes.accountButton}
+                href="/auth/logout"
+                onClick={handleDelete}
+              >
+                Delete Account
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button className={classes.accountButton} href="/auth/login">
+                Log in
+              </Button>
+            </>
+          )}
         </div>
       </Box>
     </Modal>
