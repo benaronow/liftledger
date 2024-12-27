@@ -7,6 +7,8 @@ export interface User {
   benchMax: number;
   squatMax: number;
   deadMax: number;
+  blocks: Block[];
+  curBlock: Block | undefined;
 }
 
 enum Muscle {
@@ -113,15 +115,16 @@ export enum WeightType {
 }
 
 export interface Exercise {
+  _id?: string;
   name: ExerciseName | string;
   apparatus: ExerciseApparatus | string;
   musclesWorked: Muscle[];
   sets: number;
-  reps: number | number[];
-  weight: number | number[];
+  reps: number[];
+  weight: number[];
   weightType: WeightType | string;
   unilateral: boolean;
-  previousSessionNote: string;
+  prevSessionNote: string;
 }
 
 export interface Day {
@@ -130,10 +133,18 @@ export interface Day {
   exercises: Exercise[];
 }
 
-export interface Plan {
+export interface Week {
+  _id?: string;
+  number: number;
+  days: Day[];
+}
+
+export interface Block {
   _id?: string;
   name: string;
-  days: Day[];
+  startDate: Date;
+  length: number;
+  weeks: Week[];
 }
 
 export interface GetParams {

@@ -113,6 +113,8 @@ export const CreateAccount = ({ session }: CreateAccountProps) => {
       benchMax: parseInt(input.benchMax),
       squatMax: parseInt(input.squatMax),
       deadMax: parseInt(input.deadMax),
+      blocks: [],
+      curBlock: undefined,
     };
     dispatch(createUser(user));
   };

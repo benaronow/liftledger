@@ -1,4 +1,5 @@
 import { Schema } from "mongoose";
+import BlockModel from "../block";
 
 const userSchema: Schema = new Schema(
   {
@@ -29,6 +30,14 @@ const userSchema: Schema = new Schema(
     },
     squatMax: {
       type: Number,
+      required: false,
+    },
+    blocks: {
+      type: [BlockModel],
+      required: false,
+    },
+    curBlock: {
+      type: BlockModel,
       required: false,
     },
   },

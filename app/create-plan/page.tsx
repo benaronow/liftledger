@@ -1,7 +1,7 @@
-import { CreatePlan } from "../components/createPlan";
+import { CreateBlock } from "../components/createBlock";
 
 const Page = async () => {
-  return <CreatePlan />;
+  return <CreateBlock />;
 };
 
 export default Page;
