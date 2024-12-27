@@ -20,8 +20,16 @@ export const Dashboard = ({ session }: DashboardProps) => {
       router.push("/create-account");
     }
   }, [attemptedLogin]);
-    
-  if (!session) return <span>You are not logged in</span>
 
-  return <Button>Create Plan</Button>;
+  if (!session) return <span>You are not logged in</span>;
+
+  const handleCreatePlanClick = () => {
+    router.push("/create-plan");
+  };
+
+  return (
+    <>
+      <Button onClick={handleCreatePlanClick}> Create Plan</Button>
+    </>
+  );
 };
