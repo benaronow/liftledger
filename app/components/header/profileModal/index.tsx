@@ -20,6 +20,17 @@ const useStyles = makeStyles()({
   },
 });
 
+const boxStyle = {
+  position: "absolute",
+  top: "70px",
+  right: "10px",
+  background: "white",
+  outline: 0,
+  border: "solid",
+  borderColor: "lightgray",
+  borderRadius: "25px",
+};
+
 interface ProfileModalProps {
   open: boolean;
   onClose: () => void;
@@ -29,17 +40,6 @@ interface ProfileModalProps {
 export const ProfileModal = ({ open, onClose, session }: ProfileModalProps) => {
   const { classes } = useStyles();
   const dispatch = useAppDispatch();
-
-  const boxStyle = {
-    position: "absolute",
-    top: "70px",
-    right: "10px",
-    background: "white",
-    outline: 0,
-    border: "solid",
-    borderColor: "lightgray",
-    borderRadius: "25px",
-  };
 
   const auth0_email = session?.user.email || "";
   const handleDelete = () => {

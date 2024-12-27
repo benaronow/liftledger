@@ -19,15 +19,15 @@ const userSchema: Schema = new Schema(
       type: Date,
       required: false,
     },
-    curBenchMax: {
+    benchMax: {
       type: Number,
       required: false,
     },
-    curDeadMax: {
+    deadMax: {
       type: Number,
       required: false,
     },
-    curSquatMax: {
+    squatMax: {
       type: Number,
       required: false,
     },

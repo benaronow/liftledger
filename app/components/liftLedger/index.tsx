@@ -15,7 +15,6 @@ export const LiftLedger = ({ session }: LiftLedgerProps) => {
   const { attemptedLogin, curUser } = useLiftLedger(auth0_email);
 
   useEffect(() => {
-    console.log(session, attemptedLogin, curUser);
     if (!session) router.push("/dashboard");
     if (session && attemptedLogin) {
       router.push(curUser ? "/dashboard" : "/create-account");

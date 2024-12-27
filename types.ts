@@ -4,9 +4,9 @@ export interface User {
   firstName: string;
   lastName: string;
   birthday: Date;
-  curBenchMax: number;
-  curSquatMax: number;
-  curDeadMax: number;
+  benchMax: number;
+  squatMax: number;
+  deadMax: number;
 }
 
 export interface GetParams {

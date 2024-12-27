@@ -1,9 +1,9 @@
 import { auth0 } from "@/lib/auth0";
-import { LiftLedger } from "../components/liftLedger";
+import { Dashboard } from "../components/dashboard";
 
 const Page = async () => {
   const session = await auth0.getSession();
-  return <LiftLedger session={session} />;
+  return <Dashboard session={session} />;
 };
 
 export default Page;

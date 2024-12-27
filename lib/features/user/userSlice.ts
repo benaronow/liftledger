@@ -50,9 +50,9 @@ export const userSlice = createAppSlice({
         firstName: string;
         lastName: string;
         birthday: Date;
-        curBenchMax: number;
-        curSquatMax: number;
-        curDeadMax: number;
+        benchMax: number;
+        squatMax: number;
+        deadMax: number;
       }) => {
         const response: User = await createUserRequest(user);
         return response;
