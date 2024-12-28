@@ -1,7 +1,6 @@
 import {
   selectCurUser,
   selectAttemptedLogin,
-  deleteUser,
   loginUser,
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -18,9 +17,5 @@ export const useLiftLedger = (auth0_email: string) => {
     if (auth0_email && !curUser) dispatch(loginUser(auth0_email));
   }, [curUser]);
 
-  const handleDelete = () => {
-    dispatch(deleteUser(auth0_email));
-  };
-
-  return { attemptedLogin, curUser, handleDelete };
+  return { attemptedLogin, curUser };
 };

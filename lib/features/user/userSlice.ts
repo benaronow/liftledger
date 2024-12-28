@@ -4,8 +4,9 @@ import {
   deleteUserRequest,
   getAllUsersRequest,
   createUserRequest,
+  addBlockRequest,
 } from "./userAPI";
-import { User } from "@/types";
+import { Block, User } from "@/types";
 
 export interface UserSliceState {
   attemptedLogin: boolean;
@@ -50,9 +51,11 @@ export const userSlice = createAppSlice({
         firstName: string;
         lastName: string;
         birthday: Date;
-        curBenchMax: number;
-        curSquatMax: number;
-        curDeadMax: number;
+        benchMax: number;
+        squatMax: number;
+        deadMax: number;
+        blocks: Block[];
+        curBlock: Block | undefined;
       }) => {
         const response: User = await createUserRequest(user);
         return response;
@@ -107,6 +110,27 @@ export const userSlice = createAppSlice({
         },
       }
     ),
+    addBlock: create.asyncThunk(
+      async (data: { uid: string; block: Block }) => {
+        const response: User | undefined = await addBlockRequest({
+          uid: data.uid,
+          block: data.block,
+        });
+        return response;
+      },
+      {
+        pending: (state) => {
+          state.status = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.status = "idle";
+          state.curUser = action.payload;
+        },
+        rejected: (state) => {
+          state.status = "failed";
+        },
+      }
+    ),
   }),
   // You can define your selectors here. These selectors receive the slice
   // state as their first argument.
@@ -118,7 +142,7 @@ export const userSlice = createAppSlice({
   },
 });
 
-export const { loginUser, createUser, deleteUser, getAllUsers } =
+export const { loginUser, createUser, deleteUser, getAllUsers, addBlock } =
   userSlice.actions;
 
 export const {
