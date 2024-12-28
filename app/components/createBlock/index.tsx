@@ -34,7 +34,7 @@ const boxStyle = {
   borderRadius: "25px",
   padding: "10px 10px 10px 10px",
   width: "100%",
-  maxWidth: "350px",
+  maxWidth: "400px",
 };
 
 export const CreateBlock = () => {

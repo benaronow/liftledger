@@ -20,7 +20,7 @@ const useStyles = makeStyles()({
     alignItems: "center",
     marginTop: "10px",
     width: "100%",
-    justifyContent: "flex-end",
+    justifyContent: "flex-start",
   },
   day: {
     justifyContent: "space-between",
@@ -62,7 +62,7 @@ const useStyles = makeStyles()({
     borderRadius: "5px",
     marginLeft: "5px",
     background: "white",
-    width: "140px",
+    width: "100%",
   },
   nameInput: {
     border: "solid",
@@ -192,7 +192,7 @@ export const EditWeek = ({
     <form className={classes.createBlockContainer} onSubmit={handleSubmit}>
       <span>Create Training Block</span>
       <div className={classes.entry}>
-        <span>Block Name: </span>
+        <span style={{ width: "60%" }}>Block Name: </span>
         <Input
           className={classes.input}
           value={block.name}
@@ -200,7 +200,7 @@ export const EditWeek = ({
         ></Input>
       </div>
       <div className={classes.entry}>
-        <span>Start Date: </span>
+        <span style={{ width: "60%" }}>Start Date: </span>
         <DatePicker
           className={classes.input}
           value={dayjs(block.startDate)}
@@ -208,7 +208,7 @@ export const EditWeek = ({
         />
       </div>
       <div className={classes.entry}>
-        <span>Length (weeks): </span>
+        <span style={{ width: "60%" }}>Length (weeks): </span>
         <Input
           className={classes.input}
           value={block.length}

@@ -24,6 +24,9 @@ const useStyles = makeStyles()({
     alignItems: "center",
     marginTop: "10px",
     width: "100%",
+    justifyContent: "flex-start",
+  },
+  uniEntry: {
     justifyContent: "center",
   },
   exercise: {
@@ -59,13 +62,18 @@ const useStyles = makeStyles()({
     marginLeft: "5px",
     marginRight: "5px",
   },
+  entryColumn: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+  },
   input: {
     border: "solid",
     borderColor: "gray",
     borderWidth: "1px",
     borderRadius: "5px",
     marginLeft: "5px",
-    width: "170px",
+    width: "100%",
     background: "white",
   },
   removeButton: {
@@ -93,7 +101,7 @@ const useStyles = makeStyles()({
     borderColor: "gray",
     borderWidth: "1px",
     borderRadius: "5px",
-    width: "35px",
+    width: "100%",
     height: "38px",
     background: "white",
   },
@@ -103,7 +111,7 @@ const useStyles = makeStyles()({
     borderColor: "gray",
     borderWidth: "1px",
     borderRadius: "5px 0px 0px 5px",
-    width: "45px",
+    width: "100%",
     height: "38px",
     background: "white",
   },
@@ -329,7 +337,7 @@ export const EditDay = ({
             </div>
           </div>
           <div className={classes.entryContainer}>
-            <div>
+            <div className={classes.entryColumn}>
               <div className={classes.entry}>
                 <span>Lift: </span>
                 <Select
@@ -418,7 +426,7 @@ export const EditDay = ({
                   }}
                 />
               </div>
-              <div className={classes.entry}>
+              <div className={`${classes.entry} ${classes.uniEntry}`}>
                 <span>Unilateral?</span>
                 <Checkbox
                   checked={exercise.unilateral}
