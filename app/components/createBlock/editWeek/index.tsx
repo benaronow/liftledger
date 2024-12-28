@@ -71,6 +71,7 @@ const useStyles = makeStyles()({
     borderRadius: "5px",
     marginLeft: "5px",
     background: "white",
+    width: "100%",
   },
   editButton: {
     marginLeft: "5px",
