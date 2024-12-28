@@ -15,6 +15,18 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Dayjs } from "dayjs";
 
 const useStyles = makeStyles()({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    flex: '1',
+    position: "absolute",
+    top: "60px",
+    width: '100%',
+    padding: '10px 10px 0px 10px',
+    background: 'gray',
+    height: 'calc(100vh - 60px)',
+    alignItems: 'center',
+  },
   form: {
     display: "flex",
     flexDirection: "column",
@@ -50,6 +62,8 @@ const boxStyle = {
   borderColor: "lightgray",
   borderRadius: "25px",
   padding: "10px 10px 10px 10px",
+  width: '100%',
+  maxWidth: '300px'
 };
 
 interface CreateAccountProps {
@@ -121,33 +135,35 @@ export const CreateAccount = ({ session }: CreateAccountProps) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={boxStyle}>
-        <form className={classes.form} onSubmit={handleSubmit}>
-          <span>Create Account</span>
-          {Object.values(input).map((entry, idx) => (
-            <div className={classes.entry} key={idx}>
-              <span>{`${entryNames[idx]}: `}</span>
-              {entryNames[idx] === "Birthday" ? (
-                <DatePicker
-                  className={classes.input}
-                  onChange={(value: Dayjs | null) => handleDateInput(value)}
-                />
-              ) : (
-                <Input
-                  className={classes.input}
-                  value={entry}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    handleInput(e, entryNames[idx])
-                  }
-                ></Input>
-              )}
-            </div>
-          ))}
-          <Button className={classes.submitButton} type="submit">
-            Submit
-          </Button>
-        </form>
-      </Box>
+      <div className={classes.container}>
+        <Box sx={boxStyle}>
+          <form className={classes.form} onSubmit={handleSubmit}>
+            <span>Create Account</span>
+            {Object.values(input).map((entry, idx) => (
+              <div className={classes.entry} key={idx}>
+                <span>{`${entryNames[idx]}: `}</span>
+                {entryNames[idx] === "Birthday" ? (
+                  <DatePicker
+                    className={classes.input}
+                    onChange={(value: Dayjs | null) => handleDateInput(value)}
+                  />
+                ) : (
+                  <Input
+                    className={classes.input}
+                    value={entry}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      handleInput(e, entryNames[idx])
+                    }
+                  ></Input>
+                )}
+              </div>
+            ))}
+            <Button className={classes.submitButton} type="submit">
+              Submit
+            </Button>
+          </form>
+        </Box>
+      </div>
     </LocalizationProvider>
   );
 };

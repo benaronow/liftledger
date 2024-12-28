@@ -13,6 +13,7 @@ const useStyles = makeStyles()({
     background: "#a3258c",
     justifyContent: "center",
     alignItems: "center",
+    height: '60px',
   },
   logoContainer: {
     display: "flex",
