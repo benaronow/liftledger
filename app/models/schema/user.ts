@@ -1,45 +1,16 @@
 import { Schema } from "mongoose";
-import BlockModel from "../block";
 
 const userSchema: Schema = new Schema(
   {
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    firstName: {
-      type: String,
-      required: false,
-    },
-    lastName: {
-      type: String,
-      required: false,
-    },
-    birthday: {
-      type: Date,
-      required: false,
-    },
-    benchMax: {
-      type: Number,
-      required: false,
-    },
-    deadMax: {
-      type: Number,
-      required: false,
-    },
-    squatMax: {
-      type: Number,
-      required: false,
-    },
-    blocks: {
-      type: [BlockModel],
-      required: false,
-    },
-    curBlock: {
-      type: BlockModel,
-      required: false,
-    },
+    email: { type: String, required: true, unique: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    birthday: { type: Date, required: true },
+    benchMax: { type: Number, required: true },
+    deadMax: { type: Number, required: true },
+    squatMax: { type: Number, required: true },
+    blocks: { type: [{ type: Schema.Types.ObjectId, ref: "Block" }] },
+    curBlock: { type: Schema.Types.ObjectId, ref: "Block" },
   },
   { collection: "User" }
 );

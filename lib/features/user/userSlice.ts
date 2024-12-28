@@ -112,7 +112,10 @@ export const userSlice = createAppSlice({
     ),
     addBlock: create.asyncThunk(
       async (data: { uid: string; block: Block }) => {
-        const response: User = await addBlockRequest(data.uid, data.block);
+        const response: User | undefined = await addBlockRequest({
+          uid: data.uid,
+          block: data.block,
+        });
         return response;
       },
       {

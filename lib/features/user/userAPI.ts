@@ -29,8 +29,8 @@ export const getAllUsersRequest = async () => {
   return result;
 };
 
-export const addBlockRequest = async (uid: string, block: Block) => {
-  const res = await api.post(`${BLOCK_API_URL}`, { uid, block });
+export const addBlockRequest = async (data: { uid: string; block: Block }) => {
+  const res = await api.post(`${BLOCK_API_URL}`, data);
   const result: User = await res.data;
   return result;
-}
+};

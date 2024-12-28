@@ -19,6 +19,7 @@ export const LiftLedger = ({ session }: LiftLedgerProps) => {
     if (session && attemptedLogin) {
       router.push(curUser ? "/dashboard" : "/create-account");
     }
+    console.log(curUser?.curBlock);
   }, [attemptedLogin]);
 
   return <span>Hello</span>;

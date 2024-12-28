@@ -15,7 +15,7 @@ import Select from "react-select";
 import { makeStyles } from "tss-react/mui";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useAppDispatch } from "@/lib/hooks";
 import { addBlock, selectCurUser } from "@/lib/features/user/userSlice";
@@ -435,6 +435,8 @@ export const CreateBlock = () => {
     dispatch(addBlock({ uid: curUser?._id || '', block }))
   };
 
+  console.log(curUser?.curBlock);
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box sx={boxStyle}>
@@ -456,6 +458,7 @@ export const CreateBlock = () => {
               <span>Start Date: </span>
               <DatePicker
                 className={classes.input}
+                value={dayjs(block.startDate)}
                 onChange={(value: Dayjs | null) => handleDateInput(value)}
               />
             </div>
@@ -463,6 +466,7 @@ export const CreateBlock = () => {
               <span>Length (weeks): </span>
               <Input
                 className={classes.input}
+                value={block.length}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   handleNumberInput(e, 0, "length")
                 }
