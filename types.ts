@@ -11,29 +11,29 @@ export interface User {
   curBlock: Block | undefined;
 }
 
-enum Muscle {
-  Traps = "Traps",
-  Rhomboids = "Rhomboids",
-  FrontDelts = "Front Delts",
-  SideDelts = "Side Delts",
-  RearDelts = "Rear Delts",
-  Biceps = "Biceps",
-  Triceps = "Triceps",
-  Brachialis = "Brachialis",
-  Brachioradialis = "Brachioradialis",
-  Forearms = "Forearms",
-  Pecs = "Pecs",
-  Abs = "Abs",
-  Obliques = "Obliques",
-  Lats = "Lats",
-  ErectorSpinae = "Erector Spinae",
-  Glutes = "Glutes",
-  Adductors = "Adductors",
-  Abductors = "Abductors",
-  Quads = "Quads",
-  Hamstrings = "Hamstrings",
-  Calves = "Calves",
-}
+// enum Muscle {
+//   Traps = "Traps",
+//   Rhomboids = "Rhomboids",
+//   FrontDelts = "Front Delts",
+//   SideDelts = "Side Delts",
+//   RearDelts = "Rear Delts",
+//   Biceps = "Biceps",
+//   Triceps = "Triceps",
+//   Brachialis = "Brachialis",
+//   Brachioradialis = "Brachioradialis",
+//   Forearms = "Forearms",
+//   Pecs = "Pecs",
+//   Abs = "Abs",
+//   Obliques = "Obliques",
+//   Lats = "Lats",
+//   ErectorSpinae = "Erector Spinae",
+//   Glutes = "Glutes",
+//   Adductors = "Adductors",
+//   Abductors = "Abductors",
+//   Quads = "Quads",
+//   Hamstrings = "Hamstrings",
+//   Calves = "Calves",
+// }
 
 export enum ExerciseName {
   BenchPress = "Bench Press",
@@ -119,7 +119,6 @@ export interface Exercise {
   _id?: string;
   name: ExerciseName | string;
   apparatus: ExerciseApparatus | string;
-  musclesWorked: Muscle[];
   sets: number;
   prevSessionSets?: number;
   reps: number[];
@@ -129,6 +128,7 @@ export interface Exercise {
   weightType: WeightType | string;
   unilateral: boolean;
   prevSessionNote: string;
+  completed: boolean;
 }
 
 export interface Day {
@@ -157,4 +157,11 @@ export interface Block {
 
 export interface GetParams {
   params: Promise<{ id: string }>;
+}
+
+export enum BlockOp {
+  New = "new",
+  EditWeek = "edit week",
+  AddWeek = "add week",
+  Complete = "complete",
 }

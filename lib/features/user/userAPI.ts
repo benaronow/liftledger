@@ -1,5 +1,5 @@
 import api from "@/lib/config";
-import { Block, User } from "@/types";
+import { Block, BlockOp, User } from "@/types";
 
 const USER_API_URL = "/api/user";
 const BLOCK_API_URL = "/api/block";
@@ -29,8 +29,12 @@ export const getAllUsersRequest = async () => {
   return result;
 };
 
-export const addBlockRequest = async (data: { uid: string; block: Block }) => {
+export const blockOpRequest = async (data: {
+  uid: string;
+  block: Block;
+  type: BlockOp;
+}) => {
   const res = await api.post(`${BLOCK_API_URL}`, data);
-  const result: User = await res.data;
+  const result: Block = await res.data;
   return result;
 };

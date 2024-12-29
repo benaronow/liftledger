@@ -1,6 +1,6 @@
-import { addBlock } from "@/lib/features/user/userSlice";
+import { blockOp } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
-import { Block, Day, WeightType } from "@/types";
+import { Block, BlockOp, Day, WeightType } from "@/types";
 import {
   AddCircleOutline,
   ArrowBackIosNew,
@@ -207,13 +207,13 @@ export const EditWeek = ({
         {
           name: "",
           apparatus: "",
-          musclesWorked: [],
           sets: 0,
           reps: [0],
           weight: [0],
           weightType: WeightType.Pounds,
           unilateral: false,
           prevSessionNote: "",
+          completed: false,
         },
       ],
       completed: false,
@@ -260,7 +260,7 @@ export const EditWeek = ({
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatch(addBlock({ uid, block }));
+    dispatch(blockOp({ uid, block, type: BlockOp.New }));
     router.push("/dashboard");
   };
 

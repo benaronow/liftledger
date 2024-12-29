@@ -11,7 +11,7 @@ const useStyles = makeStyles()({
   container: {
     display: "flex",
     flexDirection: "column",
-    alignContent: "center",
+    alignItems: "center",
     width: "100%",
     textAlign: "center",
   },
@@ -68,11 +68,16 @@ const useStyles = makeStyles()({
     background: "#0096FF",
     color: "white",
     fontFamily: "Gabarito",
-    fontSize: "15px",
+    fontSize: "16px",
     height: "35px",
   },
   disabledButton: {
     background: "#9ED7FF",
+  },
+  noBlockText: {
+    marginBottom: "10px",
+    fontFamily: "Gabarito",
+    fontSize: "16px",
   },
 });
 
@@ -119,51 +124,46 @@ export const Dashboard = () => {
         <Box sx={boxStyle}>
           <span className={classes.title}>Current Training Block</span>
           <div className={classes.divider}></div>
-          <div className={classes.entry}>
-            <span className={classes.name}>Name: </span>
-            <span className={classes.value}>
-              {curUser?.curBlock ? curUser?.curBlock?.name : "Loading"}
+          {!curUser && <span className={classes.noBlockText}>Loading</span>}
+          {curUser && !curUser?.curBlock && (
+            <span className={classes.noBlockText}>
+              Create your first training block to get started!
             </span>
-          </div>
-          <div className={classes.entry}>
-            <span className={classes.name}>Start Date: </span>
-            <span className={classes.value}>
-              {curUser?.curBlock
-                ? dayjs(curUser?.curBlock?.startDate).format("MM-DD-YYYY")
-                : "Loading"}
-            </span>
-          </div>
-          <div className={classes.entry}>
-            <span className={classes.name}>Length (weeks): </span>
-            <span className={classes.value}>
-              {curUser?.curBlock ? curUser?.curBlock?.length : "Loading"}
-            </span>
-          </div>
-          <div className={classes.divider}></div>
-          <div className={classes.entry}>
-            <span className={classes.name}>Current Week: </span>
-            <span className={classes.value}>
-              {curUser?.curBlock ? currentWeek : "Loading"}
-            </span>
-          </div>
-          <div className={classes.entry}>
-            <span className={classes.name}>Current Day: </span>
-            <span className={classes.value}>
-              {curUser?.curBlock ? currentDay : "Loading"}
-            </span>
-          </div>
-          <div className={classes.divider}></div>
-          <button
-            className={`${classes.startDayButton} ${
-              !curUser && classes.disabledButton
-            }`}
-            onClick={handleStartDay}
-            disabled={!curUser}
-          >
-            {`Start: ${
-              !curUser ? "Loading" : `Week ${currentWeek}, ${currentDay}`
-            }`}
-          </button>
+          )}
+          {curUser?.curBlock && (
+            <>
+              <div className={classes.entry}>
+                <span className={classes.name}>Name: </span>
+                <span className={classes.value}>{curUser.curBlock.name}</span>
+              </div>
+              <div className={classes.entry}>
+                <span className={classes.name}>Start Date: </span>
+                <span className={classes.value}>
+                  {dayjs(curUser.curBlock.startDate).format("MM-DD-YYYY")}
+                </span>
+              </div>
+              <div className={classes.entry}>
+                <span className={classes.name}>Length (weeks): </span>
+                <span className={classes.value}>{curUser.curBlock.length}</span>
+              </div>
+              <div className={classes.divider}></div>
+              <div className={classes.entry}>
+                <span className={classes.name}>Current Week: </span>
+                <span className={classes.value}>{currentWeek}</span>
+              </div>
+              <div className={classes.entry}>
+                <span className={classes.name}>Current Day: </span>
+                <span className={classes.value}>{currentDay}</span>
+              </div>
+              <div className={classes.divider}></div>
+              <button
+                className={classes.startDayButton}
+                onClick={handleStartDay}
+              >
+                {`Start Week ${currentWeek}, ${currentDay}`}
+              </button>
+            </>
+          )}
         </Box>
       ) : (
         <span>Create an account or log in to use LiftLedger!</span>

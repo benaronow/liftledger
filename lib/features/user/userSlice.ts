@@ -2,23 +2,20 @@ import { createAppSlice } from "@/lib/createAppSlice";
 import {
   loginUserRequest,
   deleteUserRequest,
-  getAllUsersRequest,
   createUserRequest,
-  addBlockRequest,
+  blockOpRequest,
 } from "./userAPI";
-import { Block, User } from "@/types";
+import { Block, BlockOp, User } from "@/types";
 
 export interface UserSliceState {
   attemptedLogin: boolean;
   curUser: User | undefined;
-  users: User[];
   status: "idle" | "loading" | "failed";
 }
 
 const initialState: UserSliceState = {
   attemptedLogin: false,
   curUser: undefined,
-  users: [],
   status: "idle",
 };
 
@@ -92,29 +89,12 @@ export const userSlice = createAppSlice({
         },
       }
     ),
-    getAllUsers: create.asyncThunk(
-      async () => {
-        const response: User[] = await getAllUsersRequest();
-        return response;
-      },
-      {
-        pending: (state) => {
-          state.status = "loading";
-        },
-        fulfilled: (state, action) => {
-          state.status = "idle";
-          state.users = action.payload;
-        },
-        rejected: (state) => {
-          state.status = "failed";
-        },
-      }
-    ),
-    addBlock: create.asyncThunk(
-      async (data: { uid: string; block: Block }) => {
-        const response: User | undefined = await addBlockRequest({
+    blockOp: create.asyncThunk(
+      async (data: { uid: string; block: Block; type: BlockOp }) => {
+        const response: Block = await blockOpRequest({
           uid: data.uid,
           block: data.block,
+          type: data.type,
         });
         return response;
       },
@@ -124,7 +104,11 @@ export const userSlice = createAppSlice({
         },
         fulfilled: (state, action) => {
           state.status = "idle";
-          state.curUser = action.payload;
+          if (state.curUser) {
+            state.curUser.curBlock = action.payload;
+            state.curUser.blocks = state.curUser.blocks.toSpliced(
+              state.curUser.blocks.length - 1, 1, action.payload);
+          }
         },
         rejected: (state) => {
           state.status = "failed";
@@ -137,17 +121,11 @@ export const userSlice = createAppSlice({
   selectors: {
     selectAttemptedLogin: (state) => state.attemptedLogin,
     selectCurUser: (state) => state.curUser,
-    selectUsers: (state) => state.users,
     selectStatus: (state) => state.status,
   },
 });
 
-export const { loginUser, createUser, deleteUser, getAllUsers, addBlock } =
-  userSlice.actions;
+export const { loginUser, createUser, deleteUser, blockOp } = userSlice.actions;
 
-export const {
-  selectAttemptedLogin,
-  selectCurUser,
-  selectUsers,
-  selectStatus,
-} = userSlice.selectors;
+export const { selectAttemptedLogin, selectCurUser, selectStatus } =
+  userSlice.selectors;
