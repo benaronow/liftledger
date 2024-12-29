@@ -214,7 +214,7 @@ export const EditDay = ({
       ...day,
       exercises: newExercises,
     });
-    setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
+    setBlock({ ...block, weeks: [{...block.weeks[0], days: newDays }] });
   };
 
   const handleExerciseNameSelect = (
@@ -235,7 +235,7 @@ export const EditDay = ({
       ...day,
       exercises: newExercises,
     });
-    setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
+    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleExerciseApparatusSelect = (
@@ -256,7 +256,7 @@ export const EditDay = ({
       ...day,
       exercises: newExercises,
     });
-    setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
+    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleWeightTypeSelect = (
@@ -277,7 +277,7 @@ export const EditDay = ({
       ...day,
       exercises: newExercises,
     });
-    setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
+    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleNumberInput = (
@@ -313,7 +313,7 @@ export const EditDay = ({
         ...day,
         exercises: newExercises,
       });
-      setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
+      setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
     }
   };
 
@@ -332,7 +332,7 @@ export const EditDay = ({
       ...day,
       exercises: newExercises,
     });
-    setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
+    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleAddExercise = () => {
@@ -352,7 +352,7 @@ export const EditDay = ({
       ...day,
       exercises: [...day.exercises, newExercise],
     });
-    setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
+    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleRemoveExercise = (exerciseNumber: number) => {
@@ -366,7 +366,7 @@ export const EditDay = ({
       exercises: newExercises,
     });
     if (day.exercises.length > 1)
-      setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
+      setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleGoBack = () => {

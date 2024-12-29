@@ -121,8 +121,11 @@ export interface Exercise {
   apparatus: ExerciseApparatus | string;
   musclesWorked: Muscle[];
   sets: number;
+  prevSessionSets?: number;
   reps: number[];
+  prevSessionReps?: number[];
   weight: number[];
+  prevSessionWeight?: number[];
   weightType: WeightType | string;
   unilateral: boolean;
   prevSessionNote: string;
@@ -133,6 +136,7 @@ export interface Day {
   name: string;
   exercises: Exercise[];
   completed: boolean;
+  completedDate: Date | undefined;
 }
 
 export interface Week {

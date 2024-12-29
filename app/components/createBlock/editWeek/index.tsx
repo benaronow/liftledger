@@ -188,15 +188,15 @@ export const EditWeek = ({
     dayNumber: number
   ) => {
     const newDay: Day = {
+      ...block.weeks[0].days[dayNumber - 1],
       name: e.target.value,
-      exercises: block.weeks[0].days[dayNumber - 1].exercises,
     };
     const newDays: Day[] = block.weeks[0].days.toSpliced(
       dayNumber - 1,
       1,
       newDay
     );
-    setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
+    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleAddDay = () => {
@@ -216,10 +216,12 @@ export const EditWeek = ({
           prevSessionNote: "",
         },
       ],
+      completed: false,
+      completedDate: undefined,
     };
     setBlock({
       ...block,
-      weeks: [{ number: 1, days: [...block.weeks[0].days, newDay] }],
+      weeks: [{ ...block.weeks[0], days: [...block.weeks[0].days, newDay] }],
     });
   };
 
@@ -230,7 +232,7 @@ export const EditWeek = ({
   const handleRemoveDay = (dayNumber: number) => {
     const newDays: Day[] = block.weeks[0].days.toSpliced(dayNumber - 1, 1);
     if (block.weeks[0].days.length > 1)
-      setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
+      setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleDuplicateDay = (dayNumber: number) => {
@@ -239,7 +241,7 @@ export const EditWeek = ({
       name: `${block.weeks[0].days[dayNumber - 1].name} (copy)`,
     };
     const newDays: Day[] = block.weeks[0].days.toSpliced(dayNumber, 0, day);
-    setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
+    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleMoveDay = (day: Day, dayNumber: number, type: "up" | "down") => {
@@ -249,7 +251,7 @@ export const EditWeek = ({
       0,
       day
     );
-    setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
+    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleLengthInput = (e: ChangeEvent<HTMLInputElement>) => {

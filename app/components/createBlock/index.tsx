@@ -101,10 +101,14 @@ export const CreateBlock = () => {
                 prevSessionNote: "",
               },
             ],
+            completed: false,
+            completedDate: undefined,
           },
         ],
+        completed: false,
       },
     ],
+    completed: false,
   });
 
   return (
