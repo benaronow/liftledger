@@ -160,6 +160,8 @@ export const CreateAccount = () => {
       deadMax: parseInt(input.deadMax),
       blocks: [],
       curBlock: undefined,
+      curWeek: undefined,
+      curDay: undefined,
     };
     dispatch(createUser(user));
   };

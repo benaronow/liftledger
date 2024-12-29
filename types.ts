@@ -1,16 +1,3 @@
-export interface User {
-  _id?: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  birthday: Date;
-  benchMax: number;
-  squatMax: number;
-  deadMax: number;
-  blocks: Block[];
-  curBlock: Block | undefined;
-}
-
 // enum Muscle {
 //   Traps = "Traps",
 //   Rhomboids = "Rhomboids",
@@ -153,6 +140,21 @@ export interface Block {
   length: number;
   weeks: Week[];
   completed: boolean;
+}
+
+export interface User {
+  _id?: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  birthday: Date;
+  benchMax: number;
+  squatMax: number;
+  deadMax: number;
+  blocks: Block[];
+  curBlock: Block | undefined;
+  curWeek: number | undefined;
+  curDay: number | undefined;
 }
 
 export interface GetParams {

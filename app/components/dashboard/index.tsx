@@ -6,6 +6,8 @@ import { LoginContext } from "../providers/loginContext";
 import { makeStyles } from "tss-react/mui";
 import { Box } from "@mui/material";
 import dayjs from "dayjs";
+import { useAppDispatch } from "@/lib/hooks";
+import { setCurDay, setCurWeek } from "@/lib/features/user/userSlice";
 
 const useStyles = makeStyles()({
   container: {
@@ -100,10 +102,15 @@ const boxStyle = {
 export const Dashboard = () => {
   const { classes } = useStyles();
   const { session, attemptedLogin, curUser } = useContext(LoginContext);
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const currentWeek =
     curUser?.curBlock?.weeks.find((week) => !week.completed)?.number || 0;
-  const currentDay =
+  const currentDayNumber =
+    curUser?.curBlock?.weeks[currentWeek - 1]?.days.findIndex(
+      (day) => !day.completed
+    ) || 0;
+  const currentDayName =
     curUser?.curBlock?.weeks[currentWeek - 1]?.days.find(
       (day) => !day.completed
     )?.name || "Unavailable";
@@ -114,8 +121,11 @@ export const Dashboard = () => {
     }
   }, [attemptedLogin]);
 
-  const handleStartDay = () => {
-    return null;
+  const handleStartDay = (currentWeek: number, currentDay: number) => {
+    console.log(currentWeek, currentDay);
+    dispatch(setCurWeek(currentWeek));
+    dispatch(setCurDay(currentDay));
+    router.push('/complete-day');
   };
 
   return (
@@ -143,24 +153,26 @@ export const Dashboard = () => {
                 </span>
               </div>
               <div className={classes.entry}>
-                <span className={classes.name}>Length (weeks): </span>
-                <span className={classes.value}>{curUser.curBlock.length}</span>
+                <span className={classes.name}>Length: </span>
+                <span
+                  className={classes.value}
+                >{`${curUser.curBlock.length} weeks`}</span>
               </div>
               <div className={classes.divider}></div>
               <div className={classes.entry}>
                 <span className={classes.name}>Current Week: </span>
-                <span className={classes.value}>{currentWeek}</span>
+                <span className={classes.value}>{`Week ${currentWeek}`}</span>
               </div>
               <div className={classes.entry}>
                 <span className={classes.name}>Current Day: </span>
-                <span className={classes.value}>{currentDay}</span>
+                <span className={classes.value}>{currentDayName}</span>
               </div>
               <div className={classes.divider}></div>
               <button
                 className={classes.startDayButton}
-                onClick={handleStartDay}
+                onClick={() => handleStartDay(currentWeek - 1, currentDayNumber)}
               >
-                {`Start Week ${currentWeek}, ${currentDay}`}
+                {`Start: Week ${currentWeek}, ${currentDayName}`}
               </button>
             </>
           )}

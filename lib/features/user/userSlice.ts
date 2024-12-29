@@ -6,6 +6,7 @@ import {
   blockOpRequest,
 } from "./userAPI";
 import { Block, BlockOp, User } from "@/types";
+import { PayloadAction } from "@reduxjs/toolkit";
 
 export interface UserSliceState {
   attemptedLogin: boolean;
@@ -53,6 +54,8 @@ export const userSlice = createAppSlice({
         deadMax: number;
         blocks: Block[];
         curBlock: Block | undefined;
+        curWeek: number | undefined;
+        curDay: number | undefined;
       }) => {
         const response: User = await createUserRequest(user);
         return response;
@@ -107,7 +110,10 @@ export const userSlice = createAppSlice({
           if (state.curUser) {
             state.curUser.curBlock = action.payload;
             state.curUser.blocks = state.curUser.blocks.toSpliced(
-              state.curUser.blocks.length - 1, 1, action.payload);
+              state.curUser.blocks.length - 1,
+              1,
+              action.payload
+            );
           }
         },
         rejected: (state) => {
@@ -115,9 +121,13 @@ export const userSlice = createAppSlice({
         },
       }
     ),
+    setCurWeek: create.reducer((state, action: PayloadAction<number>) => {
+      if (state.curUser) state.curUser.curWeek = action.payload;
+    }),
+    setCurDay: create.reducer((state, action: PayloadAction<number>) => {
+      if (state.curUser) state.curUser.curDay = action.payload;
+    }),
   }),
-  // You can define your selectors here. These selectors receive the slice
-  // state as their first argument.
   selectors: {
     selectAttemptedLogin: (state) => state.attemptedLogin,
     selectCurUser: (state) => state.curUser,
@@ -125,7 +135,17 @@ export const userSlice = createAppSlice({
   },
 });
 
-export const { loginUser, createUser, deleteUser, blockOp } = userSlice.actions;
+export const {
+  loginUser,
+  createUser,
+  deleteUser,
+  blockOp,
+  setCurWeek,
+  setCurDay,
+} = userSlice.actions;
 
-export const { selectAttemptedLogin, selectCurUser, selectStatus } =
-  userSlice.selectors;
+export const {
+  selectAttemptedLogin,
+  selectCurUser,
+  selectStatus,
+} = userSlice.selectors;
