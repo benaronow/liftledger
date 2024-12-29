@@ -1,9 +1,10 @@
 import { deleteUser } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
-import { SessionData } from "@auth0/nextjs-auth0/server";
 import { Box, Modal } from "@mui/material";
 import { useRouter } from "next/navigation";
+import { useContext } from "react";
 import { makeStyles } from "tss-react/mui";
+import { LoginContext } from "../../providers/loginContext";
 
 const useStyles = makeStyles()({
   modalContent: {
@@ -13,6 +14,8 @@ const useStyles = makeStyles()({
   },
   email: {
     marginBottom: "10px",
+    fontFamily: "Gabarito",
+    fontSize: "16px",
   },
   accountButton: {
     border: "none",
@@ -20,9 +23,10 @@ const useStyles = makeStyles()({
     marginBottom: "10px",
     fontFamily: "Gabarito",
     fontSize: "16px",
+    color: "#0096FF",
   },
   deleteButton: {
-    color: "red",
+    color: "#ff0000",
   },
   divider: {
     width: "100%",
@@ -48,15 +52,13 @@ const boxStyle = {
 interface ProfileModalProps {
   open: boolean;
   onClose: () => void;
-  session: SessionData | null;
 }
 
-export const ProfileModal = ({ open, onClose, session }: ProfileModalProps) => {
+export const ProfileModal = ({ open, onClose }: ProfileModalProps) => {
   const { classes } = useStyles();
+  const { session } = useContext(LoginContext);
   const dispatch = useAppDispatch();
   const router = useRouter();
-
-  const auth0_email = session?.user.email || "";
 
   const handleLogin = () => {
     router.push(`/auth/login`);
@@ -72,7 +74,7 @@ export const ProfileModal = ({ open, onClose, session }: ProfileModalProps) => {
   };
 
   const handleDelete = () => {
-    dispatch(deleteUser(auth0_email));
+    dispatch(deleteUser(session?.user.email || ""));
     handleLogout();
   };
 

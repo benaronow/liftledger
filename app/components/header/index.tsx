@@ -52,6 +52,7 @@ const useStyles = makeStyles()({
     marginBottom: "10px",
     border: "solid",
     borderColor: "white",
+    borderWidth: "1.5px",
   },
   modalContainer: {},
 });
@@ -96,7 +97,6 @@ export const Header = () => {
       <ProfileModal
         open={profileModalOpen}
         onClose={handleProfileModalClose}
-        session={session}
       ></ProfileModal>
     </>
   );
