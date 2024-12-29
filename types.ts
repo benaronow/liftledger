@@ -132,12 +132,14 @@ export interface Day {
   _id?: string;
   name: string;
   exercises: Exercise[];
+  completed: boolean;
 }
 
 export interface Week {
   _id?: string;
   number: number;
   days: Day[];
+  completed: boolean;
 }
 
 export interface Block {
@@ -146,6 +148,7 @@ export interface Block {
   startDate: Date;
   length: number;
   weeks: Week[];
+  completed: boolean;
 }
 
 export interface GetParams {

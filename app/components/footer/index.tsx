@@ -29,7 +29,7 @@ const useStyles = makeStyles()({
     background: "red",
   },
   disabledButton: {
-    background: "#9ED7FF",
+    background: "#9ed7ff",
   },
   disabledCancel: {
     background: "#ff8888",

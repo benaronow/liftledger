@@ -30,8 +30,10 @@ const useStyles = makeStyles()({
     width: "100%",
   },
   name: {
+    display: 'flex',
     fontWeight: 600,
     width: "100%",
+    justifyContent: 'flex-start'
   },
   value: {
     display: "flex",
