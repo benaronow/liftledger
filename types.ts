@@ -37,6 +37,7 @@ enum Muscle {
 
 export enum ExerciseName {
   BenchPress = "Bench Press",
+  InclineBenchPress = "Incline Bench Press",
   ChestPress = "Chest Press",
   SqueezePress = "Squeeze Press",
   ChestFly = "Chest Fly",

@@ -234,7 +234,10 @@ export const EditWeek = ({
   };
 
   const handleDuplicateDay = (dayNumber: number) => {
-    const day: Day = block.weeks[0].days[dayNumber - 1];
+    const day: Day = {
+      ...block.weeks[0].days[dayNumber - 1],
+      name: `${block.weeks[0].days[dayNumber - 1].name} (copy)`,
+    };
     const newDays: Day[] = block.weeks[0].days.toSpliced(dayNumber, 0, day);
     setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
   };
