@@ -340,13 +340,13 @@ export const EditDay = ({
     const newExercise: Exercise = {
       name: "",
       apparatus: "",
-      musclesWorked: [],
       sets: 0,
       reps: [0],
       weight: [0],
       weightType: WeightType.Pounds,
       unilateral: false,
       prevSessionNote: "",
+      completed: false
     };
     const newDays: Day[] = block.weeks[0].days.toSpliced(editingDay - 1, 1, {
       ...day,

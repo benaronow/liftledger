@@ -92,13 +92,13 @@ export const CreateBlock = () => {
               {
                 name: "",
                 apparatus: "",
-                musclesWorked: [],
                 sets: 0,
                 reps: [0],
                 weight: [0],
                 weightType: WeightType.Pounds,
                 unilateral: false,
                 prevSessionNote: "",
+                completed: false
               },
             ],
             completed: false,
