@@ -11,7 +11,7 @@ import { Input } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent } from "react";
+import { ChangeEvent, FormEvent, RefObject, useEffect } from "react";
 import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
@@ -43,7 +43,7 @@ const useStyles = makeStyles()({
     width: "100%",
     height: "1.5px",
     background: "#0096FF",
-    marginBottom: '10px',
+    marginBottom: "10px",
   },
   day: {
     justifyContent: "space-between",
@@ -150,6 +150,7 @@ interface EditWeekProps {
   block: Block;
   setBlock: (block: Block) => void;
   setEditingDay: (day: number) => void;
+  saveRef: RefObject<HTMLDivElement | null>;
 }
 
 export const EditWeek = ({
@@ -157,10 +158,19 @@ export const EditWeek = ({
   block,
   setBlock,
   setEditingDay,
+  saveRef,
 }: EditWeekProps) => {
   const { classes } = useStyles();
   const dispatch = useAppDispatch();
   const router = useRouter();
+
+  useEffect(() => {
+    if (saveRef.current)
+      saveRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+  }, [block.weeks[0].days.length]);
 
   const handleBlockNameInput = (e: ChangeEvent<HTMLInputElement>) => {
     setBlock({ ...block, name: e.target.value });
@@ -278,8 +288,8 @@ export const EditWeek = ({
       </div>
       <div className={classes.entryDivider}></div>
       {block.weeks[0].days.map((day, idx) => (
-        <>
-          <div className={`${classes.entry} ${classes.day}`} key={idx}>
+        <div key={idx}>
+          <div className={`${classes.entry} ${classes.day}`}>
             <div className={classes.moveDayButtons}>
               <div onClick={() => handleMoveDay(day, idx + 1, "up")}>
                 <ArrowBackIosNew className={classes.moveUpButton} />
@@ -338,7 +348,7 @@ export const EditWeek = ({
             </div>
           </div>
           <div className={classes.entryDivider}></div>
-        </>
+        </div>
       ))}
       {block.weeks[0].days.length < 7 && (
         <div className={classes.addDayButton} onClick={handleAddDay}>

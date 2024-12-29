@@ -1,18 +1,28 @@
 "use client";
 
-import { SessionData } from "@auth0/nextjs-auth0/server";
-import { useLiftLedger } from "./useLiftLedger";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
+import { LoginContext } from "../providers/loginContext";
+import { makeStyles } from "tss-react/mui";
+import { CircularProgress } from "@mui/material";
 
-interface LiftLedgerProps {
-  session: SessionData | null;
-}
+const useStyles = makeStyles()({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    height: "calc(100vh - 140px)",
+    alignItems: "center",
+  },
+  desc: {
+    marginBottom: "20px",
+  },
+});
 
-export const LiftLedger = ({ session }: LiftLedgerProps) => {
+export const LiftLedger = () => {
+  const { classes } = useStyles();
   const router = useRouter();
-  const auth0_email = session?.user.email || "";
-  const { attemptedLogin, curUser } = useLiftLedger(auth0_email);
+  const { session, attemptedLogin, curUser } = useContext(LoginContext);
 
   useEffect(() => {
     if (!session) router.push("/dashboard");
@@ -21,5 +31,10 @@ export const LiftLedger = ({ session }: LiftLedgerProps) => {
     }
   }, [attemptedLogin]);
 
-  return <span>Hello</span>;
+  return (
+    <div className={classes.container}>
+      <span className={classes.desc}>Attempting login...</span>
+      <CircularProgress />
+    </div>
+  );
 };

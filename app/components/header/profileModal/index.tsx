@@ -1,7 +1,8 @@
 import { deleteUser } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { SessionData } from "@auth0/nextjs-auth0/server";
-import { Box, Button, Modal } from "@mui/material";
+import { Box, Modal } from "@mui/material";
+import { useRouter } from "next/navigation";
 import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
@@ -11,24 +12,37 @@ const useStyles = makeStyles()({
     alignItems: "center",
   },
   email: {
-    margin: "10px 10px 10px 10px",
+    marginBottom: "10px",
   },
   accountButton: {
-    margin: "10px 10px 10px 10px",
-    border: "solid",
-    borderWidth: "1px",
+    border: "none",
+    background: "transparent",
+    marginBottom: "10px",
+    fontFamily: "Gabarito",
+    fontSize: "16px",
+  },
+  deleteButton: {
+    color: "red",
+  },
+  divider: {
+    width: "100%",
+    height: "1.5px",
+    background: "gray",
+    marginBottom: "10px",
   },
 });
 
 const boxStyle = {
   position: "absolute",
-  top: "70px",
-  right: "10px",
+  top: "50%",
+  right: "50%",
+  transform: "translate(50%, -50%)",
   background: "white",
   outline: 0,
   border: "solid",
   borderColor: "lightgray",
-  borderRadius: "25px",
+  borderRadius: "10px",
+  padding: "10px 10px 00px 10px",
 };
 
 interface ProfileModalProps {
@@ -40,39 +54,54 @@ interface ProfileModalProps {
 export const ProfileModal = ({ open, onClose, session }: ProfileModalProps) => {
   const { classes } = useStyles();
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const auth0_email = session?.user.email || "";
+
+  const handleLogin = () => {
+    router.push(`/auth/login`);
+  };
+
+  const handleProfile = () => {
+    onClose();
+    router.push(`/profile`);
+  };
+
+  const handleLogout = () => {
+    router.push(`/auth/logout`);
+  };
+
   const handleDelete = () => {
     dispatch(deleteUser(auth0_email));
+    handleLogout();
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      slotProps={{ backdrop: { invisible: true } }}
-    >
+    <Modal open={open} onClose={onClose}>
       <Box sx={boxStyle}>
         <div className={classes.modalContent}>
           {session ? (
             <>
               <span className={classes.email}>{session?.user.email}</span>
-              <Button className={classes.accountButton} href="/auth/logout">
+              <div className={classes.divider}></div>
+              <button className={classes.accountButton} onClick={handleProfile}>
+                My Profile
+              </button>
+              <button className={classes.accountButton} onClick={handleLogout}>
                 Log out
-              </Button>
-              <Button
-                className={classes.accountButton}
-                href="/auth/logout"
+              </button>
+              <button
+                className={`${classes.accountButton} ${classes.deleteButton}`}
                 onClick={handleDelete}
               >
                 Delete Account
-              </Button>
+              </button>
             </>
           ) : (
             <>
-              <Button className={classes.accountButton} href="/auth/login">
+              <button className={classes.accountButton} onClick={handleLogin}>
                 Log in
-              </Button>
+              </button>
             </>
           )}
         </div>

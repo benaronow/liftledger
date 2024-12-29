@@ -1,20 +1,21 @@
 import {
   selectCurUser,
-  loginUser,
   selectAttemptedLogin,
+  loginUser,
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { User } from "@/types";
 import { useEffect } from "react";
 
-export const useCreateAccount = (auth0_email: string) => {
+export const useLogin = (auth0_email: string) => {
   const dispatch = useAppDispatch();
-  useEffect(() => {
-    if (auth0_email) dispatch(loginUser(auth0_email));
-  }, []);
 
   const attemptedLogin: boolean = useAppSelector(selectAttemptedLogin);
   const curUser: User | undefined = useAppSelector(selectCurUser);
+
+  useEffect(() => {
+    if (auth0_email && !curUser) dispatch(loginUser(auth0_email));
+  }, [curUser]);
 
   return { attemptedLogin, curUser };
 };

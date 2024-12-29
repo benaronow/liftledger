@@ -3,29 +3,42 @@
 import { createUser } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { User } from "@/types";
-import { SessionData } from "@auth0/nextjs-auth0/server";
-import { Box, Button, Input } from "@mui/material";
+import { Box, Input } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useState } from "react";
-import { useCreateAccount } from "./useCreateAccount";
+import { ChangeEvent, FormEvent, useContext, useState } from "react";
 import { makeStyles } from "tss-react/mui";
 import { DatePicker } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Dayjs } from "dayjs";
+import { LoginContext } from "../providers/loginContext";
 
 const useStyles = makeStyles()({
+  title: {
+    fontFamily: "Gabarito",
+    fontWeight: 900,
+    fontSize: "22px",
+  },
   container: {
     display: "flex",
     flexDirection: "column",
-    flex: '1',
+    flex: "1",
     position: "absolute",
     top: "60px",
-    width: '100%',
-    padding: '10px 10px 0px 10px',
-    background: 'gray',
-    height: 'calc(100vh - 60px)',
-    alignItems: 'center',
+    width: "100%",
+    padding: "10px 10px 0px 10px",
+    background: "gray",
+    height: "calc(100vh - 60px)",
+    alignItems: "center",
+  },
+  submitButton: {
+    width: "100%",
+    height: "40px",
+    borderRadius: "0px 0px 20px 20px",
+    border: "none",
+    background: "#0096FF",
+    color: "white",
+    fontFamily: "Gabarito",
+    fontWeight: 600,
+    fontSize: "18px",
   },
   form: {
     display: "flex",
@@ -36,9 +49,15 @@ const useStyles = makeStyles()({
   entry: {
     display: "flex",
     alignItems: "center",
-    marginTop: "10px",
+    marginBottom: "10px",
     width: "100%",
-    justifyContent: "flex-end",
+    justifyContent: "flex-start",
+  },
+  entryName: {
+    fontFamily: "Gabarito",
+    width: "60%",
+    fontWeight: 600,
+    fontSize: "16px",
   },
   input: {
     border: "solid",
@@ -46,39 +65,57 @@ const useStyles = makeStyles()({
     borderWidth: "1px",
     borderRadius: "5px",
     marginLeft: "5px",
-    width: "170px",
+    width: "100%",
+    paddingLeft: "5px",
+    fontSize: "15px",
   },
-  submitButton: {
-    marginTop: "10px",
-    border: "solid",
-    borderWidth: "1px",
+  dateInput: {
+    paddingLeft: "0px",
   },
 });
 
-const boxStyle = {
+const titleBoxStyle = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  background: "lightgray",
+  borderWidth: "5px",
+  borderRadius: "25px 25px 0px 0px",
+  width: "100%",
+  minHeight: "50px",
+  maxWidth: "400px",
+  marginBottom: "-5px",
+};
+
+const formBoxStyle = {
   background: "white",
   outline: 0,
   border: "solid",
   borderColor: "lightgray",
-  borderRadius: "25px",
-  padding: "10px 10px 10px 10px",
-  width: '100%',
-  maxWidth: '400px'
+  borderWidth: "5px",
+  padding: "10px 10px 0px 10px",
+  width: "100%",
+  maxWidth: "400px",
 };
 
-interface CreateAccountProps {
-  session: SessionData | null;
-}
+const saveBoxStyle = {
+  outline: 0,
+  border: "solid",
+  borderColor: "lightgray",
+  borderWidth: "5px",
+  borderRadius: "0px 0px 25px 25px",
+  width: "100%",
+  height: "50px",
+  maxWidth: "400px",
+  marginTop: "-5px",
+};
 
-export const CreateAccount = ({ session }: CreateAccountProps) => {
+export const CreateAccount = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { classes } = useStyles();
-
-  const email = session?.user.email || "";
-  const { attemptedLogin, curUser } = useCreateAccount(email);
-  if (!email) router.push("/");
-  if (attemptedLogin && curUser) router.push("/dashboard");
+  const { session, attemptedLogin, curUser } = useContext(LoginContext);
+  if (!session || (attemptedLogin && curUser)) router.push("/dashboard");
 
   const [input, setInput] = useState({
     firstName: "",
@@ -123,7 +160,7 @@ export const CreateAccount = ({ session }: CreateAccountProps) => {
     e.preventDefault();
     const user: User = {
       ...input,
-      email,
+      email: session?.user.email || "",
       benchMax: parseInt(input.benchMax),
       squatMax: parseInt(input.squatMax),
       deadMax: parseInt(input.deadMax),
@@ -134,36 +171,48 @@ export const CreateAccount = ({ session }: CreateAccountProps) => {
   };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className={classes.container}>
-        <Box sx={boxStyle}>
-          <form className={classes.form} onSubmit={handleSubmit}>
-            <span>Create Account</span>
-            {Object.values(input).map((entry, idx) => (
-              <div className={classes.entry} key={idx}>
-                <span>{`${entryNames[idx]}: `}</span>
-                {entryNames[idx] === "Birthday" ? (
-                  <DatePicker
-                    className={classes.input}
-                    onChange={(value: Dayjs | null) => handleDateInput(value)}
-                  />
-                ) : (
-                  <Input
-                    className={classes.input}
-                    value={entry}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      handleInput(e, entryNames[idx])
-                    }
-                  ></Input>
-                )}
-              </div>
-            ))}
-            <Button className={classes.submitButton} type="submit">
-              Submit
-            </Button>
-          </form>
-        </Box>
-      </div>
-    </LocalizationProvider>
+    <div className={classes.container}>
+      <Box sx={titleBoxStyle}>
+        <span className={classes.title}>Create Account</span>
+      </Box>
+      <Box sx={formBoxStyle}>
+        <form
+          className={classes.form}
+          id="create-account-form"
+          onSubmit={handleSubmit}
+        >
+          {Object.values(input).map((entry, idx) => (
+            <div className={classes.entry} key={idx}>
+              <span
+                className={classes.entryName}
+              >{`${entryNames[idx]}: `}</span>
+              {entryNames[idx] === "Birthday" ? (
+                <DatePicker
+                  className={`${classes.input} ${classes.dateInput}`}
+                  onChange={(value: Dayjs | null) => handleDateInput(value)}
+                />
+              ) : (
+                <Input
+                  className={classes.input}
+                  value={entry}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    handleInput(e, entryNames[idx])
+                  }
+                ></Input>
+              )}
+            </div>
+          ))}
+        </form>
+      </Box>
+      <Box sx={saveBoxStyle}>
+        <button
+          className={classes.submitButton}
+          form="create-account-form"
+          type="submit"
+        >
+          Save Account
+        </button>
+      </Box>
+    </div>
   );
 };

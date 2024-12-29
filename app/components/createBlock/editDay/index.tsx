@@ -12,7 +12,7 @@ import {
   DeleteOutline,
 } from "@mui/icons-material";
 import { Checkbox, Input } from "@mui/material";
-import { ChangeEvent } from "react";
+import { ChangeEvent, RefObject, useEffect } from "react";
 import Select from "react-select";
 import { makeStyles } from "tss-react/mui";
 
@@ -155,6 +155,7 @@ interface EditDayProps {
   editingDay: number;
   setBlock: (block: Block) => void;
   setEditingDay: (day: number) => void;
+  saveRef: RefObject<HTMLDivElement | null>
 }
 
 export const EditDay = ({
@@ -162,8 +163,17 @@ export const EditDay = ({
   setBlock,
   editingDay,
   setEditingDay,
+  saveRef,
 }: EditDayProps) => {
   const { classes } = useStyles();
+
+  useEffect(() => {
+    if (saveRef.current)
+      saveRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+  }, [block.weeks[0].days[editingDay - 1].exercises.length]);
 
   const exerciseNameOptions = Object.values(ExerciseName).map((value) => ({
     value,
@@ -368,8 +378,8 @@ export const EditDay = ({
       </div>
       <div className={classes.entryDivider}></div>
       {block.weeks[0].days[editingDay - 1].exercises.map((exercise, idx) => (
-        <>
-          <div className={classes.entry} key={idx}>
+        <div key={idx}>
+          <div className={classes.entry}>
             <div className={classes.moveDayButtons}>
               <div onClick={() => handleMoveExercise(exercise, idx + 1, "up")}>
                 <ArrowBackIosNew className={classes.moveUpButton} />
@@ -490,7 +500,7 @@ export const EditDay = ({
             </div>
           </div>
           <div className={classes.entryDivider}></div>
-        </>
+        </div>
       ))}
       <div className={classes.addExerciseButton} onClick={handleAddExercise}>
         <AddCircleOutline style={{ color: "#0096FF" }}></AddCircleOutline>

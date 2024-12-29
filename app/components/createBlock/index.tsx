@@ -2,7 +2,7 @@
 
 import { Block, WeightType } from "@/types";
 import { Box } from "@mui/material";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { selectCurUser } from "@/lib/features/user/userSlice";
@@ -20,13 +20,13 @@ const useStyles = makeStyles()({
   container: {
     display: "flex",
     flexDirection: "column",
-    flex: "1",
     position: "absolute",
     top: "60px",
     width: "100%",
     padding: "10px 10px 10px 10px",
     background: "gray",
-    minHeight: "calc(100vh - 60px)",
+    height: "calc(100vh - 120px)",
+    overflow: "scroll",
     alignItems: "center",
   },
   submitButton: {
@@ -53,7 +53,7 @@ const titleBoxStyle = {
   borderWidth: "5px",
   borderRadius: "25px 25px 0px 0px",
   width: "100%",
-  height: "50px",
+  minHeight: "50px",
   maxWidth: "400px",
   marginBottom: "-5px",
 };
@@ -84,6 +84,7 @@ const saveBoxStyle = {
 export const CreateBlock = () => {
   const { classes } = useStyles();
   const curUser = useSelector(selectCurUser);
+  const saveRef = useRef<HTMLDivElement>(null);
   const [editingDay, setEditingDay] = useState(0);
   const [block, setBlock] = useState<Block>({
     name: "",
@@ -127,6 +128,7 @@ export const CreateBlock = () => {
               block={block}
               setBlock={setBlock}
               setEditingDay={setEditingDay}
+              saveRef={saveRef}
             />
           ) : (
             <EditDay
@@ -134,10 +136,11 @@ export const CreateBlock = () => {
               setBlock={setBlock}
               editingDay={editingDay}
               setEditingDay={setEditingDay}
+              saveRef={saveRef}
             />
           )}
         </Box>
-        <Box sx={saveBoxStyle}>
+        <Box sx={saveBoxStyle} ref={saveRef}>
           <button
             className={`${classes.submitButton} ${
               editingDay !== 0 && classes.submitButtonDisabled
@@ -146,7 +149,7 @@ export const CreateBlock = () => {
             type="submit"
             disabled={editingDay !== 0}
           >
-            Save Plan
+            Save Block
           </button>
         </Box>
       </div>

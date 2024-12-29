@@ -1,6 +1,6 @@
 import { CreateBlock } from "../components/createBlock";
 
-const Page = async () => {
+const Page = () => {
   return <CreateBlock />;
 };
 

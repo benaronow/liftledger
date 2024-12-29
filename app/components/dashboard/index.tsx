@@ -1,19 +1,25 @@
 "use client";
 
-import { SessionData } from "@auth0/nextjs-auth0/server";
-import { useDashboard } from "./useDashboard";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { Button } from "@mui/material";
+import { useContext, useEffect } from "react";
+import { LoginContext } from "../providers/loginContext";
+import { makeStyles } from "tss-react/mui";
 
-interface DashboardProps {
-  session: SessionData | null;
-}
+const useStyles = makeStyles()({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    height: "calc(100vh - 140px)",
+    alignItems: "center",
+    textAlign: "center",
+  },
+});
 
-export const Dashboard = ({ session }: DashboardProps) => {
+export const Dashboard = () => {
+  const { classes } = useStyles();
+  const { session, attemptedLogin, curUser } = useContext(LoginContext);
   const router = useRouter();
-  const auth0_email = session?.user.email || "";
-  const { attemptedLogin, curUser } = useDashboard(auth0_email);
 
   useEffect(() => {
     if (session && attemptedLogin && !curUser) {
@@ -21,15 +27,15 @@ export const Dashboard = ({ session }: DashboardProps) => {
     }
   }, [attemptedLogin]);
 
-  if (!session) return <span>You are not logged in</span>;
-
-  const handleCreatePlanClick = () => {
-    router.push("/create-plan");
-  };
-
   return (
-    <>
-      <Button onClick={handleCreatePlanClick}> Create Plan</Button>
-    </>
+    <div>
+      {session ? (
+        <span>Cool dashboard here!</span>
+      ) : (
+        <div className={classes.container}>
+          <span>Create an account or log in to use LiftLedger!</span>
+        </div>
+      )}
+    </div>
   );
 };
