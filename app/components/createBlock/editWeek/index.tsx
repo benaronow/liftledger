@@ -1,10 +1,16 @@
 import { addBlock } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { Block, Day, WeightType } from "@/types";
-import { ArrowBackIosNew, DeleteOutline } from "@mui/icons-material";
-import { Button, Input } from "@mui/material";
+import {
+  AddCircleOutline,
+  ArrowBackIosNew,
+  ControlPointDuplicate,
+  DeleteOutline,
+} from "@mui/icons-material";
+import { Input } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent } from "react";
 import { makeStyles } from "tss-react/mui";
 
@@ -15,15 +21,35 @@ const useStyles = makeStyles()({
     justifyContent: "center",
     alignItems: "center",
   },
+  title: {
+    fontFamily: "Gabarito",
+    fontSize: "20px",
+    fontWeight: 900,
+  },
   entry: {
     display: "flex",
     alignItems: "center",
-    marginTop: "10px",
+    marginBottom: "10px",
     width: "100%",
     justifyContent: "flex-start",
   },
+  entryName: {
+    fontFamily: "Gabarito",
+    width: "60%",
+    fontWeight: 600,
+    fontSize: "16px",
+  },
+  entryDivider: {
+    width: "100%",
+    height: "1.5px",
+    background: "#0096FF",
+    marginBottom: '10px',
+  },
   day: {
     justifyContent: "space-between",
+  },
+  dayInfo: {
+    marginTop: "0px",
   },
   moveDayButtons: {
     display: "flex",
@@ -34,6 +60,7 @@ const useStyles = makeStyles()({
   },
   moveUpButton: {
     height: "15px",
+    color: "#0096FF",
     transform: "rotate(90deg)",
     "&:hover": {
       cursor: "pointer",
@@ -41,6 +68,7 @@ const useStyles = makeStyles()({
   },
   moveDownButton: {
     height: "15px",
+    color: "#0096FF",
     transform: "rotate(270deg)",
     "&:hover": {
       cursor: "pointer",
@@ -55,7 +83,22 @@ const useStyles = makeStyles()({
     marginLeft: "5px",
     marginRight: "5px",
   },
+  entryColumn: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    alignItems: "center",
+  },
+  dayValidText: {
+    color: "#32CD32",
+    fontSize: "12px",
+    fontWeight: "bold",
+  },
+  invalid: {
+    color: "red",
+  },
   input: {
+    paddingLeft: "5px",
     border: "solid",
     borderColor: "gray",
     borderWidth: "1px",
@@ -63,6 +106,10 @@ const useStyles = makeStyles()({
     marginLeft: "5px",
     background: "white",
     width: "100%",
+    fontSize: "15px",
+  },
+  dateInput: {
+    paddingLeft: "0px",
   },
   nameInput: {
     border: "solid",
@@ -72,9 +119,17 @@ const useStyles = makeStyles()({
     marginLeft: "5px",
     background: "white",
     width: "100%",
+    paddingLeft: "5px",
+    fontSize: "15px",
   },
   editButton: {
+    background: "transparent",
+    border: "none",
+    color: "#0096FF",
     marginLeft: "5px",
+    fontSize: "16px",
+    fontWeight: 600,
+    fontFamily: "Gabarito",
   },
   removeButton: {
     "&:hover": {
@@ -85,14 +140,8 @@ const useStyles = makeStyles()({
     color: "lightgray",
   },
   addDayButton: {
-    marginTop: "10px",
-    border: "solid",
-    borderWidth: "1px",
-  },
-  submitButton: {
-    marginTop: "10px",
-    border: "solid",
-    borderWidth: "1px",
+    color: "#0096FF",
+    marginBottom: "-5px",
   },
 });
 
@@ -111,6 +160,7 @@ export const EditWeek = ({
 }: EditWeekProps) => {
   const { classes } = useStyles();
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const handleBlockNameInput = (e: ChangeEvent<HTMLInputElement>) => {
     setBlock({ ...block, name: e.target.value });
@@ -170,6 +220,12 @@ export const EditWeek = ({
       setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
   };
 
+  const handleDuplicateDay = (dayNumber: number) => {
+    const day: Day = block.weeks[0].days[dayNumber - 1];
+    const newDays: Day[] = block.weeks[0].days.toSpliced(dayNumber, 0, day);
+    setBlock({ ...block, weeks: [{ number: 1, days: newDays }] });
+  };
+
   const handleMoveDay = (day: Day, dayNumber: number, type: "up" | "down") => {
     const withoutDay: Day[] = block.weeks[0].days.toSpliced(dayNumber - 1, 1);
     const newDays: Day[] = withoutDay.toSpliced(
@@ -187,13 +243,17 @@ export const EditWeek = ({
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(addBlock({ uid, block }));
+    router.push("/dashboard");
   };
 
   return (
-    <form className={classes.createBlockContainer} onSubmit={handleSubmit}>
-      <span>Create Training Block</span>
+    <form
+      className={classes.createBlockContainer}
+      id="create-block-form"
+      onSubmit={handleSubmit}
+    >
       <div className={classes.entry}>
-        <span style={{ width: "60%" }}>Block Name: </span>
+        <span className={classes.entryName}>Block Name: </span>
         <Input
           className={classes.input}
           value={block.name}
@@ -201,65 +261,90 @@ export const EditWeek = ({
         ></Input>
       </div>
       <div className={classes.entry}>
-        <span style={{ width: "60%" }}>Start Date: </span>
+        <span className={classes.entryName}>Start Date: </span>
         <DatePicker
-          className={classes.input}
+          className={`${classes.input} ${classes.dateInput}`}
           value={dayjs(block.startDate)}
           onChange={(value: Dayjs | null) => handleDateInput(value)}
         />
       </div>
       <div className={classes.entry}>
-        <span style={{ width: "60%" }}>Length (weeks): </span>
+        <span className={classes.entryName}>Length (weeks): </span>
         <Input
           className={classes.input}
           value={block.length}
           onChange={(e: ChangeEvent<HTMLInputElement>) => handleLengthInput(e)}
         />
       </div>
+      <div className={classes.entryDivider}></div>
       {block.weeks[0].days.map((day, idx) => (
-        <div className={`${classes.entry} ${classes.day}`} key={idx}>
-          <div className={classes.moveDayButtons}>
-            <div onClick={() => handleMoveDay(day, idx + 1, "up")}>
-              <ArrowBackIosNew className={classes.moveUpButton} />
+        <>
+          <div className={`${classes.entry} ${classes.day}`} key={idx}>
+            <div className={classes.moveDayButtons}>
+              <div onClick={() => handleMoveDay(day, idx + 1, "up")}>
+                <ArrowBackIosNew className={classes.moveUpButton} />
+              </div>
+              <div onClick={() => handleMoveDay(day, idx + 1, "down")}>
+                <ArrowBackIosNew className={classes.moveDownButton} />
+              </div>
             </div>
-            <div onClick={() => handleMoveDay(day, idx + 1, "down")}>
-              <ArrowBackIosNew className={classes.moveDownButton} />
+            <div className={classes.entryContainer}>
+              <div className={classes.entryColumn}>
+                <div className={`${classes.entry} ${classes.dayInfo}`}>
+                  <Input
+                    className={classes.nameInput}
+                    value={day.name}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      handleDayNameInput(e, idx + 1)
+                    }
+                  ></Input>
+                  <button
+                    className={classes.editButton}
+                    onClick={() => handleEditDay(idx + 1)}
+                  >
+                    EDIT
+                  </button>
+                </div>
+                <span
+                  className={`${classes.dayValidText} ${
+                    !day.exercises[0].name && classes.invalid
+                  }`}
+                >
+                  {day.exercises[0].name
+                    ? "Exercises Added"
+                    : "No Exercises Added!"}
+                </span>
+              </div>
+            </div>
+            <div>
+              <div onClick={() => handleRemoveDay(idx + 1)}>
+                <DeleteOutline
+                  className={`${
+                    block.weeks[0].days.length > 1
+                      ? classes.removeButton
+                      : classes.disabled
+                  }`}
+                />
+              </div>
+              <div onClick={() => handleDuplicateDay(idx + 1)}>
+                <ControlPointDuplicate
+                  className={`${
+                    block.weeks[0].days.length < 7
+                      ? classes.removeButton
+                      : classes.disabled
+                  }`}
+                />
+              </div>
             </div>
           </div>
-          <div className={classes.entryContainer}>
-            <Input
-              className={classes.nameInput}
-              value={day.name}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleDayNameInput(e, idx + 1)
-              }
-            ></Input>
-            <Button
-              className={classes.editButton}
-              onClick={() => handleEditDay(idx + 1)}
-            >
-              Edit
-            </Button>
-          </div>
-          <div onClick={() => handleRemoveDay(idx + 1)}>
-            <DeleteOutline
-              className={`${
-                block.weeks[0].days.length > 1
-                  ? classes.removeButton
-                  : classes.disabled
-              }`}
-            />
-          </div>
-        </div>
+          <div className={classes.entryDivider}></div>
+        </>
       ))}
       {block.weeks[0].days.length < 7 && (
-        <Button className={classes.addDayButton} onClick={handleAddDay}>
-          Add Day
-        </Button>
+        <div className={classes.addDayButton} onClick={handleAddDay}>
+          <AddCircleOutline></AddCircleOutline>
+        </div>
       )}
-      <Button className={classes.submitButton} type="submit">
-        Save
-      </Button>
     </form>
   );
 };

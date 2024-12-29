@@ -12,6 +12,11 @@ import { EditWeek } from "./editWeek";
 import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
+  title: {
+    fontFamily: "Gabarito",
+    fontWeight: 900,
+    fontSize: "22px",
+  },
   container: {
     display: "flex",
     flexDirection: "column",
@@ -24,17 +29,56 @@ const useStyles = makeStyles()({
     minHeight: "calc(100vh - 60px)",
     alignItems: "center",
   },
+  submitButton: {
+    width: "100%",
+    height: "40px",
+    borderRadius: "0px 0px 20px 20px",
+    border: "none",
+    background: "#0096FF",
+    color: "white",
+    fontFamily: "Gabarito",
+    fontWeight: 600,
+    fontSize: "18px",
+  },
+  submitButtonDisabled: {
+    background: "#9ED7FF",
+  },
 });
 
-const boxStyle = {
+const titleBoxStyle = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  background: "lightgray",
+  borderWidth: "5px",
+  borderRadius: "25px 25px 0px 0px",
+  width: "100%",
+  height: "50px",
+  maxWidth: "400px",
+  marginBottom: "-5px",
+};
+
+const formBoxStyle = {
   background: "white",
   outline: 0,
   border: "solid",
   borderColor: "lightgray",
-  borderRadius: "25px",
+  borderWidth: "5px",
   padding: "10px 10px 10px 10px",
   width: "100%",
   maxWidth: "400px",
+};
+
+const saveBoxStyle = {
+  outline: 0,
+  border: "solid",
+  borderColor: "lightgray",
+  borderWidth: "5px",
+  borderRadius: "0px 0px 25px 25px",
+  width: "100%",
+  height: "50px",
+  maxWidth: "400px",
+  marginTop: "-5px",
 };
 
 export const CreateBlock = () => {
@@ -73,7 +117,10 @@ export const CreateBlock = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className={classes.container}>
-        <Box sx={boxStyle}>
+        <Box sx={titleBoxStyle}>
+          <span className={classes.title}>Create Training Block</span>
+        </Box>
+        <Box sx={formBoxStyle}>
           {editingDay === 0 ? (
             <EditWeek
               uid={curUser?._id || ""}
@@ -89,6 +136,18 @@ export const CreateBlock = () => {
               setEditingDay={setEditingDay}
             />
           )}
+        </Box>
+        <Box sx={saveBoxStyle}>
+          <button
+            className={`${classes.submitButton} ${
+              editingDay !== 0 && classes.submitButtonDisabled
+            }`}
+            form="create-block-form"
+            type="submit"
+            disabled={editingDay !== 0}
+          >
+            Save Plan
+          </button>
         </Box>
       </div>
     </LocalizationProvider>
