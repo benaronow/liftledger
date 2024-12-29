@@ -52,7 +52,7 @@ const useStyles = makeStyles()({
     color: "#0096FF",
   },
   deleteButton: {
-    color: "#ff0000",
+    color: "#FF0000",
   },
 });
 
