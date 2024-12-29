@@ -13,6 +13,9 @@ import { LoginContext } from "../providers/loginContext";
 
 const useStyles = makeStyles()({
   container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
     width: "100%",
   },
   title: {

@@ -11,6 +11,9 @@ import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
   container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
     width: "100%",
   },
   title: {
