@@ -3,8 +3,6 @@
 import { Block, WeightType } from "@/types";
 import { Box } from "@mui/material";
 import { useRef, useState } from "react";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { selectCurUser } from "@/lib/features/user/userSlice";
 import { useSelector } from "react-redux";
 import { EditDay } from "./editDay";
@@ -16,18 +14,6 @@ const useStyles = makeStyles()({
     fontFamily: "Gabarito",
     fontWeight: 900,
     fontSize: "22px",
-  },
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    position: "absolute",
-    top: "60px",
-    width: "100%",
-    padding: "10px 10px 10px 10px",
-    background: "gray",
-    height: "calc(100vh - 120px)",
-    overflow: "scroll",
-    alignItems: "center",
   },
   submitButton: {
     width: "100%",
@@ -116,43 +102,42 @@ export const CreateBlock = () => {
   });
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className={classes.container}>
-        <Box sx={titleBoxStyle}>
-          <span className={classes.title}>Create Training Block</span>
-        </Box>
-        <Box sx={formBoxStyle}>
-          {editingDay === 0 ? (
-            <EditWeek
-              uid={curUser?._id || ""}
-              block={block}
-              setBlock={setBlock}
-              setEditingDay={setEditingDay}
-              saveRef={saveRef}
-            />
-          ) : (
-            <EditDay
-              block={block}
-              setBlock={setBlock}
-              editingDay={editingDay}
-              setEditingDay={setEditingDay}
-              saveRef={saveRef}
-            />
-          )}
-        </Box>
-        <Box sx={saveBoxStyle} ref={saveRef}>
-          <button
-            className={`${classes.submitButton} ${
-              editingDay !== 0 && classes.submitButtonDisabled
-            }`}
-            form="create-block-form"
-            type="submit"
-            disabled={editingDay !== 0}
-          >
-            Save Block
-          </button>
-        </Box>
-      </div>
-    </LocalizationProvider>
+    <div>
+      <Box sx={titleBoxStyle}>
+        <span className={classes.title}>Create Training Block</span>
+      </Box>
+      <Box sx={formBoxStyle}>
+        {editingDay === 0 ? (
+          <EditWeek
+            uid={curUser?._id || ""}
+            block={block}
+            setBlock={setBlock}
+            setEditingDay={setEditingDay}
+            saveRef={saveRef}
+          />
+        ) : (
+          <EditDay
+            block={block}
+            setBlock={setBlock}
+            editingDay={editingDay}
+            setEditingDay={setEditingDay}
+            saveRef={saveRef}
+          />
+        )}
+      </Box>
+      <Box sx={saveBoxStyle} ref={saveRef}>
+        <button
+          className={`${classes.submitButton} ${
+            editingDay !== 0 &&
+            classes.submitButtonDisabled
+          }`}
+          form="create-block-form"
+          type="submit"
+          disabled={editingDay !== 0}
+        >
+          Save Block
+        </button>
+      </Box>
+    </div>
   );
 };

@@ -11,7 +11,7 @@ const useStyles = makeStyles()({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    height: "calc(100vh - 140px)",
+    height: "calc(100vh - 130px)",
     alignItems: "center",
   },
   desc: {

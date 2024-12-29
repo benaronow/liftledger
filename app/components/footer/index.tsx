@@ -11,9 +11,10 @@ const useStyles = makeStyles()({
     justifyContent: "center",
     alignItems: "center",
     background: "#a3258c",
-    height: "60px",
+    height: "70px",
   },
   createBlockButton: {
+    marginTop: "-10px",
     border: "solid",
     borderRadius: "5px",
     borderColor: "white",
@@ -29,6 +30,9 @@ const useStyles = makeStyles()({
   },
   disabledButton: {
     background: "#9ED7FF",
+  },
+  disabledCancel: {
+    background: "#ff8888",
   },
 });
 
@@ -51,7 +55,11 @@ export const Footer = () => {
       <button
         className={`${classes.createBlockButton} ${
           pathname.includes("/create-block") && classes.cancelButton
-        } ${!curUser && classes.disabledButton}`}
+        } ${
+          pathname.includes("/create-block")
+            ? !curUser && classes.disabledCancel
+            : !curUser && classes.disabledButton
+        }`}
         onClick={
           pathname.includes("/create-block")
             ? handleCancelClick

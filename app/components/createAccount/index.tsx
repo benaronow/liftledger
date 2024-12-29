@@ -17,18 +17,6 @@ const useStyles = makeStyles()({
     fontWeight: 900,
     fontSize: "22px",
   },
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    flex: "1",
-    position: "absolute",
-    top: "60px",
-    width: "100%",
-    padding: "10px 10px 0px 10px",
-    background: "gray",
-    height: "calc(100vh - 60px)",
-    alignItems: "center",
-  },
   submitButton: {
     width: "100%",
     height: "40px",
@@ -171,7 +159,7 @@ export const CreateAccount = () => {
   };
 
   return (
-    <div className={classes.container}>
+    <div>
       <Box sx={titleBoxStyle}>
         <span className={classes.title}>Create Account</span>
       </Box>

@@ -7,11 +7,6 @@ import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
   container: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    height: "calc(100vh - 140px)",
-    alignItems: "center",
     textAlign: "center",
   },
 });
