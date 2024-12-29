@@ -12,6 +12,9 @@ import { Dayjs } from "dayjs";
 import { LoginContext } from "../providers/loginContext";
 
 const useStyles = makeStyles()({
+  container: {
+    width: "100%",
+  },
   title: {
     fontFamily: "Gabarito",
     fontWeight: 900,
@@ -159,7 +162,7 @@ export const CreateAccount = () => {
   };
 
   return (
-    <div>
+    <div className={classes.container}>
       <Box sx={titleBoxStyle}>
         <span className={classes.title}>Create Account</span>
       </Box>

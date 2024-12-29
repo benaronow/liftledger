@@ -33,6 +33,9 @@ const useStyles = makeStyles()({
     width: "100%",
     justifyContent: "flex-start",
   },
+  entriesContainer: {
+    width: "100%",
+  },
   entryName: {
     fontFamily: "Gabarito",
     width: "60%",
@@ -288,7 +291,7 @@ export const EditWeek = ({
       </div>
       <div className={classes.entryDivider}></div>
       {block.weeks[0].days.map((day, idx) => (
-        <div key={idx}>
+        <div className={classes.entriesContainer} key={idx}>
           <div className={`${classes.entry} ${classes.day}`}>
             <div className={classes.moveDayButtons}>
               <div onClick={() => handleMoveDay(day, idx + 1, "up")}>

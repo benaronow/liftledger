@@ -10,6 +10,9 @@ import { EditWeek } from "./editWeek";
 import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
+  container: {
+    width: "100%",
+  },
   title: {
     fontFamily: "Gabarito",
     fontWeight: 900,
@@ -102,7 +105,7 @@ export const CreateBlock = () => {
   });
 
   return (
-    <div>
+    <div className={classes.container}>
       <Box sx={titleBoxStyle}>
         <span className={classes.title}>Create Training Block</span>
       </Box>
@@ -128,8 +131,7 @@ export const CreateBlock = () => {
       <Box sx={saveBoxStyle} ref={saveRef}>
         <button
           className={`${classes.submitButton} ${
-            editingDay !== 0 &&
-            classes.submitButtonDisabled
+            editingDay !== 0 && classes.submitButtonDisabled
           }`}
           form="create-block-form"
           type="submit"

@@ -30,6 +30,9 @@ const useStyles = makeStyles()({
     width: "100%",
     justifyContent: "center",
   },
+  entriesContainer: {
+    width: "100%",
+  },
   uniEntry: {
     margin: "-10px 0px -10px 0px",
   },
@@ -155,7 +158,7 @@ interface EditDayProps {
   editingDay: number;
   setBlock: (block: Block) => void;
   setEditingDay: (day: number) => void;
-  saveRef: RefObject<HTMLDivElement | null>
+  saveRef: RefObject<HTMLDivElement | null>;
 }
 
 export const EditDay = ({
@@ -378,7 +381,7 @@ export const EditDay = ({
       </div>
       <div className={classes.entryDivider}></div>
       {block.weeks[0].days[editingDay - 1].exercises.map((exercise, idx) => (
-        <div key={idx}>
+        <div className={classes.entriesContainer} key={idx}>
           <div className={classes.entry}>
             <div className={classes.moveDayButtons}>
               <div onClick={() => handleMoveExercise(exercise, idx + 1, "up")}>
