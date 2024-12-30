@@ -160,10 +160,8 @@ export interface GetParams {
 }
 
 export enum BlockOp {
-  New = "new",
-  EditWeek = "edit week",
-  AddWeek = "add week",
-  Complete = "complete",
+  Create = "create",
+  Edit = "edit",
 }
 
 export enum NumberChange {

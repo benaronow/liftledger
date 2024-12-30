@@ -260,7 +260,7 @@ export const EditWeek = ({
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatch(blockOp({ uid, block, type: BlockOp.New }));
+    dispatch(blockOp({ uid, block, type: BlockOp.Create }));
     router.push("/dashboard");
   };
 

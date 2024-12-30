@@ -172,7 +172,7 @@ export const CompleteDay = () => {
       curUser.curWeek !== undefined &&
       curUser.curDay !== undefined
     ) {
-      dispatch(setCurExercise(finishedWorkout ? 0 : curUser.curExercise + 1));
+      if (!finishedWorkout) dispatch(setCurExercise(curUser.curExercise + 1));
       const newExercise = {
         ...exercisesState[curUser.curExercise],
         completed: true,
@@ -204,15 +204,17 @@ export const CompleteDay = () => {
         1,
         newWeek
       );
-      const finishedBlock = curUser.curWeek === newWeeks.length - 1;
+      const finishedBlock =
+        finishedWeek && curUser.curWeek === curUser.curBlock.length - 1;
       const block = {
         ...curUser.curBlock,
         weeks: newWeeks,
         completed: finishedBlock,
       };
-      dispatch(
-        blockOp({ uid: curUser._id || "", block, type: finishedWeek ? BlockOp.AddWeek : BlockOp.EditWeek })
-      );
+      dispatch(blockOp({ uid: curUser._id || "", block, type: BlockOp.Edit }));
+    }
+    if (finishedWorkout) {
+      router.push('/dashboard');
     }
   };
 
