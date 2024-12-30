@@ -109,7 +109,7 @@ const useStyles = makeStyles()({
     marginLeft: "5px",
     background: "white",
     width: "100%",
-    fontSize: "15px",
+    fontSize: "16px",
   },
   dateInput: {
     paddingLeft: "0px",
@@ -123,7 +123,7 @@ const useStyles = makeStyles()({
     background: "white",
     width: "100%",
     paddingLeft: "5px",
-    fontSize: "15px",
+    fontSize: "16px",
   },
   editButton: {
     background: "transparent",

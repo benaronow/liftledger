@@ -22,7 +22,7 @@ const useStyles = makeStyles()({
     background: "#0096FF",
     color: "white",
     fontFamily: "Gabarito",
-    fontSize: "15px",
+    fontSize: "16px",
     height: "35px",
   },
   cancelButton: {

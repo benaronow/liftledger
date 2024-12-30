@@ -61,7 +61,7 @@ const useStyles = makeStyles()({
     marginLeft: "5px",
     width: "100%",
     paddingLeft: "5px",
-    fontSize: "15px",
+    fontSize: "16px",
   },
   dateInput: {
     paddingLeft: "0px",
