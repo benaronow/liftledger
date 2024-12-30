@@ -3,6 +3,7 @@
 import {
   blockOp,
   selectCurUser,
+  setCurBlock,
   setCurExercise,
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
@@ -165,56 +166,58 @@ export const CompleteDay = () => {
     }
   };
 
-  const handleNext = (finishedWorkout: boolean) => {
+  const handleNext = (completedDay: boolean) => {
     if (
-      curUser?.curExercise !== undefined &&
-      curUser.curBlock &&
+      curUser?.curBlock &&
       curUser.curWeek !== undefined &&
-      curUser.curDay !== undefined
+      curUser.curDay !== undefined &&
+      curUser.curExercise !== undefined
     ) {
-      if (!finishedWorkout) dispatch(setCurExercise(curUser.curExercise + 1));
-      const newExercise = {
+      if (!completedDay) dispatch(setCurExercise(curUser.curExercise + 1));
+      const completeExercise = {
         ...exercisesState[curUser.curExercise],
         completed: true,
       };
       const newExercisesState = exercisesState.toSpliced(
         curUser.curExercise,
         1,
-        newExercise
+        completeExercise
       );
       setExercisesState(newExercisesState);
       const newDay = {
         ...curUser.curBlock.weeks[curUser.curWeek].days[curUser.curDay],
         exercises: newExercisesState,
-        completed: finishedWorkout,
+        completed: completedDay,
       };
       const newDays = curUser.curBlock.weeks[curUser.curWeek].days.toSpliced(
         curUser.curDay,
         1,
         newDay
       );
-      const finishedWeek = curUser.curDay === newDays.length - 1;
+      const completedWeek =
+        completedDay && curUser.curDay === newDays.length - 1;
       const newWeek = {
         ...curUser.curBlock.weeks[curUser.curWeek],
         days: newDays,
-        completed: finishedWeek,
+        completed: completedWeek,
       };
       const newWeeks = curUser.curBlock.weeks.toSpliced(
         curUser.curWeek,
         1,
         newWeek
       );
-      const finishedBlock =
-        finishedWeek && curUser.curWeek === curUser.curBlock.length - 1;
+      const completedBlock =
+        completedWeek && curUser.curWeek === curUser.curBlock.length - 1;
+      if (completedBlock) dispatch(setCurBlock(undefined));
       const block = {
         ...curUser.curBlock,
         weeks: newWeeks,
-        completed: finishedBlock,
+        completed: completedBlock,
       };
       dispatch(blockOp({ uid: curUser._id || "", block, type: BlockOp.Edit }));
     }
-    if (finishedWorkout) {
-      router.push('/dashboard');
+    if (completedDay) {
+      router.push("/dashboard");
     }
   };
 

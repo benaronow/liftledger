@@ -54,9 +54,6 @@ export const userSlice = createAppSlice({
         deadMax: number;
         blocks: Block[];
         curBlock: Block | undefined;
-        curWeek: number | undefined;
-        curDay: number | undefined;
-        curExercise: number | undefined;
       }) => {
         const response: User = await createUserRequest(user);
         return response;
@@ -122,6 +119,9 @@ export const userSlice = createAppSlice({
         },
       }
     ),
+    setCurBlock: create.reducer((state, action: PayloadAction<Block | undefined>) => {
+      if (state.curUser) state.curUser.curBlock = action.payload;
+    }),
     setCurWeek: create.reducer((state, action: PayloadAction<number>) => {
       if (state.curUser) state.curUser.curWeek = action.payload;
     }),
@@ -144,6 +144,7 @@ export const {
   createUser,
   deleteUser,
   blockOp,
+  setCurBlock,
   setCurWeek,
   setCurDay,
   setCurExercise,

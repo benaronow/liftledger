@@ -59,6 +59,12 @@ export const POST = async (req: NextRequest) => {
       );
       return NextResponse.json(newBlockWithNextWeek);
     }
+    if (block.completed)
+      await UserModel.findOneAndUpdate(
+        { _id: uid },
+        { $unset: { curBlock: "" } },
+        { new: true }
+      );
     return NextResponse.json(newBlock);
   }
 };

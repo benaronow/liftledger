@@ -150,9 +150,9 @@ export interface User {
   deadMax: number;
   blocks: Block[];
   curBlock: Block | undefined;
-  curWeek: number | undefined;
-  curDay: number | undefined;
-  curExercise: number | undefined;
+  curWeek?: number;
+  curDay?: number;
+  curExercise?: number;
 }
 
 export interface GetParams {
