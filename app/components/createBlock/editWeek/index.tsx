@@ -212,7 +212,7 @@ export const EditWeek = ({
           weight: [0],
           weightType: WeightType.Pounds,
           unilateral: false,
-          prevSessionNote: "",
+          note: "",
           completed: false,
         },
       ],

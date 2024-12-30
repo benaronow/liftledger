@@ -11,6 +11,9 @@ const userSchema: Schema = new Schema(
     squatMax: { type: Number, required: true },
     blocks: { type: [{ type: Schema.Types.ObjectId, ref: "Block" }] },
     curBlock: { type: Schema.Types.ObjectId, ref: "Block" },
+    curWeek: { type: Number },
+    curDay: { type: Number },
+    curExercise: { type: Number },
   },
   { collection: "User" }
 );

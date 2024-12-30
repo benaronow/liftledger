@@ -345,7 +345,7 @@ export const EditDay = ({
       weight: [0],
       weightType: WeightType.Pounds,
       unilateral: false,
-      prevSessionNote: "",
+      note: "",
       completed: false
     };
     const newDays: Day[] = block.weeks[0].days.toSpliced(editingDay - 1, 1, {

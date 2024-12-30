@@ -97,7 +97,7 @@ export const CreateBlock = () => {
                 weight: [0],
                 weightType: WeightType.Pounds,
                 unilateral: false,
-                prevSessionNote: "",
+                note: "",
                 completed: false
               },
             ],

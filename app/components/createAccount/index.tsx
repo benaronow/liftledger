@@ -162,6 +162,7 @@ export const CreateAccount = () => {
       curBlock: undefined,
       curWeek: undefined,
       curDay: undefined,
+      curExercise: undefined,
     };
     dispatch(createUser(user));
   };

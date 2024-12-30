@@ -7,7 +7,11 @@ import { makeStyles } from "tss-react/mui";
 import { Box } from "@mui/material";
 import dayjs from "dayjs";
 import { useAppDispatch } from "@/lib/hooks";
-import { setCurDay, setCurWeek } from "@/lib/features/user/userSlice";
+import {
+  setCurDay,
+  setCurExercise,
+  setCurWeek,
+} from "@/lib/features/user/userSlice";
 
 const useStyles = makeStyles()({
   container: {
@@ -104,16 +108,19 @@ export const Dashboard = () => {
   const { session, attemptedLogin, curUser } = useContext(LoginContext);
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const currentWeek =
-    curUser?.curBlock?.weeks.find((week) => !week.completed)?.number || 0;
-  const currentDayNumber =
-    curUser?.curBlock?.weeks[currentWeek - 1]?.days.findIndex(
+  const curWeekIdx =
+    curUser?.curBlock?.weeks.findIndex((week) => !week.completed) || 0;
+  const curDayIdx =
+    curUser?.curBlock?.weeks[curWeekIdx]?.days.findIndex(
       (day) => !day.completed
     ) || 0;
-  const currentDayName =
-    curUser?.curBlock?.weeks[currentWeek - 1]?.days.find(
-      (day) => !day.completed
-    )?.name || "Unavailable";
+  const curDayName =
+    curUser?.curBlock?.weeks[curWeekIdx]?.days.find((day) => !day.completed)
+      ?.name || "Unavailable";
+  const curExerciseIdx =
+    curUser?.curBlock?.weeks[curWeekIdx]?.days[curDayIdx].exercises.findIndex(
+      (exercise) => !exercise.completed
+    ) || 0;
 
   useEffect(() => {
     if (session && attemptedLogin && !curUser) {
@@ -121,11 +128,11 @@ export const Dashboard = () => {
     }
   }, [attemptedLogin]);
 
-  const handleStartDay = (currentWeek: number, currentDay: number) => {
-    console.log(currentWeek, currentDay);
-    dispatch(setCurWeek(currentWeek));
-    dispatch(setCurDay(currentDay));
-    router.push('/complete-day');
+  const handleStartDay = (cwIDx: number, cdIdx: number, ceIdx: number) => {
+    dispatch(setCurWeek(cwIDx));
+    dispatch(setCurDay(cdIdx));
+    dispatch(setCurExercise(ceIdx));
+    router.push("/complete-day");
   };
 
   return (
@@ -161,18 +168,24 @@ export const Dashboard = () => {
               <div className={classes.divider}></div>
               <div className={classes.entry}>
                 <span className={classes.name}>Current Week: </span>
-                <span className={classes.value}>{`Week ${currentWeek}`}</span>
+                <span className={classes.value}>{`Week ${
+                  curWeekIdx + 1
+                }`}</span>
               </div>
               <div className={classes.entry}>
                 <span className={classes.name}>Current Day: </span>
-                <span className={classes.value}>{currentDayName}</span>
+                <span className={classes.value}>{curDayName}</span>
               </div>
               <div className={classes.divider}></div>
               <button
                 className={classes.startDayButton}
-                onClick={() => handleStartDay(currentWeek - 1, currentDayNumber)}
+                onClick={() =>
+                  handleStartDay(curWeekIdx, curDayIdx, curExerciseIdx)
+                }
               >
-                {`Start: Week ${currentWeek}, ${currentDayName}`}
+                {`${
+                  !curExerciseIdx || curExerciseIdx === 0 ? "Start" : "Resume"
+                }: Week ${curWeekIdx + 1}, ${curDayName}`}
               </button>
             </>
           )}

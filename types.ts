@@ -107,14 +107,11 @@ export interface Exercise {
   name: ExerciseName | string;
   apparatus: ExerciseApparatus | string;
   sets: number;
-  prevSessionSets?: number;
   reps: number[];
-  prevSessionReps?: number[];
   weight: number[];
-  prevSessionWeight?: number[];
   weightType: WeightType | string;
   unilateral: boolean;
-  prevSessionNote: string;
+  note: string;
   completed: boolean;
 }
 
@@ -155,6 +152,7 @@ export interface User {
   curBlock: Block | undefined;
   curWeek: number | undefined;
   curDay: number | undefined;
+  curExercise: number | undefined;
 }
 
 export interface GetParams {
@@ -166,4 +164,10 @@ export enum BlockOp {
   EditWeek = "edit week",
   AddWeek = "add week",
   Complete = "complete",
+}
+
+export enum NumberChange {
+  Sets = "sets",
+  Reps = "reps",
+  Weight = "weight",
 }

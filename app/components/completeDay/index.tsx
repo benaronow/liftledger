@@ -1,9 +1,15 @@
 "use client";
 
-import { selectCurUser } from "@/lib/features/user/userSlice";
+import {
+  blockOp,
+  selectCurUser,
+  setCurExercise,
+} from "@/lib/features/user/userSlice";
+import { useAppDispatch } from "@/lib/hooks";
+import { BlockOp, NumberChange } from "@/types";
 import { Box, Input } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { makeStyles } from "tss-react/mui";
 
@@ -43,7 +49,7 @@ const useStyles = makeStyles()({
   lbs: {
     marginLeft: "-5px",
   },
-  startDayButton: {
+  completeExerciseButton: {
     marginBottom: "10px",
     border: "none",
     borderRadius: "5px",
@@ -69,8 +75,9 @@ const boxStyle = {
   padding: "10px 10px 0px 10px",
   width: "100%",
   maxWidth: "400px",
-  height: "120px",
+  height: "140px",
   zIndex: 1,
+  scrollMarginTop: "10px",
 };
 
 const overlayBoxStyle = {
@@ -80,24 +87,26 @@ const overlayBoxStyle = {
   padding: "10px 10px 0px 10px",
   width: "100%",
   maxWidth: "400px",
-  marginTop: "-120px",
+  marginTop: "-140px",
   marginBottom: "10px",
-  height: "120px",
+  height: "140px",
   zIndex: 2,
   opacity: 0.7,
 };
 
+const underlayBoxStyle = {
+  height: "140px",
+  marginTop: "-140px",
+  marginBottom: "10px",
+  zIndex: 0,
+};
+
 export const CompleteDay = () => {
   const { classes } = useStyles();
+  const dispatch = useAppDispatch();
   const curUser = useSelector(selectCurUser);
   const router = useRouter();
-
-  useEffect(() => {
-    if (curUser?.curWeek === undefined || curUser?.curDay === undefined) {
-      router.push("/dashboard");
-    }
-  }, [curUser]);
-
+  const curRef = useRef<HTMLDivElement>(null);
   const exercises =
     curUser &&
     curUser.curBlock &&
@@ -105,16 +114,113 @@ export const CompleteDay = () => {
     curUser.curDay !== undefined
       ? curUser.curBlock.weeks[curUser.curWeek].days[curUser.curDay].exercises
       : [];
+  const [exercisesState, setExercisesState] = useState(exercises);
 
-  const handleCompleteExercise = () => {
-    return null;
+  useEffect(() => {
+    if (curUser?.curWeek === undefined || curUser?.curDay === undefined) {
+      router.push("/dashboard");
+    }
+  }, [curUser]);
+
+  useEffect(() => {
+    if (curRef.current)
+      curRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+  }, [curUser?.curExercise]);
+
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    type: NumberChange
+  ) => {
+    if (curUser?.curExercise !== undefined) {
+      if (type === NumberChange.Sets) {
+        const newExercise = {
+          ...exercisesState[curUser.curExercise],
+          sets: parseInt(e.target.value) || 0,
+        };
+        setExercisesState(
+          exercisesState.toSpliced(curUser.curExercise, 1, newExercise)
+        );
+      }
+      if (type === NumberChange.Reps) {
+        const newExercise = {
+          ...exercisesState[curUser.curExercise],
+          reps: [parseInt(e.target.value) || 0],
+        };
+        setExercisesState(
+          exercisesState.toSpliced(curUser.curExercise, 1, newExercise)
+        );
+      }
+      if (type === NumberChange.Weight) {
+        const newExercise = {
+          ...exercisesState[curUser.curExercise],
+          weight: [parseInt(e.target.value) || 0],
+        };
+        setExercisesState(
+          exercisesState.toSpliced(curUser.curExercise, 1, newExercise)
+        );
+      }
+    }
+  };
+
+  const handleNext = (finishedWorkout: boolean) => {
+    if (
+      curUser?.curExercise !== undefined &&
+      curUser.curBlock &&
+      curUser.curWeek !== undefined &&
+      curUser.curDay !== undefined
+    ) {
+      dispatch(setCurExercise(finishedWorkout ? 0 : curUser.curExercise + 1));
+      const newExercise = {
+        ...exercisesState[curUser.curExercise],
+        completed: true,
+      };
+      const newExercisesState = exercisesState.toSpliced(
+        curUser.curExercise,
+        1,
+        newExercise
+      );
+      setExercisesState(newExercisesState);
+      const newDay = {
+        ...curUser.curBlock.weeks[curUser.curWeek].days[curUser.curDay],
+        exercises: newExercisesState,
+        completed: finishedWorkout,
+      };
+      const newDays = curUser.curBlock.weeks[curUser.curWeek].days.toSpliced(
+        curUser.curDay,
+        1,
+        newDay
+      );
+      const finishedWeek = curUser.curDay === newDays.length - 1;
+      const newWeek = {
+        ...curUser.curBlock.weeks[curUser.curWeek],
+        days: newDays,
+        completed: finishedWeek,
+      };
+      const newWeeks = curUser.curBlock.weeks.toSpliced(
+        curUser.curWeek,
+        1,
+        newWeek
+      );
+      const finishedBlock = curUser.curWeek === newWeeks.length - 1;
+      const block = {
+        ...curUser.curBlock,
+        weeks: newWeeks,
+        completed: finishedBlock,
+      };
+      dispatch(
+        blockOp({ uid: curUser._id || "", block, type: finishedWeek ? BlockOp.AddWeek : BlockOp.EditWeek })
+      );
+    }
   };
 
   return (
     <div className={classes.container}>
       {exercises?.map((exercise, idx) => (
         <div className={classes.container} key={idx}>
-          <Box sx={boxStyle}>
+          <Box sx={boxStyle} ref={idx === curUser?.curExercise ? curRef : null}>
             <div className={classes.entry}>
               <span
                 className={classes.title}
@@ -122,23 +228,47 @@ export const CompleteDay = () => {
             </div>
             <div className={classes.entry}>
               <span className={classes.entryName}>Sets: </span>
-              <Input className={classes.input} />
+              <Input
+                className={classes.input}
+                value={exercisesState[idx].sets}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  handleInputChange(e, NumberChange.Sets)
+                }
+              />
               <span className={classes.entryName}>Reps: </span>
-              <Input className={classes.input} />
+              <Input
+                className={classes.input}
+                value={exercisesState[idx].reps}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  handleInputChange(e, NumberChange.Reps)
+                }
+              />
               <span className={classes.entryName}>Weight: </span>
-              <Input className={classes.input} />
+              <Input
+                className={classes.input}
+                value={exercisesState[idx].weight}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  handleInputChange(e, NumberChange.Weight)
+                }
+              />
               <span className={`${classes.entryName} ${classes.lbs}`}>lbs</span>
             </div>
             <div className={classes.entry}>
               <button
-                className={classes.startDayButton}
-                onClick={() => handleCompleteExercise}
+                className={classes.completeExerciseButton}
+                onClick={() => handleNext(idx === exercises.length - 1)}
               >
-                Complete
+                {idx === exercises.length - 1
+                  ? "Finish Workout"
+                  : "Next Exercise"}
               </button>
             </div>
           </Box>
-          <Box sx={overlayBoxStyle} key={idx}></Box>
+          <Box
+            sx={
+              idx === curUser?.curExercise ? underlayBoxStyle : overlayBoxStyle
+            }
+          />
         </div>
       ))}
     </div>
