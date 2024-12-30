@@ -23,7 +23,7 @@ const RootLayout = async ({ children }: Props) => {
           ></meta>
           <meta
             name="viewport"
-            content="width=device-width, user-scalable=no"
+            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
           />
           <meta name="mobile-web-app-capable" content="yes" />
           <meta name="theme-color" content="#a3248d" />

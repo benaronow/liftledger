@@ -43,7 +43,7 @@ const useStyles = makeStyles()({
     borderRadius: "5px",
     width: "100%",
     paddingLeft: "5px",
-    fontSize: "15px",
+    fontSize: "16px",
     marginRight: "5px",
   },
   lbs: {
