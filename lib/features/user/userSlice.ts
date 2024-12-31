@@ -107,11 +107,7 @@ export const userSlice = createAppSlice({
           state.status = "idle";
           if (state.curUser) {
             state.curUser.curBlock = action.payload;
-            state.curUser.blocks = state.curUser.blocks.toSpliced(
-              state.curUser.blocks.length - 1,
-              1,
-              action.payload
-            );
+            state.curUser.blocks.push(action.payload);
           }
         },
         rejected: (state) => {
