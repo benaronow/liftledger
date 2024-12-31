@@ -20,8 +20,7 @@ const useStyles = makeStyles()({
     alignItems: "center",
     background: "white",
     height: "70px",
-    transform: "translateY(50px)",
-    zIndex: '10',
+    zIndex: "10",
   },
   icon: {
     marginTop: "-15px",
