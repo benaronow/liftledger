@@ -4,18 +4,42 @@ import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
 import { LoginContext } from "../providers/loginContext";
 import { makeStyles } from "tss-react/mui";
-import { CircularProgress } from "@mui/material";
+import Image from "next/image";
+import { keyframes } from "tss-react";
+
+const spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
 
 const useStyles = makeStyles()({
   container: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    height: "calc(100vh - 130px)",
+    height: "calc(100vh - 120px)",
     alignItems: "center",
   },
   desc: {
     marginBottom: "20px",
+  },
+  logo: {
+    animation: `${spin} 1s infinite ease`,
+  },
+  "@keyframes rotate": {
+    "0%": {
+      transform: "rotate(0)",
+    },
+    "50%": {
+      transform: "rotate(180deg)",
+    },
+    "100%": {
+      transform: "translateY(360deg)",
+    },
   },
 });
 
@@ -33,8 +57,13 @@ export const LiftLedger = () => {
 
   return (
     <div className={classes.container}>
-      <span className={classes.desc}>Attempting login...</span>
-      <CircularProgress />
+      <Image
+        className={classes.logo}
+        src="/icon.png"
+        alt="Description of image"
+        height={50}
+        width={50}
+      />
     </div>
   );
 };

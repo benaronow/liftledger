@@ -169,3 +169,11 @@ export enum NumberChange {
   Reps = "reps",
   Weight = "weight",
 }
+
+export enum RouteType {
+  Progress = "/progress",
+  History = "/history",
+  Home = "/dashboard",
+  Add = "/create-block",
+  Profile = "/profile"
+}

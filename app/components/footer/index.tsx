@@ -1,16 +1,22 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useContext } from "react";
 import { makeStyles } from "tss-react/mui";
-import { LoginContext } from "../providers/loginContext";
+import {
+  AddCircleOutline,
+  History,
+  HomeOutlined,
+  InsightsRounded,
+  PersonOutline,
+} from "@mui/icons-material";
+import { RouteType } from "@/types";
 
 const useStyles = makeStyles()({
   footer: {
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "space-around",
     alignItems: "center",
-    background: "#a3258c",
+    background: "white",
     height: "70px",
   },
   createBlockButton: {
@@ -34,41 +40,46 @@ const useStyles = makeStyles()({
   disabledCancel: {
     background: "#ff8888",
   },
+  icon: {
+    color: "#a3258c",
+    fontSize: "40px",
+  },
+  addIcon: {
+    color: "#a3258c",
+    fontSize: "35px",
+  },
 });
 
 export const Footer = () => {
   const { classes } = useStyles();
-  const { curUser } = useContext(LoginContext);
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleCreateClick = () => {
-    router.push("/create-block");
-  };
-
-  const handleCancelClick = () => {
-    router.push("/dashboard");
+  const handleIconClick = (type: RouteType) => {
+    router.push(type);
   };
 
   return (
-    <div className={classes.footer}>
-      <button
-        className={`${classes.createBlockButton} ${
-          pathname.includes("/create-block") && classes.cancelButton
-        } ${
-          pathname.includes("/create-block")
-            ? !curUser && classes.disabledCancel
-            : !curUser && classes.disabledButton
-        }`}
-        onClick={
-          pathname.includes("/create-block")
-            ? handleCancelClick
-            : handleCreateClick
-        }
-        disabled={!curUser}
-      >
-        {pathname.includes("/create-block") ? "Cancel" : "Create New Block"}
-      </button>
-    </div>
+    <>
+      {pathname !== "/" && (
+        <div className={classes.footer}>
+          <div onClick={() => handleIconClick(RouteType.Progress)}>
+            <InsightsRounded className={classes.icon}></InsightsRounded>
+          </div>
+          <div onClick={() => handleIconClick(RouteType.History)}>
+            <History className={classes.icon}></History>
+          </div>
+          <div onClick={() => handleIconClick(RouteType.Home)}>
+            <HomeOutlined className={classes.icon}></HomeOutlined>
+          </div>
+          <div onClick={() => handleIconClick(RouteType.Add)}>
+            <AddCircleOutline className={classes.addIcon}></AddCircleOutline>
+          </div>
+          <div onClick={() => handleIconClick(RouteType.Profile)}>
+            <PersonOutline className={classes.icon}></PersonOutline>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
