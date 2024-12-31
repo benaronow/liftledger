@@ -1,5 +1,3 @@
-"use client";
-
 import { Block, WeightType } from "@/types";
 import { Box } from "@mui/material";
 import { useRef, useState } from "react";

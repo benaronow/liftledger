@@ -1,5 +1,3 @@
-"use client";
-
 import { makeStyles } from "tss-react/mui";
 import { Box } from "@mui/material";
 import dayjs from "dayjs";

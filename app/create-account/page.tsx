@@ -1,3 +1,5 @@
+"use client";
+
 import { CreateAccount } from "../components/createAccount";
 
 const Page = () => {

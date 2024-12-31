@@ -1,5 +1,3 @@
-"use client";
-
 import { Avatar, Box } from "@mui/material";
 import { useContext } from "react";
 import { makeStyles } from "tss-react/mui";

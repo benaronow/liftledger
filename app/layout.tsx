@@ -17,14 +17,13 @@ const RootLayout = async ({ children }: Props) => {
     <Providers session={session}>
       <html lang="en">
         <head>
+          <title>LiftLedger</title>
+          <meta name="title" content="LiftLedger"></meta>
           <meta
             name="description"
             content="An app for tracking resistance-training progression."
           ></meta>
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1"
-          />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta name="mobile-web-app-capable" content="yes" />
           <meta name="theme-color" content="#a3248d" />
           <link rel="icon" href="/favicon.ico" sizes="any" />

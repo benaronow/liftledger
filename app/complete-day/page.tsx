@@ -1,3 +1,5 @@
+"use client";
+
 import { CompleteDay } from "../components/completeDay";
 
 const Page = () => {

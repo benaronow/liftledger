@@ -1,7 +1,9 @@
+"use client";
+
 import { Progress } from "../components/progress";
 
 const Page = () => {
-  return <Progress></Progress>;
+  return <Progress />;
 };
 
 export default Page;

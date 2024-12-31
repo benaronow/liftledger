@@ -1,5 +1,3 @@
-"use client";
-
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
 import { LoginContext } from "../providers/loginContext";

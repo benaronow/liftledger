@@ -1,12 +1,9 @@
-import type { Metadata } from "next";
+"use client";
+
 import { LiftLedger } from "./components/liftLedger";
 
 const IndexPage = () => {
   return <LiftLedger />;
-};
-
-export const metadata: Metadata = {
-  title: "LiftLedger",
 };
 
 export default IndexPage;

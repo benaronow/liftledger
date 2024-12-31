@@ -1,5 +1,3 @@
-"use client";
-
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
 import { LoginContext } from "../providers/loginContext";
@@ -146,7 +144,7 @@ export const Dashboard = () => {
 
   return (
     <div className={classes.container}>
-      {curUser ? (
+      {session ? (
         <Box sx={boxStyle}>
           <span className={classes.title}>Current Training Block</span>
           <div className={classes.divider} />

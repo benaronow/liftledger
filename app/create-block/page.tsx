@@ -1,3 +1,5 @@
+"use client";
+
 import { CreateBlock } from "../components/createBlock";
 
 const Page = () => {
