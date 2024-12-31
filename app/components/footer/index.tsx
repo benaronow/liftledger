@@ -19,32 +19,18 @@ const useStyles = makeStyles()({
     background: "white",
     height: "70px",
   },
-  createBlockButton: {
-    marginTop: "-10px",
-    border: "solid",
-    borderRadius: "5px",
-    borderColor: "white",
-    borderWidth: "2px",
-    background: "#0096FF",
-    color: "white",
-    fontFamily: "Gabarito",
-    fontSize: "16px",
-    height: "35px",
-  },
-  cancelButton: {
-    background: "red",
-  },
-  disabledButton: {
-    background: "#9ed7ff",
-  },
-  disabledCancel: {
-    background: "#ff8888",
-  },
   icon: {
+    marginTop: "-15px",
     color: "#a3258c",
     fontSize: "40px",
   },
+  historyIcon: {
+    marginTop: "-15px",
+    color: "#a3258c",
+    fontSize: "38px",
+  },
   addIcon: {
+    marginTop: "-15px",
     color: "#a3258c",
     fontSize: "35px",
   },
@@ -67,7 +53,7 @@ export const Footer = () => {
             <InsightsRounded className={classes.icon}></InsightsRounded>
           </div>
           <div onClick={() => handleIconClick(RouteType.History)}>
-            <History className={classes.icon}></History>
+            <History className={classes.historyIcon}></History>
           </div>
           <div onClick={() => handleIconClick(RouteType.Home)}>
             <HomeOutlined className={classes.icon}></HomeOutlined>
