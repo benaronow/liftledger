@@ -5,11 +5,14 @@ import { usePathname } from "next/navigation";
 
 const useStyles = makeStyles()({
   header: {
+    position: "fixed",
     display: "flex",
     background: "#a3258c",
     justifyContent: "center",
     alignItems: "center",
     height: "50px",
+    width: "100%",
+    zIndex: "10",
   },
   noHeader: {
     height: "50px",
@@ -61,7 +64,7 @@ export const Header = () => {
 
   return (
     <>
-      <div className={pathname === '/' ? classes.noHeader : classes.header}>
+      <div className={pathname === "/" ? classes.noHeader : classes.header}>
         <div className={classes.titleContainer}>
           <span className={classes.title}>liftledger</span>
         </div>

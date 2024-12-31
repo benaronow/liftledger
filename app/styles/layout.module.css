@@ -33,6 +33,7 @@
   width: 100%;
   padding: 10px 10px 10px 10px;
   overflow: scroll;
+  transform: translateY(50px);
 }
 
 .footer {

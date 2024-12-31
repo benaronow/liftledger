@@ -13,11 +13,15 @@ import { RouteType } from "@/types";
 
 const useStyles = makeStyles()({
   footer: {
+    position: "fixed",
+    width: "100%",
     display: "flex",
     justifyContent: "space-around",
     alignItems: "center",
     background: "white",
     height: "70px",
+    transform: "translateY(50px)",
+    zIndex: '10',
   },
   icon: {
     marginTop: "-15px",
