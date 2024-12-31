@@ -18,7 +18,6 @@ const spin = keyframes`
 
 const useStyles = makeStyles()({
   container: {
-    marginTop: '50px',
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
