@@ -19,9 +19,6 @@ const useStyles = makeStyles()({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    transform: "translateY(25px)",
-  },
-  containerExtra: {
     transform: "translateY(50px)",
   },
   title: {
@@ -147,94 +144,61 @@ export const Dashboard = () => {
     router.push(`/auth/login`);
   };
 
-  const completedBlocks = curUser?.blocks.map((block, idx) => {
-    if (block.completed)
-      return (
-        <div
-          key={idx}
-          className={`${classes.entry} ${classes.completedBlockEntry}`}
-        >
-          <span>{`${block.name}: Started ${dayjs(block.startDate).format(
-            "MM-DD-YYYY"
-          )}, ${block.length} weeks`}</span>
-        </div>
-      );
-  });
-
   return (
-    <div
-      className={`${classes.container} ${!curUser && classes.containerExtra}`}
-    >
+    <div className={classes.container}>
       {curUser ? (
-        <div className={classes.container}>
-          <Box sx={boxStyle}>
-            <span className={classes.title}>Current Training Block</span>
-            <div className={classes.divider} />
-            {!curUser && <span className={classes.noBlockText}>Loading</span>}
-            {curUser && (!curUser.curBlock || curUser.curBlock.completed) && (
-              <span className={classes.noBlockText}>
-                Create a training block to get started!
-              </span>
-            )}
-            {curUser?.curBlock && !curUser.curBlock.completed && (
-              <>
-                <div className={classes.entry}>
-                  <span className={classes.name}>Name: </span>
-                  <span className={classes.value}>{curUser.curBlock.name}</span>
-                </div>
-                <div className={classes.entry}>
-                  <span className={classes.name}>Start Date: </span>
-                  <span className={classes.value}>
-                    {dayjs(curUser.curBlock.startDate).format("MM-DD-YYYY")}
-                  </span>
-                </div>
-                <div className={classes.entry}>
-                  <span className={classes.name}>Length: </span>
-                  <span
-                    className={classes.value}
-                  >{`${curUser.curBlock.length} weeks`}</span>
-                </div>
-                <div className={classes.divider} />
-                <div className={classes.entry}>
-                  <span className={classes.name}>Current Week: </span>
-                  <span className={classes.value}>{`Week ${
-                    curWeekIdx + 1
-                  }`}</span>
-                </div>
-                <div className={classes.entry}>
-                  <span className={classes.name}>Current Day: </span>
-                  <span className={classes.value}>{curDayName}</span>
-                </div>
-                <div className={classes.divider}></div>
-                <button
-                  className={classes.startDayButton}
-                  onClick={() =>
-                    handleStartDay(curWeekIdx, curDayIdx, curExerciseIdx)
-                  }
-                >
-                  {`${
-                    !curExerciseIdx || curExerciseIdx === 0 ? "Start" : "Resume"
-                  }: Week ${curWeekIdx + 1}, ${curDayName}`}
-                </button>
-              </>
-            )}
-          </Box>
-          <Box sx={boxStyle}>
-            <span className={classes.title}>Completed Training Blocks</span>
-            <div className={classes.divider} />
-            {!curUser && <span className={classes.noBlockText}>Loading</span>}
-            {curUser &&
-              (completedBlocks && completedBlocks[0] ? (
-                completedBlocks
-              ) : (
-                <div
-                  className={`${classes.entry} ${classes.completedBlockEntry}`}
-                >
-                  <span>No completed blocks yet</span>
-                </div>
-              ))}
-          </Box>
-        </div>
+        <Box sx={boxStyle}>
+          <span className={classes.title}>Current Training Block</span>
+          <div className={classes.divider} />
+          {!curUser && <span className={classes.noBlockText}>Loading</span>}
+          {curUser && (!curUser.curBlock || curUser.curBlock.completed) && (
+            <span className={classes.noBlockText}>
+              Create a training block to get started!
+            </span>
+          )}
+          {curUser?.curBlock && !curUser.curBlock.completed && (
+            <>
+              <div className={classes.entry}>
+                <span className={classes.name}>Name: </span>
+                <span className={classes.value}>{curUser.curBlock.name}</span>
+              </div>
+              <div className={classes.entry}>
+                <span className={classes.name}>Start Date: </span>
+                <span className={classes.value}>
+                  {dayjs(curUser.curBlock.startDate).format("MM-DD-YYYY")}
+                </span>
+              </div>
+              <div className={classes.entry}>
+                <span className={classes.name}>Length: </span>
+                <span
+                  className={classes.value}
+                >{`${curUser.curBlock.length} weeks`}</span>
+              </div>
+              <div className={classes.divider} />
+              <div className={classes.entry}>
+                <span className={classes.name}>Current Week: </span>
+                <span className={classes.value}>{`Week ${
+                  curWeekIdx + 1
+                }`}</span>
+              </div>
+              <div className={classes.entry}>
+                <span className={classes.name}>Current Day: </span>
+                <span className={classes.value}>{curDayName}</span>
+              </div>
+              <div className={classes.divider}></div>
+              <button
+                className={classes.startDayButton}
+                onClick={() =>
+                  handleStartDay(curWeekIdx, curDayIdx, curExerciseIdx)
+                }
+              >
+                {`${
+                  !curExerciseIdx || curExerciseIdx === 0 ? "Start" : "Resume"
+                }: Week ${curWeekIdx + 1}, ${curDayName}`}
+              </button>
+            </>
+          )}
+        </Box>
       ) : (
         <button className={classes.accountButton} onClick={handleLogin}>
           Log in to get started

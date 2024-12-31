@@ -1,5 +1,7 @@
+import { History } from "../components/history";
+
 const Page = () => {
-  return <></>;
+  return <History />;
 };
 
 export default Page;

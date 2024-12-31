@@ -1,5 +1,7 @@
+import { Progress } from "../components/progress";
+
 const Page = () => {
-  return <></>;
+  return <Progress></Progress>;
 };
 
 export default Page;

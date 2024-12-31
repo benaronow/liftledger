@@ -1,6 +1,6 @@
 "use client";
 
-import { Box } from "@mui/material";
+import { Avatar, Box } from "@mui/material";
 import { useContext } from "react";
 import { makeStyles } from "tss-react/mui";
 import { LoginContext } from "../providers/loginContext";
@@ -61,6 +61,10 @@ const useStyles = makeStyles()({
     color: "#0096FF",
   },
   deleteButton: {
+    border: "none",
+    background: "transparent",
+    fontFamily: "Gabarito",
+    fontSize: "16px",
     color: "#FF0000",
   },
 });
@@ -100,6 +104,10 @@ export const Profile = () => {
     <div className={classes.container}>
       <Box sx={boxStyle}>
         <span className={classes.title}>Profile</span>
+        <Avatar
+          sx={{ height: "75px", width: "75px", marginBottom: "10px" }}
+          src={session?.user.picture}
+        />
         <div className={classes.divider}></div>
         <div className={classes.entry}>
           <span className={classes.name}>Name: </span>
@@ -146,10 +154,7 @@ export const Profile = () => {
           <button className={classes.accountButton} onClick={handleLogout}>
             Log out
           </button>
-          <button
-            className={`${classes.accountButton} ${classes.deleteButton}`}
-            onClick={handleDelete}
-          >
+          <button className={classes.deleteButton} onClick={handleDelete}>
             Delete Account
           </button>
         </div>
