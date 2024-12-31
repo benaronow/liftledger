@@ -10,6 +10,8 @@ import {
   PersonOutline,
 } from "@mui/icons-material";
 import { RouteType } from "@/types";
+import { useContext } from "react";
+import { LoginContext } from "../providers/loginContext";
 
 const useStyles = makeStyles()({
   footer: {
@@ -41,11 +43,12 @@ const useStyles = makeStyles()({
 
 export const Footer = () => {
   const { classes } = useStyles();
+  const { curUser } = useContext(LoginContext);
   const router = useRouter();
   const pathname = usePathname();
 
   const handleIconClick = (type: RouteType) => {
-    router.push(type);
+    if (curUser) router.push(type);
   };
 
   return (

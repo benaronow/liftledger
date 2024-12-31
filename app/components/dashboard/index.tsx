@@ -21,6 +21,9 @@ const useStyles = makeStyles()({
     width: "100%",
     transform: "translateY(25px)",
   },
+  containerExtra: {
+    transform: "translateY(50px)",
+  },
   title: {
     fontFamily: "Gabarito",
     fontWeight: 900,
@@ -63,6 +66,7 @@ const useStyles = makeStyles()({
     fontFamily: "Gabarito",
     fontSize: "16px",
     color: "#0096FF",
+    transform: "translateY(calc(50vh - 70px))",
   },
   deleteButton: {
     color: "#FF0000",
@@ -139,10 +143,17 @@ export const Dashboard = () => {
     router.push("/complete-day");
   };
 
+  const handleLogin = () => {
+    router.push(`/auth/login`);
+  };
+
   const completedBlocks = curUser?.blocks.map((block, idx) => {
     if (block.completed)
       return (
-        <div key={idx} className={`${classes.entry} ${classes.completedBlockEntry}`}>
+        <div
+          key={idx}
+          className={`${classes.entry} ${classes.completedBlockEntry}`}
+        >
           <span>{`${block.name}: Started ${dayjs(block.startDate).format(
             "MM-DD-YYYY"
           )}, ${block.length} weeks`}</span>
@@ -151,8 +162,10 @@ export const Dashboard = () => {
   });
 
   return (
-    <div className={classes.container}>
-      {session ? (
+    <div
+      className={`${classes.container} ${!curUser && classes.containerExtra}`}
+    >
+      {curUser ? (
         <div className={classes.container}>
           <Box sx={boxStyle}>
             <span className={classes.title}>Current Training Block</span>
@@ -223,7 +236,9 @@ export const Dashboard = () => {
           </Box>
         </div>
       ) : (
-        <span>Create an account or log in to use LiftLedger!</span>
+        <button className={classes.accountButton} onClick={handleLogin}>
+          Log in to get started
+        </button>
       )}
     </div>
   );
