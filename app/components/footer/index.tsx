@@ -37,7 +37,7 @@ const useStyles = makeStyles()({
     height: "65px",
     width: "65px",
     borderRadius: "32.5px",
-    transform: "translateY(-15px)",
+    transform: "translateY(-12.5px)",
   },
   iconCircle: {
     display: "flex",
@@ -74,7 +74,6 @@ const useStyles = makeStyles()({
     color: "#a3258c",
     fontSize: "33px",
     marginTop: "1px",
-    marginRight: "1px",
   },
   profileIcon: {
     color: "#a3258c",

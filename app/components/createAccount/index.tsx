@@ -20,23 +20,20 @@ const useStyles = makeStyles()({
     fontFamily: "Gabarito",
     fontWeight: 900,
     fontSize: "22px",
+    marginBottom: "10px",
   },
-  submitButton: {
-    width: "100%",
-    height: "40px",
-    borderRadius: "0px 0px 20px 20px",
-    border: "none",
-    background: "#0096FF",
-    color: "white",
-    fontFamily: "Gabarito",
-    fontWeight: 600,
-    fontSize: "18px",
+  divider: {
+    width: "105%",
+    height: "1.5px",
+    background: "black",
+    marginBottom: "10px",
   },
   form: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
+    width: "100%",
   },
   entry: {
     display: "flex",
@@ -64,42 +61,40 @@ const useStyles = makeStyles()({
   dateInput: {
     paddingLeft: "0px",
   },
+  buttons: {
+    display: "flex",
+    width: "70%",
+    justifyContent: "space-around",
+  },
+  accountButton: {
+    border: "none",
+    background: "transparent",
+    fontFamily: "Gabarito",
+    fontSize: "16px",
+    color: "#0096FF",
+  },
+  deleteButton: {
+    border: "none",
+    background: "transparent",
+    fontFamily: "Gabarito",
+    fontSize: "16px",
+    color: "#FF0000",
+  },
 });
 
-const titleBoxStyle = {
+const boxStyle = {
   display: "flex",
+  flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
-  background: "lightgray",
-  borderWidth: "5px",
-  borderRadius: "25px 25px 0px 0px",
-  width: "100%",
-  minHeight: "50px",
-  maxWidth: "400px",
-  marginBottom: "-5px",
-};
-
-const formBoxStyle = {
   background: "white",
   outline: 0,
-  border: "solid",
-  borderColor: "lightgray",
-  borderWidth: "5px",
-  padding: "10px 10px 0px 10px",
+  border: "none",
+  borderRadius: "25px 25px 25px 25px",
+  padding: "0px 10px 0px 10px",
   width: "100%",
   maxWidth: "400px",
-};
-
-const saveBoxStyle = {
-  outline: 0,
-  border: "solid",
-  borderColor: "lightgray",
-  borderWidth: "5px",
-  borderRadius: "0px 0px 25px 25px",
-  width: "100%",
-  height: "50px",
-  maxWidth: "400px",
-  marginTop: "-5px",
+  marginBottom: "10px",
 };
 
 export const CreateAccount = () => {
@@ -162,12 +157,15 @@ export const CreateAccount = () => {
     dispatch(createUser(user));
   };
 
+  const handleLogout = () => {
+    router.push(`/auth/logout`);
+  };
+
   return (
     <div className={classes.container}>
-      <Box sx={titleBoxStyle}>
+      <Box sx={boxStyle}>
         <span className={classes.title}>Create Account</span>
-      </Box>
-      <Box sx={formBoxStyle}>
+        <div className={classes.divider} />
         <form
           className={classes.form}
           id="create-account-form"
@@ -195,15 +193,19 @@ export const CreateAccount = () => {
             </div>
           ))}
         </form>
-      </Box>
-      <Box sx={saveBoxStyle}>
-        <button
-          className={classes.submitButton}
-          form="create-account-form"
-          type="submit"
-        >
-          Save Account
-        </button>
+        <div className={classes.divider} />
+        <div className={classes.buttons}>
+          <button
+            className={classes.accountButton}
+            form="create-account-form"
+            type="submit"
+          >
+            Save Info
+          </button>
+          <button className={classes.deleteButton} onClick={handleLogout}>
+            Log out
+          </button>
+        </div>
       </Box>
     </div>
   );

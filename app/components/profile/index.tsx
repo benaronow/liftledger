@@ -21,7 +21,7 @@ const useStyles = makeStyles()({
     marginBottom: "10px",
   },
   divider: {
-    width: "100%",
+    width: "105%",
     height: "1.5px",
     background: "black",
     marginBottom: "10px",
@@ -45,6 +45,8 @@ const useStyles = makeStyles()({
     justifyContent: "flex-end",
   },
   actions: {
+    display: "flex",
+    width: "70%",
     justifyContent: "space-around",
   },
   accountButton: {
@@ -70,11 +72,9 @@ const boxStyle = {
   alignItems: "center",
   background: "white",
   outline: 0,
-  border: "solid",
-  borderColor: "lightgray",
-  borderWidth: "5px",
+  border: "none",
   borderRadius: "25px 25px 25px 25px",
-  padding: "10px 10px 0px 10px",
+  padding: "00px 10px 0px 10px",
   width: "100%",
   maxWidth: "400px",
 };
@@ -98,6 +98,7 @@ export const Profile = () => {
     <div className={classes.container}>
       <Box sx={boxStyle}>
         <span className={classes.title}>Profile</span>
+        <div className={classes.divider}></div>
         <Avatar
           sx={{ height: "75px", width: "75px", marginBottom: "10px" }}
           src={session?.user.picture}

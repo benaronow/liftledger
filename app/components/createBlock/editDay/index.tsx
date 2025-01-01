@@ -12,7 +12,7 @@ import {
   DeleteOutline,
 } from "@mui/icons-material";
 import { Checkbox, Input } from "@mui/material";
-import { ChangeEvent, RefObject, useEffect } from "react";
+import { ChangeEvent, useEffect, useRef } from "react";
 import Select from "react-select";
 import { makeStyles } from "tss-react/mui";
 
@@ -42,7 +42,7 @@ const useStyles = makeStyles()({
     fontSize: "16px",
   },
   entryDivider: {
-    width: "100%",
+    width: "105%",
     height: "1.5px",
     background: "#0096FF",
     marginBottom: "10px",
@@ -150,7 +150,6 @@ interface EditDayProps {
   editingDay: number;
   setBlock: (block: Block) => void;
   setEditingDay: (day: number) => void;
-  saveRef: RefObject<HTMLDivElement | null>;
 }
 
 export const EditDay = ({
@@ -158,13 +157,13 @@ export const EditDay = ({
   setBlock,
   editingDay,
   setEditingDay,
-  saveRef,
 }: EditDayProps) => {
   const { classes } = useStyles();
+  const addRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (saveRef.current)
-      saveRef.current.scrollIntoView({
+    if (addRef.current)
+      addRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
@@ -206,7 +205,7 @@ export const EditDay = ({
       ...day,
       exercises: newExercises,
     });
-    setBlock({ ...block, weeks: [{...block.weeks[0], days: newDays }] });
+    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleExerciseNameSelect = (
@@ -338,7 +337,7 @@ export const EditDay = ({
       weightType: WeightType.Pounds,
       unilateral: false,
       note: "",
-      completed: false
+      completed: false,
     };
     const newDays: Day[] = block.weeks[0].days.toSpliced(editingDay - 1, 1, {
       ...day,
@@ -371,133 +370,140 @@ export const EditDay = ({
         <ArrowBackIosNew className={classes.backArrow}></ArrowBackIosNew>
         <span className={classes.backButton}>Go Back</span>
       </div>
-      <div className={classes.entryDivider}></div>
       {block.weeks[0].days[editingDay - 1].exercises.map((exercise, idx) => (
-        <div className={classes.entriesContainer} key={idx}>
-          <div className={classes.entry}>
-            <div className={classes.moveDayButtons}>
-              <div onClick={() => handleMoveExercise(exercise, idx + 1, "up")}>
-                <ArrowBackIosNew className={classes.moveUpButton} />
-              </div>
-              <div
-                onClick={() => handleMoveExercise(exercise, idx + 1, "down")}
-              >
-                <ArrowBackIosNew className={classes.moveDownButton} />
-              </div>
-            </div>
-            <div className={classes.entryContainer}>
-              <div className={classes.entryColumn}>
-                <div className={classes.entry}>
-                  <span className={classes.entryName}>Lift: </span>
-                  <Select
-                    className={classes.input}
-                    value={
-                      exercise.name
-                        ? { value: exercise.name, label: exercise.name }
-                        : null
-                    }
-                    defaultValue={exerciseNameOptions[0]}
-                    options={exerciseNameOptions}
-                    isSearchable
-                    onChange={(e) =>
-                      handleExerciseNameSelect(e?.value || "", idx + 1)
-                    }
-                  />
+        <div className={classes.container} key={idx}>
+          {idx > 0 && <div className={classes.entryDivider} />}
+          <div className={classes.entriesContainer}>
+            <div className={classes.entry}>
+              <div className={classes.moveDayButtons}>
+                <div
+                  onClick={() => handleMoveExercise(exercise, idx + 1, "up")}
+                >
+                  <ArrowBackIosNew className={classes.moveUpButton} />
                 </div>
-                <div className={classes.entry}>
-                  <span className={classes.entryName}>Use: </span>
-                  <Select
-                    className={classes.input}
-                    value={
-                      exercise.apparatus
-                        ? {
-                            value: exercise.apparatus,
-                            label: exercise.apparatus,
-                          }
-                        : null
-                    }
-                    defaultValue={exerciseApparatusOptions[0]}
-                    options={exerciseApparatusOptions}
-                    isSearchable
-                    onChange={(e) =>
-                      handleExerciseApparatusSelect(e?.value || "", idx + 1)
-                    }
-                  />
-                </div>
-                <div className={classes.entry}>
-                  <span className={classes.entryName}>Sets: </span>
-                  <Input
-                    className={classes.numberInput}
-                    value={exercise.sets}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      handleNumberInput(e, idx + 1, "sets")
-                    }
-                  />
-                  <span className={classes.entryName}>Reps: </span>
-                  <Input
-                    className={classes.numberInput}
-                    value={exercise.reps[0]}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      handleNumberInput(e, idx + 1, "reps")
-                    }
-                  />
-                </div>
-                <div className={classes.entry}>
-                  <span className={classes.entryName}>Weight: </span>
-                  <Input
-                    className={classes.weightInput}
-                    value={exercise.weight[0]}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      handleNumberInput(e, idx + 1, "weight")
-                    }
-                  />
-                  <Select
-                    value={
-                      exercise.weightType
-                        ? {
-                            value: exercise.weightType,
-                            label: exercise.weightType,
-                          }
-                        : null
-                    }
-                    defaultValue={weightTypeOptions[0]}
-                    options={weightTypeOptions}
-                    onChange={(e) =>
-                      handleWeightTypeSelect(e?.value || "", idx + 1)
-                    }
-                    styles={{
-                      control: (basestyles) => ({
-                        ...basestyles,
-                        height: "38px",
-                        borderColor: "gray",
-                        borderRadius: "0px 5px 5px 0px",
-                      }),
-                    }}
-                  />
-                </div>
-                <div className={`${classes.entry} ${classes.uniEntry}`}>
-                  <span className={classes.entryName}>Unilateral?</span>
-                  <Checkbox
-                    checked={exercise.unilateral}
-                    onChange={() => handleUnilateralChange(idx + 1)}
-                  />
+                <div
+                  onClick={() => handleMoveExercise(exercise, idx + 1, "down")}
+                >
+                  <ArrowBackIosNew className={classes.moveDownButton} />
                 </div>
               </div>
-            </div>
-            <div onClick={() => handleRemoveExercise(idx + 1)}>
-              <DeleteOutline
-                className={`${
-                  block.weeks[0].days[editingDay - 1].exercises.length > 1
-                    ? classes.removeButton
-                    : classes.disabled
-                }`}
-              />
+              <div className={classes.entryContainer}>
+                <div className={classes.entryColumn}>
+                  <div className={classes.entry}>
+                    <span className={classes.entryName}>Lift: </span>
+                    <Select
+                      className={classes.input}
+                      value={
+                        exercise.name
+                          ? { value: exercise.name, label: exercise.name }
+                          : null
+                      }
+                      defaultValue={exerciseNameOptions[0]}
+                      options={exerciseNameOptions}
+                      isSearchable
+                      onChange={(e) =>
+                        handleExerciseNameSelect(e?.value || "", idx + 1)
+                      }
+                    />
+                  </div>
+                  <div className={classes.entry}>
+                    <span className={classes.entryName}>Use: </span>
+                    <Select
+                      className={classes.input}
+                      value={
+                        exercise.apparatus
+                          ? {
+                              value: exercise.apparatus,
+                              label: exercise.apparatus,
+                            }
+                          : null
+                      }
+                      defaultValue={exerciseApparatusOptions[0]}
+                      options={exerciseApparatusOptions}
+                      isSearchable
+                      onChange={(e) =>
+                        handleExerciseApparatusSelect(e?.value || "", idx + 1)
+                      }
+                    />
+                  </div>
+                  <div className={classes.entry}>
+                    <span className={classes.entryName}>Sets: </span>
+                    <Input
+                      className={classes.numberInput}
+                      value={exercise.sets}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        handleNumberInput(e, idx + 1, "sets")
+                      }
+                    />
+                    <span className={classes.entryName}>Reps: </span>
+                    <Input
+                      className={classes.numberInput}
+                      value={exercise.reps[0]}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        handleNumberInput(e, idx + 1, "reps")
+                      }
+                    />
+                  </div>
+                  <div className={classes.entry}>
+                    <span className={classes.entryName}>Weight: </span>
+                    <Input
+                      className={classes.weightInput}
+                      value={exercise.weight[0]}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        handleNumberInput(e, idx + 1, "weight")
+                      }
+                    />
+                    <Select
+                      value={
+                        exercise.weightType
+                          ? {
+                              value: exercise.weightType,
+                              label: exercise.weightType,
+                            }
+                          : null
+                      }
+                      defaultValue={weightTypeOptions[0]}
+                      options={weightTypeOptions}
+                      onChange={(e) =>
+                        handleWeightTypeSelect(e?.value || "", idx + 1)
+                      }
+                      styles={{
+                        control: (basestyles) => ({
+                          ...basestyles,
+                          height: "38px",
+                          borderColor: "gray",
+                          borderRadius: "0px 5px 5px 0px",
+                        }),
+                      }}
+                    />
+                  </div>
+                  <div className={`${classes.entry} ${classes.uniEntry}`}>
+                    <span className={classes.entryName}>Unilateral?</span>
+                    <Checkbox
+                      checked={exercise.unilateral}
+                      onChange={() => handleUnilateralChange(idx + 1)}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div onClick={() => handleRemoveExercise(idx + 1)}>
+                <DeleteOutline
+                  className={`${
+                    block.weeks[0].days[editingDay - 1].exercises.length > 1
+                      ? classes.removeButton
+                      : classes.disabled
+                  }`}
+                />
+              </div>
             </div>
           </div>
-          <div className={classes.entryDivider}></div>
         </div>
       ))}
-      <div className={classes.addExerciseButton} onClick={handleAddExercise}>
+      <div
+        className={classes.addExerciseButton}
+        onClick={handleAddExercise}
+        ref={addRef}
+      >
         <AddCircleOutline style={{ color: "#0096FF" }}></AddCircleOutline>
       </div>
     </div>

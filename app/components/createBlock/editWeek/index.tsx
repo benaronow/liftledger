@@ -11,7 +11,7 @@ import { Input } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, RefObject, useEffect } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef } from "react";
 import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
@@ -20,6 +20,7 @@ const useStyles = makeStyles()({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
+    width: "100%",
   },
   entry: {
     display: "flex",
@@ -30,6 +31,9 @@ const useStyles = makeStyles()({
   },
   entriesContainer: {
     width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   entryName: {
     fontFamily: "Gabarito",
@@ -38,7 +42,7 @@ const useStyles = makeStyles()({
     fontSize: "16px",
   },
   entryDivider: {
-    width: "100%",
+    width: "105%",
     height: "1.5px",
     background: "#0096FF",
     marginBottom: "10px",
@@ -139,7 +143,7 @@ const useStyles = makeStyles()({
   },
   addDayButton: {
     color: "#0096FF",
-    marginBottom: "-5px",
+    marginBottom: "5px",
   },
 });
 
@@ -148,7 +152,6 @@ interface EditWeekProps {
   block: Block;
   setBlock: (block: Block) => void;
   setEditingDay: (day: number) => void;
-  saveRef: RefObject<HTMLDivElement | null>;
 }
 
 export const EditWeek = ({
@@ -156,15 +159,15 @@ export const EditWeek = ({
   block,
   setBlock,
   setEditingDay,
-  saveRef,
 }: EditWeekProps) => {
   const { classes } = useStyles();
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const addRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (saveRef.current)
-      saveRef.current.scrollIntoView({
+    if (addRef.current)
+      addRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
@@ -289,75 +292,81 @@ export const EditWeek = ({
           onChange={(e: ChangeEvent<HTMLInputElement>) => handleLengthInput(e)}
         />
       </div>
-      <div className={classes.entryDivider}></div>
       {block.weeks[0].days.map((day, idx) => (
-        <div className={classes.entriesContainer} key={idx}>
-          <div className={`${classes.entry} ${classes.day}`}>
-            <div className={classes.moveDayButtons}>
-              <div onClick={() => handleMoveDay(day, idx + 1, "up")}>
-                <ArrowBackIosNew className={classes.moveUpButton} />
-              </div>
-              <div onClick={() => handleMoveDay(day, idx + 1, "down")}>
-                <ArrowBackIosNew className={classes.moveDownButton} />
-              </div>
-            </div>
-            <div className={classes.entryContainer}>
-              <div className={classes.entryColumn}>
-                <div className={`${classes.entry} ${classes.dayInfo}`}>
-                  <Input
-                    className={classes.nameInput}
-                    value={day.name}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      handleDayNameInput(e, idx + 1)
-                    }
-                  ></Input>
-                  <button
-                    className={classes.editButton}
-                    onClick={() => handleEditDay(idx + 1)}
-                  >
-                    EDIT
-                  </button>
+        <div className={classes.container} key={idx}>
+          <div className={classes.entryDivider}></div>
+          <div className={classes.entriesContainer}>
+            <div className={`${classes.entry} ${classes.day}`}>
+              <div className={classes.moveDayButtons}>
+                <div onClick={() => handleMoveDay(day, idx + 1, "up")}>
+                  <ArrowBackIosNew className={classes.moveUpButton} />
                 </div>
-                <span
-                  className={`${classes.dayValidText} ${
-                    !day.exercises[0].name && classes.invalid
-                  }`}
-                >
-                  {day.exercises[0].name
-                    ? "Exercises Added"
-                    : "No Exercises Added!"}
-                </span>
+                <div onClick={() => handleMoveDay(day, idx + 1, "down")}>
+                  <ArrowBackIosNew className={classes.moveDownButton} />
+                </div>
               </div>
-            </div>
-            <div>
-              <div onClick={() => handleRemoveDay(idx + 1)}>
-                <DeleteOutline
-                  className={`${
-                    block.weeks[0].days.length > 1
-                      ? classes.removeButton
-                      : classes.disabled
-                  }`}
-                />
+              <div className={classes.entryContainer}>
+                <div className={classes.entryColumn}>
+                  <div className={`${classes.entry} ${classes.dayInfo}`}>
+                    <Input
+                      className={classes.nameInput}
+                      value={day.name}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        handleDayNameInput(e, idx + 1)
+                      }
+                    ></Input>
+                    <button
+                      className={classes.editButton}
+                      onClick={() => handleEditDay(idx + 1)}
+                    >
+                      EDIT
+                    </button>
+                  </div>
+                  <span
+                    className={`${classes.dayValidText} ${
+                      !day.exercises[0].name && classes.invalid
+                    }`}
+                  >
+                    {day.exercises[0].name
+                      ? "Exercises Added"
+                      : "No Exercises Added!"}
+                  </span>
+                </div>
               </div>
-              <div onClick={() => handleDuplicateDay(idx + 1)}>
-                <ControlPointDuplicate
-                  className={`${
-                    block.weeks[0].days.length < 7
-                      ? classes.removeButton
-                      : classes.disabled
-                  }`}
-                />
+              <div>
+                <div onClick={() => handleRemoveDay(idx + 1)}>
+                  <DeleteOutline
+                    className={`${
+                      block.weeks[0].days.length > 1
+                        ? classes.removeButton
+                        : classes.disabled
+                    }`}
+                  />
+                </div>
+                <div onClick={() => handleDuplicateDay(idx + 1)}>
+                  <ControlPointDuplicate
+                    className={`${
+                      block.weeks[0].days.length < 7
+                        ? classes.removeButton
+                        : classes.disabled
+                    }`}
+                  />
+                </div>
               </div>
             </div>
           </div>
-          <div className={classes.entryDivider}></div>
         </div>
       ))}
       {block.weeks[0].days.length < 7 && (
-        <div className={classes.addDayButton} onClick={handleAddDay}>
+        <div
+          className={classes.addDayButton}
+          onClick={handleAddDay}
+          ref={addRef}
+        >
           <AddCircleOutline></AddCircleOutline>
         </div>
       )}
+      <div className={classes.entryDivider}></div>
     </form>
   );
 };

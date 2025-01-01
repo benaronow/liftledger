@@ -21,6 +21,18 @@ const useStyles = makeStyles()({
   },
   title: {
     fontFamily: "Gabarito",
+    fontWeight: 900,
+    fontSize: "22px",
+    marginBottom: "10px",
+  },
+  divider: {
+    width: "105%",
+    height: "1.5px",
+    background: "black",
+    marginBottom: "10px",
+  },
+  entryTitle: {
+    fontFamily: "Gabarito",
     fontSize: "16px",
     fontWeight: 600,
   },
@@ -49,7 +61,6 @@ const useStyles = makeStyles()({
     marginLeft: "-5px",
   },
   completeExerciseButton: {
-    marginBottom: "10px",
     border: "none",
     borderRadius: "5px",
     background: "#0096FF",
@@ -61,6 +72,20 @@ const useStyles = makeStyles()({
 });
 
 const boxStyle = {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  background: "white",
+  outline: 0,
+  border: "none",
+  borderRadius: "25px 25px 25px 25px",
+  padding: "0px 10px 0px 10px",
+  width: "100%",
+  maxWidth: "400px",
+};
+
+const exerciseBoxStyle = {
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
@@ -221,59 +246,70 @@ export const CompleteDay = () => {
 
   return (
     <div className={classes.container}>
-      {exercises?.map((exercise, idx) => (
-        <div className={classes.container} key={idx}>
-          <Box sx={boxStyle} ref={idx === curUser?.curExercise ? curRef : null}>
-            <div className={classes.entry}>
-              <span
-                className={classes.title}
-              >{`${exercise.name} (${exercise.apparatus})`}</span>
-            </div>
-            <div className={classes.entry}>
-              <span className={classes.entryName}>Sets: </span>
-              <Input
-                className={classes.input}
-                value={exercisesState[idx].sets}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, NumberChange.Sets)
-                }
-              />
-              <span className={classes.entryName}>Reps: </span>
-              <Input
-                className={classes.input}
-                value={exercisesState[idx].reps}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, NumberChange.Reps)
-                }
-              />
-              <span className={classes.entryName}>Weight: </span>
-              <Input
-                className={classes.input}
-                value={exercisesState[idx].weight}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange(e, NumberChange.Weight)
-                }
-              />
-              <span className={`${classes.entryName} ${classes.lbs}`}>lbs</span>
-            </div>
-            <div className={classes.entry}>
-              <button
-                className={classes.completeExerciseButton}
-                onClick={() => handleNext(idx === exercises.length - 1)}
-              >
-                {idx === exercises.length - 1
-                  ? "Finish Workout"
-                  : "Next Exercise"}
-              </button>
-            </div>
-          </Box>
-          <Box
-            sx={
-              idx === curUser?.curExercise ? underlayBoxStyle : overlayBoxStyle
-            }
-          />
-        </div>
-      ))}
+      <Box sx={boxStyle}>
+        <span className={classes.title}>Complete Workout</span>
+        <div className={classes.divider}></div>
+        {exercises?.map((exercise, idx) => (
+          <div className={classes.container} key={idx}>
+            <Box
+              sx={exerciseBoxStyle}
+              ref={idx === curUser?.curExercise ? curRef : null}
+            >
+              <div className={classes.entry}>
+                <span
+                  className={classes.entryTitle}
+                >{`${exercise.name} (${exercise.apparatus})`}</span>
+              </div>
+              <div className={classes.entry}>
+                <span className={classes.entryName}>Sets: </span>
+                <Input
+                  className={classes.input}
+                  value={exercisesState[idx].sets}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    handleInputChange(e, NumberChange.Sets)
+                  }
+                />
+                <span className={classes.entryName}>Reps: </span>
+                <Input
+                  className={classes.input}
+                  value={exercisesState[idx].reps}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    handleInputChange(e, NumberChange.Reps)
+                  }
+                />
+                <span className={classes.entryName}>Weight: </span>
+                <Input
+                  className={classes.input}
+                  value={exercisesState[idx].weight}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    handleInputChange(e, NumberChange.Weight)
+                  }
+                />
+                <span className={`${classes.entryName} ${classes.lbs}`}>
+                  lbs
+                </span>
+              </div>
+              <div className={classes.entry}>
+                <button
+                  className={classes.completeExerciseButton}
+                  onClick={() => handleNext(idx === exercises.length - 1)}
+                >
+                  {idx === exercises.length - 1
+                    ? "Finish Workout"
+                    : "Next Exercise"}
+                </button>
+              </div>
+            </Box>
+            <Box
+              sx={
+                idx === curUser?.curExercise
+                  ? underlayBoxStyle
+                  : overlayBoxStyle
+              }
+            />
+          </div>
+        ))}
+      </Box>
     </div>
   );
 };

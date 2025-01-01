@@ -16,7 +16,7 @@
   height: calc(100vh - 120px);
   min-height: calc(100vh - 120px);
   width: 100%;
-  padding: 10px 10px 10px 10px;
+  padding: 10px 10px 20px 10px;
   overflow: scroll;
   transform: translateY(50px);
 }

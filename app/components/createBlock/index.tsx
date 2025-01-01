@@ -1,6 +1,6 @@
 import { Block, WeightType } from "@/types";
 import { Box } from "@mui/material";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { selectCurUser } from "@/lib/features/user/userSlice";
 import { useSelector } from "react-redux";
 import { EditDay } from "./editDay";
@@ -18,63 +18,43 @@ const useStyles = makeStyles()({
     fontFamily: "Gabarito",
     fontWeight: 900,
     fontSize: "22px",
+    marginBottom: "10px",
+  },
+  divider: {
+    width: "105%",
+    height: "1.5px",
+    background: "black",
+    marginBottom: "10px",
   },
   submitButton: {
-    width: "100%",
-    height: "40px",
-    borderRadius: "0px 0px 20px 20px",
     border: "none",
+    borderRadius: "5px",
     background: "#0096FF",
     color: "white",
     fontFamily: "Gabarito",
-    fontWeight: 600,
-    fontSize: "18px",
-  },
-  submitButtonDisabled: {
-    background: "#9ED7FF",
+    fontSize: "16px",
+    height: "35px",
   },
 });
 
-const titleBoxStyle = {
+const boxStyle = {
   display: "flex",
+  flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
-  background: "lightgray",
-  borderWidth: "5px",
-  borderRadius: "25px 25px 0px 0px",
-  width: "100%",
-  minHeight: "50px",
-  maxWidth: "400px",
-  marginBottom: "-5px",
-};
-
-const formBoxStyle = {
   background: "white",
   outline: 0,
-  border: "solid",
-  borderColor: "lightgray",
-  borderWidth: "5px",
-  padding: "10px 10px 10px 10px",
+  border: "none",
+  borderRadius: "25px 25px 25px 25px",
+  padding: "0px 10px 0px 10px",
   width: "100%",
   maxWidth: "400px",
-};
-
-const saveBoxStyle = {
-  outline: 0,
-  border: "solid",
-  borderColor: "lightgray",
-  borderWidth: "5px",
-  borderRadius: "0px 0px 25px 25px",
-  width: "100%",
-  height: "50px",
-  maxWidth: "400px",
-  marginTop: "-5px",
+  marginBottom: "10px",
 };
 
 export const CreateBlock = () => {
   const { classes } = useStyles();
   const curUser = useSelector(selectCurUser);
-  const saveRef = useRef<HTMLDivElement>(null);
   const [editingDay, setEditingDay] = useState(0);
   const [block, setBlock] = useState<Block>({
     name: "",
@@ -96,7 +76,7 @@ export const CreateBlock = () => {
                 weightType: WeightType.Pounds,
                 unilateral: false,
                 note: "",
-                completed: false
+                completed: false,
               },
             ],
             completed: false,
@@ -111,17 +91,15 @@ export const CreateBlock = () => {
 
   return (
     <div className={classes.container}>
-      <Box sx={titleBoxStyle}>
+      <Box sx={boxStyle}>
         <span className={classes.title}>Create Training Block</span>
-      </Box>
-      <Box sx={formBoxStyle}>
+        <div className={classes.divider}></div>
         {editingDay === 0 ? (
           <EditWeek
             uid={curUser?._id || ""}
             block={block}
             setBlock={setBlock}
             setEditingDay={setEditingDay}
-            saveRef={saveRef}
           />
         ) : (
           <EditDay
@@ -129,21 +107,18 @@ export const CreateBlock = () => {
             setBlock={setBlock}
             editingDay={editingDay}
             setEditingDay={setEditingDay}
-            saveRef={saveRef}
           />
         )}
-      </Box>
-      <Box sx={saveBoxStyle} ref={saveRef}>
-        <button
-          className={`${classes.submitButton} ${
-            editingDay !== 0 && classes.submitButtonDisabled
-          }`}
-          form="create-block-form"
-          type="submit"
-          disabled={editingDay !== 0}
-        >
-          Save Block
-        </button>
+        {editingDay === 0 && (
+          <button
+            className={classes.submitButton}
+            form="create-block-form"
+            type="submit"
+            disabled={editingDay !== 0}
+          >
+            Save Block
+          </button>
+        )}
       </Box>
     </div>
   );
