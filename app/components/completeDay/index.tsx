@@ -114,7 +114,7 @@ const exerciseBoxStyle = {
   padding: "10px 10px 0px 10px",
   width: "100%",
   maxWidth: "400px",
-  height: "220px",
+  height: "230px",
   zIndex: 1,
   scrollMarginTop: "10px",
 };
@@ -126,9 +126,9 @@ const overlayBoxStyle = {
   padding: "10px 10px 0px 10px",
   width: "100%",
   maxWidth: "400px",
-  marginTop: "-220px",
+  marginTop: "-230px",
   marginBottom: "10px",
-  height: "220px",
+  height: "230px",
   zIndex: 2,
   opacity: 0.7,
 };
