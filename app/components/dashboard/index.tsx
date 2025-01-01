@@ -48,12 +48,13 @@ const useStyles = makeStyles()({
     width: "100%",
     justifyContent: "flex-end",
   },
-  accountButton: {
+  loginButton: {
     border: "none",
     background: "transparent",
     fontFamily: "Gabarito",
     fontSize: "16px",
     color: "#0096FF",
+    fontWeight: 600,
     transform: "translateY(calc(50vh - 70px))",
   },
   startDayButton: {
@@ -62,6 +63,7 @@ const useStyles = makeStyles()({
     fontFamily: "Gabarito",
     fontSize: "16px",
     color: "#0096FF",
+    fontWeight: 600,
   },
   noBlockText: {
     marginBottom: "10px",
@@ -177,7 +179,7 @@ export const Dashboard = () => {
           )}
         </Box>
       ) : (
-        <button className={classes.accountButton} onClick={handleLogin}>
+        <button className={classes.loginButton} onClick={handleLogin}>
           Log in to get started
         </button>
       )}

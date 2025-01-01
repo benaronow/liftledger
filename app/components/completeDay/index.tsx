@@ -83,6 +83,7 @@ const useStyles = makeStyles()({
     fontFamily: "Gabarito",
     fontSize: "16px",
     color: "#0096FF",
+    fontWeight: 600,
   },
 });
 
@@ -109,12 +110,12 @@ const exerciseBoxStyle = {
   outline: 0,
   border: "solid",
   borderColor: "lightgray",
-  borderWidth: "5px",
+  borderWidth: "3px",
   borderRadius: "25px 25px 25px 25px",
   padding: "10px 10px 0px 10px",
   width: "100%",
   maxWidth: "400px",
-  height: "230px",
+  height: "190px",
   zIndex: 1,
   scrollMarginTop: "10px",
 };
@@ -126,16 +127,16 @@ const overlayBoxStyle = {
   padding: "10px 10px 0px 10px",
   width: "100%",
   maxWidth: "400px",
-  marginTop: "-230px",
+  marginTop: "-190px",
   marginBottom: "10px",
-  height: "230px",
+  height: "190px",
   zIndex: 2,
   opacity: 0.7,
 };
 
 const underlayBoxStyle = {
-  height: "140px",
-  marginTop: "-140px",
+  height: "190px",
+  marginTop: "-190px",
   marginBottom: "10px",
   zIndex: 0,
 };
@@ -162,7 +163,7 @@ export const CompleteDay = () => {
   }, [curUser]);
 
   useEffect(() => {
-    if (curRef.current)
+    if (curRef.current && curUser?.curExercise)
       curRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -277,6 +278,12 @@ export const CompleteDay = () => {
       <Box sx={boxStyle}>
         <span className={classes.title}>Complete Workout</span>
         <div className={classes.divider}></div>
+        <div className={classes.entry}>
+          <span className={classes.descText}>
+            *Sets, reps, and weight are those specified when creating plan, or
+            those from previous session if applicable.
+          </span>
+        </div>
         {exercises?.map((exercise, idx) => (
           <div className={classes.container} key={idx}>
             <Box
@@ -286,6 +293,7 @@ export const CompleteDay = () => {
               <div className={classes.entry}>
                 <span
                   className={classes.entryTitle}
+                  style={{ textWrap: "nowrap" }}
                 >{`${exercise.name} (${exercise.apparatus})`}</span>
               </div>
               <div className={classes.entry}>
@@ -324,12 +332,6 @@ export const CompleteDay = () => {
                 />
                 <span className={`${classes.entryName} ${classes.lbs}`}>
                   lbs
-                </span>
-              </div>
-              <div className={classes.entry}>
-                <span className={classes.descText}>
-                  *Numbers are those specified when creating plan, or those from
-                  previous session if applicable.
                 </span>
               </div>
               <div className={classes.entry}>

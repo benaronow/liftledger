@@ -72,6 +72,7 @@ const useStyles = makeStyles()({
     fontFamily: "Gabarito",
     fontSize: "16px",
     color: "#0096FF",
+    fontWeight: 600,
   },
   deleteButton: {
     border: "none",
@@ -79,6 +80,7 @@ const useStyles = makeStyles()({
     fontFamily: "Gabarito",
     fontSize: "16px",
     color: "#FF0000",
+    fontWeight: 600,
   },
 });
 
