@@ -122,7 +122,7 @@ export const Profile = () => {
           <span className={classes.name}>Birthday: </span>
           <span className={classes.value}>
             {curUser
-              ? dayjs(curUser.birthday).format("MM-DD-YYYY")
+              ? dayjs(curUser.birthday).format("MM/DD/YYYY")
               : "Unavailable"}
           </span>
         </div>

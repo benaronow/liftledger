@@ -1,7 +1,7 @@
 import { Block, WeightType } from "@/types";
 import { Box } from "@mui/material";
 import { useState } from "react";
-import { selectCurUser } from "@/lib/features/user/userSlice";
+import { selectCurUser, selectTemplate } from "@/lib/features/user/userSlice";
 import { useSelector } from "react-redux";
 import { EditDay } from "./editDay";
 import { EditWeek } from "./editWeek";
@@ -56,38 +56,43 @@ export const CreateBlock = () => {
   const { classes } = useStyles();
   const curUser = useSelector(selectCurUser);
   const [editingDay, setEditingDay] = useState(0);
-  const [block, setBlock] = useState<Block>({
-    name: "",
-    startDate: new Date(),
-    length: 0,
-    weeks: [
-      {
-        number: 1,
-        days: [
-          {
-            name: "Day 1",
-            exercises: [
-              {
-                name: "",
-                apparatus: "",
-                sets: 0,
-                reps: [0],
-                weight: [0],
-                weightType: WeightType.Pounds,
-                unilateral: false,
-                note: "",
-                completed: false,
-              },
-            ],
-            completed: false,
-            completedDate: undefined,
-          },
-        ],
-        completed: false,
-      },
-    ],
-    completed: false,
-  });
+  const template = useSelector(selectTemplate);
+  const [block, setBlock] = useState<Block>(
+    template
+      ? { ...template, startDate: new Date() }
+      : {
+          name: "",
+          startDate: new Date(),
+          length: 0,
+          weeks: [
+            {
+              number: 1,
+              days: [
+                {
+                  name: "Day 1",
+                  exercises: [
+                    {
+                      name: "",
+                      apparatus: "",
+                      sets: 0,
+                      reps: [0],
+                      weight: [0],
+                      weightType: WeightType.Pounds,
+                      unilateral: false,
+                      note: "",
+                      completed: false,
+                    },
+                  ],
+                  completed: false,
+                  completedDate: undefined,
+                },
+              ],
+              completed: false,
+            },
+          ],
+          completed: false,
+        }
+  );
 
   return (
     <div className={classes.container}>

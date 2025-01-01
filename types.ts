@@ -133,7 +133,7 @@ export interface Week {
 export interface Block {
   _id?: string;
   name: string;
-  startDate: Date;
+  startDate: Date | undefined;
   length: number;
   weeks: Week[];
   completed: boolean;

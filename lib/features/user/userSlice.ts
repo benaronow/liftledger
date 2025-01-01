@@ -11,12 +11,14 @@ import { PayloadAction } from "@reduxjs/toolkit";
 export interface UserSliceState {
   attemptedLogin: boolean;
   curUser: User | undefined;
+  template: Block | undefined;
   status: "idle" | "loading" | "failed";
 }
 
 const initialState: UserSliceState = {
   attemptedLogin: false,
   curUser: undefined,
+  template: undefined,
   status: "idle",
 };
 
@@ -115,9 +117,16 @@ export const userSlice = createAppSlice({
         },
       }
     ),
-    setCurBlock: create.reducer((state, action: PayloadAction<Block | undefined>) => {
-      if (state.curUser) state.curUser.curBlock = action.payload;
-    }),
+    setTemplate: create.reducer(
+      (state, action: PayloadAction<Block | undefined>) => {
+        state.template = action.payload;
+      }
+    ),
+    setCurBlock: create.reducer(
+      (state, action: PayloadAction<Block | undefined>) => {
+        if (state.curUser) state.curUser.curBlock = action.payload;
+      }
+    ),
     setCurWeek: create.reducer((state, action: PayloadAction<number>) => {
       if (state.curUser) state.curUser.curWeek = action.payload;
     }),
@@ -131,6 +140,7 @@ export const userSlice = createAppSlice({
   selectors: {
     selectAttemptedLogin: (state) => state.attemptedLogin,
     selectCurUser: (state) => state.curUser,
+    selectTemplate: (state) => state.template,
     selectStatus: (state) => state.status,
   },
 });
@@ -140,6 +150,7 @@ export const {
   createUser,
   deleteUser,
   blockOp,
+  setTemplate,
   setCurBlock,
   setCurWeek,
   setCurDay,
@@ -149,5 +160,6 @@ export const {
 export const {
   selectAttemptedLogin,
   selectCurUser,
+  selectTemplate,
   selectStatus,
 } = userSlice.selectors;

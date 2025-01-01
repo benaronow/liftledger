@@ -145,7 +145,7 @@ export const Dashboard = () => {
               <div className={classes.entry}>
                 <span className={classes.name}>Start Date: </span>
                 <span className={classes.value}>
-                  {dayjs(curUser.curBlock.startDate).format("MM-DD-YYYY")}
+                  {dayjs(curUser.curBlock.startDate).format("MM/DD/YYYY")}
                 </span>
               </div>
               <div className={classes.entry}>

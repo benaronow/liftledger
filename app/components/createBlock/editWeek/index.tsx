@@ -1,4 +1,4 @@
-import { blockOp } from "@/lib/features/user/userSlice";
+import { blockOp, setTemplate } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { Block, BlockOp, Day, WeightType } from "@/types";
 import {
@@ -259,6 +259,7 @@ export const EditWeek = ({
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(blockOp({ uid, block, type: BlockOp.Create }));
+    dispatch(setTemplate(undefined));
     router.push("/dashboard");
   };
 
