@@ -13,7 +13,6 @@ const useStyles = makeStyles()({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    transform: "translateY(50px)",
   },
   title: {
     fontFamily: "Gabarito",

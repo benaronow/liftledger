@@ -17,7 +17,7 @@ import Select from "react-select";
 import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
-  createBlockContainer: {
+  container: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -46,9 +46,6 @@ const useStyles = makeStyles()({
     height: "1.5px",
     background: "#0096FF",
     marginBottom: "10px",
-  },
-  exercise: {
-    justifyContent: "space-between",
   },
   moveDayButtons: {
     display: "flex",
@@ -107,11 +104,6 @@ const useStyles = makeStyles()({
   addExerciseButton: {
     color: "blue",
     marginBottom: "-5px",
-  },
-  submitButton: {
-    marginTop: "10px",
-    border: "solid",
-    borderWidth: "1px",
   },
   numberInput: {
     marginLeft: "5px",
@@ -374,7 +366,7 @@ export const EditDay = ({
   };
 
   return (
-    <div className={classes.createBlockContainer}>
+    <div className={classes.container}>
       <div className={classes.goBack} onClick={handleGoBack}>
         <ArrowBackIosNew className={classes.backArrow}></ArrowBackIosNew>
         <span className={classes.backButton}>Go Back</span>

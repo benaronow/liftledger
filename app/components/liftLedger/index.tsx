@@ -22,22 +22,8 @@ const useStyles = makeStyles()({
     height: "calc(100vh - 120px)",
     alignItems: "center",
   },
-  desc: {
-    marginBottom: "20px",
-  },
   logo: {
     animation: `${spin} 1s infinite ease`,
-  },
-  "@keyframes rotate": {
-    "0%": {
-      transform: "rotate(0)",
-    },
-    "50%": {
-      transform: "rotate(180deg)",
-    },
-    "100%": {
-      transform: "translateY(360deg)",
-    },
   },
 });
 

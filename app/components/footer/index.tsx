@@ -14,8 +14,7 @@ import { useContext } from "react";
 import { LoginContext } from "../providers/loginContext";
 
 const useStyles = makeStyles()({
-  footer: {
-    position: "fixed",
+  container: {
     width: "100%",
     display: "flex",
     justifyContent: "space-around",
@@ -54,7 +53,7 @@ export const Footer = () => {
   return (
     <>
       {pathname !== "/" && (
-        <div className={classes.footer}>
+        <div className={classes.container}>
           <div onClick={() => handleIconClick(RouteType.Progress)}>
             <InsightsRounded className={classes.icon}></InsightsRounded>
           </div>

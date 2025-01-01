@@ -4,8 +4,7 @@ import { makeStyles } from "tss-react/mui";
 import { usePathname } from "next/navigation";
 
 const useStyles = makeStyles()({
-  header: {
-    position: "fixed",
+  container: {
     display: "flex",
     background: "#a3258c",
     justifyContent: "center",
@@ -16,17 +15,6 @@ const useStyles = makeStyles()({
   },
   noHeader: {
     height: "50px",
-  },
-  logoContainer: {
-    display: "flex",
-    flex: "1",
-    justifyContent: "flex-start",
-    alignItems: "center",
-  },
-  logo: {
-    marginLeft: "7.5px",
-    marginTop: "10px",
-    marginBottom: "10px",
   },
   titleContainer: {
     display: "flex",
@@ -39,23 +27,6 @@ const useStyles = makeStyles()({
     fontFamily: "Mina",
     fontWeight: "700",
   },
-  avatarContainer: {
-    display: "flex",
-    flex: "1",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  avatar: {
-    height: "40px",
-    width: "40px",
-    marginRight: "7.5px",
-    marginTop: "10px",
-    marginBottom: "10px",
-    border: "solid",
-    borderColor: "white",
-    borderWidth: "1.5px",
-  },
-  modalContainer: {},
 });
 
 export const Header = () => {
@@ -64,7 +35,7 @@ export const Header = () => {
 
   return (
     <>
-      <div className={pathname === "/" ? classes.noHeader : classes.header}>
+      <div className={pathname === "/" ? classes.noHeader : classes.container}>
         <div className={classes.titleContainer}>
           <span className={classes.title}>liftledger</span>
         </div>

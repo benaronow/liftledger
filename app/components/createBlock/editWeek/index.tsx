@@ -15,16 +15,11 @@ import { ChangeEvent, FormEvent, RefObject, useEffect } from "react";
 import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
-  createBlockContainer: {
+  container: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-  },
-  title: {
-    fontFamily: "Gabarito",
-    fontSize: "20px",
-    fontWeight: 900,
   },
   entry: {
     display: "flex",
@@ -266,7 +261,7 @@ export const EditWeek = ({
 
   return (
     <form
-      className={classes.createBlockContainer}
+      className={classes.container}
       id="create-block-form"
       onSubmit={handleSubmit}
     >

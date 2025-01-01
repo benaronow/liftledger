@@ -17,7 +17,6 @@ const useStyles = makeStyles()({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    transform: "translateY(50px)",
   },
   title: {
     fontFamily: "Gabarito",
@@ -49,12 +48,6 @@ const useStyles = makeStyles()({
     width: "100%",
     justifyContent: "flex-end",
   },
-  actions: {
-    justifyContent: "space-around",
-  },
-  action: {
-    fontWeight: 600,
-  },
   accountButton: {
     border: "none",
     background: "transparent",
@@ -62,9 +55,6 @@ const useStyles = makeStyles()({
     fontSize: "16px",
     color: "#0096FF",
     transform: "translateY(calc(50vh - 70px))",
-  },
-  deleteButton: {
-    color: "#FF0000",
   },
   startDayButton: {
     marginBottom: "10px",
@@ -76,16 +66,10 @@ const useStyles = makeStyles()({
     fontSize: "16px",
     height: "35px",
   },
-  disabledButton: {
-    background: "#9ED7FF",
-  },
   noBlockText: {
     marginBottom: "10px",
     fontFamily: "Gabarito",
     fontSize: "16px",
-  },
-  completedBlockEntry: {
-    justifyContent: "center",
   },
 });
 

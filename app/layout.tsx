@@ -72,14 +72,14 @@ const RootLayout = async ({ children }: Props) => {
           ></link>
         </head>
         <body>
-          <section>
-            <header>
+          <section className={styles.container}>
+            <header className={styles.header}>
               <Header />
             </header>
 
             <main className={styles.main}>{children}</main>
 
-            <footer>
+            <footer className={styles.footer}>
               <Footer />
             </footer>
           </section>
