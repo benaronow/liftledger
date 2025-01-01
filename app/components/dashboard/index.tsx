@@ -26,7 +26,7 @@ const useStyles = makeStyles()({
   },
   divider: {
     width: "105%",
-    height: "1.5px",
+    height: "2px",
     background: "black",
     marginBottom: "10px",
   },
@@ -147,9 +147,9 @@ export const Dashboard = () => {
               </div>
               <div className={classes.entry}>
                 <span className={classes.name}>Length: </span>
-                <span
-                  className={classes.value}
-                >{`${curUser.curBlock.length} weeks`}</span>
+                <span className={classes.value}>{`${
+                  curUser.curBlock.length
+                } week${curUser.curBlock.length > 1 ? "s" : ""}`}</span>
               </div>
               <div className={classes.divider} />
               <div className={classes.entry}>

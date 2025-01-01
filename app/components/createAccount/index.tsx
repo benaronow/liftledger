@@ -24,7 +24,7 @@ const useStyles = makeStyles()({
   },
   divider: {
     width: "105%",
-    height: "1.5px",
+    height: "2px",
     background: "black",
     marginBottom: "10px",
   },

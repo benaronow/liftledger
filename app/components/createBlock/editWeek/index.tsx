@@ -43,7 +43,7 @@ const useStyles = makeStyles()({
   },
   entryDivider: {
     width: "105%",
-    height: "1.5px",
+    height: "2px",
     background: "#0096FF",
     marginBottom: "10px",
   },
@@ -320,7 +320,7 @@ export const EditWeek = ({
                       className={classes.editButton}
                       onClick={() => handleEditDay(idx + 1)}
                     >
-                      EDIT
+                      Edit
                     </button>
                   </div>
                   <span
@@ -329,7 +329,9 @@ export const EditWeek = ({
                     }`}
                   >
                     {day.exercises[0].name
-                      ? "Exercises Added"
+                      ? `${day.exercises.length} Exercise${
+                          day.exercises.length > 1 ? "s" : ""
+                        } Added`
                       : "No Exercises Added!"}
                   </span>
                 </div>

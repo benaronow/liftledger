@@ -27,9 +27,15 @@ const useStyles = makeStyles()({
   },
   divider: {
     width: "105%",
-    height: "1.5px",
+    height: "2px",
     background: "black",
     marginBottom: "10px",
+  },
+  descText: {
+    fontFamily: "Gabarito",
+    fontWeight: 600,
+    fontSize: "10px",
+    color: "gray",
   },
   entryTitle: {
     fontFamily: "Gabarito",
@@ -38,9 +44,11 @@ const useStyles = makeStyles()({
   },
   entry: {
     display: "flex",
-    width: "100",
+    width: "100%",
     alignItems: "center",
     marginBottom: "10px",
+    textAlign: "center",
+    justifyContent: "center",
   },
   entryName: {
     fontFamily: "Gabarito",
@@ -57,17 +65,24 @@ const useStyles = makeStyles()({
     fontSize: "16px",
     marginRight: "5px",
   },
+  noteName: {
+    fontFamily: "Gabarito",
+    fontSize: "16px",
+    fontWeight: 400,
+    width: "50%",
+  },
+  noteInput: {
+    width: "100%",
+  },
   lbs: {
     marginLeft: "-5px",
   },
   completeExerciseButton: {
     border: "none",
-    borderRadius: "5px",
-    background: "#0096FF",
-    color: "white",
+    background: "transparent",
     fontFamily: "Gabarito",
     fontSize: "16px",
-    height: "35px",
+    color: "#0096FF",
   },
 });
 
@@ -99,7 +114,7 @@ const exerciseBoxStyle = {
   padding: "10px 10px 0px 10px",
   width: "100%",
   maxWidth: "400px",
-  height: "140px",
+  height: "220px",
   zIndex: 1,
   scrollMarginTop: "10px",
 };
@@ -111,9 +126,9 @@ const overlayBoxStyle = {
   padding: "10px 10px 0px 10px",
   width: "100%",
   maxWidth: "400px",
-  marginTop: "-140px",
+  marginTop: "-220px",
   marginBottom: "10px",
-  height: "140px",
+  height: "220px",
   zIndex: 2,
   opacity: 0.7,
 };
@@ -189,6 +204,18 @@ export const CompleteDay = () => {
     }
   };
 
+  const handleNoteChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (curUser?.curExercise !== undefined) {
+      const newExercise = {
+        ...exercisesState[curUser?.curExercise],
+        note: e.target.value,
+      };
+      setExercisesState(
+        exercisesState.toSpliced(curUser.curExercise, 1, newExercise)
+      );
+    }
+  };
+
   const handleNext = (completedDay: boolean) => {
     if (
       curUser?.curBlock &&
@@ -211,6 +238,7 @@ export const CompleteDay = () => {
         ...curUser.curBlock.weeks[curUser.curWeek].days[curUser.curDay],
         exercises: newExercisesState,
         completed: completedDay,
+        completedDate: new Date(),
       };
       const newDays = curUser.curBlock.weeks[curUser.curWeek].days.toSpliced(
         curUser.curDay,
@@ -261,6 +289,15 @@ export const CompleteDay = () => {
                 >{`${exercise.name} (${exercise.apparatus})`}</span>
               </div>
               <div className={classes.entry}>
+                <span className={classes.entryName}>{`Previous session note: ${
+                  curUser?.curWeek !== undefined && curUser.curWeek > 0
+                    ? curUser?.curBlock?.weeks[curUser.curWeek - 1].days[
+                        curUser?.curDay || 0
+                      ].exercises[idx].note
+                    : "N/A"
+                }`}</span>
+              </div>
+              <div className={classes.entry}>
                 <span className={classes.entryName}>Sets: </span>
                 <Input
                   className={classes.input}
@@ -288,6 +325,20 @@ export const CompleteDay = () => {
                 <span className={`${classes.entryName} ${classes.lbs}`}>
                   lbs
                 </span>
+              </div>
+              <div className={classes.entry}>
+                <span className={classes.descText}>
+                  *Numbers are those specified when creating plan, or those from
+                  previous session if applicable.
+                </span>
+              </div>
+              <div className={classes.entry}>
+                <span className={classes.noteName}>Leave a note: </span>
+                <Input
+                  className={`${classes.input} ${classes.noteInput}`}
+                  value={exercisesState[idx].note}
+                  onChange={handleNoteChange}
+                />
               </div>
               <div className={classes.entry}>
                 <button

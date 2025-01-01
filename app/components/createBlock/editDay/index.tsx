@@ -43,7 +43,7 @@ const useStyles = makeStyles()({
   },
   entryDivider: {
     width: "105%",
-    height: "1.5px",
+    height: "2px",
     background: "#0096FF",
     marginBottom: "10px",
   },
