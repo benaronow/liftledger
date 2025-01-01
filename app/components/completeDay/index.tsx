@@ -42,6 +42,13 @@ const useStyles = makeStyles()({
     fontSize: "16px",
     fontWeight: 600,
   },
+  eName: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    marginBottom: "10px",
+    textWrap: 'nowrap',
+  },
   entry: {
     display: "flex",
     width: "100%",
@@ -87,60 +94,6 @@ const useStyles = makeStyles()({
   },
 });
 
-const boxStyle = {
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  background: "white",
-  outline: 0,
-  border: "none",
-  borderRadius: "25px 25px 25px 25px",
-  padding: "0px 10px 0px 10px",
-  width: "100%",
-  maxWidth: "400px",
-};
-
-const exerciseBoxStyle = {
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  background: "white",
-  outline: 0,
-  border: "solid",
-  borderColor: "lightgray",
-  borderWidth: "3px",
-  borderRadius: "25px 25px 25px 25px",
-  padding: "10px 10px 0px 10px",
-  width: "100%",
-  maxWidth: "400px",
-  height: "190px",
-  zIndex: 1,
-  scrollMarginTop: "10px",
-};
-
-const overlayBoxStyle = {
-  background: "lightgray",
-  outline: 0,
-  borderRadius: "25px 25px 25px 25px",
-  padding: "10px 10px 0px 10px",
-  width: "100%",
-  maxWidth: "400px",
-  marginTop: "-190px",
-  marginBottom: "10px",
-  height: "190px",
-  zIndex: 2,
-  opacity: 0.7,
-};
-
-const underlayBoxStyle = {
-  height: "190px",
-  marginTop: "-190px",
-  marginBottom: "10px",
-  zIndex: 0,
-};
-
 export const CompleteDay = () => {
   const { classes } = useStyles();
   const dispatch = useAppDispatch();
@@ -155,6 +108,62 @@ export const CompleteDay = () => {
       ? curUser.curBlock.weeks[curUser.curWeek].days[curUser.curDay].exercises
       : [];
   const [exercisesState, setExercisesState] = useState(exercises);
+  const width = window.screen.width;
+  const height = width >= 380 ? "190px" : "210px";
+
+  const boxStyle = {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "white",
+    outline: 0,
+    border: "none",
+    borderRadius: "25px 25px 25px 25px",
+    padding: "0px 10px 0px 10px",
+    width: "100%",
+    maxWidth: "400px",
+  };
+
+  const exerciseBoxStyle = {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "white",
+    outline: 0,
+    border: "solid",
+    borderColor: "lightgray",
+    borderWidth: "3px",
+    borderRadius: "25px 25px 25px 25px",
+    padding: "10px 10px 0px 10px",
+    width: "100%",
+    maxWidth: "400px",
+    height: height,
+    zIndex: 1,
+    scrollMarginTop: "10px",
+  };
+
+  const overlayBoxStyle = {
+    background: "lightgray",
+    outline: 0,
+    borderRadius: "25px 25px 25px 25px",
+    padding: "10px 10px 0px 10px",
+    width: "100%",
+    maxWidth: "400px",
+    marginTop: `-${height}`,
+    marginBottom: "10px",
+    height: height,
+    zIndex: 2,
+    opacity: 0.7,
+  };
+
+  const underlayBoxStyle = {
+    height: height,
+    marginTop: `-${height}`,
+    marginBottom: "10px",
+    zIndex: 0,
+  };
 
   useEffect(() => {
     if (curUser?.curWeek === undefined || curUser?.curDay === undefined) {
@@ -290,11 +299,13 @@ export const CompleteDay = () => {
               sx={exerciseBoxStyle}
               ref={idx === curUser?.curExercise ? curRef : null}
             >
-              <div className={classes.entry}>
-                <span
-                  className={classes.entryTitle}
-                  style={{ textWrap: "nowrap" }}
-                >{`${exercise.name} (${exercise.apparatus})`}</span>
+              <div className={classes.eName}>
+                <span className={classes.entryTitle}>{`${exercise.name} ${
+                  width >= 380 ? `(${exercise.apparatus})` : ""
+                }`}</span>
+                <span className={classes.entryTitle}>{`${
+                  width < 380 ? `(${exercise.apparatus})` : ""
+                }`}</span>
               </div>
               <div className={classes.entry}>
                 <span className={classes.entryName}>{`Previous session note: ${
