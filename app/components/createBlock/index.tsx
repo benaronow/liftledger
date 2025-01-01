@@ -26,14 +26,24 @@ const useStyles = makeStyles()({
     background: "black",
     marginBottom: "10px",
   },
+  actions: {
+    display: "flex",
+    width: "70%",
+    justifyContent: "space-around",
+  },
   submitButton: {
     border: "none",
-    borderRadius: "5px",
-    background: "#0096FF",
-    color: "white",
+    background: "transparent",
     fontFamily: "Gabarito",
     fontSize: "16px",
-    height: "35px",
+    color: "#0096FF",
+  },
+  clearButton: {
+    border: "none",
+    background: "transparent",
+    fontFamily: "Gabarito",
+    fontSize: "16px",
+    color: "#FF0000",
   },
 });
 
@@ -94,6 +104,41 @@ export const CreateBlock = () => {
         }
   );
 
+  const handleClear = () => {
+    setBlock({
+      name: "",
+      startDate: new Date(),
+      length: 0,
+      weeks: [
+        {
+          number: 1,
+          days: [
+            {
+              name: "Day 1",
+              exercises: [
+                {
+                  name: "",
+                  apparatus: "",
+                  sets: 0,
+                  reps: [0],
+                  weight: [0],
+                  weightType: WeightType.Pounds,
+                  unilateral: false,
+                  note: "",
+                  completed: false,
+                },
+              ],
+              completed: false,
+              completedDate: undefined,
+            },
+          ],
+          completed: false,
+        },
+      ],
+      completed: false,
+    });
+  };
+
   return (
     <div className={classes.container}>
       <Box sx={boxStyle}>
@@ -115,14 +160,21 @@ export const CreateBlock = () => {
           />
         )}
         {editingDay === 0 && (
-          <button
-            className={classes.submitButton}
-            form="create-block-form"
-            type="submit"
-            disabled={editingDay !== 0}
-          >
-            Save Block
-          </button>
+          <div className={classes.actions}>
+            <button
+              className={classes.submitButton}
+              form="create-block-form"
+              type="submit"
+            >
+              Save Block
+            </button>
+            <button
+              className={classes.clearButton}
+              onClick={handleClear}
+            >
+              Clear
+            </button>
+          </div>
         )}
       </Box>
     </div>
