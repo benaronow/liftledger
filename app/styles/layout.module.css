@@ -1,37 +1,27 @@
 .container {
-  display: grid;
-  grid-template-areas:
-    "nav"
-    "header"
-    "main"
-    "footer";
   min-height: 100vh;
   max-height: 100vh;
 }
 
 .header {
-  grid-area: header;
   position: fixed;
   top: 0;
   width: 100%;
 }
 
 .main {
-  grid-area: main;
-  position: fixed;
-  top: 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: calc(100vh - 70px);
-  min-height: calc(100vh - 70px);
+  height: calc(100vh - 120px);
+  min-height: calc(100vh - 120px);
   width: 100%;
   padding: 10px 10px 10px 10px;
   overflow: scroll;
+  transform: translateY(50px);
 }
 
 .footer {
-  grid-area: footer;
   position: fixed;
   top: calc(100vh - 70px);
   width: 100%;

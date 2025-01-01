@@ -19,22 +19,63 @@ const useStyles = makeStyles()({
     display: "flex",
     justifyContent: "space-around",
     alignItems: "center",
-    background: "white",
+    background: "#a3258c",
     height: "70px",
     zIndex: "10",
   },
+  iconContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "50px",
+    width: "50px",
+    borderRadius: "25px",
+    background: "#a3258c",
+    transform: "translateY(-7.5px)",
+  },
+  homeIconContainer: {
+    height: "65px",
+    width: "65px",
+    borderRadius: "32.5px",
+    transform: "translateY(-15px)",
+  },
+  iconCircle: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "40px",
+    width: "40px",
+    borderRadius: "20px",
+    background: "white",
+  },
+  homeIconCircle: {
+    height: "55px",
+    width: "55px",
+    borderRadius: "27.5px",
+  },
   icon: {
-    marginTop: "-15px",
     color: "#a3258c",
     fontSize: "40px",
   },
-  historyIcon: {
-    marginTop: "-15px",
+  progressIcon: {
     color: "#a3258c",
-    fontSize: "38px",
+    fontSize: "30px",
+  },
+  historyIcon: {
+    color: "#a3258c",
+    fontSize: "35px",
+    marginRight: "2px",
+  },
+  homeIcon: {
+    color: "#a3258c",
+    fontSize: "50px",
   },
   addIcon: {
-    marginTop: "-15px",
+    color: "#a3258c",
+    fontSize: "33px",
+    marginTop: "1px",
+  },
+  profileIcon: {
     color: "#a3258c",
     fontSize: "35px",
   },
@@ -54,20 +95,49 @@ export const Footer = () => {
     <>
       {pathname !== "/" && (
         <div className={classes.container}>
-          <div onClick={() => handleIconClick(RouteType.Progress)}>
-            <InsightsRounded className={classes.icon}></InsightsRounded>
+          <div className={classes.iconContainer}>
+            <div
+              className={classes.iconCircle}
+              onClick={() => handleIconClick(RouteType.Progress)}
+            >
+              <InsightsRounded
+                className={classes.progressIcon}
+              ></InsightsRounded>
+            </div>
           </div>
-          <div onClick={() => handleIconClick(RouteType.History)}>
-            <History className={classes.historyIcon}></History>
+          <div className={classes.iconContainer}>
+            <div
+              className={classes.iconCircle}
+              onClick={() => handleIconClick(RouteType.History)}
+            >
+              <History className={classes.historyIcon}></History>
+            </div>
           </div>
-          <div onClick={() => handleIconClick(RouteType.Home)}>
-            <HomeOutlined className={classes.icon}></HomeOutlined>
+          <div
+            className={`${classes.iconContainer} ${classes.homeIconContainer}`}
+          >
+            <div
+              className={`${classes.iconCircle} ${classes.homeIconCircle}`}
+              onClick={() => handleIconClick(RouteType.Home)}
+            >
+              <HomeOutlined className={classes.homeIcon}></HomeOutlined>
+            </div>
           </div>
-          <div onClick={() => handleIconClick(RouteType.Add)}>
-            <AddCircleOutline className={classes.addIcon}></AddCircleOutline>
+          <div className={classes.iconContainer}>
+            <div
+              className={classes.iconCircle}
+              onClick={() => handleIconClick(RouteType.Add)}
+            >
+              <AddCircleOutline className={classes.addIcon}></AddCircleOutline>
+            </div>
           </div>
-          <div onClick={() => handleIconClick(RouteType.Profile)}>
-            <PersonOutline className={classes.icon}></PersonOutline>
+          <div className={classes.iconContainer}>
+            <div
+              className={classes.iconCircle}
+              onClick={() => handleIconClick(RouteType.Profile)}
+            >
+              <PersonOutline className={classes.profileIcon}></PersonOutline>
+            </div>
           </div>
         </div>
       )}
