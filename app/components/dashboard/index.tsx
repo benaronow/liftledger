@@ -57,14 +57,11 @@ const useStyles = makeStyles()({
     transform: "translateY(calc(50vh - 70px))",
   },
   startDayButton: {
-    marginBottom: "10px",
     border: "none",
-    borderRadius: "5px",
-    background: "#0096FF",
-    color: "white",
+    background: "transparent",
     fontFamily: "Gabarito",
     fontSize: "16px",
-    height: "35px",
+    color: "#0096FF",
   },
   noBlockText: {
     marginBottom: "10px",
