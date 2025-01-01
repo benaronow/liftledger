@@ -74,6 +74,7 @@ const useStyles = makeStyles()({
     color: "#a3258c",
     fontSize: "33px",
     marginTop: "1px",
+    marginRight: "1px",
   },
   profileIcon: {
     color: "#a3258c",
