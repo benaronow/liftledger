@@ -1,7 +1,7 @@
 import { Avatar, Box, Theme } from "@mui/material";
 import { useContext } from "react";
 import { makeStyles } from "tss-react/mui";
-import { LoginContext } from "../../providers/loginContext";
+import { LoginContext } from "../../providers/loginProvider";
 import dayjs from "dayjs";
 import { useAppDispatch } from "@/lib/hooks";
 import { deleteUser } from "@/lib/features/user/userSlice";
@@ -56,6 +56,9 @@ const useStyles = makeStyles()({
     fontSize: "16px",
     color: "#0096FF",
     fontWeight: 600,
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   deleteButton: {
     border: "none",
@@ -64,6 +67,9 @@ const useStyles = makeStyles()({
     fontSize: "16px",
     color: "#FF0000",
     fontWeight: 600,
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
 });
 
@@ -105,7 +111,6 @@ export const Profile = () => {
           sx={{ height: "75px", width: "75px", marginBottom: "10px" }}
           src={session?.user.picture}
         />
-        <div className={classes.divider}></div>
         <div className={classes.entry}>
           <span className={classes.name}>Name: </span>
           <span className={classes.value}>

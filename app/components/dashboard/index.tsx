@@ -1,8 +1,8 @@
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
-import { LoginContext } from "../../providers/loginContext";
+import { LoginContext } from "../../providers/loginProvider";
 import { makeStyles } from "tss-react/mui";
-import { Box, Theme } from "@mui/material";
+import { Box, Theme, useTheme } from "@mui/material";
 import dayjs from "dayjs";
 import { useAppDispatch } from "@/lib/hooks";
 import {
@@ -10,6 +10,7 @@ import {
   setCurExercise,
   setCurWeek,
 } from "@/lib/features/user/userSlice";
+import { InnerWidthContext } from "@/app/providers/innerWidthProvider";
 
 const useStyles = makeStyles()({
   container: {
@@ -56,6 +57,9 @@ const useStyles = makeStyles()({
     color: "#0096FF",
     fontWeight: 600,
     transform: "translateY(calc(50dvh - 70px))",
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   startDayButton: {
     border: "none",
@@ -64,6 +68,9 @@ const useStyles = makeStyles()({
     fontSize: "16px",
     color: "#0096FF",
     fontWeight: 600,
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   noBlockText: {
     marginBottom: "10px",
@@ -83,13 +90,15 @@ const boxStyle = (theme: Theme) => ({
   borderRadius: "25px 25px 25px 25px",
   padding: "0px 10px 0px 10px",
   width: "100%",
-  maxWidth: `calc(${theme.breakpoints.values['sm']}px - 20px)`,
+  maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   marginBottom: "10px",
 });
 
 export const Dashboard = () => {
   const { classes } = useStyles();
   const { session, attemptedLogin, curUser } = useContext(LoginContext);
+  const { innerWidth } = useContext(InnerWidthContext);
+  const theme = useTheme();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const curWeekIdx =
@@ -113,10 +122,12 @@ export const Dashboard = () => {
   }, [attemptedLogin]);
 
   const handleStartDay = (cwIDx: number, cdIdx: number, ceIdx: number) => {
-    dispatch(setCurWeek(cwIDx));
-    dispatch(setCurDay(cdIdx));
-    dispatch(setCurExercise(ceIdx));
-    router.push("/complete-day");
+    if (innerWidth && innerWidth < theme.breakpoints.values["sm"]) {
+      dispatch(setCurWeek(cwIDx));
+      dispatch(setCurDay(cdIdx));
+      dispatch(setCurExercise(ceIdx));
+      router.push("/complete-day");
+    }
   };
 
   const handleLogin = () => {

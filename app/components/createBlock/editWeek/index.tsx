@@ -132,6 +132,9 @@ const useStyles = makeStyles()({
     fontSize: "16px",
     fontWeight: 600,
     fontFamily: "Gabarito",
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   removeButton: {
     "&:hover": {
@@ -144,6 +147,9 @@ const useStyles = makeStyles()({
   addDayButton: {
     color: "#0096FF",
     marginBottom: "5px",
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
 });
 

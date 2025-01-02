@@ -1,3 +1,4 @@
+import { InnerWidthContext } from "@/app/providers/innerWidthProvider";
 import {
   blockOp,
   selectCurUser,
@@ -6,18 +7,21 @@ import {
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { BlockOp, NumberChange } from "@/types";
-import { Box, Input, Theme } from "@mui/material";
+import { Box, Input, Theme, useTheme } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { makeStyles } from "tss-react/mui";
 
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   container: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      display: "none",
+    },
   },
   title: {
     fontFamily: "Gabarito",
@@ -47,7 +51,7 @@ const useStyles = makeStyles()({
     flexDirection: "column",
     alignItems: "center",
     marginBottom: "10px",
-    textWrap: 'nowrap',
+    textWrap: "nowrap",
   },
   entry: {
     display: "flex",
@@ -91,8 +95,11 @@ const useStyles = makeStyles()({
     fontSize: "16px",
     color: "#0096FF",
     fontWeight: 600,
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
-});
+}));
 
 const boxStyle = (theme: Theme) => ({
   display: "flex",
@@ -105,7 +112,7 @@ const boxStyle = (theme: Theme) => ({
   borderRadius: "25px 25px 25px 25px",
   padding: "0px 10px 0px 10px",
   width: "100%",
-  maxWidth: `calc(${theme.breakpoints.values['sm']}px - 20px)`,
+  maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
 });
 
 export const CompleteDay = () => {
@@ -113,6 +120,8 @@ export const CompleteDay = () => {
   const dispatch = useAppDispatch();
   const curUser = useSelector(selectCurUser);
   const router = useRouter();
+  const { innerWidth } = useContext(InnerWidthContext);
+  const theme = useTheme();
   const curRef = useRef<HTMLDivElement>(null);
   const exercises =
     curUser &&
@@ -121,9 +130,17 @@ export const CompleteDay = () => {
     curUser.curDay !== undefined
       ? curUser.curBlock.weeks[curUser.curWeek].days[curUser.curDay].exercises
       : [];
+  useEffect(() => {
+    if (!exercises.length) router.push("/dashboard");
+  }, [exercises]);
+
+  useEffect(() => {
+    if (innerWidth && innerWidth > theme.breakpoints.values["sm"])
+      router.push("/dashboard");
+  }, [innerWidth]);
+
   const [exercisesState, setExercisesState] = useState(exercises);
-  const width = window.screen.width;
-  const height = width >= 380 ? "190px" : "210px";
+  const height = innerWidth && innerWidth >= 380 ? "190px" : "210px";
 
   const exerciseBoxStyle = {
     display: "flex",
@@ -299,10 +316,14 @@ export const CompleteDay = () => {
             >
               <div className={classes.eName}>
                 <span className={classes.entryTitle}>{`${exercise.name} ${
-                  width >= 380 ? `(${exercise.apparatus})` : ""
+                  innerWidth && innerWidth >= 380
+                    ? `(${exercise.apparatus})`
+                    : ""
                 }`}</span>
                 <span className={classes.entryTitle}>{`${
-                  width < 380 ? `(${exercise.apparatus})` : ""
+                  innerWidth && innerWidth < 380
+                    ? `(${exercise.apparatus})`
+                    : ""
                 }`}</span>
               </div>
               <div className={classes.entry}>

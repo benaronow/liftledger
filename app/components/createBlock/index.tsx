@@ -1,18 +1,23 @@
 import { Block, WeightType } from "@/types";
-import { Box, Theme } from "@mui/material";
-import { useState } from "react";
+import { Box, Theme, useTheme } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
 import { selectCurUser, selectTemplate } from "@/lib/features/user/userSlice";
 import { useSelector } from "react-redux";
 import { EditDay } from "./editDay";
 import { EditWeek } from "./editWeek";
 import { makeStyles } from "tss-react/mui";
+import { useRouter } from "next/navigation";
+import { InnerWidthContext } from "@/app/providers/innerWidthProvider";
 
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   container: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      display: "none",
+    },
   },
   title: {
     fontFamily: "Gabarito",
@@ -38,6 +43,9 @@ const useStyles = makeStyles()({
     fontSize: "16px",
     color: "#0096FF",
     fontWeight: 600,
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   clearButton: {
     border: "none",
@@ -46,8 +54,11 @@ const useStyles = makeStyles()({
     fontSize: "16px",
     color: "#FF0000",
     fontWeight: 600,
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
-});
+}));
 
 const boxStyle = (theme: Theme) => ({
   display: "flex",
@@ -60,7 +71,7 @@ const boxStyle = (theme: Theme) => ({
   borderRadius: "25px 25px 25px 25px",
   padding: "0px 10px 0px 10px",
   width: "100%",
-  maxWidth: `calc(${theme.breakpoints.values['sm']}px - 20px)`,
+  maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   marginBottom: "10px",
 });
 
@@ -68,6 +79,15 @@ export const CreateBlock = () => {
   const { classes } = useStyles();
   const curUser = useSelector(selectCurUser);
   const [editingDay, setEditingDay] = useState(0);
+  const router = useRouter();
+  const { innerWidth } = useContext(InnerWidthContext);
+  const theme = useTheme();
+
+  useEffect(() => {
+    if (innerWidth && innerWidth > theme.breakpoints.values["sm"])
+      router.push("/dashboard");
+  }, [innerWidth]);
+
   const template = useSelector(selectTemplate);
   const [block, setBlock] = useState<Block>(
     template
@@ -170,10 +190,7 @@ export const CreateBlock = () => {
             >
               Save Block
             </button>
-            <button
-              className={classes.clearButton}
-              onClick={handleClear}
-            >
+            <button className={classes.clearButton} onClick={handleClear}>
               Clear
             </button>
           </div>

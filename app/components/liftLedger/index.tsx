@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
-import { LoginContext } from "../../providers/loginContext";
+import { LoginContext } from "../../providers/loginProvider";
 import { makeStyles } from "tss-react/mui";
 import Image from "next/image";
 import { keyframes } from "tss-react";

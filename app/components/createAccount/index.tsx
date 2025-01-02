@@ -7,7 +7,7 @@ import { ChangeEvent, FormEvent, useContext, useState } from "react";
 import { makeStyles } from "tss-react/mui";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
-import { LoginContext } from "../../providers/loginContext";
+import { LoginContext } from "../../providers/loginProvider";
 
 const useStyles = makeStyles()({
   container: {

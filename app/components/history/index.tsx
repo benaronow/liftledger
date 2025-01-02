@@ -1,5 +1,5 @@
 import { makeStyles } from "tss-react/mui";
-import { Box, Theme } from "@mui/material";
+import { Box, Theme, useTheme } from "@mui/material";
 import dayjs from "dayjs";
 import { selectCurUser, setTemplate } from "@/lib/features/user/userSlice";
 import { useSelector } from "react-redux";
@@ -7,13 +7,18 @@ import { ControlPointDuplicate } from "@mui/icons-material";
 import { Block } from "@/types";
 import { useAppDispatch } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
+import { useContext, useEffect } from "react";
+import { InnerWidthContext } from "@/app/providers/innerWidthProvider";
 
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   container: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      display: "none",
+    },
   },
   title: {
     fontFamily: "Gabarito",
@@ -44,8 +49,11 @@ const useStyles = makeStyles()({
   },
   duplicateButton: {
     color: "#0096FF",
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
-});
+}));
 
 const boxStyle = (theme: Theme) => ({
   display: "flex",
@@ -67,6 +75,13 @@ export const History = () => {
   const dispatch = useAppDispatch();
   const curUser = useSelector(selectCurUser);
   const router = useRouter();
+  const { innerWidth } = useContext(InnerWidthContext);
+  const theme = useTheme();
+
+  useEffect(() => {
+    if (innerWidth && innerWidth > theme.breakpoints.values["sm"])
+      router.push("/dashboard");
+  }, [innerWidth]);
 
   const getCompletedDate = (block: Block) => {
     return block.weeks[block.length - 1].days[

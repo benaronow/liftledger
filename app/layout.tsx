@@ -26,6 +26,7 @@ const RootLayout = async ({ children }: Props) => {
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta name="mobile-web-app-capable" content="yes" />
           <meta name="theme-color" content="#a3248d" />
+          <meta httpEquiv="ScreenOrientation" content="autoRotate:disabled" />
           <link rel="icon" href="/favicon.ico" sizes="any" />
           <link
             rel="icon"

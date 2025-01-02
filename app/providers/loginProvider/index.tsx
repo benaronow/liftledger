@@ -1,4 +1,4 @@
-import { useLogin } from "@/app/providers/loginContext/useLogin";
+import { useLogin } from "@/app/providers/loginProvider/useLogin";
 import { User } from "@/types";
 import { SessionData } from "@auth0/nextjs-auth0/server";
 import { createContext, ReactNode, useContext } from "react";

@@ -104,6 +104,9 @@ const useStyles = makeStyles()({
   addExerciseButton: {
     color: "blue",
     marginBottom: "-5px",
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   numberInput: {
     marginLeft: "5px",
@@ -132,6 +135,9 @@ const useStyles = makeStyles()({
     display: "flex",
     alignItems: "center",
     marginBottom: "10px",
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   backButton: {
     fontFamily: "Gabarito",

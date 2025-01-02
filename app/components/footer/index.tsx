@@ -10,8 +10,8 @@ import {
   PersonOutline,
 } from "@mui/icons-material";
 import { RouteType } from "@/types";
-import { useContext } from "react";
-import { LoginContext } from "../../providers/loginContext";
+import { useContext, useEffect, useState } from "react";
+import { LoginContext } from "../../providers/loginProvider";
 
 const useStyles = makeStyles()((theme) => ({
   container: {
@@ -40,7 +40,7 @@ const useStyles = makeStyles()((theme) => ({
     height: "65px",
     width: "65px",
     borderRadius: "32.5px",
-    transform: "translateY(-10px)",
+    transform: "translateY(-12.5px)",
   },
   iconCircle: {
     display: "flex",
@@ -50,11 +50,17 @@ const useStyles = makeStyles()((theme) => ({
     width: "40px",
     borderRadius: "20px",
     background: "white",
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   homeIconCircle: {
     height: "55px",
     width: "55px",
     borderRadius: "27.5px",
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   icon: {
     color: "#a3258c",
@@ -90,10 +96,10 @@ export const Footer = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  // const [isStandalone, setIsStandalone] = useState(true);
-  // useEffect(() => {
-  //   setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
-  // }, []);
+  const [isStandalone, setIsStandalone] = useState(true);
+  useEffect(() => {
+    setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
+  }, []);
 
   const handleIconClick = (type: RouteType) => {
     if (curUser) router.push(type);
@@ -104,6 +110,7 @@ export const Footer = () => {
       {pathname !== "/" && (
         <div
           className={classes.container}
+          style={{ transform: `translateY(${isStandalone ? "0px" : "10px"})` }}
         >
           <div className={classes.iconContainer}>
             <div
