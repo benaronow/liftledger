@@ -1,13 +1,13 @@
 import { Block, WeightType } from "@/types";
 import { Box, Theme, useTheme } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { selectCurUser, selectTemplate } from "@/lib/features/user/userSlice";
 import { useSelector } from "react-redux";
 import { EditDay } from "./editDay";
 import { EditWeek } from "./editWeek";
 import { makeStyles } from "tss-react/mui";
-import { useRouter } from "next/navigation";
-import { InnerWidthContext } from "@/app/providers/innerWidthProvider";
+import { usePathname, useRouter } from "next/navigation";
+import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
 
 const useStyles = makeStyles()((theme) => ({
   container: {
@@ -15,8 +15,13 @@ const useStyles = makeStyles()((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
+    height: "calc(100dvh - 120px)",
+    padding: "10px 10px 10px 10px",
+    overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
-      display: "none",
+      background: "lightgray",
+      height: "calc(100dvh - 50px)",
+      overflow: "visible",
     },
   },
   title: {
@@ -73,6 +78,11 @@ const boxStyle = (theme: Theme) => ({
   width: "100%",
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   marginBottom: "10px",
+  [theme.breakpoints.up("sm")]: {
+    border: "solid",
+    borderWidth: "5px",
+    padding: "10px 10px 10px 10px",
+  },
 });
 
 export const CreateBlock = () => {
@@ -80,8 +90,10 @@ export const CreateBlock = () => {
   const curUser = useSelector(selectCurUser);
   const [editingDay, setEditingDay] = useState(0);
   const router = useRouter();
-  const { innerWidth } = useContext(InnerWidthContext);
+  const pathname = usePathname();
+  const { innerWidth } = useContext(InnerSizeContext);
   const theme = useTheme();
+  const saveRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (innerWidth && innerWidth > theme.breakpoints.values["sm"])
@@ -163,39 +175,47 @@ export const CreateBlock = () => {
 
   return (
     <div className={classes.container}>
-      <Box sx={boxStyle}>
-        <span className={classes.title}>Create Training Block</span>
-        <div className={classes.divider}></div>
-        {editingDay === 0 ? (
-          <EditWeek
-            uid={curUser?._id || ""}
-            block={block}
-            setBlock={setBlock}
-            setEditingDay={setEditingDay}
-          />
-        ) : (
-          <EditDay
-            block={block}
-            setBlock={setBlock}
-            editingDay={editingDay}
-            setEditingDay={setEditingDay}
-          />
-        )}
-        {editingDay === 0 && (
-          <div className={classes.actions}>
-            <button
-              className={classes.submitButton}
-              form="create-block-form"
-              type="submit"
-            >
-              Save Block
-            </button>
-            <button className={classes.clearButton} onClick={handleClear}>
-              Clear
-            </button>
-          </div>
-        )}
-      </Box>
+      {((pathname === "/dashboard" &&
+        innerWidth &&
+        innerWidth > theme.breakpoints.values["sm"]) ||
+        (pathname === "/create-block" &&
+          innerWidth &&
+          innerWidth < theme.breakpoints.values["sm"])) && (
+        <Box sx={boxStyle}>
+          <span className={classes.title}>Create Training Block</span>
+          <div className={classes.divider}></div>
+          {editingDay === 0 ? (
+            <EditWeek
+              uid={curUser?._id || ""}
+              block={block}
+              setBlock={setBlock}
+              setEditingDay={setEditingDay}
+              saveRef={saveRef}
+            />
+          ) : (
+            <EditDay
+              block={block}
+              setBlock={setBlock}
+              editingDay={editingDay}
+              setEditingDay={setEditingDay}
+            />
+          )}
+          {editingDay === 0 && (
+            <div className={classes.actions} ref={saveRef}>
+              <button
+                className={classes.submitButton}
+                form="create-block-form"
+                type="submit"
+              >
+                Save Block
+              </button>
+              <button className={classes.clearButton} onClick={handleClear}>
+                Clear
+              </button>
+            </div>
+          )}
+        </Box>
+      )}
     </div>
   );
 };

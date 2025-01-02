@@ -11,7 +11,7 @@ import { Input } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useEffect, useRef } from "react";
+import { ChangeEvent, FormEvent, RefObject, useEffect } from "react";
 import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
@@ -158,6 +158,7 @@ interface EditWeekProps {
   block: Block;
   setBlock: (block: Block) => void;
   setEditingDay: (day: number) => void;
+  saveRef: RefObject<HTMLDivElement | null>;
 }
 
 export const EditWeek = ({
@@ -165,15 +166,15 @@ export const EditWeek = ({
   block,
   setBlock,
   setEditingDay,
+  saveRef,
 }: EditWeekProps) => {
   const { classes } = useStyles();
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const addRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (addRef.current)
-      addRef.current.scrollIntoView({
+    if (saveRef.current && block.weeks[0].days.length > 1)
+      saveRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
@@ -367,11 +368,7 @@ export const EditWeek = ({
         </div>
       ))}
       {block.weeks[0].days.length < 7 && (
-        <div
-          className={classes.addDayButton}
-          onClick={handleAddDay}
-          ref={addRef}
-        >
+        <div className={classes.addDayButton} onClick={handleAddDay}>
           <AddCircleOutline></AddCircleOutline>
         </div>
       )}

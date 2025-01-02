@@ -19,7 +19,7 @@ const useStyles = makeStyles()({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    height: "calc(100dvh - 120px)",
+    height: "calc(100dvh - 90px)",
     alignItems: "center",
   },
   logo: {

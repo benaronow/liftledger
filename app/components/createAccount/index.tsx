@@ -9,12 +9,20 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
 import { LoginContext } from "../../providers/loginProvider";
 
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   container: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
+    height: "calc(100dvh - 120px)",
+    padding: "10px 10px 0px 10px",
+    overflow: "scroll",
+    [theme.breakpoints.up("sm")]: {
+      background: "lightgray",
+      height: "calc(100dvh - 50px)",
+      overflow: "visible",
+    },
   },
   title: {
     fontFamily: "Gabarito",
@@ -73,6 +81,9 @@ const useStyles = makeStyles()({
     fontSize: "16px",
     color: "#0096FF",
     fontWeight: 600,
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   deleteButton: {
     border: "none",
@@ -81,8 +92,11 @@ const useStyles = makeStyles()({
     fontSize: "16px",
     color: "#FF0000",
     fontWeight: 600,
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
-});
+}));
 
 const boxStyle = (theme: Theme) => ({
   display: "flex",
@@ -97,6 +111,11 @@ const boxStyle = (theme: Theme) => ({
   width: "100%",
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   marginBottom: "10px",
+  [theme.breakpoints.up("sm")]: {
+    border: "solid",
+    borderWidth: "5px",
+    padding: "10px 10px 10px 10px",
+  },
 });
 
 export const CreateAccount = () => {

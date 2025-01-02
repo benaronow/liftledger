@@ -10,14 +10,33 @@ import {
   setCurExercise,
   setCurWeek,
 } from "@/lib/features/user/userSlice";
-import { InnerWidthContext } from "@/app/providers/innerWidthProvider";
+import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
+import { History } from "../history";
+import { CreateBlock } from "../createBlock";
+import { CompleteDay } from "../completeDay";
 
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
+  superDuperContainer: {
+    display: "flex",
+    width: "100%",
+    height: "calc(100dvh - 120px)",
+    overflow: "scroll",
+    [theme.breakpoints.up("sm")]: {
+      background: "lightgray",
+      height: "calc(100dvh - 50px)",
+    },
+  },
+  superContainer: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+  },
   container: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
+    padding: "10px 10px 0px 10px",
   },
   title: {
     fontFamily: "Gabarito",
@@ -77,7 +96,7 @@ const useStyles = makeStyles()({
     fontFamily: "Gabarito",
     fontSize: "16px",
   },
-});
+}));
 
 const boxStyle = (theme: Theme) => ({
   display: "flex",
@@ -92,15 +111,21 @@ const boxStyle = (theme: Theme) => ({
   width: "100%",
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   marginBottom: "10px",
+  [theme.breakpoints.up("sm")]: {
+    border: "solid",
+    borderWidth: "5px",
+    padding: "10px 10px 10px 10px",
+  },
 });
 
 export const Dashboard = () => {
   const { classes } = useStyles();
   const { session, attemptedLogin, curUser } = useContext(LoginContext);
-  const { innerWidth } = useContext(InnerWidthContext);
+  const { innerWidth } = useContext(InnerSizeContext);
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const router = useRouter();
+
   const curWeekIdx =
     curUser?.curBlock?.weeks.findIndex((week) => !week.completed) || 0;
   const curDayIdx =
@@ -122,10 +147,10 @@ export const Dashboard = () => {
   }, [attemptedLogin]);
 
   const handleStartDay = (cwIDx: number, cdIdx: number, ceIdx: number) => {
+    dispatch(setCurWeek(cwIDx));
+    dispatch(setCurDay(cdIdx));
+    dispatch(setCurExercise(ceIdx));
     if (innerWidth && innerWidth < theme.breakpoints.values["sm"]) {
-      dispatch(setCurWeek(cwIDx));
-      dispatch(setCurDay(cdIdx));
-      dispatch(setCurExercise(ceIdx));
       router.push("/complete-day");
     }
   };
@@ -134,65 +159,94 @@ export const Dashboard = () => {
     router.push(`/auth/login`);
   };
 
+  const noUserBackground = curUser ? {} : { background: "white" };
+
   return (
-    <div className={classes.container}>
-      {session ? (
-        <Box sx={boxStyle}>
-          <span className={classes.title}>Current Training Block</span>
-          <div className={classes.divider} />
-          {!curUser && <span className={classes.noBlockText}>Loading</span>}
-          {curUser && (!curUser.curBlock || curUser.curBlock.completed) && (
-            <span className={classes.noBlockText}>
-              Create a training block to get started!
-            </span>
-          )}
-          {curUser?.curBlock && !curUser.curBlock.completed && (
-            <>
-              <div className={classes.entry}>
-                <span className={classes.name}>Name: </span>
-                <span className={classes.value}>{curUser.curBlock.name}</span>
-              </div>
-              <div className={classes.entry}>
-                <span className={classes.name}>Start Date: </span>
-                <span className={classes.value}>
-                  {dayjs(curUser.curBlock.startDate).format("MM/DD/YYYY")}
-                </span>
-              </div>
-              <div className={classes.entry}>
-                <span className={classes.name}>Length: </span>
-                <span className={classes.value}>{`${
-                  curUser.curBlock.length
-                } week${curUser.curBlock.length > 1 ? "s" : ""}`}</span>
-              </div>
+    <div
+      className={classes.superDuperContainer}
+      style={noUserBackground}
+    >
+      <div className={classes.superContainer}>
+        <div className={classes.container}>
+          {session ? (
+            <Box sx={boxStyle}>
+              <span className={classes.title}>Current Training Block</span>
               <div className={classes.divider} />
-              <div className={classes.entry}>
-                <span className={classes.name}>Current Week: </span>
-                <span className={classes.value}>{`Week ${
-                  curWeekIdx + 1
-                }`}</span>
-              </div>
-              <div className={classes.entry}>
-                <span className={classes.name}>Current Day: </span>
-                <span className={classes.value}>{curDayName}</span>
-              </div>
-              <div className={classes.divider}></div>
-              <button
-                className={classes.startDayButton}
-                onClick={() =>
-                  handleStartDay(curWeekIdx, curDayIdx, curExerciseIdx)
-                }
-              >
-                {`${
-                  !curExerciseIdx || curExerciseIdx === 0 ? "Start" : "Resume"
-                }: Week ${curWeekIdx + 1}, ${curDayName}`}
-              </button>
-            </>
+              {!curUser && <span className={classes.noBlockText}>Loading</span>}
+              {curUser && (!curUser.curBlock || curUser.curBlock.completed) && (
+                <span className={classes.noBlockText}>
+                  Create a training block to get started!
+                </span>
+              )}
+              {curUser?.curBlock && !curUser.curBlock.completed && (
+                <>
+                  <div className={classes.entry}>
+                    <span className={classes.name}>Name: </span>
+                    <span className={classes.value}>
+                      {curUser.curBlock.name}
+                    </span>
+                  </div>
+                  <div className={classes.entry}>
+                    <span className={classes.name}>Start Date: </span>
+                    <span className={classes.value}>
+                      {dayjs(curUser.curBlock.startDate).format("MM/DD/YYYY")}
+                    </span>
+                  </div>
+                  <div className={classes.entry}>
+                    <span className={classes.name}>Length: </span>
+                    <span className={classes.value}>{`${
+                      curUser.curBlock.length
+                    } week${curUser.curBlock.length > 1 ? "s" : ""}`}</span>
+                  </div>
+                  <div className={classes.divider} />
+                  <div className={classes.entry}>
+                    <span className={classes.name}>Current Week: </span>
+                    <span className={classes.value}>{`Week ${
+                      curWeekIdx + 1
+                    }`}</span>
+                  </div>
+                  <div className={classes.entry}>
+                    <span className={classes.name}>Current Day: </span>
+                    <span className={classes.value}>{curDayName}</span>
+                  </div>
+                  <div className={classes.divider}></div>
+                  <button
+                    className={classes.startDayButton}
+                    onClick={() =>
+                      handleStartDay(curWeekIdx, curDayIdx, curExerciseIdx)
+                    }
+                  >
+                    {`${
+                      !curExerciseIdx || curExerciseIdx === 0
+                        ? "Start"
+                        : "Resume"
+                    }: Week ${curWeekIdx + 1}, ${curDayName}`}
+                  </button>
+                </>
+              )}
+            </Box>
+          ) : (
+            <button className={classes.loginButton} onClick={handleLogin}>
+              Log in to get started
+            </button>
           )}
-        </Box>
-      ) : (
-        <button className={classes.loginButton} onClick={handleLogin}>
-          Log in to get started
-        </button>
+        </div>
+        {curUser &&
+          innerWidth &&
+          innerWidth > theme.breakpoints.values["sm"] &&
+          innerWidth < theme.breakpoints.values["md"] && <History />}
+      </div>
+      {curUser && innerWidth && innerWidth > theme.breakpoints.values["sm"] && (
+        <>
+          {curUser?.curExercise === undefined ? (
+            <CreateBlock />
+          ) : (
+            <CompleteDay />
+          )}
+        </>
+      )}
+      {curUser && innerWidth && innerWidth > theme.breakpoints.values["md"] && (
+        <History />
       )}
     </div>
   );

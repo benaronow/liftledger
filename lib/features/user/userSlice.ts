@@ -127,15 +127,21 @@ export const userSlice = createAppSlice({
         if (state.curUser) state.curUser.curBlock = action.payload;
       }
     ),
-    setCurWeek: create.reducer((state, action: PayloadAction<number>) => {
-      if (state.curUser) state.curUser.curWeek = action.payload;
-    }),
-    setCurDay: create.reducer((state, action: PayloadAction<number>) => {
-      if (state.curUser) state.curUser.curDay = action.payload;
-    }),
-    setCurExercise: create.reducer((state, action: PayloadAction<number>) => {
-      if (state.curUser) state.curUser.curExercise = action.payload;
-    }),
+    setCurWeek: create.reducer(
+      (state, action: PayloadAction<number | undefined>) => {
+        if (state.curUser) state.curUser.curWeek = action.payload;
+      }
+    ),
+    setCurDay: create.reducer(
+      (state, action: PayloadAction<number | undefined>) => {
+        if (state.curUser) state.curUser.curDay = action.payload;
+      }
+    ),
+    setCurExercise: create.reducer(
+      (state, action: PayloadAction<number | undefined>) => {
+        if (state.curUser) state.curUser.curExercise = action.payload;
+      }
+    ),
   }),
   selectors: {
     selectAttemptedLogin: (state) => state.attemptedLogin,

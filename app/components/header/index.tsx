@@ -5,7 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "@mui/material";
 import { useContext } from "react";
 import { ExitToAppOutlined, PersonOutline } from "@mui/icons-material";
-import { InnerWidthContext } from "@/app/providers/innerWidthProvider";
+import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
+import { LoginContext } from "@/app/providers/loginProvider";
 
 const useStyles = makeStyles()({
   container: {
@@ -15,7 +16,7 @@ const useStyles = makeStyles()({
     alignItems: "center",
     height: "50px",
     width: "100%",
-    zIndex: "10",
+    zIndex: 10,
   },
   noHeader: {
     height: "50px",
@@ -81,7 +82,8 @@ export const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const theme = useTheme();
-  const { innerWidth } = useContext(InnerWidthContext);
+  const { innerWidth } = useContext(InnerSizeContext);
+  const { curUser } = useContext(LoginContext);
 
   const handleDashboardClick = () => {
     router.push("/dashboard");
@@ -99,7 +101,7 @@ export const Header = () => {
     <>
       <div className={pathname === "/" ? classes.noHeader : classes.container}>
         <div className={classes.leftPad}>
-          {innerWidth && innerWidth > theme.breakpoints.values["sm"] && (
+          {curUser && innerWidth && innerWidth > theme.breakpoints.values["sm"] && (
             <div
               className={classes.changePage}
               onClick={
@@ -121,7 +123,7 @@ export const Header = () => {
           <span className={classes.title}>liftledger</span>
         </div>
         <div className={classes.rightPad}>
-          {innerWidth && innerWidth > theme.breakpoints.values["sm"] && (
+          {curUser && innerWidth && innerWidth > theme.breakpoints.values["sm"] && (
             <div
               className={classes.profileContainer}
               onClick={handleProfileClick}

@@ -8,7 +8,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { StoreProvider } from "@/app/providers/StoreProvider";
 import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
 import { createTheme, ThemeProvider } from "@mui/material";
-import { InnerWidthProvider } from "./innerWidthProvider";
+import { InnerSizeProvider } from "./innerSizeProvider";
 
 interface ProvidersProps {
   readonly children: ReactNode;
@@ -23,9 +23,9 @@ export const Providers = ({ children, session }: ProvidersProps) => {
       <NextAppDirEmotionCacheProvider options={{ key: "css" }}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <ThemeProvider theme={theme}>
-            <InnerWidthProvider>
+            <InnerSizeProvider>
               <LoginProvider session={session}>{children}</LoginProvider>
-            </InnerWidthProvider>
+            </InnerSizeProvider>
           </ThemeProvider>
         </LocalizationProvider>
       </NextAppDirEmotionCacheProvider>

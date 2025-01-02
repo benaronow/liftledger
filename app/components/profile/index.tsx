@@ -7,12 +7,18 @@ import { useAppDispatch } from "@/lib/hooks";
 import { deleteUser } from "@/lib/features/user/userSlice";
 import { useRouter } from "next/navigation";
 
-const useStyles = makeStyles()({
+const useStyles = makeStyles()((theme) => ({
   container: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
+    height: "calc(100dvh - 120px)",
+    padding: "10px 10px 0px 10px",
+    [theme.breakpoints.up("sm")]: {
+      background: "lightgray",
+      height: "calc(100dvh - 50px)",
+    },
   },
   title: {
     fontFamily: "Gabarito",
@@ -71,7 +77,7 @@ const useStyles = makeStyles()({
       cursor: "pointer",
     },
   },
-});
+}));
 
 const boxStyle = (theme: Theme) => ({
   display: "flex",
@@ -82,9 +88,14 @@ const boxStyle = (theme: Theme) => ({
   outline: 0,
   border: "none",
   borderRadius: "25px 25px 25px 25px",
-  padding: "00px 10px 0px 10px",
+  padding: "0px 10px 0px 10px",
   width: "100%",
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
+  [theme.breakpoints.up("sm")]: {
+    border: "solid",
+    borderWidth: "5px",
+    padding: "10px 10px 0px 10px",
+  },
 });
 
 export const Profile = () => {

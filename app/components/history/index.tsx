@@ -6,9 +6,9 @@ import { useSelector } from "react-redux";
 import { ControlPointDuplicate } from "@mui/icons-material";
 import { Block } from "@/types";
 import { useAppDispatch } from "@/lib/hooks";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
-import { InnerWidthContext } from "@/app/providers/innerWidthProvider";
+import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
 
 const useStyles = makeStyles()((theme) => ({
   container: {
@@ -16,8 +16,13 @@ const useStyles = makeStyles()((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
+    height: "calc(100dvh - 120px)",
+    padding: "10px 10px 0px 10px",
+    overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
-      display: "none",
+      background: "lightgray",
+      height: "calc(100dvh - 50px)",
+      overflow: "visible",
     },
   },
   title: {
@@ -68,6 +73,11 @@ const boxStyle = (theme: Theme) => ({
   width: "100%",
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   marginBottom: "10px",
+  [theme.breakpoints.up("sm")]: {
+    border: "solid",
+    borderWidth: "5px",
+    padding: "10px 10px 0px 10px",
+  },
 });
 
 export const History = () => {
@@ -75,7 +85,8 @@ export const History = () => {
   const dispatch = useAppDispatch();
   const curUser = useSelector(selectCurUser);
   const router = useRouter();
-  const { innerWidth } = useContext(InnerWidthContext);
+  const pathname = usePathname();
+  const { innerWidth } = useContext(InnerSizeContext);
   const theme = useTheme();
 
   useEffect(() => {
@@ -152,19 +163,28 @@ export const History = () => {
 
   return (
     <div className={`${classes.container}`}>
-      <Box sx={boxStyle}>
-        <span className={classes.title}>Completed Training Blocks</span>
-        <div className={classes.divider} />
-        {!curUser && <span className={classes.noBlockText}>Loading</span>}
-        {curUser &&
-          (completedBlocks && completedBlocks[0] ? (
-            completedBlocks
-          ) : (
-            <div className={`${classes.entry} ${classes.completedBlockEntry}`}>
-              <span>No completed blocks yet</span>
-            </div>
-          ))}
-      </Box>
+      {((pathname === "/dashboard" &&
+        innerWidth &&
+        innerWidth > theme.breakpoints.values["sm"]) ||
+        (pathname === "/history" &&
+          innerWidth &&
+          innerWidth < theme.breakpoints.values["sm"])) && (
+        <Box sx={boxStyle}>
+          <span className={classes.title}>Completed Training Blocks</span>
+          <div className={classes.divider} />
+          {!curUser && <span className={classes.noBlockText}>Loading</span>}
+          {curUser &&
+            (completedBlocks && completedBlocks[0] ? (
+              completedBlocks
+            ) : (
+              <div
+                className={`${classes.entry} ${classes.completedBlockEntry}`}
+              >
+                <span>No completed blocks yet</span>
+              </div>
+            ))}
+        </Box>
+      )}
     </div>
   );
 };

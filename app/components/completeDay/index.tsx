@@ -1,14 +1,16 @@
-import { InnerWidthContext } from "@/app/providers/innerWidthProvider";
+import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
 import {
   blockOp,
   selectCurUser,
   setCurBlock,
+  setCurDay,
   setCurExercise,
+  setCurWeek,
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { BlockOp, NumberChange } from "@/types";
 import { Box, Input, Theme, useTheme } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { makeStyles } from "tss-react/mui";
@@ -19,9 +21,20 @@ const useStyles = makeStyles()((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
+    height: "calc(100dvh - 120px)",
+    padding: "10px 10px 0px 10px",
+    overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
-      display: "none",
+      background: "lightgray",
+      height: "calc(100dvh - 50px)",
+      overflow: "visible",
     },
+  },
+  exerciseContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "100%",
   },
   title: {
     fontFamily: "Gabarito",
@@ -113,6 +126,11 @@ const boxStyle = (theme: Theme) => ({
   padding: "0px 10px 0px 10px",
   width: "100%",
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
+  [theme.breakpoints.up("sm")]: {
+    border: "solid",
+    borderWidth: "5px",
+    padding: "10px 10px 0px 10px",
+  },
 });
 
 export const CompleteDay = () => {
@@ -120,7 +138,8 @@ export const CompleteDay = () => {
   const dispatch = useAppDispatch();
   const curUser = useSelector(selectCurUser);
   const router = useRouter();
-  const { innerWidth } = useContext(InnerWidthContext);
+  const pathname = usePathname();
+  const { innerWidth } = useContext(InnerSizeContext);
   const theme = useTheme();
   const curRef = useRef<HTMLDivElement>(null);
   const exercises =
@@ -294,105 +313,117 @@ export const CompleteDay = () => {
     }
     if (completedDay) {
       router.push("/dashboard");
+      dispatch(setCurWeek(undefined));
+      dispatch(setCurDay(undefined));
+      dispatch(setCurExercise(undefined));
     }
   };
 
   return (
     <div className={classes.container}>
-      <Box sx={boxStyle}>
-        <span className={classes.title}>Complete Workout</span>
-        <div className={classes.divider}></div>
-        <div className={classes.entry}>
-          <span className={classes.descText}>
-            *Sets, reps, and weight are those specified when creating plan, or
-            those from previous session if applicable.
-          </span>
-        </div>
-        {exercises?.map((exercise, idx) => (
-          <div className={classes.container} key={idx}>
-            <Box
-              sx={exerciseBoxStyle}
-              ref={idx === curUser?.curExercise ? curRef : null}
-            >
-              <div className={classes.eName}>
-                <span className={classes.entryTitle}>{`${exercise.name} ${
-                  innerWidth && innerWidth >= 380
-                    ? `(${exercise.apparatus})`
-                    : ""
-                }`}</span>
-                <span className={classes.entryTitle}>{`${
-                  innerWidth && innerWidth < 380
-                    ? `(${exercise.apparatus})`
-                    : ""
-                }`}</span>
-              </div>
-              <div className={classes.entry}>
-                <span className={classes.entryName}>{`Previous session note: ${
-                  curUser?.curWeek !== undefined && curUser.curWeek > 0
-                    ? curUser?.curBlock?.weeks[curUser.curWeek - 1].days[
-                        curUser?.curDay || 0
-                      ].exercises[idx].note
-                    : "N/A"
-                }`}</span>
-              </div>
-              <div className={classes.entry}>
-                <span className={classes.entryName}>Sets: </span>
-                <Input
-                  className={classes.input}
-                  value={exercisesState[idx].sets}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    handleInputChange(e, NumberChange.Sets)
-                  }
-                />
-                <span className={classes.entryName}>Reps: </span>
-                <Input
-                  className={classes.input}
-                  value={exercisesState[idx].reps}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    handleInputChange(e, NumberChange.Reps)
-                  }
-                />
-                <span className={classes.entryName}>Weight: </span>
-                <Input
-                  className={classes.input}
-                  value={exercisesState[idx].weight}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    handleInputChange(e, NumberChange.Weight)
-                  }
-                />
-                <span className={`${classes.entryName} ${classes.lbs}`}>
-                  lbs
-                </span>
-              </div>
-              <div className={classes.entry}>
-                <span className={classes.noteName}>Leave a note: </span>
-                <Input
-                  className={`${classes.input} ${classes.noteInput}`}
-                  value={exercisesState[idx].note}
-                  onChange={handleNoteChange}
-                />
-              </div>
-              <div className={classes.entry}>
-                <button
-                  className={classes.completeExerciseButton}
-                  onClick={() => handleNext(idx === exercises.length - 1)}
-                >
-                  {idx === exercises.length - 1
-                    ? "Finish Workout"
-                    : "Next Exercise"}
-                </button>
-              </div>
-            </Box>
-            <Box
-              sx={
-                idx === curUser?.curExercise
-                  ? underlayBoxStyle
-                  : overlayBoxStyle
-              }
-            />
+      {((pathname === "/dashboard" &&
+        innerWidth &&
+        innerWidth > theme.breakpoints.values["sm"]) ||
+        (pathname === "/complete-day" &&
+          innerWidth &&
+          innerWidth < theme.breakpoints.values["sm"])) && (
+        <Box sx={boxStyle}>
+          <span className={classes.title}>Complete Workout</span>
+          <div className={classes.divider}></div>
+          <div className={classes.entry}>
+            <span className={classes.descText}>
+              *Sets, reps, and weight are those specified when creating plan, or
+              those from previous session if applicable.
+            </span>
           </div>
-        ))}
-      </Box>
+          {exercises?.map((exercise, idx) => (
+            <div className={classes.exerciseContainer} key={idx}>
+              <Box
+                sx={exerciseBoxStyle}
+                ref={idx === curUser?.curExercise ? curRef : null}
+              >
+                <div className={classes.eName}>
+                  <span className={classes.entryTitle}>{`${exercise.name} ${
+                    innerWidth && innerWidth >= 380
+                      ? `(${exercise.apparatus})`
+                      : ""
+                  }`}</span>
+                  <span className={classes.entryTitle}>{`${
+                    innerWidth && innerWidth < 380
+                      ? `(${exercise.apparatus})`
+                      : ""
+                  }`}</span>
+                </div>
+                <div className={classes.entry}>
+                  <span
+                    className={classes.entryName}
+                  >{`Previous session note: ${
+                    curUser?.curWeek !== undefined && curUser.curWeek > 0
+                      ? curUser?.curBlock?.weeks[curUser.curWeek - 1].days[
+                          curUser?.curDay || 0
+                        ].exercises[idx].note
+                      : "N/A"
+                  }`}</span>
+                </div>
+                <div className={classes.entry}>
+                  <span className={classes.entryName}>Sets: </span>
+                  <Input
+                    className={classes.input}
+                    value={exercisesState[idx].sets}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      handleInputChange(e, NumberChange.Sets)
+                    }
+                  />
+                  <span className={classes.entryName}>Reps: </span>
+                  <Input
+                    className={classes.input}
+                    value={exercisesState[idx].reps}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      handleInputChange(e, NumberChange.Reps)
+                    }
+                  />
+                  <span className={classes.entryName}>Weight: </span>
+                  <Input
+                    className={classes.input}
+                    value={exercisesState[idx].weight}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      handleInputChange(e, NumberChange.Weight)
+                    }
+                  />
+                  <span className={`${classes.entryName} ${classes.lbs}`}>
+                    lbs
+                  </span>
+                </div>
+                <div className={classes.entry}>
+                  <span className={classes.noteName}>Leave a note: </span>
+                  <Input
+                    className={`${classes.input} ${classes.noteInput}`}
+                    value={exercisesState[idx].note}
+                    onChange={handleNoteChange}
+                  />
+                </div>
+                <div className={classes.entry}>
+                  <button
+                    className={classes.completeExerciseButton}
+                    onClick={() => handleNext(idx === exercises.length - 1)}
+                  >
+                    {idx === exercises.length - 1
+                      ? "Finish Workout"
+                      : "Next Exercise"}
+                  </button>
+                </div>
+              </Box>
+              <Box
+                sx={
+                  idx === curUser?.curExercise
+                    ? underlayBoxStyle
+                    : overlayBoxStyle
+                }
+              />
+            </div>
+          ))}
+        </Box>
+      )}
     </div>
   );
 };
