@@ -6,7 +6,7 @@ import {
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { BlockOp, NumberChange } from "@/types";
-import { Box, Input } from "@mui/material";
+import { Box, Input, Theme } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
@@ -94,6 +94,20 @@ const useStyles = makeStyles()({
   },
 });
 
+const boxStyle = (theme: Theme) => ({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  background: "white",
+  outline: 0,
+  border: "none",
+  borderRadius: "25px 25px 25px 25px",
+  padding: "0px 10px 0px 10px",
+  width: "100%",
+  maxWidth: `calc(${theme.breakpoints.values['sm']}px - 20px)`,
+});
+
 export const CompleteDay = () => {
   const { classes } = useStyles();
   const dispatch = useAppDispatch();
@@ -111,20 +125,6 @@ export const CompleteDay = () => {
   const width = window.screen.width;
   const height = width >= 380 ? "190px" : "210px";
 
-  const boxStyle = {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "white",
-    outline: 0,
-    border: "none",
-    borderRadius: "25px 25px 25px 25px",
-    padding: "0px 10px 0px 10px",
-    width: "100%",
-    maxWidth: "400px",
-  };
-
   const exerciseBoxStyle = {
     display: "flex",
     flexDirection: "column",
@@ -138,8 +138,7 @@ export const CompleteDay = () => {
     borderRadius: "25px 25px 25px 25px",
     padding: "10px 10px 0px 10px",
     width: "100%",
-    maxWidth: "400px",
-    height: height,
+    height,
     zIndex: 1,
     scrollMarginTop: "10px",
   };
@@ -150,7 +149,6 @@ export const CompleteDay = () => {
     borderRadius: "25px 25px 25px 25px",
     padding: "10px 10px 0px 10px",
     width: "100%",
-    maxWidth: "400px",
     marginTop: `-${height}`,
     marginBottom: "10px",
     height: height,

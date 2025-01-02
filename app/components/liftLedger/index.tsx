@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
-import { LoginContext } from "../providers/loginContext";
+import { LoginContext } from "../../providers/loginContext";
 import { makeStyles } from "tss-react/mui";
 import Image from "next/image";
 import { keyframes } from "tss-react";
@@ -19,7 +19,7 @@ const useStyles = makeStyles()({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    height: "calc(100vh - 120px)",
+    height: "calc(100dvh - 120px)",
     alignItems: "center",
   },
   logo: {

@@ -5,8 +5,9 @@ import { ReactNode } from "react";
 import { SessionData } from "@auth0/nextjs-auth0/server";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { StoreProvider } from "@/app/StoreProvider";
+import { StoreProvider } from "@/app/providers/StoreProvider";
 import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
+import { createTheme, ThemeProvider } from "@mui/material";
 
 interface ProvidersProps {
   readonly children: ReactNode;
@@ -14,11 +15,15 @@ interface ProvidersProps {
 }
 
 export const Providers = ({ children, session }: ProvidersProps) => {
+  const theme = createTheme();
+
   return (
     <StoreProvider>
       <NextAppDirEmotionCacheProvider options={{ key: "css" }}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <LoginProvider session={session}>{children}</LoginProvider>
+          <ThemeProvider theme={theme}>
+            <LoginProvider session={session}>{children}</LoginProvider>
+          </ThemeProvider>
         </LocalizationProvider>
       </NextAppDirEmotionCacheProvider>
     </StoreProvider>

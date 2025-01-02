@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import "./styles/globals.css";
 import styles from "./styles/layout.module.css";
-import { Providers } from "./components/providers";
+import { Providers } from "./providers";
 import { Footer } from "./components/footer";
 import { auth0 } from "@/lib/auth0";
 import { Header } from "./components/header";

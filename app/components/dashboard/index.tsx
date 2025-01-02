@@ -1,8 +1,8 @@
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
-import { LoginContext } from "../providers/loginContext";
+import { LoginContext } from "../../providers/loginContext";
 import { makeStyles } from "tss-react/mui";
-import { Box } from "@mui/material";
+import { Box, Theme } from "@mui/material";
 import dayjs from "dayjs";
 import { useAppDispatch } from "@/lib/hooks";
 import {
@@ -55,7 +55,7 @@ const useStyles = makeStyles()({
     fontSize: "16px",
     color: "#0096FF",
     fontWeight: 600,
-    transform: "translateY(calc(50vh - 70px))",
+    transform: "translateY(calc(50dvh - 70px))",
   },
   startDayButton: {
     border: "none",
@@ -72,7 +72,7 @@ const useStyles = makeStyles()({
   },
 });
 
-const boxStyle = {
+const boxStyle = (theme: Theme) => ({
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
@@ -83,9 +83,9 @@ const boxStyle = {
   borderRadius: "25px 25px 25px 25px",
   padding: "0px 10px 0px 10px",
   width: "100%",
-  maxWidth: "400px",
+  maxWidth: `calc(${theme.breakpoints.values['sm']}px - 20px)`,
   marginBottom: "10px",
-};
+});
 
 export const Dashboard = () => {
   const { classes } = useStyles();

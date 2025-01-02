@@ -1,5 +1,5 @@
 import { Block, WeightType } from "@/types";
-import { Box } from "@mui/material";
+import { Box, Theme } from "@mui/material";
 import { useState } from "react";
 import { selectCurUser, selectTemplate } from "@/lib/features/user/userSlice";
 import { useSelector } from "react-redux";
@@ -49,7 +49,7 @@ const useStyles = makeStyles()({
   },
 });
 
-const boxStyle = {
+const boxStyle = (theme: Theme) => ({
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
@@ -60,9 +60,9 @@ const boxStyle = {
   borderRadius: "25px 25px 25px 25px",
   padding: "0px 10px 0px 10px",
   width: "100%",
-  maxWidth: "400px",
+  maxWidth: `calc(${theme.breakpoints.values['sm']}px - 20px)`,
   marginBottom: "10px",
-};
+});
 
 export const CreateBlock = () => {
   const { classes } = useStyles();

@@ -1,4 +1,4 @@
-import { useLogin } from "@/app/components/providers/loginContext/useLogin";
+import { useLogin } from "@/app/providers/loginContext/useLogin";
 import { User } from "@/types";
 import { SessionData } from "@auth0/nextjs-auth0/server";
 import { createContext, ReactNode, useContext } from "react";
@@ -26,7 +26,9 @@ export const LoginProvider = ({ children, session }: LoginProviderProps) => {
   const { attemptedLogin, curUser } = useLogin(session?.user.email || "");
 
   return (
-    <LoginContext value={{ session, attemptedLogin, curUser }}>{children}</LoginContext>
+    <LoginContext value={{ session, attemptedLogin, curUser }}>
+      {children}
+    </LoginContext>
   );
 };
 

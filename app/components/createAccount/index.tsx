@@ -1,13 +1,13 @@
 import { createUser } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { User } from "@/types";
-import { Box, Input } from "@mui/material";
+import { Box, Input, Theme } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useContext, useState } from "react";
 import { makeStyles } from "tss-react/mui";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
-import { LoginContext } from "../providers/loginContext";
+import { LoginContext } from "../../providers/loginContext";
 
 const useStyles = makeStyles()({
   container: {
@@ -84,7 +84,7 @@ const useStyles = makeStyles()({
   },
 });
 
-const boxStyle = {
+const boxStyle = (theme: Theme) => ({
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
@@ -95,9 +95,9 @@ const boxStyle = {
   borderRadius: "25px 25px 25px 25px",
   padding: "0px 10px 0px 10px",
   width: "100%",
-  maxWidth: "400px",
+  maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   marginBottom: "10px",
-};
+});
 
 export const CreateAccount = () => {
   const dispatch = useAppDispatch();

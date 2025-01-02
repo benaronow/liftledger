@@ -1,7 +1,7 @@
-import { Avatar, Box } from "@mui/material";
+import { Avatar, Box, Theme } from "@mui/material";
 import { useContext } from "react";
 import { makeStyles } from "tss-react/mui";
-import { LoginContext } from "../providers/loginContext";
+import { LoginContext } from "../../providers/loginContext";
 import dayjs from "dayjs";
 import { useAppDispatch } from "@/lib/hooks";
 import { deleteUser } from "@/lib/features/user/userSlice";
@@ -67,7 +67,7 @@ const useStyles = makeStyles()({
   },
 });
 
-const boxStyle = {
+const boxStyle = (theme: Theme) => ({
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
@@ -78,8 +78,8 @@ const boxStyle = {
   borderRadius: "25px 25px 25px 25px",
   padding: "00px 10px 0px 10px",
   width: "100%",
-  maxWidth: "400px",
-};
+  maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
+});
 
 export const Profile = () => {
   const { classes } = useStyles();
