@@ -20,6 +20,20 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json(newBlock);
   }
 
+  const laterSession = (curWeek: Week, curDay: number) => {
+    const curDayDetail = curWeek.days[curDay];
+    for (let i = curDay + 1; i < curWeek.days.length; i++) {
+      const laterSessionDetail = curWeek.days[i];
+      if (
+        curDayDetail.hasGroup &&
+        laterSessionDetail.hasGroup &&
+        curDayDetail.groupName === laterSessionDetail.groupName
+      )
+        return i;
+    }
+    return 0;
+  };
+
   if (type === BlockOp.Edit) {
     const newBlock = await BlockModel.findOneAndUpdate(
       { _id: block._id },
@@ -30,18 +44,22 @@ export const POST = async (req: NextRequest) => {
     if (thisWeek && thisWeek.completed && !newBlock.completed) {
       const nextWeek: Week = {
         number: thisWeek.number + 1,
-        days: thisWeek.days.map((day) => {
+        days: thisWeek.days.map((day, dIdx) => {
+          const laterSessionIdx = laterSession(thisWeek, dIdx);
           return {
             name: day.name,
             hasGroup: day.hasGroup,
             groupName: day.groupName,
-            exercises: day.exercises.map((exercise) => {
+            exercises: day.exercises.map((exercise, eIdx) => {
               return {
                 name: exercise.name,
                 apparatus: exercise.apparatus,
-                sets: exercise.sets,
-                reps: exercise.reps,
-                weight: exercise.weight,
+                sets: thisWeek.days[laterSessionIdx || dIdx].exercises[eIdx]
+                  .sets,
+                reps: thisWeek.days[laterSessionIdx || dIdx].exercises[eIdx]
+                  .reps,
+                weight:
+                  thisWeek.days[laterSessionIdx || dIdx].exercises[eIdx].weight,
                 weightType: exercise.weightType,
                 unilateral: exercise.unilateral,
                 note: "",

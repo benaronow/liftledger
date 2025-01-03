@@ -60,12 +60,12 @@ const useStyles = makeStyles()((theme) => ({
   name: {
     display: "flex",
     fontWeight: 600,
-    width: "100%",
+    width: "75%",
     justifyContent: "flex-start",
   },
   value: {
     display: "flex",
-    width: "100%",
+    width: "125%",
     justifyContent: "flex-end",
   },
   loginButton: {

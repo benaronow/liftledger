@@ -292,6 +292,32 @@ export const CompleteDay = () => {
     return "None";
   };
 
+  const laterSession = () => {
+    if (
+      curUser?.curBlock &&
+      curUser.curWeek !== undefined &&
+      curUser.curDay !== undefined
+    ) {
+      const curDayDetail =
+        curUser.curBlock.weeks[curUser.curWeek].days[curUser.curDay];
+      for (
+        let i = curUser.curDay + 1;
+        i < curUser?.curBlock?.weeks[curUser.curWeek || 0].days.length;
+        i++
+      ) {
+        const laterSessionDetail =
+          curUser.curBlock.weeks[curUser.curWeek].days[i];
+        if (
+          curDayDetail.hasGroup &&
+          laterSessionDetail.hasGroup &&
+          curDayDetail.groupName === laterSessionDetail.groupName
+        )
+          return i;
+      }
+    }
+    return 0;
+  };
+
   const handleNext = (completedDay: boolean) => {
     if (
       curUser?.curBlock &&
@@ -316,11 +342,28 @@ export const CompleteDay = () => {
         completed: completedDay,
         completedDate: new Date(),
       };
+      const laterSessionIdx = laterSession();
+      const newLaterSession = laterSessionIdx
+        ? {
+            ...curUser.curBlock.weeks[curUser.curWeek].days[laterSessionIdx],
+            exercises: curUser.curBlock.weeks[curUser.curWeek].days[
+              laterSessionIdx
+            ].exercises.map((exercise, idx) => {
+              return {
+                ...exercise,
+                sets: newExercisesState[idx].sets,
+                reps: newExercisesState[idx].reps,
+                weight: newExercisesState[idx].weight,
+              };
+            }),
+          }
+        : undefined;
       const newDays = curUser.curBlock.weeks[curUser.curWeek].days.toSpliced(
         curUser.curDay,
         1,
         newDay
       );
+      if (newLaterSession) newDays.splice(laterSessionIdx, 1, newLaterSession);
       const completedWeek =
         completedDay && curUser.curDay === newDays.length - 1;
       const newWeek = {
