@@ -68,9 +68,9 @@ const RootLayout = async ({ children }: Props) => {
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link
-            href="https://fonts.googleapis.com/css2?family=Alkatra:wght@400..700&family=Anta&family=Audiowide&family=Baumans&family=Belanosima:wght@400;600;700&family=Bowlby+One+SC&family=Contrail+One&family=Edu+AU+VIC+WA+NT+Guides:wght@400..700&family=Fugaz+One&family=Gabarito:wght@400..900&family=Goldman:wght@400;700&family=Iceberg&family=Jockey+One&family=Keania+One&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Mina:wght@400;700&family=Odibee+Sans&family=Racing+Sans+One&family=Shrikhand&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=ZCOOL+QingKe+HuangYou&family=Zen+Dots&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=League+Spartan:wght@100..900&family=Mina:wght@400;700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
             rel="stylesheet"
-          ></link>
+          />
         </head>
         <body>
           <section className={styles.container}>

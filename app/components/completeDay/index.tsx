@@ -37,7 +37,7 @@ const useStyles = makeStyles()((theme) => ({
     width: "100%",
   },
   title: {
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontWeight: 900,
     fontSize: "22px",
     marginBottom: "10px",
@@ -49,13 +49,13 @@ const useStyles = makeStyles()((theme) => ({
     marginBottom: "10px",
   },
   descText: {
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontWeight: 600,
     fontSize: "10px",
     color: "gray",
   },
   entryTitle: {
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontSize: "16px",
     fontWeight: 600,
   },
@@ -75,7 +75,7 @@ const useStyles = makeStyles()((theme) => ({
     justifyContent: "center",
   },
   entryName: {
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontSize: "16px",
     fontWeight: 400,
   },
@@ -90,7 +90,7 @@ const useStyles = makeStyles()((theme) => ({
     marginRight: "5px",
   },
   noteName: {
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontSize: "16px",
     fontWeight: 400,
     width: "50%",
@@ -104,7 +104,7 @@ const useStyles = makeStyles()((theme) => ({
   completeExerciseButton: {
     border: "none",
     background: "transparent",
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontSize: "16px",
     color: "#0096FF",
     fontWeight: 600,

@@ -25,7 +25,7 @@ const useStyles = makeStyles()((theme) => ({
     },
   },
   title: {
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontWeight: 900,
     fontSize: "22px",
     marginBottom: "10px",
@@ -44,7 +44,7 @@ const useStyles = makeStyles()((theme) => ({
   submitButton: {
     border: "none",
     background: "transparent",
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontSize: "16px",
     color: "#0096FF",
     fontWeight: 600,
@@ -55,7 +55,7 @@ const useStyles = makeStyles()((theme) => ({
   clearButton: {
     border: "none",
     background: "transparent",
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontSize: "16px",
     color: "#FF0000",
     fontWeight: 600,

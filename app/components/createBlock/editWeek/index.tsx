@@ -36,7 +36,7 @@ const useStyles = makeStyles()({
     alignItems: "center",
   },
   entryName: {
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     width: "60%",
     fontWeight: 600,
     fontSize: "16px",
@@ -131,7 +131,7 @@ const useStyles = makeStyles()({
     marginLeft: "5px",
     fontSize: "16px",
     fontWeight: 600,
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     "&:hover": {
       cursor: "pointer",
     },

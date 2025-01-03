@@ -44,7 +44,7 @@ const useStyles = makeStyles()({
     marginLeft: "10px",
     color: "white",
     fontSize: "18px",
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontWeight: 600,
     alignItems: "center",
     "&:hover": {

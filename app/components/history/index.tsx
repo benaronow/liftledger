@@ -26,7 +26,7 @@ const useStyles = makeStyles()((theme) => ({
     },
   },
   title: {
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontWeight: 900,
     fontSize: "22px",
     marginBottom: "10px",
@@ -39,14 +39,14 @@ const useStyles = makeStyles()((theme) => ({
   },
   entry: {
     display: "flex",
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontSize: "16px",
     marginBottom: "10px",
     width: "100%",
   },
   noBlockText: {
     marginBottom: "10px",
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontSize: "16px",
   },
   completedBlockEntry: {

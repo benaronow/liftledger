@@ -37,7 +37,7 @@ const useStyles = makeStyles()({
     margin: "-10px 0px -10px 0px",
   },
   entryName: {
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontWeight: 600,
     fontSize: "16px",
   },
@@ -140,7 +140,7 @@ const useStyles = makeStyles()({
     },
   },
   backButton: {
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontWeight: 600,
     fontSize: "16px",
     color: "#0096FF",

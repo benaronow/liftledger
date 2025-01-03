@@ -39,7 +39,7 @@ const useStyles = makeStyles()((theme) => ({
     padding: "10px 10px 0px 10px",
   },
   title: {
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontWeight: 900,
     fontSize: "22px",
     marginBottom: "10px",
@@ -52,7 +52,7 @@ const useStyles = makeStyles()((theme) => ({
   },
   entry: {
     display: "flex",
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontSize: "16px",
     marginBottom: "10px",
     width: "100%",
@@ -71,7 +71,7 @@ const useStyles = makeStyles()((theme) => ({
   loginButton: {
     border: "none",
     background: "transparent",
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontSize: "16px",
     color: "#0096FF",
     fontWeight: 600,
@@ -83,7 +83,7 @@ const useStyles = makeStyles()((theme) => ({
   startDayButton: {
     border: "none",
     background: "transparent",
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontSize: "16px",
     color: "#0096FF",
     fontWeight: 600,
@@ -93,7 +93,7 @@ const useStyles = makeStyles()((theme) => ({
   },
   noBlockText: {
     marginBottom: "10px",
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontSize: "16px",
   },
 }));

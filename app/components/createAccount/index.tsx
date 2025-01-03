@@ -25,7 +25,7 @@ const useStyles = makeStyles()((theme) => ({
     },
   },
   title: {
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontWeight: 900,
     fontSize: "22px",
     marginBottom: "10px",
@@ -51,7 +51,7 @@ const useStyles = makeStyles()((theme) => ({
     justifyContent: "flex-start",
   },
   entryName: {
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     width: "60%",
     fontWeight: 600,
     fontSize: "16px",
@@ -77,7 +77,7 @@ const useStyles = makeStyles()((theme) => ({
   accountButton: {
     border: "none",
     background: "transparent",
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontSize: "16px",
     color: "#0096FF",
     fontWeight: 600,
@@ -88,7 +88,7 @@ const useStyles = makeStyles()((theme) => ({
   deleteButton: {
     border: "none",
     background: "transparent",
-    fontFamily: "Gabarito",
+    fontFamily: "League+Spartan",
     fontSize: "16px",
     color: "#FF0000",
     fontWeight: 600,
