@@ -116,6 +116,11 @@ export interface Exercise {
   completed: boolean;
 }
 
+export interface ExerciseWithSubWeek extends Exercise {
+  week: number;
+  sub?: number;
+}
+
 export interface Day {
   _id?: string;
   name: string;
@@ -124,6 +129,11 @@ export interface Day {
   exercises: Exercise[];
   completed: boolean;
   completedDate: Date | undefined;
+}
+
+export interface DayWithSubWeek extends Day {
+  week: number
+  sub?: number
 }
 
 export interface Week {
@@ -165,6 +175,10 @@ export interface GetParams {
 export interface SizeInfo {
   innerWidth: number | undefined;
   innerHeight: number | undefined;
+}
+
+export interface TableData {
+  [key: string]: string;
 }
 
 export enum BlockOp {
