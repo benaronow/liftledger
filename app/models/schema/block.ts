@@ -20,6 +20,8 @@ const blockSchema: Schema = new Schema(
         days: [
           {
             name: String,
+            hasGroup: Boolean,
+            groupName: String,
             exercises: [
               {
                 name: String,

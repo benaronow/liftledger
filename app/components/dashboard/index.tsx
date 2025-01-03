@@ -135,6 +135,9 @@ export const Dashboard = () => {
   const curDayName =
     curUser?.curBlock?.weeks[curWeekIdx]?.days.find((day) => !day.completed)
       ?.name || "Unavailable";
+  const curDayGroupName =
+    curUser?.curBlock?.weeks[curWeekIdx]?.days.find((day) => !day.completed)
+      ?.groupName || "";
   const curExerciseIdx =
     curUser?.curBlock?.weeks[curWeekIdx]?.days[curDayIdx].exercises.findIndex(
       (exercise) => !exercise.completed
@@ -162,10 +165,7 @@ export const Dashboard = () => {
   const noUserBackground = curUser ? {} : { background: "white" };
 
   return (
-    <div
-      className={classes.superDuperContainer}
-      style={noUserBackground}
-    >
+    <div className={classes.superDuperContainer} style={noUserBackground}>
       <div className={classes.superContainer}>
         <div className={classes.container}>
           {session ? (
@@ -207,7 +207,9 @@ export const Dashboard = () => {
                   </div>
                   <div className={classes.entry}>
                     <span className={classes.name}>Current Day: </span>
-                    <span className={classes.value}>{curDayName}</span>
+                    <span className={classes.value}>{`${curDayName}${
+                      curDayGroupName ? ` (${curDayGroupName})` : ""
+                    }`}</span>
                   </div>
                   <div className={classes.divider}></div>
                   <button

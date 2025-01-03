@@ -111,6 +111,8 @@ export const History = () => {
           days: block.weeks[block.length - 1].days.map((day) => {
             return {
               name: day.name,
+              hasGroup: day.hasGroup,
+              groupName: day.groupName,
               exercises: day.exercises.map((exercise) => {
                 return {
                   name: exercise.name,

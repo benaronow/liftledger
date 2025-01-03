@@ -1,4 +1,8 @@
 import { makeStyles } from "tss-react/mui";
+// import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
+// import { useContext } from "react";
+// import { LoginContext } from "@/app/providers/loginProvider";
+
 
 const useStyles = makeStyles()({
   container: {
@@ -11,6 +15,14 @@ const useStyles = makeStyles()({
 
 export const Progress = () => {
   const { classes } = useStyles();
+  // const { curUser } = useContext(LoginContext);
+
+  // const createData = () => {
+    
+  // }
+
+  // const data = 
+  // const table = useMaterialReactTable({});
 
   return (
     <div className={`${classes.container}`}>

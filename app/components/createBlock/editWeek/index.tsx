@@ -7,7 +7,7 @@ import {
   ControlPointDuplicate,
   DeleteOutline,
 } from "@mui/icons-material";
-import { Input } from "@mui/material";
+import { Checkbox, Input } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
@@ -40,6 +40,15 @@ const useStyles = makeStyles()({
     width: "60%",
     fontWeight: 600,
     fontSize: "16px",
+  },
+  dayName: {
+    fontFamily: "League+Spartan",
+    width: "25%",
+    fontWeight: 600,
+    fontSize: "16px",
+  },
+  dayNameDisabled: {
+    color: "gray",
   },
   entryDivider: {
     width: "105%",
@@ -204,10 +213,41 @@ export const EditWeek = ({
     setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
+  const handleCheckGroup = (dayNumber: number) => {
+    const newDay: Day = {
+      ...block.weeks[0].days[dayNumber - 1],
+      hasGroup: !block.weeks[0].days[dayNumber - 1].hasGroup,
+      groupName: "",
+    };
+    const newDays: Day[] = block.weeks[0].days.toSpliced(
+      dayNumber - 1,
+      1,
+      newDay
+    );
+    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
+  };
+
+  const handleGroupNameInput = (
+    e: ChangeEvent<HTMLInputElement>,
+    dayNumber: number
+  ) => {
+    const newDay: Day = {
+      ...block.weeks[0].days[dayNumber - 1],
+      groupName: e.target.value,
+    };
+    const newDays: Day[] = block.weeks[0].days.toSpliced(
+      dayNumber - 1,
+      1,
+      newDay
+    );
+    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
+  };
+
   const handleAddDay = () => {
     const dayNumber = block.weeks[0].days.length + 1;
     const newDay: Day = {
       name: `Day ${dayNumber}`,
+      hasGroup: false,
       exercises: [
         {
           name: "",
@@ -316,6 +356,7 @@ export const EditWeek = ({
               <div className={classes.entryContainer}>
                 <div className={classes.entryColumn}>
                   <div className={`${classes.entry} ${classes.dayInfo}`}>
+                    <span className={classes.dayName}>Name: </span>
                     <Input
                       className={classes.nameInput}
                       value={day.name}
@@ -329,6 +370,28 @@ export const EditWeek = ({
                     >
                       Edit
                     </button>
+                  </div>
+                  <div className={`${classes.entry} ${classes.dayInfo}`}>
+                    <span
+                      className={`${classes.dayName} ${
+                        !day.hasGroup && classes.dayNameDisabled
+                      }`}
+                    >
+                      Group:
+                    </span>
+                    <Input
+                      className={classes.nameInput}
+                      disabled={!day.hasGroup}
+                      value={day.groupName}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        handleGroupNameInput(e, idx + 1)
+                      }
+                    ></Input>
+                    <Checkbox
+                      className={classes.editButton}
+                      checked={day.hasGroup}
+                      onClick={() => handleCheckGroup(idx + 1)}
+                    />
                   </div>
                   <span
                     className={`${classes.dayValidText} ${

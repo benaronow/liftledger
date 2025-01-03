@@ -33,6 +33,8 @@ export const POST = async (req: NextRequest) => {
         days: thisWeek.days.map((day) => {
           return {
             name: day.name,
+            hasGroup: day.hasGroup,
+            groupName: day.groupName,
             exercises: day.exercises.map((exercise) => {
               return {
                 name: exercise.name,

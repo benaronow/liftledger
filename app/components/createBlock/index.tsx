@@ -114,6 +114,7 @@ export const CreateBlock = () => {
               days: [
                 {
                   name: "Day 1",
+                  hasGroup: false,
                   exercises: [
                     {
                       name: "",
@@ -149,6 +150,8 @@ export const CreateBlock = () => {
           days: [
             {
               name: "Day 1",
+              hasGroup: false,
+              groupName: '',
               exercises: [
                 {
                   name: "",

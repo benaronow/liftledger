@@ -133,6 +133,44 @@ const boxStyle = (theme: Theme) => ({
   },
 });
 
+const exerciseBoxStyle = {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  background: "white",
+  outline: 0,
+  border: "solid",
+  borderColor: "lightgray",
+  borderWidth: "3px",
+  borderRadius: "25px 25px 25px 25px",
+  padding: "10px 10px 0px 10px",
+  width: "100%",
+  height: "210px",
+  zIndex: 1,
+  scrollMarginTop: "10px",
+};
+
+const overlayBoxStyle = {
+  background: "lightgray",
+  outline: 0,
+  borderRadius: "25px 25px 25px 25px",
+  padding: "10px 10px 0px 10px",
+  width: "100%",
+  marginTop: "-210px",
+  marginBottom: "10px",
+  height: "210px",
+  zIndex: 2,
+  opacity: 0.7,
+};
+
+const underlayBoxStyle = {
+  height: "210px",
+  marginTop: "-210px",
+  marginBottom: "10px",
+  zIndex: 0,
+};
+
 export const CompleteDay = () => {
   const { classes } = useStyles();
   const dispatch = useAppDispatch();
@@ -159,45 +197,6 @@ export const CompleteDay = () => {
   }, [innerWidth]);
 
   const [exercisesState, setExercisesState] = useState(exercises);
-  const height = innerWidth && innerWidth >= 380 ? "190px" : "210px";
-
-  const exerciseBoxStyle = {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "white",
-    outline: 0,
-    border: "solid",
-    borderColor: "lightgray",
-    borderWidth: "3px",
-    borderRadius: "25px 25px 25px 25px",
-    padding: "10px 10px 0px 10px",
-    width: "100%",
-    height,
-    zIndex: 1,
-    scrollMarginTop: "10px",
-  };
-
-  const overlayBoxStyle = {
-    background: "lightgray",
-    outline: 0,
-    borderRadius: "25px 25px 25px 25px",
-    padding: "10px 10px 0px 10px",
-    width: "100%",
-    marginTop: `-${height}`,
-    marginBottom: "10px",
-    height: height,
-    zIndex: 2,
-    opacity: 0.7,
-  };
-
-  const underlayBoxStyle = {
-    height: height,
-    marginTop: `-${height}`,
-    marginBottom: "10px",
-    zIndex: 0,
-  };
 
   useEffect(() => {
     if (curUser?.curWeek === undefined || curUser?.curDay === undefined) {
@@ -258,6 +257,39 @@ export const CompleteDay = () => {
         exercisesState.toSpliced(curUser.curExercise, 1, newExercise)
       );
     }
+  };
+
+  const getPreviousSessionNote = (idx: number) => {
+    if (curUser?.curWeek !== undefined && curUser?.curDay !== undefined) {
+      const curDayDetail =
+        curUser?.curBlock?.weeks[curUser.curWeek].days[curUser.curDay];
+      if (curDayDetail?.hasGroup)
+        for (let i = 0; i < curUser.curDay; i++) {
+          const checkDayDetail =
+            curUser?.curBlock?.weeks[curUser.curWeek].days[i];
+          if (
+            checkDayDetail?.hasGroup &&
+            checkDayDetail.groupName === curDayDetail.groupName
+          )
+            return checkDayDetail.exercises[idx].note || "None";
+        }
+      if (curUser.curWeek > 0) {
+        if (!curDayDetail?.hasGroup)
+          return (
+            curUser?.curBlock?.weeks[curUser.curWeek - 1].days[curUser.curDay]
+              .exercises[idx].note || "None"
+          );
+        const prevWeekDayIdx =
+          curUser?.curBlock?.weeks[curUser.curWeek - 1].days.findLastIndex(
+            (day) => day.hasGroup && day.groupName === curDayDetail.groupName
+          ) || curUser.curDay;
+        return (
+          curUser?.curBlock?.weeks[curUser.curWeek - 1].days[prevWeekDayIdx]
+            .exercises[idx].note || "None"
+        );
+      }
+    }
+    return "None";
   };
 
   const handleNext = (completedDay: boolean) => {
@@ -343,27 +375,19 @@ export const CompleteDay = () => {
                 ref={idx === curUser?.curExercise ? curRef : null}
               >
                 <div className={classes.eName}>
-                  <span className={classes.entryTitle}>{`${exercise.name} ${
-                    innerWidth && innerWidth >= 380
-                      ? `(${exercise.apparatus})`
-                      : ""
-                  }`}</span>
-                  <span className={classes.entryTitle}>{`${
-                    innerWidth && innerWidth < 380
-                      ? `(${exercise.apparatus})`
-                      : ""
-                  }`}</span>
+                  <span className={classes.entryTitle}>{exercise.name}</span>
+                  <span className={classes.entryTitle}>{`(${
+                    exercise.apparatus
+                  }, ${
+                    exercise.unilateral ? "Unilateral" : "Bilateral"
+                  })`}</span>
                 </div>
                 <div className={classes.entry}>
                   <span
                     className={classes.entryName}
-                  >{`Previous session note: ${
-                    curUser?.curWeek !== undefined && curUser.curWeek > 0
-                      ? curUser?.curBlock?.weeks[curUser.curWeek - 1].days[
-                          curUser?.curDay || 0
-                        ].exercises[idx].note
-                      : "N/A"
-                  }`}</span>
+                  >{`Previous session note: ${getPreviousSessionNote(
+                    idx
+                  )}`}</span>
                 </div>
                 <div className={classes.entry}>
                   <span className={classes.entryName}>Sets: </span>

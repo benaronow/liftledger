@@ -1,19 +1,24 @@
+import { SizeInfo } from "@/types";
 import { useEffect, useState } from "react";
 
 export const useInnerSize = () => {
-  const [innerSize, setInnerSize] = useState(
-    typeof window !== "undefined"
-      ? { innerWidth: window.innerWidth, innerHeight: window.innerHeight }
-      : { innerWidth: undefined, innerHeight: undefined }
+  const [innerSize, setInnerSize] = useState <SizeInfo> (
+    { innerWidth: undefined, innerHeight: undefined }
   );
+
   const updateSize = () => {
     setInnerSize({
       innerWidth: window.innerWidth,
       innerHeight: window.innerHeight,
     });
   };
+
   useEffect(() => {
     if (typeof window !== "undefined")
+      setInnerSize({
+        innerWidth: window.innerWidth,
+        innerHeight: window.innerHeight,
+      });
       window.addEventListener("resize", updateSize);
   }, []);
 

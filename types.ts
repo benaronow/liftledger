@@ -1,26 +1,26 @@
-// enum Muscle {
-//   Traps = "Traps",
-//   Rhomboids = "Rhomboids",
-//   FrontDelts = "Front Delts",
-//   SideDelts = "Side Delts",
-//   RearDelts = "Rear Delts",
-//   Biceps = "Biceps",
-//   Triceps = "Triceps",
-//   Brachialis = "Brachialis",
-//   Brachioradialis = "Brachioradialis",
-//   Forearms = "Forearms",
-//   Pecs = "Pecs",
-//   Abs = "Abs",
-//   Obliques = "Obliques",
-//   Lats = "Lats",
-//   ErectorSpinae = "Erector Spinae",
-//   Glutes = "Glutes",
-//   Adductors = "Adductors",
-//   Abductors = "Abductors",
-//   Quads = "Quads",
-//   Hamstrings = "Hamstrings",
-//   Calves = "Calves",
-// }
+enum Muscle {
+  Traps = "Traps",
+  Rhomboids = "Rhomboids",
+  FrontDelts = "Front Delts",
+  SideDelts = "Side Delts",
+  RearDelts = "Rear Delts",
+  Biceps = "Biceps",
+  Triceps = "Triceps",
+  Brachialis = "Brachialis",
+  Brachioradialis = "Brachioradialis",
+  Forearms = "Forearms",
+  Pecs = "Pecs",
+  Abs = "Abs",
+  Obliques = "Obliques",
+  Lats = "Lats",
+  ErectorSpinae = "Erector Spinae",
+  Glutes = "Glutes",
+  Adductors = "Adductors",
+  Abductors = "Abductors",
+  Quads = "Quads",
+  Hamstrings = "Hamstrings",
+  Calves = "Calves",
+}
 
 export enum ExerciseName {
   BenchPress = "Bench Press",
@@ -106,6 +106,7 @@ export interface Exercise {
   _id?: string;
   name: ExerciseName | string;
   apparatus: ExerciseApparatus | string;
+  musclesWorked?: Muscle[];
   sets: number;
   reps: number[];
   weight: number[];
@@ -118,6 +119,8 @@ export interface Exercise {
 export interface Day {
   _id?: string;
   name: string;
+  hasGroup: boolean;
+  groupName?: string;
   exercises: Exercise[];
   completed: boolean;
   completedDate: Date | undefined;
@@ -157,6 +160,11 @@ export interface User {
 
 export interface GetParams {
   params: Promise<{ id: string }>;
+}
+
+export interface SizeInfo {
+  innerWidth: number | undefined;
+  innerHeight: number | undefined;
 }
 
 export enum BlockOp {
