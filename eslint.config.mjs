@@ -8,6 +8,7 @@ export default [
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { ignores: [".next/*"] },
   { languageOptions: { globals: globals.browser } },
+  { settings: { react: { version: "detect" } } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
