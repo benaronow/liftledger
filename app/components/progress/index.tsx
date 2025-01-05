@@ -46,7 +46,13 @@ const useStyles = makeStyles()((theme) => ({
     maxWidth: 100,
     width: 100,
   },
+  stickyCell: {
+    position: "sticky",
+    zIndex: 2,
+  },
 }));
+
+const paperStyle = { width: "100%" };
 
 export const Progress = () => {
   const { classes } = useStyles();
@@ -157,6 +163,37 @@ export const Progress = () => {
     return tableData;
   };
 
+  const getHeaderColor = (
+    key: string,
+    firstTableData: {
+      data: TableData | undefined;
+      day: string;
+      subs: number;
+      colspan: number;
+    }
+  ) => {
+    if (!key.split(" ")[1]) return '#a3258c';
+    const num =
+      parseInt(key.split(" ")[1].split("-")[0]) * (firstTableData.subs || 1) -
+      (firstTableData.subs - (parseInt(key.split(" ")[1].split("-")[1]) || 0));
+    const denom = Object.keys(firstTableData.data || {}).length - 1;
+    return `color-mix(in srgb, #a3258c, #0096FF ${(num / denom) * 100}%`;
+  };
+
+  const getCellColor = (key: string | string[]) => {
+    return key.includes("true")
+      ? key.includes("Down")
+        ? "red"
+        : key.includes("Up")
+        ? "#32CD32"
+        : key.includes("None")
+        ? "lightgray"
+        : "white"
+      : key.includes("false")
+      ? "white"
+      : "gray";
+  };
+
   const allDayData = getAllDayData();
   const allExerciseData = allDayData.map((data) => getExerciseData(data));
   const maxSubs = allExerciseData.reduce((acc: number, cur) => {
@@ -181,34 +218,21 @@ export const Progress = () => {
           <div className={classes.dayLabel}>
             <span>{tableData[0].day}</span>
           </div>
-          <Paper sx={{ width: "100%" }} key={idx}>
+          <Paper sx={paperStyle}>
             <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
                     {Object.keys(tableData[0]?.data || {}).map((key, idx) => (
                       <TableCell
-                        className={classes.cell}
+                        className={`${classes.cell} ${
+                          idx === 0 && classes.stickyCell
+                        }`}
                         key={idx}
-                        align="left"
+                        align={idx === 0 ? "left" : "center"}
                         colSpan={idx === 0 ? 1 : tableData[0]?.colspan}
                         style={{
-                          background: `${
-                            idx === 0
-                              ? "#a3258c"
-                              : `color-mix(in srgb, #a3258c, #0096FF ${
-                                  ((parseInt(key.split(" ")[1][0]) *
-                                    (tableData[0].subs || 1) -
-                                    (tableData[0].subs -
-                                      (parseInt(key.split(" ")[1][2]) || 0))) /
-                                    (Object.keys(tableData[0]?.data || {})
-                                      .length -
-                                      1)) *
-                                  100
-                                }%)`
-                          }`,
-                          position: `${idx === 0 ? "sticky" : "relative"}`,
-                          zIndex: `${idx === 0 ? 2 : 1}`,
+                          background: getHeaderColor(key, tableData[0]),
                         }}
                       >
                         {key}
@@ -221,26 +245,14 @@ export const Progress = () => {
                     <TableRow key={idx}>
                       {Object.values(data?.data || {}).map((key, idx) => (
                         <TableCell
-                          className={classes.cell}
+                          className={`${classes.cell} ${
+                            idx === 0 && classes.stickyCell
+                          }`}
                           key={idx}
-                          align="left"
+                          align={idx === 0 ? "left" : "center"}
                           colSpan={idx === 0 ? 1 : data.colspan}
                           style={{
-                            background: `${
-                              key.includes("true")
-                                ? key.includes("Down")
-                                  ? "red"
-                                  : key.includes("Up")
-                                  ? "#32CD32"
-                                  : key.includes("None")
-                                  ? "lightgray"
-                                  : "white"
-                                : key.includes("false")
-                                ? "white"
-                                : "gray"
-                            }`,
-                            position: `${idx === 0 ? "sticky" : "relative"}`,
-                            zIndex: `${idx === 0 ? 2 : 1}`,
+                            background: `${getCellColor(key)}`,
                           }}
                         >
                           {key.includes("true")
