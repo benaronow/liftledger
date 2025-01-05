@@ -52,6 +52,26 @@ const useStyles = makeStyles()((theme) => ({
     position: "sticky",
     zIndex: 2,
   },
+  title: {
+    fontFamily: "League+Spartan",
+    fontWeight: 900,
+    fontSize: "22px",
+    marginBottom: "10px",
+  },
+  horizontalDivider: {
+    width: "100%",
+    height: "2px",
+    background: "black",
+    marginBottom: "10px",
+    border: "solid",
+    borderWidth: "1px",
+  },
+  noBlockText: {
+    marginBottom: "10px",
+    fontFamily: "League+Spartan",
+    fontSize: "16px",
+    textAlign: "center",
+  },
 }));
 
 const paperStyle = { width: "100%" };
@@ -215,6 +235,8 @@ export const Progress = () => {
 
   return (
     <div className={`${classes.container}`}>
+      <span className={classes.title}>Progress</span>
+      <div className={classes.horizontalDivider} />
       <>
         {allTableData.map((tableData, idx) => (
           <React.Fragment key={idx}>
@@ -243,7 +265,11 @@ export const Progress = () => {
                             background: getHeaderColor(key, tableData[0]),
                           }}
                         >
-                          {key}
+                          <>
+                            <span>{key.split(" ")[0]}</span>
+                            <br />
+                            <span>{key.split(" ")[1]}</span>
+                          </>
                         </TableCell>
                       ))}
                     </TableRow>
@@ -278,7 +304,13 @@ export const Progress = () => {
             </Paper>
           </React.Fragment>
         ))}
-        <div className={`${classes.dayLabel} ${classes.bottom}`} />
+        {allTableData.length ? (
+          <div className={`${classes.dayLabel} ${classes.bottom}`} />
+        ) : (
+          <span className={classes.noBlockText}>
+            Start training to see your progress!
+          </span>
+        )}
       </>
     </div>
   );

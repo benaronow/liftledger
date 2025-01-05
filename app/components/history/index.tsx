@@ -29,6 +29,7 @@ const useStyles = makeStyles()((theme) => ({
     fontWeight: 900,
     fontSize: "22px",
     marginBottom: "10px",
+    textAlign: "center",
   },
   horizontalDivider: {
     width: "100%",
@@ -44,11 +45,13 @@ const useStyles = makeStyles()((theme) => ({
     fontSize: "16px",
     marginBottom: "10px",
     width: "100%",
+    justifyContent: "center",
   },
   noBlockText: {
     marginBottom: "10px",
     fontFamily: "League+Spartan",
     fontSize: "16px",
+    textAlign: "center",
   },
   completedBlockEntry: {
     justifyContent: "space-between",
@@ -187,7 +190,9 @@ export const History = () => {
               <div
                 className={`${classes.entry} ${classes.completedBlockEntry}`}
               >
-                <span>No completed blocks yet</span>
+                <span className={classes.noBlockText}>
+                  No completed blocks yet
+                </span>
               </div>
             ))}
         </Box>

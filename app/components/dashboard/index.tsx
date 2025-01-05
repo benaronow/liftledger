@@ -65,11 +65,13 @@ const useStyles = makeStyles()((theme) => ({
     fontWeight: 600,
     width: "75%",
     justifyContent: "flex-start",
+    textAlign: "left",
   },
   value: {
     display: "flex",
     width: "125%",
     justifyContent: "flex-end",
+    textAlign: "right",
   },
   loginButton: {
     border: "none",
