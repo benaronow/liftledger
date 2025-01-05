@@ -4,6 +4,10 @@ import { LoginContext } from "../../providers/loginProvider";
 import { makeStyles } from "tss-react/mui";
 import Image from "next/image";
 import { keyframes } from "tss-react";
+import { useAppDispatch } from "@/lib/hooks";
+import { setMessageOpen } from "@/lib/features/user/userSlice";
+import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
+import { useTheme } from "@mui/material";
 
 const spin = keyframes`
   from {
@@ -30,12 +34,24 @@ const useStyles = makeStyles()({
 export const LiftLedger = () => {
   const { classes } = useStyles();
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const { session, attemptedLogin, curUser } = useContext(LoginContext);
+  const { innerWidth } = useContext(InnerSizeContext);
+  const theme = useTheme();
 
   useEffect(() => {
     if (!session) router.push("/dashboard");
     if (session && attemptedLogin) {
       router.push(curUser ? "/dashboard" : "/create-account");
+    }
+    if (
+      typeof window !== "undefined" &&
+      innerWidth &&
+      innerWidth < theme.breakpoints.values["sm"]
+    ) {
+      dispatch(
+        setMessageOpen(!window.matchMedia("(display-mode: standalone)").matches)
+      );
     }
   }, [attemptedLogin]);
 

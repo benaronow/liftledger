@@ -12,6 +12,7 @@ export interface UserSliceState {
   attemptedLogin: boolean;
   curUser: User | undefined;
   template: Block | undefined;
+  messageOpen: boolean;
   status: "idle" | "loading" | "failed";
 }
 
@@ -19,6 +20,7 @@ const initialState: UserSliceState = {
   attemptedLogin: false,
   curUser: undefined,
   template: undefined,
+  messageOpen: false,
   status: "idle",
 };
 
@@ -133,6 +135,9 @@ export const userSlice = createAppSlice({
         state.template = action.payload;
       }
     ),
+    setMessageOpen: create.reducer((state, action: PayloadAction<boolean>) => {
+      state.messageOpen = action.payload;
+    }),
     setCurBlock: create.reducer(
       (state, action: PayloadAction<Block | undefined>) => {
         if (state.curUser) state.curUser.curBlock = action.payload;
@@ -158,6 +163,7 @@ export const userSlice = createAppSlice({
     selectAttemptedLogin: (state) => state.attemptedLogin,
     selectCurUser: (state) => state.curUser,
     selectTemplate: (state) => state.template,
+    selectMessageOpen: (state) => state.messageOpen,
     selectStatus: (state) => state.status,
   },
 });
@@ -168,6 +174,7 @@ export const {
   deleteUser,
   blockOp,
   setTemplate,
+  setMessageOpen,
   setCurBlock,
   setCurWeek,
   setCurDay,
@@ -178,5 +185,6 @@ export const {
   selectAttemptedLogin,
   selectCurUser,
   selectTemplate,
+  selectMessageOpen,
   selectStatus,
 } = userSlice.selectors;

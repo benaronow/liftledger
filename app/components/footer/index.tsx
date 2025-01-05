@@ -65,10 +65,6 @@ const useStyles = makeStyles()((theme) => ({
       cursor: "pointer",
     },
   },
-  icon: {
-    color: "#a3258c",
-    fontSize: "40px",
-  },
   progressIcon: {
     color: "#a3258c",
     fontSize: "30px",

@@ -5,6 +5,7 @@ import { Providers } from "./providers";
 import { Footer } from "./components/footer";
 import { auth0 } from "@/lib/auth0";
 import { Header } from "./components/header";
+import { MessageModal } from "./components/messageModal";
 
 interface Props {
   readonly children: ReactNode;
@@ -78,7 +79,12 @@ const RootLayout = async ({ children }: Props) => {
               <Header />
             </header>
 
-            <main className={styles.main}>{children}</main>
+            <main className={styles.main}>
+              <>
+                {children}
+                <MessageModal />
+              </>
+            </main>
 
             <footer className={styles.footer}>
               <Footer />
