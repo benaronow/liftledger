@@ -6,6 +6,7 @@ import {
   setCurDay,
   setCurExercise,
   setCurWeek,
+  updateUser,
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { BlockOp, NumberChange } from "@/types";
@@ -333,6 +334,22 @@ export const CompleteDay = () => {
         ...exercisesState[curUser.curExercise],
         completed: true,
       };
+      const progress = { ...curUser.progress };
+      const newProgressEntry = [
+        completeExercise.sets,
+        completeExercise.reps,
+        completeExercise.weight,
+        completeExercise.weightType,
+        new Date(),
+      ];
+      if (progress[`${completeExercise.name}`]) {
+        progress[`${completeExercise.name}`] =
+          progress[`${completeExercise.name}`].concat([newProgressEntry]);
+      } else {
+        progress[`${completeExercise.name}`] = [newProgressEntry];
+      }
+      const updatedUser = { ...curUser, progress };
+      dispatch(updateUser(updatedUser));
       const newExercisesState = exercisesState.toSpliced(
         curUser.curExercise,
         1,

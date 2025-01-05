@@ -9,6 +9,7 @@ const userSchema: Schema = new Schema(
     benchMax: { type: Number, required: true },
     deadMax: { type: Number, required: true },
     squatMax: { type: Number, required: true },
+    progress: { type: Object },
     blocks: { type: [{ type: Schema.Types.ObjectId, ref: "Block" }] },
     curBlock: { type: Schema.Types.ObjectId, ref: "Block" },
   },

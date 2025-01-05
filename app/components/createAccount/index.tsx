@@ -1,4 +1,4 @@
-import { createUser } from "@/lib/features/user/userSlice";
+import { updateUser } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { User } from "@/types";
 import { Box, Input, Theme } from "@mui/material";
@@ -172,10 +172,11 @@ export const CreateAccount = () => {
       benchMax: parseInt(input.benchMax),
       squatMax: parseInt(input.squatMax),
       deadMax: parseInt(input.deadMax),
+      progress: {},
       blocks: [],
       curBlock: undefined,
     };
-    dispatch(createUser(user));
+    dispatch(updateUser(user));
   };
 
   const handleLogout = () => {

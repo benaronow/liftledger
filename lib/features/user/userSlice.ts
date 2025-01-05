@@ -2,10 +2,10 @@ import { createAppSlice } from "@/lib/createAppSlice";
 import {
   loginUserRequest,
   deleteUserRequest,
-  createUserRequest,
   blockOpRequest,
+  updateUserRequest,
 } from "./userAPI";
-import { Block, BlockOp, User } from "@/types";
+import { Block, BlockOp, ExerciseProgress, User } from "@/types";
 import { PayloadAction } from "@reduxjs/toolkit";
 
 export interface UserSliceState {
@@ -45,7 +45,7 @@ export const userSlice = createAppSlice({
         },
       }
     ),
-    createUser: create.asyncThunk(
+    updateUser: create.asyncThunk(
       async (user: {
         email: string;
         firstName: string;
@@ -54,10 +54,11 @@ export const userSlice = createAppSlice({
         benchMax: number;
         squatMax: number;
         deadMax: number;
+        progress: ExerciseProgress;
         blocks: Block[];
         curBlock: Block | undefined;
       }) => {
-        const response: User = await createUserRequest(user);
+        const response: User = await updateUserRequest(user);
         return response;
       },
       {
@@ -66,7 +67,11 @@ export const userSlice = createAppSlice({
         },
         fulfilled: (state, action) => {
           state.status = "idle";
-          state.curUser = action.payload;
+          if (state.curUser) {
+            state.curUser.progress = action.payload.progress;
+          } else {
+            state.curUser = action.payload;
+          }
         },
         rejected: (state) => {
           state.status = "failed";
@@ -93,7 +98,12 @@ export const userSlice = createAppSlice({
       }
     ),
     blockOp: create.asyncThunk(
-      async (data: { uid: string; block: Block; curWeek: number; type: BlockOp }) => {
+      async (data: {
+        uid: string;
+        block: Block;
+        curWeek: number;
+        type: BlockOp;
+      }) => {
         const response: Block = await blockOpRequest({
           uid: data.uid,
           block: data.block,
@@ -154,7 +164,7 @@ export const userSlice = createAppSlice({
 
 export const {
   loginUser,
-  createUser,
+  updateUser,
   deleteUser,
   blockOp,
   setTemplate,

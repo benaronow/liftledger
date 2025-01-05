@@ -10,7 +10,7 @@ export const loginUserRequest = async (email: string) => {
   return result;
 };
 
-export const createUserRequest = async (user: User) => {
+export const updateUserRequest = async (user: User) => {
   const res = await api.post(`${USER_API_URL}`, user);
   const result: User = await res.data;
   return result;

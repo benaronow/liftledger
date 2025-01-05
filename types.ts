@@ -134,8 +134,8 @@ export interface Day {
 }
 
 export interface TableDay extends Day {
-  week: number
-  sub?: number
+  week: number;
+  sub?: number;
 }
 
 export interface Week {
@@ -154,6 +154,10 @@ export interface Block {
   completed: boolean;
 }
 
+export interface ExerciseProgress {
+  [key: string]: (number | number[] | string | Date)[][];
+}
+
 export interface User {
   _id?: string;
   email: string;
@@ -163,6 +167,7 @@ export interface User {
   benchMax: number;
   squatMax: number;
   deadMax: number;
+  progress: ExerciseProgress;
   blocks: Block[];
   curBlock: Block | undefined;
   curWeek?: number | undefined;
@@ -199,5 +204,5 @@ export enum RouteType {
   History = "/history",
   Home = "/dashboard",
   Add = "/create-block",
-  Profile = "/profile"
+  Profile = "/profile",
 }
