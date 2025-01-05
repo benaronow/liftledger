@@ -26,6 +26,22 @@ const useStyles = makeStyles()((theme) => ({
       height: "calc(100dvh - 50px)",
     },
   },
+  dayLabel: {
+    display: "flex",
+    width: "100%",
+    justifyContent: "center",
+    background: "black",
+    minHeight: "30px",
+    alignItems: "center",
+    border: "solid",
+    borderWidth: "1px",
+    borderColor: "black",
+    color: "white",
+  },
+  cell: {
+    border: "solid",
+    borderWidth: "1px",
+  },
 }));
 
 export const Progress = () => {
@@ -154,19 +170,7 @@ export const Progress = () => {
     <div className={`${classes.container}`}>
       {allTableData.map((tableData, idx) => (
         <>
-          <div
-            style={{
-              display: "flex",
-              width: "100%",
-              justifyContent: "center",
-              background: "black",
-              minHeight: "30px",
-              alignItems: "center",
-              border: "solid",
-              borderColor: "black",
-              color: "white",
-            }}
-          >
+          <div className={classes.dayLabel}>
             <span>{tableData[0].day}</span>
           </div>
           <Paper sx={{ width: "100%" }} key={idx}>
@@ -176,10 +180,10 @@ export const Progress = () => {
                   <TableRow>
                     {Object.keys(tableData[0]?.data || {}).map((key, idx) => (
                       <TableCell
+                        className={classes.cell}
                         key={idx}
                         align="left"
                         style={{
-                          border: "solid",
                           width: `${idx === 0 ? "200px" : ""}`,
                           background: `${
                             idx === 0
@@ -207,10 +211,10 @@ export const Progress = () => {
                     <TableRow key={idx}>
                       {Object.values(data?.data || {}).map((key, idx) => (
                         <TableCell
+                          className={classes.cell}
                           key={idx}
                           align="left"
                           style={{
-                            border: "solid",
                             width: `${idx === 0 ? "200px" : ""}`,
                             background: `${
                               key.includes("true")
