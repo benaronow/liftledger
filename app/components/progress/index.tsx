@@ -22,7 +22,6 @@ const useStyles = makeStyles()((theme) => ({
     height: "calc(100dvh - 120px)",
     overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
-      background: "lightgray",
       height: "calc(100dvh - 50px)",
     },
   },
@@ -37,6 +36,9 @@ const useStyles = makeStyles()((theme) => ({
     borderWidth: "1px",
     borderColor: "black",
     color: "white",
+  },
+  bottom: {
+    borderRadius: "0px 0px 25px 25px",
   },
   cell: {
     border: "solid",
@@ -172,7 +174,7 @@ export const Progress = () => {
       colspan: number;
     }
   ) => {
-    if (!key.split(" ")[1]) return '#a3258c';
+    if (!key.split(" ")[1]) return "#a3258c";
     const num =
       parseInt(key.split(" ")[1].split("-")[0]) * (firstTableData.subs || 1) -
       (firstTableData.subs - (parseInt(key.split(" ")[1].split("-")[1]) || 0));
@@ -213,63 +215,71 @@ export const Progress = () => {
 
   return (
     <div className={`${classes.container}`}>
-      {allTableData.map((tableData, idx) => (
-        <React.Fragment key={idx}>
-          <div className={classes.dayLabel}>
-            <span>{tableData[0].day}</span>
-          </div>
-          <Paper sx={paperStyle}>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    {Object.keys(tableData[0]?.data || {}).map((key, idx) => (
-                      <TableCell
-                        className={`${classes.cell} ${
-                          idx === 0 && classes.stickyCell
-                        }`}
-                        key={idx}
-                        align={idx === 0 ? "left" : "center"}
-                        colSpan={idx === 0 ? 1 : tableData[0]?.colspan}
-                        style={{
-                          background: getHeaderColor(key, tableData[0]),
-                        }}
-                      >
-                        {key}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {tableData.map((data, idx) => (
-                    <TableRow key={idx}>
-                      {Object.values(data?.data || {}).map((key, idx) => (
+      <>
+        {allTableData.map((tableData, idx) => (
+          <React.Fragment key={idx}>
+            <div
+              className={classes.dayLabel}
+              style={{
+                borderRadius: `${idx === 0 ? "25px 25px 0px 0px" : ""}`,
+              }}
+            >
+              <span>{tableData[0].day}</span>
+            </div>
+            <Paper sx={paperStyle}>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      {Object.keys(tableData[0]?.data || {}).map((key, idx) => (
                         <TableCell
                           className={`${classes.cell} ${
                             idx === 0 && classes.stickyCell
                           }`}
                           key={idx}
                           align={idx === 0 ? "left" : "center"}
-                          colSpan={idx === 0 ? 1 : data.colspan}
+                          colSpan={idx === 0 ? 1 : tableData[0]?.colspan}
                           style={{
-                            background: `${getCellColor(key)}`,
+                            background: getHeaderColor(key, tableData[0]),
                           }}
                         >
-                          {key.includes("true")
-                            ? `${key[0]}x${key[1]}, ${key[2]}${key[3]}`
-                            : key.includes("false")
-                            ? ""
-                            : key}
+                          {key}
                         </TableCell>
                       ))}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </React.Fragment>
-      ))}
+                  </TableHead>
+                  <TableBody>
+                    {tableData.map((data, idx) => (
+                      <TableRow key={idx}>
+                        {Object.values(data?.data || {}).map((key, idx) => (
+                          <TableCell
+                            className={`${classes.cell} ${
+                              idx === 0 && classes.stickyCell
+                            }`}
+                            key={idx}
+                            align={idx === 0 ? "left" : "center"}
+                            colSpan={idx === 0 ? 1 : data.colspan}
+                            style={{
+                              background: `${getCellColor(key)}`,
+                            }}
+                          >
+                            {key.includes("true")
+                              ? `${key[0]}x${key[1]}, ${key[2]}${key[3]}`
+                              : key.includes("false")
+                              ? ""
+                              : key}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          </React.Fragment>
+        ))}
+        <div className={`${classes.dayLabel} ${classes.bottom}`} />
+      </>
     </div>
   );
 };

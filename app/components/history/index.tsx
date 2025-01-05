@@ -20,9 +20,8 @@ const useStyles = makeStyles()((theme) => ({
     padding: "10px 10px 0px 10px",
     overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
-      background: "lightgray",
       height: "calc(100dvh - 50px)",
-      overflow: "visible",
+      overflow: "hidden",
     },
   },
   title: {
@@ -31,11 +30,13 @@ const useStyles = makeStyles()((theme) => ({
     fontSize: "22px",
     marginBottom: "10px",
   },
-  divider: {
-    width: "105%",
+  horizontalDivider: {
+    width: "100%",
     height: "2px",
     background: "black",
     marginBottom: "10px",
+    border: "solid",
+    borderWidth: "1px",
   },
   entry: {
     display: "flex",
@@ -63,20 +64,24 @@ const useStyles = makeStyles()((theme) => ({
 const boxStyle = (theme: Theme) => ({
   display: "flex",
   flexDirection: "column",
-  justifyContent: "center",
+  justifyContent: "flex-start",
   alignItems: "center",
   background: "white",
   outline: 0,
   border: "none",
   borderRadius: "25px 25px 25px 25px",
-  padding: "0px 10px 0px 10px",
+  padding: "0px 10px 10px 10px",
   width: "100%",
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   marginBottom: "10px",
   [theme.breakpoints.up("sm")]: {
-    border: "solid",
-    borderWidth: "5px",
-    padding: "10px 10px 0px 10px",
+    maxHeight: "100%",
+    overflow: "scroll",
+    boxShadow: "5px 5px 5px gray",
+  },
+  [theme.breakpoints.up("md")]: {
+    maxHeight: "calc(100dvh - 70px)",
+    overflow: "scroll",
   },
 });
 
@@ -173,7 +178,7 @@ export const History = () => {
           innerWidth < theme.breakpoints.values["sm"])) && (
         <Box sx={boxStyle}>
           <span className={classes.title}>Completed Training Blocks</span>
-          <div className={classes.divider} />
+          <div className={classes.horizontalDivider} />
           {!curUser && <span className={classes.noBlockText}>Loading</span>}
           {curUser &&
             (completedBlocks && completedBlocks[0] ? (

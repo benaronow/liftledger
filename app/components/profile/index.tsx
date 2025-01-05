@@ -10,13 +10,13 @@ import { useRouter } from "next/navigation";
 const useStyles = makeStyles()((theme) => ({
   container: {
     display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    justifyContent: "center",
+    alignItems: "flex-start",
     width: "100%",
     height: "calc(100dvh - 120px)",
-    padding: "10px 10px 0px 10px",
+    padding: "10px 10px 10px 10px",
+    overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
-      background: "lightgray",
       height: "calc(100dvh - 50px)",
     },
   },
@@ -26,11 +26,13 @@ const useStyles = makeStyles()((theme) => ({
     fontSize: "22px",
     marginBottom: "10px",
   },
-  divider: {
-    width: "105%",
+  horizontalDivider: {
+    width: "100%",
     height: "2px",
     background: "black",
     marginBottom: "10px",
+    border: "solid",
+    borderWidth: "1px",
   },
   entry: {
     display: "flex",
@@ -82,7 +84,7 @@ const useStyles = makeStyles()((theme) => ({
 const boxStyle = (theme: Theme) => ({
   display: "flex",
   flexDirection: "column",
-  justifyContent: "center",
+  justifyContent: "flex-start",
   alignItems: "center",
   background: "white",
   outline: 0,
@@ -92,9 +94,8 @@ const boxStyle = (theme: Theme) => ({
   width: "100%",
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   [theme.breakpoints.up("sm")]: {
-    border: "solid",
-    borderWidth: "5px",
-    padding: "10px 10px 0px 10px",
+    maxHeight: "calc(100dvh - 70px)",
+    boxShadow: "5px 5px 5px gray",
   },
 });
 
@@ -117,7 +118,7 @@ export const Profile = () => {
     <div className={classes.container}>
       <Box sx={boxStyle}>
         <span className={classes.title}>Profile</span>
-        <div className={classes.divider}></div>
+        <div className={classes.horizontalDivider}></div>
         <Avatar
           sx={{ height: "75px", width: "75px", marginBottom: "10px" }}
           src={session?.user.picture}
@@ -162,7 +163,7 @@ export const Profile = () => {
             {curUser ? curUser.deadMax : "Unavailable"}
           </span>
         </div>
-        <div className={classes.divider}></div>
+        <div className={classes.horizontalDivider} />
         <div className={`${classes.entry} ${classes.actions}`}>
           <button className={classes.accountButton} onClick={handleLogout}>
             Log out

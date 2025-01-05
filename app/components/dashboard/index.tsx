@@ -23,13 +23,13 @@ const useStyles = makeStyles()((theme) => ({
     overflow: "scroll",
     outline: "none",
     [theme.breakpoints.up("sm")]: {
-      background: "lightgray",
       height: "calc(100dvh - 50px)",
     },
   },
   superContainer: {
     display: "flex",
     flexDirection: "column",
+    alignItems: "center",
     width: "100%",
   },
   container: {
@@ -45,11 +45,13 @@ const useStyles = makeStyles()((theme) => ({
     fontSize: "22px",
     marginBottom: "10px",
   },
-  divider: {
-    width: "105%",
+  horizontalDivider: {
+    width: "100%",
     height: "2px",
     background: "black",
     marginBottom: "10px",
+    border: "solid",
+    borderWidth: "1px",
   },
   entry: {
     display: "flex",
@@ -92,6 +94,12 @@ const useStyles = makeStyles()((theme) => ({
       cursor: "pointer",
     },
   },
+  startedDayButton: {
+    color: "#7dc9ff",
+    "&:hover": {
+      cursor: "default",
+    },
+  },
   noBlockText: {
     marginBottom: "10px",
     fontFamily: "League+Spartan",
@@ -102,20 +110,24 @@ const useStyles = makeStyles()((theme) => ({
 const boxStyle = (theme: Theme) => ({
   display: "flex",
   flexDirection: "column",
-  justifyContent: "center",
+  justifyContent: "flex-start",
   alignItems: "center",
   background: "white",
   outline: 0,
   border: "none",
   borderRadius: "25px 25px 25px 25px",
-  padding: "0px 10px 0px 10px",
+  padding: "0px 10px 10px 10px",
   width: "100%",
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   marginBottom: "10px",
   [theme.breakpoints.up("sm")]: {
-    border: "solid",
-    borderWidth: "5px",
-    padding: "10px 10px 10px 10px",
+    maxHeight: "100%",
+    overflow: "scroll",
+    boxShadow: "5px 5px 5px gray",
+  },
+  [theme.breakpoints.up("md")]: {
+    maxHeight: "calc(100dvh - 70px)",
+    overflow: "scroll",
   },
 });
 
@@ -126,6 +138,12 @@ export const Dashboard = () => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const router = useRouter();
+
+  useEffect(() => {
+    dispatch(setCurWeek(undefined));
+    dispatch(setCurDay(undefined));
+    dispatch(setCurExercise(undefined));
+  }, []);
 
   const curWeekIdx =
     curUser?.curBlock?.weeks.findIndex((week) => !week.completed) || 0;
@@ -172,7 +190,7 @@ export const Dashboard = () => {
           {session ? (
             <Box sx={boxStyle}>
               <span className={classes.title}>Current Training Block</span>
-              <div className={classes.divider} />
+              <div className={classes.horizontalDivider} />
               {!curUser && <span className={classes.noBlockText}>Loading</span>}
               {curUser && (!curUser.curBlock || curUser.curBlock.completed) && (
                 <span className={classes.noBlockText}>
@@ -199,7 +217,7 @@ export const Dashboard = () => {
                       curUser.curBlock.length
                     } week${curUser.curBlock.length > 1 ? "s" : ""}`}</span>
                   </div>
-                  <div className={classes.divider} />
+                  <div className={classes.horizontalDivider} />
                   <div className={classes.entry}>
                     <span className={classes.name}>Current Week: </span>
                     <span className={classes.value}>{`Week ${
@@ -212,9 +230,11 @@ export const Dashboard = () => {
                       curDayGroupName ? ` (${curDayGroupName})` : ""
                     }`}</span>
                   </div>
-                  <div className={classes.divider}></div>
+                  <div className={classes.horizontalDivider}></div>
                   <button
-                    className={classes.startDayButton}
+                    className={`${classes.startDayButton} ${
+                      curUser.curExercise && classes.startedDayButton
+                    }`}
                     onClick={() =>
                       handleStartDay(curWeekIdx, curDayIdx, curExerciseIdx)
                     }

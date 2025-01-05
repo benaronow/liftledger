@@ -19,9 +19,8 @@ const useStyles = makeStyles()((theme) => ({
     padding: "10px 10px 10px 10px",
     overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
-      background: "lightgray",
       height: "calc(100dvh - 50px)",
-      overflow: "visible",
+      overflow: "hidden",
     },
   },
   title: {
@@ -30,11 +29,13 @@ const useStyles = makeStyles()((theme) => ({
     fontSize: "22px",
     marginBottom: "10px",
   },
-  divider: {
-    width: "105%",
+  horizontalDivider: {
+    width: "100%",
     height: "2px",
     background: "black",
     marginBottom: "10px",
+    border: "solid",
+    borderWidth: "1px",
   },
   actions: {
     display: "flex",
@@ -68,20 +69,20 @@ const useStyles = makeStyles()((theme) => ({
 const boxStyle = (theme: Theme) => ({
   display: "flex",
   flexDirection: "column",
-  justifyContent: "center",
+  justifyContent: "flex-start",
   alignItems: "center",
   background: "white",
   outline: 0,
   border: "none",
   borderRadius: "25px 25px 25px 25px",
-  padding: "0px 10px 0px 10px",
+  padding: "0px 10px 10px 10px",
   width: "100%",
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   marginBottom: "10px",
   [theme.breakpoints.up("sm")]: {
-    border: "solid",
-    borderWidth: "5px",
-    padding: "10px 10px 10px 10px",
+    maxHeight: "calc(100dvh - 70px)",
+    overflow: "scroll",
+    boxShadow: "5px 5px 5px gray",
   },
 });
 
@@ -151,7 +152,7 @@ export const CreateBlock = () => {
             {
               name: "Day 1",
               hasGroup: false,
-              groupName: '',
+              groupName: "",
               exercises: [
                 {
                   name: "",
@@ -186,7 +187,7 @@ export const CreateBlock = () => {
           innerWidth < theme.breakpoints.values["sm"])) && (
         <Box sx={boxStyle}>
           <span className={classes.title}>Create Training Block</span>
-          <div className={classes.divider}></div>
+          <div className={classes.horizontalDivider}></div>
           {editingDay === 0 ? (
             <EditWeek
               uid={curUser?._id || ""}

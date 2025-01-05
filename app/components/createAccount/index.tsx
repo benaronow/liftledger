@@ -12,16 +12,15 @@ import { LoginContext } from "../../providers/loginProvider";
 const useStyles = makeStyles()((theme) => ({
   container: {
     display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    alignItems: "flex-start",
+    justifyContent: "center",
     width: "100%",
     height: "calc(100dvh - 120px)",
-    padding: "10px 10px 0px 10px",
+    padding: "10px 10px 10px 10px",
     overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
-      background: "lightgray",
       height: "calc(100dvh - 50px)",
-      overflow: "visible",
+      overflow: "hidden",
     },
   },
   title: {
@@ -30,11 +29,13 @@ const useStyles = makeStyles()((theme) => ({
     fontSize: "22px",
     marginBottom: "10px",
   },
-  divider: {
-    width: "105%",
+  horizontalDivider: {
+    width: "100%",
     height: "2px",
     background: "black",
     marginBottom: "10px",
+    border: "solid",
+    borderWidth: "1px",
   },
   form: {
     display: "flex",
@@ -101,20 +102,19 @@ const useStyles = makeStyles()((theme) => ({
 const boxStyle = (theme: Theme) => ({
   display: "flex",
   flexDirection: "column",
-  justifyContent: "center",
+  justifyContent: "flex-start",
   alignItems: "center",
   background: "white",
   outline: 0,
   border: "none",
   borderRadius: "25px 25px 25px 25px",
-  padding: "0px 10px 0px 10px",
+  padding: "0px 10px 10px 10px",
   width: "100%",
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   marginBottom: "10px",
   [theme.breakpoints.up("sm")]: {
-    border: "solid",
-    borderWidth: "5px",
-    padding: "10px 10px 10px 10px",
+    maxHeight: "calc(100dvh - 70px)",
+    boxShadow: "5px 5px 5px gray",
   },
 });
 
@@ -187,7 +187,7 @@ export const CreateAccount = () => {
     <div className={classes.container}>
       <Box sx={boxStyle}>
         <span className={classes.title}>Create Account</span>
-        <div className={classes.divider} />
+        <div className={classes.horizontalDivider} />
         <form
           className={classes.form}
           id="create-account-form"
@@ -215,7 +215,7 @@ export const CreateAccount = () => {
             </div>
           ))}
         </form>
-        <div className={classes.divider} />
+        <div className={classes.horizontalDivider} />
         <div className={classes.buttons}>
           <button
             className={classes.accountButton}
