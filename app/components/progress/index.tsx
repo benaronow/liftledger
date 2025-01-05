@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { makeStyles } from "tss-react/mui";
 import { LoginContext } from "@/app/providers/loginProvider";
 import { TableData, TableDay, TableExercise, Week } from "@/types";
@@ -42,7 +42,9 @@ const useStyles = makeStyles()((theme) => ({
     border: "solid",
     borderWidth: "1px",
     left: 0,
-    width: "100%",
+    minWidth: 100,
+    maxWidth: 100,
+    width: 100,
   },
 }));
 
@@ -157,12 +159,16 @@ export const Progress = () => {
 
   const allDayData = getAllDayData();
   const allExerciseData = allDayData.map((data) => getExerciseData(data));
+  const maxSubs = allExerciseData.reduce((acc: number, cur) => {
+    return Math.max(acc, cur[0].subs);
+  }, 0);
   const allTableData = allExerciseData.map((data) =>
     data.map((td) => {
       return {
         data: getTableData(td.exerciseData),
         day: td.day,
         subs: td.subs,
+        colspan: (maxSubs / (td.subs || 1)) * 7,
       };
     })
   );
@@ -171,7 +177,7 @@ export const Progress = () => {
   return (
     <div className={`${classes.container}`}>
       {allTableData.map((tableData, idx) => (
-        <>
+        <React.Fragment key={idx}>
           <div className={classes.dayLabel}>
             <span>{tableData[0].day}</span>
           </div>
@@ -185,16 +191,16 @@ export const Progress = () => {
                         className={classes.cell}
                         key={idx}
                         align="left"
+                        colSpan={idx === 0 ? 1 : tableData[0]?.colspan}
                         style={{
-                          width: `${idx === 0 ? "200px" : ""}`,
                           background: `${
                             idx === 0
                               ? "#a3258c"
                               : `color-mix(in srgb, #a3258c, #0096FF ${
                                   ((parseInt(key.split(" ")[1][0]) *
-                                    tableData[0].subs -
+                                    (tableData[0].subs || 1) -
                                     (tableData[0].subs -
-                                      parseInt(key.split(" ")[1][2]))) /
+                                      (parseInt(key.split(" ")[1][2]) || 0))) /
                                     (Object.keys(tableData[0]?.data || {})
                                       .length -
                                       1)) *
@@ -218,8 +224,8 @@ export const Progress = () => {
                           className={classes.cell}
                           key={idx}
                           align="left"
+                          colSpan={idx === 0 ? 1 : data.colspan}
                           style={{
-                            width: `${idx === 0 ? "200px" : ""}`,
                             background: `${
                               key.includes("true")
                                 ? key.includes("Down")
@@ -250,7 +256,7 @@ export const Progress = () => {
               </Table>
             </TableContainer>
           </Paper>
-        </>
+        </React.Fragment>
       ))}
     </div>
   );
