@@ -41,6 +41,8 @@ const useStyles = makeStyles()((theme) => ({
   cell: {
     border: "solid",
     borderWidth: "1px",
+    left: 0,
+    width: "100%",
   },
 }));
 
@@ -199,6 +201,8 @@ export const Progress = () => {
                                   100
                                 }%)`
                           }`,
+                          position: `${idx === 0 ? "sticky" : "relative"}`,
+                          zIndex: `${idx === 0 ? 2 : 1}`,
                         }}
                       >
                         {key}
@@ -229,6 +233,8 @@ export const Progress = () => {
                                 ? "white"
                                 : "gray"
                             }`,
+                            position: `${idx === 0 ? "sticky" : "relative"}`,
+                            zIndex: `${idx === 0 ? 2 : 1}`,
                           }}
                         >
                           {key.includes("true")
