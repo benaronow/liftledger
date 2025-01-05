@@ -93,10 +93,11 @@ export const userSlice = createAppSlice({
       }
     ),
     blockOp: create.asyncThunk(
-      async (data: { uid: string; block: Block; type: BlockOp }) => {
+      async (data: { uid: string; block: Block; curWeek: number; type: BlockOp }) => {
         const response: Block = await blockOpRequest({
           uid: data.uid,
           block: data.block,
+          curWeek: data.curWeek,
           type: data.type,
         });
         return response;

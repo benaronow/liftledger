@@ -21,6 +21,7 @@ const useStyles = makeStyles()((theme) => ({
     width: "100%",
     height: "calc(100dvh - 120px)",
     overflow: "scroll",
+    outline: "none",
     [theme.breakpoints.up("sm")]: {
       background: "lightgray",
       height: "calc(100dvh - 50px)",

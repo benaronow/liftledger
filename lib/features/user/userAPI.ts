@@ -32,6 +32,7 @@ export const getAllUsersRequest = async () => {
 export const blockOpRequest = async (data: {
   uid: string;
   block: Block;
+  curWeek: number;
   type: BlockOp;
 }) => {
   const res = await api.post(`${BLOCK_API_URL}`, data);

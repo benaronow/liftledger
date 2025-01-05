@@ -305,7 +305,10 @@ export const EditWeek = ({
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatch(blockOp({ uid, block, type: BlockOp.Create }));
+    const newWeeks = [...block.weeks];
+    Array.from(Array(block.length - 1)).forEach(() => newWeeks.push(block.weeks[0]))
+    const fullBlock = { ...block, weeks: newWeeks }
+    dispatch(blockOp({ uid, block: fullBlock, curWeek: 0, type: BlockOp.Create }));
     dispatch(setTemplate(undefined));
     router.push("/dashboard");
   };

@@ -263,7 +263,8 @@ export const CompleteDay = () => {
     if (curUser?.curWeek !== undefined && curUser?.curDay !== undefined) {
       const curDayDetail =
         curUser?.curBlock?.weeks[curUser.curWeek].days[curUser.curDay];
-      if (curDayDetail?.hasGroup)
+      if (curDayDetail?.hasGroup) {
+        let note = "";
         for (let i = 0; i < curUser.curDay; i++) {
           const checkDayDetail =
             curUser?.curBlock?.weeks[curUser.curWeek].days[i];
@@ -271,8 +272,10 @@ export const CompleteDay = () => {
             checkDayDetail?.hasGroup &&
             checkDayDetail.groupName === curDayDetail.groupName
           )
-            return checkDayDetail.exercises[idx].note || "None";
+            note = checkDayDetail.exercises[idx].note || "None";
         }
+        if (note) return note;
+      }
       if (curUser.curWeek > 0) {
         if (!curDayDetail?.hasGroup)
           return (
@@ -384,7 +387,19 @@ export const CompleteDay = () => {
         weeks: newWeeks,
         completed: completedBlock,
       };
-      dispatch(blockOp({ uid: curUser._id || "", block, type: BlockOp.Edit }));
+      console.log(
+        curUser.curWeek,
+        block.weeks[curUser.curWeek],
+        block.completed
+      );
+      dispatch(
+        blockOp({
+          uid: curUser._id || "",
+          block,
+          curWeek: curUser.curWeek,
+          type: BlockOp.Edit,
+        })
+      );
     }
     if (completedDay) {
       router.push("/dashboard");
