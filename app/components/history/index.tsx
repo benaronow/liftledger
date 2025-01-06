@@ -46,6 +46,7 @@ const useStyles = makeStyles()((theme) => ({
     marginBottom: "10px",
     width: "100%",
     justifyContent: "center",
+    alignItems: "center",
   },
   noBlockText: {
     marginBottom: "10px",
