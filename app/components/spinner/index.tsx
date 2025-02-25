@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { keyframes } from "tss-react";
 import { makeStyles } from "tss-react/mui";
