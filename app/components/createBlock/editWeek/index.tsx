@@ -1,4 +1,10 @@
-import { blockOp, setTemplate } from "@/lib/features/user/userSlice";
+import {
+  blockOp,
+  selectCurUser,
+  selectEditingBlock,
+  setEditingBlock,
+  setTemplate,
+} from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { Block, BlockOp, Day, WeightType } from "@/types";
 import {
@@ -12,6 +18,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, RefObject, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
@@ -180,6 +187,8 @@ export const EditWeek = ({
   const { classes } = useStyles();
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const editingBlock = useSelector(selectEditingBlock);
+  const curUser = useSelector(selectCurUser);
 
   useEffect(() => {
     if (saveRef.current && block.weeks[0].days.length > 1)
@@ -199,54 +208,60 @@ export const EditWeek = ({
 
   const handleDayNameInput = (
     e: ChangeEvent<HTMLInputElement>,
-    dayNumber: number
+    dayIdx: number
   ) => {
-    const newDay: Day = {
-      ...block.weeks[0].days[dayNumber - 1],
-      name: e.target.value,
-    };
-    const newDays: Day[] = block.weeks[0].days.toSpliced(
-      dayNumber - 1,
-      1,
-      newDay
-    );
-    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week) => ({
+        ...week,
+        days: week.days.map((day, idx) =>
+          idx === dayIdx ? { ...day, name: e.target.value } : day
+        ),
+      })),
+    });
   };
 
-  const handleCheckGroup = (dayNumber: number) => {
-    const newDay: Day = {
-      ...block.weeks[0].days[dayNumber - 1],
-      hasGroup: !block.weeks[0].days[dayNumber - 1].hasGroup,
-      groupName: "",
-    };
-    const newDays: Day[] = block.weeks[0].days.toSpliced(
-      dayNumber - 1,
-      1,
-      newDay
-    );
-    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
+  const handleCheckGroup = (dayIdx: number) => {
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week) => ({
+        ...week,
+        days: week.days.map((day, idx) =>
+          idx === dayIdx
+            ? {
+                ...day,
+                hasGroup: !day.hasGroup,
+                groupName: "",
+              }
+            : day
+        ),
+      })),
+    });
   };
 
   const handleGroupNameInput = (
     e: ChangeEvent<HTMLInputElement>,
-    dayNumber: number
+    dayIdx: number
   ) => {
-    const newDay: Day = {
-      ...block.weeks[0].days[dayNumber - 1],
-      groupName: e.target.value,
-    };
-    const newDays: Day[] = block.weeks[0].days.toSpliced(
-      dayNumber - 1,
-      1,
-      newDay
-    );
-    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week) => ({
+        ...week,
+        days: week.days.map((day, idx) =>
+          idx === dayIdx
+            ? {
+                ...day,
+                groupName: e.target.value,
+              }
+            : day
+        ),
+      })),
+    });
   };
 
   const handleAddDay = () => {
-    const dayNumber = block.weeks[0].days.length + 1;
     const newDay: Day = {
-      name: `Day ${dayNumber}`,
+      name: `Day ${block.weeks[0].days.length + 1}`,
       hasGroup: false,
       exercises: [
         {
@@ -266,37 +281,59 @@ export const EditWeek = ({
     };
     setBlock({
       ...block,
-      weeks: [{ ...block.weeks[0], days: [...block.weeks[0].days, newDay] }],
+      weeks: block.weeks.map((week) => ({
+        ...week,
+        days: [
+          ...week.days,
+          week.completed
+            ? {
+                ...newDay,
+                completed: true,
+              }
+            : newDay,
+        ],
+      })),
     });
   };
 
-  const handleEditDay = (dayNumber: number) => {
-    setEditingDay(dayNumber);
+  const handleEditDay = (dayIdx: number) => {
+    setEditingDay(dayIdx);
   };
 
-  const handleRemoveDay = (dayNumber: number) => {
-    const newDays: Day[] = block.weeks[0].days.toSpliced(dayNumber - 1, 1);
-    if (block.weeks[0].days.length > 1)
-      setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
+  const handleRemoveDay = (dayIdx: number) => {
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week) => ({
+        ...week,
+        days: week.days.toSpliced(dayIdx, 1),
+      })),
+    });
   };
 
-  const handleDuplicateDay = (dayNumber: number) => {
+  const handleDuplicateDay = (dayIdx: number) => {
     const day: Day = {
-      ...block.weeks[0].days[dayNumber - 1],
-      name: `${block.weeks[0].days[dayNumber - 1].name} (copy)`,
+      ...block.weeks[block.weeks.length - 1].days[dayIdx],
+      name: `${block.weeks[0].days[dayIdx].name} (copy)`,
     };
-    const newDays: Day[] = block.weeks[0].days.toSpliced(dayNumber, 0, day);
-    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week) => ({
+        ...week,
+        days: week.days.toSpliced(dayIdx + 1, 0, day),
+      })),
+    });
   };
 
-  const handleMoveDay = (day: Day, dayNumber: number, type: "up" | "down") => {
-    const withoutDay: Day[] = block.weeks[0].days.toSpliced(dayNumber - 1, 1);
-    const newDays: Day[] = withoutDay.toSpliced(
-      type === "up" ? dayNumber - 2 : dayNumber,
-      0,
-      day
-    );
-    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
+  const handleMoveDay = (day: Day, dayIdx: number, type: "up" | "down") => {
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week) => ({
+        ...week,
+        days: week.days
+          .toSpliced(dayIdx, 1)
+          .toSpliced(type === "up" ? dayIdx - 1 : dayIdx + 1, 0, day),
+      })),
+    });
   };
 
   const handleLengthInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -306,10 +343,20 @@ export const EditWeek = ({
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newWeeks = [...block.weeks];
-    Array.from(Array(block.length - 1)).forEach(() => newWeeks.push(block.weeks[0]))
-    const fullBlock = { ...block, weeks: newWeeks }
-    dispatch(blockOp({ uid, block: fullBlock, curWeek: 0, type: BlockOp.Create }));
+    Array.from(Array(block.length - 1)).forEach(() =>
+      newWeeks.push(block.weeks[0])
+    );
+    const fullBlock = { ...block, weeks: newWeeks };
+    dispatch(
+      blockOp({
+        uid,
+        block: editingBlock ? block : fullBlock,
+        curWeek: editingBlock ? curUser?.curWeek || 0 : 0,
+        type: BlockOp.Create,
+      })
+    );
     dispatch(setTemplate(undefined));
+    setEditingBlock(false);
     router.push("/dashboard");
   };
 
@@ -349,10 +396,10 @@ export const EditWeek = ({
           <div className={classes.entriesContainer}>
             <div className={`${classes.entry} ${classes.day}`}>
               <div className={classes.moveDayButtons}>
-                <div onClick={() => handleMoveDay(day, idx + 1, "up")}>
+                <div onClick={() => handleMoveDay(day, idx, "up")}>
                   <ArrowBackIosNew className={classes.moveUpButton} />
                 </div>
-                <div onClick={() => handleMoveDay(day, idx + 1, "down")}>
+                <div onClick={() => handleMoveDay(day, idx, "down")}>
                   <ArrowBackIosNew className={classes.moveDownButton} />
                 </div>
               </div>
@@ -364,12 +411,12 @@ export const EditWeek = ({
                       className={classes.nameInput}
                       value={day.name}
                       onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        handleDayNameInput(e, idx + 1)
+                        handleDayNameInput(e, idx)
                       }
                     ></Input>
                     <button
                       className={classes.editButton}
-                      onClick={() => handleEditDay(idx + 1)}
+                      onClick={() => handleEditDay(idx)}
                     >
                       Edit
                     </button>
@@ -387,13 +434,13 @@ export const EditWeek = ({
                       disabled={!day.hasGroup}
                       value={day.groupName}
                       onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        handleGroupNameInput(e, idx + 1)
+                        handleGroupNameInput(e, idx)
                       }
                     ></Input>
                     <Checkbox
                       className={classes.editButton}
                       checked={day.hasGroup}
-                      onClick={() => handleCheckGroup(idx + 1)}
+                      onClick={() => handleCheckGroup(idx)}
                     />
                   </div>
                   <span
@@ -410,7 +457,7 @@ export const EditWeek = ({
                 </div>
               </div>
               <div>
-                <div onClick={() => handleRemoveDay(idx + 1)}>
+                <div onClick={() => handleRemoveDay(idx)}>
                   <DeleteOutline
                     className={`${
                       block.weeks[0].days.length > 1
@@ -419,7 +466,7 @@ export const EditWeek = ({
                     }`}
                   />
                 </div>
-                <div onClick={() => handleDuplicateDay(idx + 1)}>
+                <div onClick={() => handleDuplicateDay(idx)}>
                   <ControlPointDuplicate
                     className={`${
                       block.weeks[0].days.length < 7

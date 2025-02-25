@@ -1,7 +1,11 @@
 import { Block, WeightType } from "@/types";
 import { Box, Theme, useTheme } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
-import { selectCurUser, selectTemplate } from "@/lib/features/user/userSlice";
+import {
+  selectCurUser,
+  selectEditingBlock,
+  selectTemplate,
+} from "@/lib/features/user/userSlice";
 import { useSelector } from "react-redux";
 import { EditDay } from "./editDay";
 import { EditWeek } from "./editWeek";
@@ -80,6 +84,8 @@ const boxStyle = (theme: Theme) => ({
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   marginBottom: "10px",
   [theme.breakpoints.up("sm")]: {
+    paddingTop: "5px",
+    border: "solid",
     maxHeight: "calc(100dvh - 70px)",
     overflow: "scroll",
     boxShadow: "5px 5px 5px gray",
@@ -89,7 +95,7 @@ const boxStyle = (theme: Theme) => ({
 export const CreateBlock = () => {
   const { classes } = useStyles();
   const curUser = useSelector(selectCurUser);
-  const [editingDay, setEditingDay] = useState(0);
+  const [editingDay, setEditingDay] = useState(-1);
   const router = useRouter();
   const pathname = usePathname();
   const { innerWidth } = useContext(InnerSizeContext);
@@ -102,9 +108,13 @@ export const CreateBlock = () => {
   }, [innerWidth]);
 
   const template = useSelector(selectTemplate);
+  const editingBlock = useSelector(selectEditingBlock);
   const [block, setBlock] = useState<Block>(
     template
-      ? { ...template, startDate: new Date() }
+      ? {
+          ...template,
+          startDate: editingBlock ? template.startDate : new Date(),
+        }
       : {
           name: "",
           startDate: new Date(),
@@ -188,7 +198,7 @@ export const CreateBlock = () => {
         <Box sx={boxStyle}>
           <span className={classes.title}>Create Training Block</span>
           <div className={classes.horizontalDivider}></div>
-          {editingDay === 0 ? (
+          {editingDay === -1 ? (
             <EditWeek
               uid={curUser?._id || ""}
               block={block}
@@ -204,7 +214,7 @@ export const CreateBlock = () => {
               setEditingDay={setEditingDay}
             />
           )}
-          {editingDay === 0 && (
+          {editingDay === -1 && (
             <div className={classes.actions} ref={saveRef}>
               <button
                 className={classes.submitButton}

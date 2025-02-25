@@ -14,6 +14,8 @@ import { useContext, useEffect, useState } from "react";
 import { LoginContext } from "../../providers/loginProvider";
 import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
 import { useTheme } from "@mui/material";
+import { useAppDispatch } from "@/lib/hooks";
+import { setEditingBlock, setTemplate } from "@/lib/features/user/userSlice";
 
 const useStyles = makeStyles()((theme) => ({
   container: {
@@ -91,6 +93,7 @@ const useStyles = makeStyles()((theme) => ({
 
 export const Footer = () => {
   const { classes } = useStyles();
+  const dispatch = useAppDispatch();
   const { curUser } = useContext(LoginContext);
   const router = useRouter();
   const pathname = usePathname();
@@ -103,6 +106,8 @@ export const Footer = () => {
   }, []);
 
   const handleIconClick = (type: RouteType) => {
+    dispatch(setTemplate(undefined));
+    dispatch(setEditingBlock(false));
     if (curUser) router.push(type);
   };
 

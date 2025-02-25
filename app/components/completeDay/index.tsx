@@ -10,6 +10,7 @@ import {
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { BlockOp, NumberChange } from "@/types";
+import { Add, Remove } from "@mui/icons-material";
 import { Box, Input, Theme, useTheme } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
@@ -81,6 +82,12 @@ const useStyles = makeStyles()((theme) => ({
     fontSize: "16px",
     fontWeight: 400,
   },
+  entrySetsReps: {
+    marginRight: "5px",
+  },
+  entryWeight: {
+    margin: "0px 5px 0px 10px",
+  },
   input: {
     border: "solid",
     borderColor: "gray",
@@ -95,13 +102,11 @@ const useStyles = makeStyles()((theme) => ({
     fontFamily: "League+Spartan",
     fontSize: "16px",
     fontWeight: 400,
-    width: "50%",
+    whiteSpace: "nowrap",
+    marginRight: "5px",
   },
   noteInput: {
     width: "100%",
-  },
-  lbs: {
-    marginLeft: "-5px",
   },
   actions: {
     display: "flex",
@@ -131,6 +136,14 @@ const useStyles = makeStyles()((theme) => ({
       cursor: "pointer",
     },
   },
+  addSet: {
+    fontSize: "18px",
+    color: "#0096FF",
+  },
+  subtractSet: {
+    fontSize: "18px",
+    color: "red",
+  },
 }));
 
 const boxStyle = (theme: Theme) => ({
@@ -146,6 +159,8 @@ const boxStyle = (theme: Theme) => ({
   width: "100%",
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   [theme.breakpoints.up("sm")]: {
+    paddingTop: "5px",
+    border: "solid",
     maxHeight: "calc(100dvh - 70px)",
     overflow: "scroll",
     boxShadow: "5px 5px 5px gray",
@@ -165,7 +180,6 @@ const exerciseBoxStyle = {
   borderRadius: "25px 25px 25px 25px",
   padding: "10px 10px 0px 10px",
   width: "100%",
-  height: "210px",
   zIndex: 1,
   scrollMarginTop: "10px",
 };
@@ -231,24 +245,56 @@ export const CompleteDay = () => {
       });
   }, [curUser?.curExercise]);
 
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement>,
-    type: NumberChange
-  ) => {
+  const handleSetsChange = (type: NumberChange) => {
     if (curUser?.curExercise !== undefined) {
-      if (type === NumberChange.Sets) {
+      if (
+        type === NumberChange.SubtractSet &&
+        exercisesState[curUser.curExercise].sets > 1
+      ) {
         const newExercise = {
           ...exercisesState[curUser.curExercise],
-          sets: parseInt(e.target.value) || 0,
+          sets: exercisesState[curUser.curExercise].sets - 1,
+          reps: exercisesState[curUser.curExercise].reps.toSpliced(
+            exercisesState[curUser.curExercise].sets - 1,
+            1
+          ),
+          weight: exercisesState[curUser.curExercise].weight.toSpliced(
+            exercisesState[curUser.curExercise].sets - 1,
+            1
+          ),
         };
         setExercisesState(
           exercisesState.toSpliced(curUser.curExercise, 1, newExercise)
         );
       }
+      if (type === NumberChange.AddSet) {
+        const newExercise = {
+          ...exercisesState[curUser.curExercise],
+          sets: exercisesState[curUser.curExercise].sets + 1,
+          reps: [...exercisesState[curUser.curExercise].reps, 0],
+          weight: [...exercisesState[curUser.curExercise].weight, 0],
+        };
+        setExercisesState(
+          exercisesState.toSpliced(curUser.curExercise, 1, newExercise)
+        );
+      }
+    }
+  };
+
+  const handleRepsWeightChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    type: NumberChange,
+    set: number
+  ) => {
+    if (curUser?.curExercise !== undefined) {
       if (type === NumberChange.Reps) {
         const newExercise = {
           ...exercisesState[curUser.curExercise],
-          reps: [parseInt(e.target.value) || 0],
+          reps: exercisesState[curUser.curExercise].reps.toSpliced(
+            set,
+            1,
+            parseInt(e?.target.value || "") || 0
+          ),
         };
         setExercisesState(
           exercisesState.toSpliced(curUser.curExercise, 1, newExercise)
@@ -257,7 +303,11 @@ export const CompleteDay = () => {
       if (type === NumberChange.Weight) {
         const newExercise = {
           ...exercisesState[curUser.curExercise],
-          weight: [parseInt(e.target.value) || 0],
+          weight: exercisesState[curUser.curExercise].weight.toSpliced(
+            set,
+            1,
+            parseInt(e?.target.value || "") || 0
+          ),
         };
         setExercisesState(
           exercisesState.toSpliced(curUser.curExercise, 1, newExercise)
@@ -423,11 +473,6 @@ export const CompleteDay = () => {
         weeks: newWeeks,
         completed: completedBlock,
       };
-      console.log(
-        curUser.curWeek,
-        block.weeks[curUser.curWeek],
-        block.completed
-      );
       dispatch(
         blockOp({
           uid: curUser._id || "",
@@ -465,7 +510,7 @@ export const CompleteDay = () => {
           <div className={classes.horizontalDivider}></div>
           <div className={classes.entry}>
             <span className={classes.descText}>
-              *Sets, reps, and weight are those specified when creating plan, or
+              Sets, reps, and weight are those specified when creating plan, or
               those from previous session if applicable.
             </span>
           </div>
@@ -491,38 +536,76 @@ export const CompleteDay = () => {
                   )}`}</span>
                 </div>
                 <div className={classes.entry}>
-                  <span className={classes.entryName}>Sets: </span>
-                  <Input
-                    className={classes.input}
-                    value={exercisesState[idx].sets}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      handleInputChange(e, NumberChange.Sets)
-                    }
-                  />
-                  <span className={classes.entryName}>Reps: </span>
-                  <Input
-                    className={classes.input}
-                    value={exercisesState[idx].reps}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      handleInputChange(e, NumberChange.Reps)
-                    }
-                  />
-                  <span className={classes.entryName}>Weight: </span>
-                  <Input
-                    className={classes.input}
-                    value={exercisesState[idx].weight}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      handleInputChange(e, NumberChange.Weight)
-                    }
-                  />
-                  <span className={`${classes.entryName} ${classes.lbs}`}>
-                    lbs
+                  <span
+                    className={`${classes.entryName} ${classes.entrySetsReps}`}
+                  >
+                    Sets:{" "}
                   </span>
+                  <div
+                    style={{ display: "flex", alignItems: "center" }}
+                    onClick={() => handleSetsChange(NumberChange.SubtractSet)}
+                  >
+                    <Remove className={classes.subtractSet} />
+                  </div>
+                  <span className={classes.entryName}>
+                    {exercisesState[idx].sets}
+                  </span>
+                  <div
+                    style={{ display: "flex", alignItems: "center" }}
+                    onClick={() => handleSetsChange(NumberChange.AddSet)}
+                  >
+                    <Add className={classes.addSet} />
+                  </div>
+                </div>
+                <div>
+                  {Array.from(Array(exercisesState[idx].sets).keys()).map(
+                    (set) => (
+                      <div className={classes.entry} key={set}>
+                        <span
+                          className={`${classes.entryName} ${classes.entrySetsReps}`}
+                        >
+                          Reps:
+                        </span>
+                        <Input
+                          inputProps={{
+                            style: { textAlign: "center" },
+                          }}
+                          value={
+                            set < exercisesState[idx].reps.length
+                              ? exercisesState[idx].reps[set]
+                              : exercisesState[idx].reps[0]
+                          }
+                          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                            handleRepsWeightChange(e, NumberChange.Reps, set)
+                          }
+                        />
+                        <span
+                          className={`${classes.entryName} ${classes.entryWeight}`}
+                        >
+                          Weight:
+                        </span>
+                        <Input
+                          inputProps={{
+                            style: { textAlign: "center" },
+                          }}
+                          value={
+                            set < exercisesState[idx].weight.length
+                              ? exercisesState[idx].weight[set]
+                              : exercisesState[idx].weight[0]
+                          }
+                          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                            handleRepsWeightChange(e, NumberChange.Weight, set)
+                          }
+                        />
+                        <span className={classes.entryName}>lbs</span>
+                      </div>
+                    )
+                  )}
                 </div>
                 <div className={classes.entry}>
                   <span className={classes.noteName}>Leave a note: </span>
                   <Input
-                    className={`${classes.input} ${classes.noteInput}`}
+                    className={classes.noteInput}
                     value={exercisesState[idx].note}
                     onChange={handleNoteChange}
                   />

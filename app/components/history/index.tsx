@@ -1,7 +1,7 @@
 import { makeStyles } from "tss-react/mui";
 import { Box, Theme, useTheme } from "@mui/material";
 import dayjs from "dayjs";
-import { selectCurUser, setTemplate } from "@/lib/features/user/userSlice";
+import { selectCurUser, setEditingBlock, setTemplate } from "@/lib/features/user/userSlice";
 import { useSelector } from "react-redux";
 import { ControlPointDuplicate } from "@mui/icons-material";
 import { Block } from "@/types";
@@ -79,6 +79,8 @@ const boxStyle = (theme: Theme) => ({
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   marginBottom: "10px",
   [theme.breakpoints.up("sm")]: {
+    paddingTop: "5px",
+    border: "solid",
     maxHeight: "100%",
     overflow: "scroll",
     boxShadow: "5px 5px 5px gray",
@@ -148,6 +150,7 @@ export const History = () => {
 
   const handleCreateFromTemplate = (block: Block) => {
     dispatch(setTemplate(getTemplateFromBlock(block)));
+    dispatch(setEditingBlock(false));
     router.push("/create-block");
   };
 

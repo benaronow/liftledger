@@ -1,6 +1,5 @@
 import {
   Block,
-  Day,
   Exercise,
   ExerciseApparatus,
   ExerciseName,
@@ -167,13 +166,21 @@ export const EditDay = ({
   const { classes } = useStyles();
   const addRef = useRef<HTMLDivElement>(null);
 
+  const dayGroup = block.weeks[0].days[editingDay].groupName;
+  const shouldEditDay = (dayName: string) => {
+    return block.weeks[0].days
+      .filter((day) => day.groupName === dayGroup)
+      .map((groupDay) => groupDay.name)
+      .includes(dayName);
+  };
+
   useEffect(() => {
     if (addRef.current)
       addRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
-  }, [block.weeks[0].days[editingDay - 1].exercises.length]);
+  }, [block.weeks[0].days[editingDay].exercises.length]);
 
   const exerciseNameOptions = Object.values(ExerciseName).map((value) => ({
     value,
@@ -194,146 +201,176 @@ export const EditDay = ({
 
   const handleMoveExercise = (
     exercise: Exercise,
-    exerciseNumber: number,
+    exerciseIdx: number,
     type: "up" | "down"
   ) => {
-    const day = block.weeks[0].days[editingDay - 1];
-    const withoutExercise: Exercise[] = day.exercises.toSpliced(
-      exerciseNumber - 1,
-      1
-    );
-    const newExercises: Exercise[] = withoutExercise.toSpliced(
-      type === "up" ? exerciseNumber - 2 : exerciseNumber,
-      0,
-      exercise
-    );
-    const newDays: Day[] = block.weeks[0].days.toSpliced(editingDay - 1, 1, {
-      ...day,
-      exercises: newExercises,
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week) => ({
+        ...week,
+        days: week.days.map((day) =>
+          shouldEditDay(day.name)
+            ? {
+                ...day,
+                exercises: day.exercises
+                  .toSpliced(exerciseIdx, 1)
+                  .toSpliced(
+                    type === "up" ? exerciseIdx - 1 : exerciseIdx + 1,
+                    0,
+                    exercise
+                  ),
+              }
+            : day
+        ),
+      })),
     });
-    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleExerciseNameSelect = (
     name: ExerciseName | string,
-    exerciseNumber: number
+    exerciseIdx: number
   ) => {
-    const day = block.weeks[0].days[editingDay - 1];
-    const newExercise: Exercise = {
-      ...day.exercises[exerciseNumber - 1],
-      name,
-    };
-    const newExercises: Exercise[] = day.exercises.toSpliced(
-      exerciseNumber - 1,
-      1,
-      newExercise
-    );
-    const newDays: Day[] = block.weeks[0].days.toSpliced(editingDay - 1, 1, {
-      ...day,
-      exercises: newExercises,
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week) => ({
+        ...week,
+        days: week.days.map((day) =>
+          shouldEditDay(day.name)
+            ? {
+                ...day,
+                exercises: day.exercises.map((exercise, eIdx) =>
+                  exerciseIdx === eIdx
+                    ? {
+                        ...exercise,
+                        name,
+                      }
+                    : exercise
+                ),
+              }
+            : day
+        ),
+      })),
     });
-    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleExerciseApparatusSelect = (
     apparatus: ExerciseApparatus | string,
-    exerciseNumber: number
+    exerciseIdx: number
   ) => {
-    const day = block.weeks[0].days[editingDay - 1];
-    const newExercise: Exercise = {
-      ...day.exercises[exerciseNumber - 1],
-      apparatus,
-    };
-    const newExercises: Exercise[] = day.exercises.toSpliced(
-      exerciseNumber - 1,
-      1,
-      newExercise
-    );
-    const newDays: Day[] = block.weeks[0].days.toSpliced(editingDay - 1, 1, {
-      ...day,
-      exercises: newExercises,
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week) => ({
+        ...week,
+        days: week.days.map((day) =>
+          shouldEditDay(day.name)
+            ? {
+                ...day,
+                exercises: day.exercises.map((exercise, eIdx) =>
+                  exerciseIdx === eIdx
+                    ? {
+                        ...exercise,
+                        apparatus,
+                      }
+                    : exercise
+                ),
+              }
+            : day
+        ),
+      })),
     });
-    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleWeightTypeSelect = (
     weightType: WeightType | string,
-    exerciseNumber: number
+    exerciseIdx: number
   ) => {
-    const day = block.weeks[0].days[editingDay - 1];
-    const newExercise: Exercise = {
-      ...day.exercises[exerciseNumber - 1],
-      weightType,
-    };
-    const newExercises: Exercise[] = day.exercises.toSpliced(
-      exerciseNumber - 1,
-      1,
-      newExercise
-    );
-    const newDays: Day[] = block.weeks[0].days.toSpliced(editingDay - 1, 1, {
-      ...day,
-      exercises: newExercises,
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week) => ({
+        ...week,
+        days: week.days.map((day) =>
+          shouldEditDay(day.name)
+            ? {
+                ...day,
+                exercises: day.exercises.map((exercise, eIdx) =>
+                  exerciseIdx === eIdx
+                    ? {
+                        ...exercise,
+                        weightType,
+                      }
+                    : exercise
+                ),
+              }
+            : day
+        ),
+      })),
     });
-    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleNumberInput = (
     e: ChangeEvent<HTMLInputElement>,
-    exerciseNumber: number,
+    exerciseIdx: number,
     type: string
   ) => {
-    if (type === "length") {
-      setBlock({ ...block, length: parseInt(e.target.value) || 0 });
-    } else {
-      const day = block.weeks[0].days[editingDay - 1];
-      const newExercise: Exercise = {
-        ...day.exercises[exerciseNumber - 1],
-        sets:
-          type === "sets"
-            ? parseInt(e.target.value) || 0
-            : day.exercises[exerciseNumber - 1].sets,
-        reps:
-          type === "reps"
-            ? [parseInt(e.target.value) || 0]
-            : day.exercises[exerciseNumber - 1].reps,
-        weight:
-          type === "weight"
-            ? [parseInt(e.target.value) || 0]
-            : day.exercises[exerciseNumber - 1].weight,
-      };
-      const newExercises: Exercise[] = day.exercises.toSpliced(
-        exerciseNumber - 1,
-        1,
-        newExercise
-      );
-      const newDays: Day[] = block.weeks[0].days.toSpliced(editingDay - 1, 1, {
-        ...day,
-        exercises: newExercises,
-      });
-      setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
-    }
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week) => ({
+        ...week,
+        days: week.days.map((day) =>
+          shouldEditDay(day.name)
+            ? {
+                ...day,
+                exercises: day.exercises.map((exercise, eIdx) =>
+                  exerciseIdx === eIdx
+                    ? {
+                        ...exercise,
+                        sets:
+                          type === "sets"
+                            ? parseInt(e.target.value) || 0
+                            : day.exercises[exerciseIdx].sets,
+                        reps:
+                          type === "reps"
+                            ? [parseInt(e.target.value) || 0]
+                            : day.exercises[exerciseIdx].reps,
+                        weight:
+                          type === "weight"
+                            ? [parseInt(e.target.value) || 0]
+                            : day.exercises[exerciseIdx].weight,
+                      }
+                    : exercise
+                ),
+              }
+            : day
+        ),
+      })),
+    });
   };
 
-  const handleUnilateralChange = (exerciseNumber: number) => {
-    const day = block.weeks[0].days[editingDay - 1];
-    const newExercise: Exercise = {
-      ...day.exercises[exerciseNumber - 1],
-      unilateral: !day.exercises[exerciseNumber - 1].unilateral,
-    };
-    const newExercises: Exercise[] = day.exercises.toSpliced(
-      exerciseNumber - 1,
-      1,
-      newExercise
-    );
-    const newDays: Day[] = block.weeks[0].days.toSpliced(editingDay - 1, 1, {
-      ...day,
-      exercises: newExercises,
+  const handleUnilateralChange = (exerciseIdx: number) => {
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week) => ({
+        ...week,
+        days: week.days.map((day) =>
+          shouldEditDay(day.name)
+            ? {
+                ...day,
+                exercises: day.exercises.map((exercise, eIdx) =>
+                  exerciseIdx === eIdx
+                    ? {
+                        ...exercise,
+                        unilateral: !exercise.unilateral,
+                      }
+                    : exercise
+                ),
+              }
+            : day
+        ),
+      })),
     });
-    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
   const handleAddExercise = () => {
-    const day = block.weeks[0].days[editingDay - 1];
     const newExercise: Exercise = {
       name: "",
       apparatus: "",
@@ -345,29 +382,42 @@ export const EditDay = ({
       note: "",
       completed: false,
     };
-    const newDays: Day[] = block.weeks[0].days.toSpliced(editingDay - 1, 1, {
-      ...day,
-      exercises: [...day.exercises, newExercise],
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week) => ({
+        ...week,
+        days: week.days.map((day) =>
+          shouldEditDay(day.name)
+            ? {
+                ...day,
+                exercises: [...day.exercises, newExercise],
+              }
+            : day
+        ),
+      })),
     });
-    setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
   };
 
-  const handleRemoveExercise = (exerciseNumber: number) => {
-    const day = block.weeks[0].days[editingDay - 1];
-    const newExercises: Exercise[] = day.exercises.toSpliced(
-      exerciseNumber - 1,
-      1
-    );
-    const newDays: Day[] = block.weeks[0].days.toSpliced(editingDay - 1, 1, {
-      ...day,
-      exercises: newExercises,
-    });
-    if (day.exercises.length > 1)
-      setBlock({ ...block, weeks: [{ ...block.weeks[0], days: newDays }] });
+  const handleRemoveExercise = (exerciseIdx: number) => {
+    if (block.weeks[0].days[editingDay].exercises.length > 1)
+      setBlock({
+        ...block,
+        weeks: block.weeks.map((week) => ({
+          ...week,
+          days: week.days.map((day) =>
+            shouldEditDay(day.name)
+              ? {
+                  ...day,
+                  exercises: day.exercises.toSpliced(exerciseIdx, 1),
+                }
+              : day
+          ),
+        })),
+      });
   };
 
   const handleGoBack = () => {
-    setEditingDay(0);
+    setEditingDay(-1);
   };
 
   return (
@@ -376,20 +426,16 @@ export const EditDay = ({
         <ArrowBackIosNew className={classes.backArrow}></ArrowBackIosNew>
         <span className={classes.backButton}>Go Back</span>
       </div>
-      {block.weeks[0].days[editingDay - 1].exercises.map((exercise, idx) => (
+      {block.weeks[0].days[editingDay].exercises.map((exercise, idx) => (
         <div className={classes.container} key={idx}>
           {idx > 0 && <div className={classes.entryDivider} />}
           <div className={classes.entriesContainer}>
             <div className={classes.entry}>
               <div className={classes.moveDayButtons}>
-                <div
-                  onClick={() => handleMoveExercise(exercise, idx + 1, "up")}
-                >
+                <div onClick={() => handleMoveExercise(exercise, idx, "up")}>
                   <ArrowBackIosNew className={classes.moveUpButton} />
                 </div>
-                <div
-                  onClick={() => handleMoveExercise(exercise, idx + 1, "down")}
-                >
+                <div onClick={() => handleMoveExercise(exercise, idx, "down")}>
                   <ArrowBackIosNew className={classes.moveDownButton} />
                 </div>
               </div>
@@ -408,7 +454,7 @@ export const EditDay = ({
                       options={exerciseNameOptions}
                       isSearchable
                       onChange={(e) =>
-                        handleExerciseNameSelect(e?.value || "", idx + 1)
+                        handleExerciseNameSelect(e?.value || "", idx)
                       }
                     />
                   </div>
@@ -428,35 +474,44 @@ export const EditDay = ({
                       options={exerciseApparatusOptions}
                       isSearchable
                       onChange={(e) =>
-                        handleExerciseApparatusSelect(e?.value || "", idx + 1)
+                        handleExerciseApparatusSelect(e?.value || "", idx)
                       }
                     />
                   </div>
                   <div className={classes.entry}>
                     <span className={classes.entryName}>Sets: </span>
                     <Input
+                      disabled={
+                        block.weeks[0].days[editingDay].exercises[idx].completed
+                      }
                       className={classes.numberInput}
                       value={exercise.sets}
                       onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        handleNumberInput(e, idx + 1, "sets")
+                        handleNumberInput(e, idx, "sets")
                       }
                     />
                     <span className={classes.entryName}>Reps: </span>
                     <Input
+                      disabled={
+                        block.weeks[0].days[editingDay].exercises[idx].completed
+                      }
                       className={classes.numberInput}
                       value={exercise.reps[0]}
                       onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        handleNumberInput(e, idx + 1, "reps")
+                        handleNumberInput(e, idx, "reps")
                       }
                     />
                   </div>
                   <div className={classes.entry}>
                     <span className={classes.entryName}>Weight: </span>
                     <Input
+                      disabled={
+                        block.weeks[0].days[editingDay].exercises[idx].completed
+                      }
                       className={classes.weightInput}
                       value={exercise.weight[0]}
                       onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        handleNumberInput(e, idx + 1, "weight")
+                        handleNumberInput(e, idx, "weight")
                       }
                     />
                     <Select
@@ -471,7 +526,7 @@ export const EditDay = ({
                       defaultValue={weightTypeOptions[0]}
                       options={weightTypeOptions}
                       onChange={(e) =>
-                        handleWeightTypeSelect(e?.value || "", idx + 1)
+                        handleWeightTypeSelect(e?.value || "", idx)
                       }
                       styles={{
                         control: (basestyles) => ({
@@ -487,15 +542,15 @@ export const EditDay = ({
                     <span className={classes.entryName}>Unilateral?</span>
                     <Checkbox
                       checked={exercise.unilateral}
-                      onChange={() => handleUnilateralChange(idx + 1)}
+                      onChange={() => handleUnilateralChange(idx)}
                     />
                   </div>
                 </div>
               </div>
-              <div onClick={() => handleRemoveExercise(idx + 1)}>
+              <div onClick={() => handleRemoveExercise(idx)}>
                 <DeleteOutline
                   className={`${
-                    block.weeks[0].days[editingDay - 1].exercises.length > 1
+                    block.weeks[0].days[editingDay].exercises.length > 1
                       ? classes.removeButton
                       : classes.disabled
                   }`}

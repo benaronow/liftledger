@@ -9,11 +9,14 @@ import {
   setCurDay,
   setCurExercise,
   setCurWeek,
+  setEditingBlock,
+  setTemplate,
 } from "@/lib/features/user/userSlice";
 import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
 import { History } from "../history";
 import { CreateBlock } from "../createBlock";
 import { CompleteDay } from "../completeDay";
+import { Block } from "@/types";
 
 const useStyles = makeStyles()((theme) => ({
   superDuperContainer: {
@@ -123,6 +126,8 @@ const boxStyle = (theme: Theme) => ({
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
   marginBottom: "10px",
   [theme.breakpoints.up("sm")]: {
+    paddingTop: "5px",
+    border: "solid",
     maxHeight: "100%",
     overflow: "scroll",
     boxShadow: "5px 5px 5px gray",
@@ -185,6 +190,51 @@ export const Dashboard = () => {
 
   const noUserBackground = curUser ? {} : { background: "white" };
 
+  const getTemplateFromBlock = (block: Block, editing: boolean) => {
+    return {
+      name: block.name,
+      startDate: block.startDate,
+      length: block.length,
+      weeks: editing
+        ? block.weeks
+        : [
+            {
+              number: 1,
+              days: block.weeks[block.length - 1].days.map((day) => {
+                return {
+                  name: day.name,
+                  hasGroup: day.hasGroup,
+                  groupName: day.groupName,
+                  exercises: day.exercises.map((exercise) => {
+                    return {
+                      name: exercise.name,
+                      apparatus: exercise.apparatus,
+                      sets: exercise.sets,
+                      reps: exercise.reps,
+                      weight: exercise.weight,
+                      weightType: exercise.weightType,
+                      unilateral: exercise.unilateral,
+                      note: "",
+                      completed: false,
+                    };
+                  }),
+                  completed: false,
+                  completedDate: undefined,
+                };
+              }),
+              completed: false,
+            },
+          ],
+      completed: false,
+    };
+  };
+
+  const handleCreateFromTemplate = (block: Block) => {
+    dispatch(setTemplate(getTemplateFromBlock(block, true)));
+    dispatch(setEditingBlock(true));
+    router.push("/create-block");
+  };
+
   return (
     <div className={classes.superDuperContainer} style={noUserBackground}>
       <div className={classes.superContainer}>
@@ -246,6 +296,14 @@ export const Dashboard = () => {
                         ? "Start"
                         : "Resume"
                     }: Week ${curWeekIdx + 1}, ${curDayName}`}
+                  </button>
+                  <button
+                    onClick={() =>
+                      curUser?.curBlock &&
+                      handleCreateFromTemplate(curUser.curBlock)
+                    }
+                  >
+                    Edit
                   </button>
                 </>
               )}

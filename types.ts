@@ -72,8 +72,8 @@ export enum ExerciseName {
   ReverseCurl = "Reverse Curl",
   ZottmanCurl = "Zottman Curl",
   ConcentrationCurl = "Concentration Curl",
-  OverheadTricepExtension = "Overhead Tricep Extension",
-  CrossbodyTricepExtension = "Cross-body Tricep Extension",
+  TricepOverheadExtension = "Tricep Overhead Extension",
+  TricepCrossbodyExtension = "Tricep Cross-body Extension",
   TricepPushdown = "Tricep Pushdown",
   Dip = "Dip",
   Skullcrusher = "Skullcrusher",
@@ -194,7 +194,8 @@ export enum BlockOp {
 }
 
 export enum NumberChange {
-  Sets = "sets",
+  AddSet = "add set",
+  SubtractSet = "subtract set",
   Reps = "reps",
   Weight = "weight",
 }
