@@ -182,26 +182,7 @@ const exerciseBoxStyle = {
   width: "100%",
   zIndex: 1,
   scrollMarginTop: "10px",
-};
-
-const overlayBoxStyle = {
-  background: "lightgray",
-  outline: 0,
-  borderRadius: "25px 25px 25px 25px",
-  padding: "10px 10px 0px 10px",
-  width: "100%",
-  marginTop: "-210px",
   marginBottom: "10px",
-  height: "210px",
-  zIndex: 2,
-  opacity: 0.7,
-};
-
-const underlayBoxStyle = {
-  height: "210px",
-  marginTop: "-210px",
-  marginBottom: "10px",
-  zIndex: 0,
 };
 
 export const CompleteDay = () => {
@@ -528,109 +509,119 @@ export const CompleteDay = () => {
                     exercise.unilateral ? "Unilateral" : "Bilateral"
                   })`}</span>
                 </div>
-                <div className={classes.entry}>
-                  <span
-                    className={classes.entryName}
-                  >{`Previous session note: ${getPreviousSessionNote(
-                    idx
-                  )}`}</span>
-                </div>
-                <div className={classes.entry}>
-                  <span
-                    className={`${classes.entryName} ${classes.entrySetsReps}`}
-                  >
-                    Sets:{" "}
-                  </span>
-                  <div
-                    style={{ display: "flex", alignItems: "center" }}
-                    onClick={() => handleSetsChange(NumberChange.SubtractSet)}
-                  >
-                    <Remove className={classes.subtractSet} />
-                  </div>
-                  <span className={classes.entryName}>
-                    {exercisesState[idx].sets}
-                  </span>
-                  <div
-                    style={{ display: "flex", alignItems: "center" }}
-                    onClick={() => handleSetsChange(NumberChange.AddSet)}
-                  >
-                    <Add className={classes.addSet} />
-                  </div>
-                </div>
-                <div>
-                  {Array.from(Array(exercisesState[idx].sets).keys()).map(
-                    (set) => (
-                      <div className={classes.entry} key={set}>
-                        <span
-                          className={`${classes.entryName} ${classes.entrySetsReps}`}
-                        >
-                          Reps:
-                        </span>
-                        <Input
-                          inputProps={{
-                            style: { textAlign: "center" },
-                          }}
-                          value={
-                            set < exercisesState[idx].reps.length
-                              ? exercisesState[idx].reps[set]
-                              : exercisesState[idx].reps[0]
-                          }
-                          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                            handleRepsWeightChange(e, NumberChange.Reps, set)
-                          }
-                        />
-                        <span
-                          className={`${classes.entryName} ${classes.entryWeight}`}
-                        >
-                          Weight:
-                        </span>
-                        <Input
-                          inputProps={{
-                            style: { textAlign: "center" },
-                          }}
-                          value={
-                            set < exercisesState[idx].weight.length
-                              ? exercisesState[idx].weight[set]
-                              : exercisesState[idx].weight[0]
-                          }
-                          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                            handleRepsWeightChange(e, NumberChange.Weight, set)
-                          }
-                        />
-                        <span className={classes.entryName}>lbs</span>
+                {idx === curUser?.curExercise && (
+                  <>
+                    <div className={classes.entry}>
+                      <span
+                        className={classes.entryName}
+                      >{`Previous session note: ${getPreviousSessionNote(
+                        idx
+                      )}`}</span>
+                    </div>
+                    <div className={classes.entry}>
+                      <span
+                        className={`${classes.entryName} ${classes.entrySetsReps}`}
+                      >
+                        Sets:{" "}
+                      </span>
+                      <div
+                        style={{ display: "flex", alignItems: "center" }}
+                        onClick={() =>
+                          handleSetsChange(NumberChange.SubtractSet)
+                        }
+                      >
+                        <Remove className={classes.subtractSet} />
                       </div>
-                    )
-                  )}
-                </div>
-                <div className={classes.entry}>
-                  <span className={classes.noteName}>Leave a note: </span>
-                  <Input
-                    className={classes.noteInput}
-                    value={exercisesState[idx].note}
-                    onChange={handleNoteChange}
-                  />
-                </div>
-                <div className={classes.actions}>
-                  <button
-                    className={classes.completeExerciseButton}
-                    onClick={() => handleNext(idx === exercises.length - 1)}
-                  >
-                    {idx === exercises.length - 1
-                      ? "Finish Workout"
-                      : "Next Exercise"}
-                  </button>
-                  <button className={classes.quitButton} onClick={handleQuit}>
-                    Quit
-                  </button>
-                </div>
+                      <span className={classes.entryName}>
+                        {exercisesState[idx].sets}
+                      </span>
+                      <div
+                        style={{ display: "flex", alignItems: "center" }}
+                        onClick={() => handleSetsChange(NumberChange.AddSet)}
+                      >
+                        <Add className={classes.addSet} />
+                      </div>
+                    </div>
+                    <div>
+                      {Array.from(Array(exercisesState[idx].sets).keys()).map(
+                        (set) => (
+                          <div className={classes.entry} key={set}>
+                            <span
+                              className={`${classes.entryName} ${classes.entrySetsReps}`}
+                            >
+                              Reps:
+                            </span>
+                            <Input
+                              inputProps={{
+                                style: { textAlign: "center" },
+                              }}
+                              value={
+                                set < exercisesState[idx].reps.length
+                                  ? exercisesState[idx].reps[set]
+                                  : exercisesState[idx].reps[0]
+                              }
+                              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                handleRepsWeightChange(
+                                  e,
+                                  NumberChange.Reps,
+                                  set
+                                )
+                              }
+                            />
+                            <span
+                              className={`${classes.entryName} ${classes.entryWeight}`}
+                            >
+                              Weight:
+                            </span>
+                            <Input
+                              inputProps={{
+                                style: { textAlign: "center" },
+                              }}
+                              value={
+                                set < exercisesState[idx].weight.length
+                                  ? exercisesState[idx].weight[set]
+                                  : exercisesState[idx].weight[0]
+                              }
+                              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                handleRepsWeightChange(
+                                  e,
+                                  NumberChange.Weight,
+                                  set
+                                )
+                              }
+                            />
+                            <span className={classes.entryName}>lbs</span>
+                          </div>
+                        )
+                      )}
+                    </div>
+                    <div className={classes.entry}>
+                      <span className={classes.noteName}>Leave a note: </span>
+                      <Input
+                        className={classes.noteInput}
+                        value={exercisesState[idx].note}
+                        onChange={handleNoteChange}
+                      />
+                    </div>
+                    <div className={classes.actions}>
+                      <button
+                        className={classes.completeExerciseButton}
+                        onClick={() => handleNext(idx === exercises.length - 1)}
+                      >
+                        {idx === exercises.length - 1
+                          ? "Finish Workout"
+                          : "Next Exercise"}
+                      </button>
+                      <button
+                        className={classes.quitButton}
+                        onClick={handleQuit}
+                      >
+                        Quit
+                      </button>
+                    </div>
+                  </>
+                )}
               </Box>
-              <Box
-                sx={
-                  idx === curUser?.curExercise
-                    ? underlayBoxStyle
-                    : overlayBoxStyle
-                }
-              />
             </div>
           ))}
         </Box>

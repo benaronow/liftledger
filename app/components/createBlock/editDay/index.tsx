@@ -1,5 +1,6 @@
 import {
   Block,
+  Day,
   Exercise,
   ExerciseApparatus,
   ExerciseName,
@@ -167,11 +168,14 @@ export const EditDay = ({
   const addRef = useRef<HTMLDivElement>(null);
 
   const dayGroup = block.weeks[0].days[editingDay].groupName;
-  const shouldEditDay = (dayName: string) => {
-    return block.weeks[0].days
-      .filter((day) => day.groupName === dayGroup)
-      .map((groupDay) => groupDay.name)
-      .includes(dayName);
+  const shouldEditDay = (day: Day) => {
+    return (
+      day.hasGroup &&
+      block.weeks[0].days
+        .filter((day) => day.groupName === dayGroup)
+        .map((groupDay) => groupDay.name)
+        .includes(day.name)
+    );
   };
 
   useEffect(() => {
@@ -209,7 +213,7 @@ export const EditDay = ({
       weeks: block.weeks.map((week) => ({
         ...week,
         days: week.days.map((day) =>
-          shouldEditDay(day.name)
+          shouldEditDay(day)
             ? {
                 ...day,
                 exercises: day.exercises
@@ -235,7 +239,7 @@ export const EditDay = ({
       weeks: block.weeks.map((week) => ({
         ...week,
         days: week.days.map((day) =>
-          shouldEditDay(day.name)
+          shouldEditDay(day)
             ? {
                 ...day,
                 exercises: day.exercises.map((exercise, eIdx) =>
@@ -262,7 +266,7 @@ export const EditDay = ({
       weeks: block.weeks.map((week) => ({
         ...week,
         days: week.days.map((day) =>
-          shouldEditDay(day.name)
+          shouldEditDay(day)
             ? {
                 ...day,
                 exercises: day.exercises.map((exercise, eIdx) =>
@@ -289,7 +293,7 @@ export const EditDay = ({
       weeks: block.weeks.map((week) => ({
         ...week,
         days: week.days.map((day) =>
-          shouldEditDay(day.name)
+          shouldEditDay(day)
             ? {
                 ...day,
                 exercises: day.exercises.map((exercise, eIdx) =>
@@ -317,7 +321,7 @@ export const EditDay = ({
       weeks: block.weeks.map((week) => ({
         ...week,
         days: week.days.map((day) =>
-          shouldEditDay(day.name)
+          shouldEditDay(day)
             ? {
                 ...day,
                 exercises: day.exercises.map((exercise, eIdx) =>
@@ -352,7 +356,7 @@ export const EditDay = ({
       weeks: block.weeks.map((week) => ({
         ...week,
         days: week.days.map((day) =>
-          shouldEditDay(day.name)
+          shouldEditDay(day)
             ? {
                 ...day,
                 exercises: day.exercises.map((exercise, eIdx) =>
@@ -387,7 +391,7 @@ export const EditDay = ({
       weeks: block.weeks.map((week) => ({
         ...week,
         days: week.days.map((day) =>
-          shouldEditDay(day.name)
+          shouldEditDay(day)
             ? {
                 ...day,
                 exercises: [...day.exercises, newExercise],
@@ -405,7 +409,7 @@ export const EditDay = ({
         weeks: block.weeks.map((week) => ({
           ...week,
           days: week.days.map((day) =>
-            shouldEditDay(day.name)
+            shouldEditDay(day)
               ? {
                   ...day,
                   exercises: day.exercises.toSpliced(exerciseIdx, 1),
