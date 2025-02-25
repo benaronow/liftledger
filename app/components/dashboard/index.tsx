@@ -18,7 +18,7 @@ import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
 import { History } from "../history";
 import { CreateBlock } from "../createBlock";
 import { CompleteDay } from "../completeDay";
-import { Block } from "@/types";
+import { Block, RouteType } from "@/types";
 
 const useStyles = makeStyles()((theme) => ({
   superDuperContainer: {
@@ -162,6 +162,10 @@ export const Dashboard = () => {
   const router = useRouter();
 
   useEffect(() => {
+    router.prefetch(RouteType.Add);
+    router.prefetch(RouteType.History);
+    router.prefetch(RouteType.Profile);
+    router.prefetch(RouteType.Progress);
     dispatch(setCurWeek(undefined));
     dispatch(setCurDay(undefined));
     dispatch(setCurExercise(undefined));
