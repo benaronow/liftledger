@@ -10,7 +10,7 @@ import {
 } from "@/lib/features/user/userSlice";
 import { useSelector } from "react-redux";
 import { ControlPointDuplicate } from "@mui/icons-material";
-import { Block } from "@/types";
+import { Block, RouteType } from "@/types";
 import { useAppDispatch } from "@/lib/hooks";
 import { usePathname, useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
@@ -105,6 +105,13 @@ export const History = () => {
   const pathname = usePathname();
   const { innerWidth } = useContext(InnerSizeContext);
   const theme = useTheme();
+
+  useEffect(() => {
+    router.prefetch(RouteType.Add);
+    router.prefetch(RouteType.Home);
+    router.prefetch(RouteType.Profile);
+    router.prefetch(RouteType.Progress);
+  }, []);
 
   useEffect(() => {
     if (innerWidth && innerWidth > theme.breakpoints.values["sm"])

@@ -2,10 +2,10 @@
 
 import { updateUser } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
-import { User } from "@/types";
+import { RouteType, User } from "@/types";
 import { Box, Input, Theme } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useContext, useState } from "react";
+import { ChangeEvent, FormEvent, useContext, useEffect, useState } from "react";
 import { makeStyles } from "tss-react/mui";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
@@ -125,7 +125,11 @@ export const CreateAccount = () => {
   const router = useRouter();
   const { classes } = useStyles();
   const { session, attemptedLogin, curUser } = useContext(LoginContext);
-  if (!session || (attemptedLogin && curUser)) router.push("/dashboard");
+
+  useEffect(() => {
+    router.prefetch(RouteType.Home);
+    if (!session || (attemptedLogin && curUser)) router.push("/dashboard");
+  }, []);
 
   const [input, setInput] = useState({
     firstName: "",

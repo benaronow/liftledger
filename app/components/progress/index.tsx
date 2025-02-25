@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles } from "tss-react/mui";
 import { LoginContext } from "@/app/providers/loginProvider";
-import { TableData, TableDay, TableExercise, Week } from "@/types";
+import { RouteType, TableData, TableDay, TableExercise, Week } from "@/types";
 import {
   Paper,
   Table,
@@ -13,6 +13,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 const useStyles = makeStyles()((theme) => ({
   container: {
@@ -81,6 +82,14 @@ const paperStyle = { width: "100%" };
 export const Progress = () => {
   const { classes } = useStyles();
   const { curUser } = useContext(LoginContext);
+  const router = useRouter();
+
+  useEffect(() => {
+    router.prefetch(RouteType.Add);
+    router.prefetch(RouteType.Home);
+    router.prefetch(RouteType.Profile);
+    router.prefetch(RouteType.History);
+  }, []);
 
   const laterSessions = (curWeek: Week, curDay: number) => {
     const curDayDetail = curWeek.days[curDay];

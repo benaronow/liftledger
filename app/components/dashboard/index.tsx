@@ -166,9 +166,6 @@ export const Dashboard = () => {
     router.prefetch(RouteType.History);
     router.prefetch(RouteType.Profile);
     router.prefetch(RouteType.Progress);
-    dispatch(setCurWeek(undefined));
-    dispatch(setCurDay(undefined));
-    dispatch(setCurExercise(undefined));
   }, []);
 
   const curWeekIdx =

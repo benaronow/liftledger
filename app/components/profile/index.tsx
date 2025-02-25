@@ -1,13 +1,14 @@
 "use client";
 
 import { Avatar, Box, Theme } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { makeStyles } from "tss-react/mui";
 import { LoginContext } from "../../providers/loginProvider";
 import dayjs from "dayjs";
 import { useAppDispatch } from "@/lib/hooks";
 import { deleteUser } from "@/lib/features/user/userSlice";
 import { useRouter } from "next/navigation";
+import { RouteType } from "@/types";
 
 const useStyles = makeStyles()((theme) => ({
   container: {
@@ -106,6 +107,13 @@ export const Profile = () => {
   const { session, curUser } = useContext(LoginContext);
   const dispatch = useAppDispatch();
   const router = useRouter();
+
+  useEffect(() => {
+    router.prefetch(RouteType.Add);
+    router.prefetch(RouteType.Home);
+    router.prefetch(RouteType.History);
+    router.prefetch(RouteType.Progress);
+  }, []);
 
   const handleLogout = () => {
     router.push(`/auth/logout`);

@@ -11,7 +11,7 @@ import {
   updateUser,
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
-import { BlockOp, NumberChange } from "@/types";
+import { BlockOp, NumberChange, RouteType } from "@/types";
 import { Add, Remove } from "@mui/icons-material";
 import { Box, Input, Theme, useTheme } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
@@ -210,6 +210,14 @@ export const CompleteDay = () => {
   const { innerWidth } = useContext(InnerSizeContext);
   const theme = useTheme();
   const curRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    router.prefetch(RouteType.Add);
+    router.prefetch(RouteType.Home);
+    router.prefetch(RouteType.Profile);
+    router.prefetch(RouteType.History);
+    router.prefetch(RouteType.Progress);
+  }, []);
 
   const exercises =
     curUser &&

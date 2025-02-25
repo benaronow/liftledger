@@ -1,6 +1,6 @@
 "use client";
 
-import { Block, WeightType } from "@/types";
+import { Block, RouteType, WeightType } from "@/types";
 import { Box, Theme, useTheme } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
@@ -103,6 +103,13 @@ export const CreateBlock = () => {
   const { innerWidth } = useContext(InnerSizeContext);
   const theme = useTheme();
   const saveRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    router.prefetch(RouteType.Progress);
+    router.prefetch(RouteType.Home);
+    router.prefetch(RouteType.Profile);
+    router.prefetch(RouteType.History);
+  }, []);
 
   useEffect(() => {
     if (innerWidth && innerWidth > theme.breakpoints.values["sm"])
