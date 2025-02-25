@@ -30,12 +30,14 @@ export const Spinner = () => {
   const { classes } = useStyles();
 
   return (
-    <Image
-      className={classes.logo}
-      src="/icon.png"
-      alt="Description of image"
-      height={50}
-      width={50}
-    />
+    <div className={classes.container}>
+      <Image
+        className={classes.logo}
+        src="/icon.png"
+        alt="Description of image"
+        height={50}
+        width={50}
+      />
+    </div>
   );
 };
