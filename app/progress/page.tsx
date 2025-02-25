@@ -1,5 +1,3 @@
-"use client";
-
 import { Progress } from "../components/progress";
 
 const Page = () => {

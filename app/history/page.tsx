@@ -1,5 +1,3 @@
-"use client";
-
 import { History } from "../components/history";
 
 const Page = () => {

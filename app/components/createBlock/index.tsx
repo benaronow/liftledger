@@ -1,3 +1,5 @@
+"use client";
+
 import { Block, WeightType } from "@/types";
 import { Box, Theme, useTheme } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";

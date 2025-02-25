@@ -1,3 +1,5 @@
+"use client";
+
 import { updateUser } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { User } from "@/types";

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useContext } from "react";
 import { makeStyles } from "tss-react/mui";
 import { LoginContext } from "@/app/providers/loginProvider";

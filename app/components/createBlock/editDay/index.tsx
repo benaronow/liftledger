@@ -521,6 +521,9 @@ export const EditDay = ({
                       }}
                     />
                     <Select
+                      isDisabled={
+                        block.weeks[0].days[editingDay].exercises[idx].completed
+                      }
                       value={
                         exercise.weightType
                           ? {

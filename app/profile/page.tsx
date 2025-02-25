@@ -1,5 +1,3 @@
-"use client";
-
 import { Profile } from "../components/profile";
 
 const Page = () => {

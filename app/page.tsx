@@ -1,5 +1,3 @@
-"use client";
-
 import { LiftLedger } from "./components/liftLedger";
 
 const IndexPage = () => {

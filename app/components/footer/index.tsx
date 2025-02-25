@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { makeStyles } from "tss-react/mui";
 import {
   AddCircleOutline,
@@ -11,11 +11,11 @@ import {
 } from "@mui/icons-material";
 import { RouteType } from "@/types";
 import { useContext, useEffect, useState } from "react";
-import { LoginContext } from "../../providers/loginProvider";
 import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
 import { useTheme } from "@mui/material";
 import { useAppDispatch } from "@/lib/hooks";
 import { setEditingBlock, setTemplate } from "@/lib/features/user/userSlice";
+import Link from "next/link";
 
 const useStyles = makeStyles()((theme) => ({
   container: {
@@ -94,8 +94,6 @@ const useStyles = makeStyles()((theme) => ({
 export const Footer = () => {
   const { classes } = useStyles();
   const dispatch = useAppDispatch();
-  const { curUser } = useContext(LoginContext);
-  const router = useRouter();
   const pathname = usePathname();
   const { innerWidth } = useContext(InnerSizeContext);
   const theme = useTheme();
@@ -105,10 +103,9 @@ export const Footer = () => {
     setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
   }, []);
 
-  const handleIconClick = (type: RouteType) => {
+  const handleIconClick = () => {
     dispatch(setTemplate(undefined));
     dispatch(setEditingBlock(false));
-    if (curUser) router.push(type);
   };
 
   return (
@@ -120,54 +117,59 @@ export const Footer = () => {
         >
           {innerWidth && innerWidth < theme.breakpoints.values["sm"] && (
             <>
-              <div className={classes.iconContainer}>
-                <div
-                  className={classes.iconCircle}
-                  onClick={() => handleIconClick(RouteType.Progress)}
-                >
+              <Link
+                className={classes.iconContainer}
+                href={RouteType.Progress}
+                onClick={handleIconClick}
+              >
+                <div className={classes.iconCircle}>
                   <InsightsRounded
                     className={classes.progressIcon}
                   ></InsightsRounded>
                 </div>
-              </div>
-              <div className={classes.iconContainer}>
-                <div
-                  className={classes.iconCircle}
-                  onClick={() => handleIconClick(RouteType.History)}
-                >
+              </Link>
+              <Link
+                className={classes.iconContainer}
+                href={RouteType.History}
+                onClick={handleIconClick}
+              >
+                <div className={classes.iconCircle}>
                   <History className={classes.historyIcon}></History>
                 </div>
-              </div>
-              <div
+              </Link>
+              <Link
                 className={`${classes.iconContainer} ${classes.homeIconContainer}`}
+                href={RouteType.Home}
+                onClick={handleIconClick}
               >
                 <div
                   className={`${classes.iconCircle} ${classes.homeIconCircle}`}
-                  onClick={() => handleIconClick(RouteType.Home)}
                 >
                   <HomeOutlined className={classes.homeIcon}></HomeOutlined>
                 </div>
-              </div>
-              <div className={classes.iconContainer}>
-                <div
-                  className={classes.iconCircle}
-                  onClick={() => handleIconClick(RouteType.Add)}
-                >
+              </Link>
+              <Link
+                className={classes.iconContainer}
+                href={RouteType.Add}
+                onClick={handleIconClick}
+              >
+                <div className={classes.iconCircle}>
                   <AddCircleOutline
                     className={classes.addIcon}
                   ></AddCircleOutline>
                 </div>
-              </div>
-              <div className={classes.iconContainer}>
-                <div
-                  className={classes.iconCircle}
-                  onClick={() => handleIconClick(RouteType.Profile)}
-                >
+              </Link>
+              <Link
+                className={classes.iconContainer}
+                href={RouteType.Profile}
+                onClick={handleIconClick}
+              >
+                <div className={classes.iconCircle}>
                   <PersonOutline
                     className={classes.profileIcon}
                   ></PersonOutline>
                 </div>
-              </div>
+              </Link>
             </>
           )}
         </div>

@@ -1,7 +1,13 @@
+"use client";
+
 import { makeStyles } from "tss-react/mui";
 import { Box, Theme, useTheme } from "@mui/material";
 import dayjs from "dayjs";
-import { selectCurUser, setEditingBlock, setTemplate } from "@/lib/features/user/userSlice";
+import {
+  selectCurUser,
+  setEditingBlock,
+  setTemplate,
+} from "@/lib/features/user/userSlice";
 import { useSelector } from "react-redux";
 import { ControlPointDuplicate } from "@mui/icons-material";
 import { Block } from "@/types";

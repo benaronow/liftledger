@@ -1,3 +1,5 @@
+"use client";
+
 import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
 import {
   blockOp,
