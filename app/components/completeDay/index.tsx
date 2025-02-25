@@ -209,29 +209,6 @@ export const CompleteDay = () => {
   const theme = useTheme();
   const curRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (curUser?.curExercise)
-      for (let i = 0; i < exercises.length; i++) {
-        if (exercises[i].reps.length !== exercises[i].sets) {
-          const newReps = [...exercisesState[curUser?.curExercise || 0].reps];
-          const newWeight = [...exercisesState[curUser.curExercise].weight];
-          Array.from(
-            Array(exercises[i].sets - exercises[i].reps.length).keys()
-          ).forEach(() => {
-            newReps.push(newReps[0]);
-            newWeight.push(newWeight[0]);
-          });
-          const newExercise = {
-            ...exercisesState[curUser.curExercise],
-            reps: newReps,
-            weight: newWeight,
-          };
-          console.log(newExercise);
-          setExercisesState(exercisesState.toSpliced(i, 1, newExercise));
-        }
-      }
-  }, [curUser?.curExercise]);
-
   const exercises =
     curUser &&
     curUser.curBlock &&
@@ -240,15 +217,35 @@ export const CompleteDay = () => {
       ? curUser.curBlock.weeks[curUser.curWeek].days[curUser.curDay].exercises
       : [];
   useEffect(() => {
-    if (!exercises.length) router.push("/dashboard");
+    if (!exercisesState.length) router.push("/dashboard");
+  }, [exercises]);
+
+  const [exercisesState, setExercisesState] = useState(exercises);
+  useEffect(() => {
+    for (let i = 0; i < exercises.length; i++) {
+      if (exercises[i].reps.length < exercises[i].sets) {
+        const newReps = [...exercises[i].reps];
+        const newWeight = [...exercises[i].weight];
+        Array.from(
+          Array(exercises[i].sets - exercises[i].reps.length).keys()
+        ).forEach(() => {
+          newReps.push(newReps[0]);
+          newWeight.push(newWeight[0]);
+        });
+        const newExercise = {
+          ...exercises[i],
+          reps: newReps,
+          weight: newWeight,
+        };
+        setExercisesState((prev) => prev.toSpliced(i, 1, newExercise));
+      }
+    }
   }, [exercises]);
 
   useEffect(() => {
     if (innerWidth && innerWidth > theme.breakpoints.values["sm"])
       router.push("/dashboard");
   }, [innerWidth]);
-
-  const [exercisesState, setExercisesState] = useState(exercises);
 
   useEffect(() => {
     if (curUser?.curWeek === undefined || curUser?.curDay === undefined) {
@@ -597,7 +594,10 @@ export const CompleteDay = () => {
                     <div>
                       {Array.from(Array(exercisesState[idx].sets).keys()).map(
                         (set) => (
-                          <div className={classes.entry} key={set}>
+                          <div
+                            className={classes.entry}
+                            key={`${exercisesState[idx].name}${set}`}
+                          >
                             <span
                               className={`${classes.entryName} ${classes.entrySetsReps}`}
                             >

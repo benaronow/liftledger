@@ -231,7 +231,6 @@ export const Progress = () => {
       };
     })
   );
-  console.log(allTableData[0]);
 
   return (
     <div className={`${classes.container}`}>
