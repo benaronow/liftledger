@@ -322,7 +322,7 @@ export const CompleteDay = () => {
           reps: exercisesState[curUser.curExercise].reps.toSpliced(
             set,
             1,
-            parseInt(e?.target.value || "") || 0
+            e.target.value as unknown as number
           ),
         };
         setExercisesState(
@@ -335,7 +335,7 @@ export const CompleteDay = () => {
           weight: exercisesState[curUser.curExercise].weight.toSpliced(
             set,
             1,
-            parseInt(e?.target.value || "") || 0
+            e.target.value as unknown as number
           ),
         };
         setExercisesState(
@@ -612,13 +612,14 @@ export const CompleteDay = () => {
                                   ? exercisesState[idx].reps[set]
                                   : exercisesState[idx].reps[0]
                               }
-                              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                handleRepsWeightChange(
-                                  e,
-                                  NumberChange.Reps,
-                                  set
-                                )
-                              }
+                              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                if (/^\d*$/.test(e.target.value))
+                                  handleRepsWeightChange(
+                                    e,
+                                    NumberChange.Reps,
+                                    set
+                                  );
+                              }}
                             />
                             <span
                               className={`${classes.entryName} ${classes.entryWeight}`}
@@ -634,13 +635,14 @@ export const CompleteDay = () => {
                                   ? exercisesState[idx].weight[set]
                                   : exercisesState[idx].weight[0]
                               }
-                              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                handleRepsWeightChange(
-                                  e,
-                                  NumberChange.Weight,
-                                  set
-                                )
-                              }
+                              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                if (/^\d*\.?\d*$/.test(e.target.value))
+                                  handleRepsWeightChange(
+                                    e,
+                                    NumberChange.Weight,
+                                    set
+                                  );
+                              }}
                             />
                             <span className={classes.entryName}>lbs</span>
                           </div>

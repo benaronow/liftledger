@@ -329,15 +329,15 @@ export const EditDay = ({
                         ...exercise,
                         sets:
                           type === "sets"
-                            ? parseInt(e.target.value) || 0
+                            ? (e.target.value as unknown as number)
                             : day.exercises[exerciseIdx].sets,
                         reps:
                           type === "reps"
-                            ? [parseInt(e.target.value) || 0]
+                            ? [e.target.value as unknown as number]
                             : day.exercises[exerciseIdx].reps,
                         weight:
                           type === "weight"
-                            ? [parseInt(e.target.value) || 0]
+                            ? [e.target.value as unknown as number]
                             : day.exercises[exerciseIdx].weight,
                       }
                     : exercise
@@ -489,9 +489,10 @@ export const EditDay = ({
                       }
                       className={classes.numberInput}
                       value={exercise.sets}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        handleNumberInput(e, idx, "sets")
-                      }
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        if (/^\d*$/.test(e.target.value))
+                          handleNumberInput(e, idx, "sets");
+                      }}
                     />
                     <span className={classes.entryName}>Reps: </span>
                     <Input
@@ -500,9 +501,10 @@ export const EditDay = ({
                       }
                       className={classes.numberInput}
                       value={exercise.reps[0]}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        handleNumberInput(e, idx, "reps")
-                      }
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        if (/^\d*$/.test(e.target.value))
+                          handleNumberInput(e, idx, "reps");
+                      }}
                     />
                   </div>
                   <div className={classes.entry}>
@@ -513,9 +515,10 @@ export const EditDay = ({
                       }
                       className={classes.weightInput}
                       value={exercise.weight[0]}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        handleNumberInput(e, idx, "weight")
-                      }
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        if (/^\d*\.?\d*$/.test(e.target.value))
+                          handleNumberInput(e, idx, "weight");
+                      }}
                     />
                     <Select
                       value={
