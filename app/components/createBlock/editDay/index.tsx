@@ -169,13 +169,12 @@ export const EditDay = ({
 
   const dayGroup = block.weeks[0].days[editingDay].groupName;
   const shouldEditDay = (day: Day) => {
-    return (
-      day.hasGroup &&
-      block.weeks[0].days
-        .filter((day) => day.groupName === dayGroup)
-        .map((groupDay) => groupDay.name)
-        .includes(day.name)
-    );
+    return dayGroup
+      ? block.weeks[0].days
+          .filter((day) => day.groupName === dayGroup)
+          .map((groupDay) => groupDay.name)
+          .includes(day.name)
+      : day.name === block.weeks[0].days[editingDay].name;
   };
 
   useEffect(() => {

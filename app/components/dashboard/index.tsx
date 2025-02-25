@@ -62,6 +62,8 @@ const useStyles = makeStyles()((theme) => ({
     fontSize: "16px",
     marginBottom: "10px",
     width: "100%",
+    justifyContent: "space-around",
+    alignItems: "center",
   },
   name: {
     display: "flex",
@@ -103,6 +105,17 @@ const useStyles = makeStyles()((theme) => ({
     color: "#7dc9ff",
     "&:hover": {
       cursor: "default",
+    },
+  },
+  editBlockButton: {
+    border: "none",
+    background: "transparent",
+    fontFamily: "League+Spartan",
+    fontSize: "16px",
+    color: "#32CD32",
+    fontWeight: 600,
+    "&:hover": {
+      cursor: "pointer",
     },
   },
   noBlockText: {
@@ -283,28 +296,31 @@ export const Dashboard = () => {
                     }`}</span>
                   </div>
                   <div className={classes.horizontalDivider}></div>
-                  <button
-                    className={`${classes.startDayButton} ${
-                      curUser.curExercise && classes.startedDayButton
-                    }`}
-                    onClick={() =>
-                      handleStartDay(curWeekIdx, curDayIdx, curExerciseIdx)
-                    }
-                  >
-                    {`${
-                      !curExerciseIdx || curExerciseIdx === 0
-                        ? "Start"
-                        : "Resume"
-                    }: Week ${curWeekIdx + 1}, ${curDayName}`}
-                  </button>
-                  <button
-                    onClick={() =>
-                      curUser?.curBlock &&
-                      handleCreateFromTemplate(curUser.curBlock)
-                    }
-                  >
-                    Edit
-                  </button>
+                  <div className={classes.entry}>
+                    <button
+                      className={`${classes.startDayButton} ${
+                        curUser.curExercise && classes.startedDayButton
+                      }`}
+                      onClick={() =>
+                        handleStartDay(curWeekIdx, curDayIdx, curExerciseIdx)
+                      }
+                    >
+                      {`${
+                        !curExerciseIdx || curExerciseIdx === 0
+                          ? "Start"
+                          : "Resume"
+                      }: Week ${curWeekIdx + 1}, ${curDayName}`}
+                    </button>
+                    <button
+                      className={classes.editBlockButton}
+                      onClick={() =>
+                        curUser?.curBlock &&
+                        handleCreateFromTemplate(curUser.curBlock)
+                      }
+                    >
+                      Edit Block
+                    </button>
+                  </div>
                 </>
               )}
             </Box>

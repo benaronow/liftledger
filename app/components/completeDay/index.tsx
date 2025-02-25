@@ -110,17 +110,30 @@ const useStyles = makeStyles()((theme) => ({
   },
   actions: {
     display: "flex",
-    width: "70%",
+    width: "100%",
     justifyContent: "space-around",
     marginBottom: "10px",
   },
-  completeExerciseButton: {
+  previousExerciseButton: {
     border: "none",
     background: "transparent",
     fontFamily: "League+Spartan",
     fontSize: "16px",
     color: "#0096FF",
     fontWeight: 600,
+    whiteSpace: "nowrap",
+    "&:hover": {
+      cursor: "pointer",
+    },
+  },
+  completeExerciseButton: {
+    border: "none",
+    background: "transparent",
+    fontFamily: "League+Spartan",
+    fontSize: "16px",
+    color: "#32CD32",
+    fontWeight: 600,
+    whiteSpace: "nowrap",
     "&:hover": {
       cursor: "pointer",
     },
@@ -132,6 +145,7 @@ const useStyles = makeStyles()((theme) => ({
     fontSize: "16px",
     color: "red",
     fontWeight: 600,
+    whiteSpace: "nowrap",
     "&:hover": {
       cursor: "pointer",
     },
@@ -194,6 +208,30 @@ export const CompleteDay = () => {
   const { innerWidth } = useContext(InnerSizeContext);
   const theme = useTheme();
   const curRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (curUser?.curExercise)
+      for (let i = 0; i < exercises.length; i++) {
+        if (exercises[i].reps.length !== exercises[i].sets) {
+          const newReps = [...exercisesState[curUser?.curExercise || 0].reps];
+          const newWeight = [...exercisesState[curUser.curExercise].weight];
+          Array.from(
+            Array(exercises[i].sets - exercises[i].reps.length).keys()
+          ).forEach(() => {
+            newReps.push(newReps[0]);
+            newWeight.push(newWeight[0]);
+          });
+          const newExercise = {
+            ...exercisesState[curUser.curExercise],
+            reps: newReps,
+            weight: newWeight,
+          };
+          console.log(newExercise);
+          setExercisesState(exercisesState.toSpliced(i, 1, newExercise));
+        }
+      }
+  }, [curUser?.curExercise]);
+
   const exercises =
     curUser &&
     curUser.curBlock &&
@@ -252,8 +290,18 @@ export const CompleteDay = () => {
         const newExercise = {
           ...exercisesState[curUser.curExercise],
           sets: exercisesState[curUser.curExercise].sets + 1,
-          reps: [...exercisesState[curUser.curExercise].reps, 0],
-          weight: [...exercisesState[curUser.curExercise].weight, 0],
+          reps: [
+            ...exercisesState[curUser.curExercise].reps,
+            exercisesState[curUser.curExercise].reps[
+              exercisesState[curUser.curExercise].sets - 1
+            ],
+          ],
+          weight: [
+            ...exercisesState[curUser.curExercise].weight,
+            exercisesState[curUser.curExercise].weight[
+              exercisesState[curUser.curExercise].sets - 1
+            ],
+          ],
         };
         setExercisesState(
           exercisesState.toSpliced(curUser.curExercise, 1, newExercise)
@@ -369,6 +417,10 @@ export const CompleteDay = () => {
       }
     }
     return 0;
+  };
+
+  const handleBack = () => {
+    if (curUser?.curExercise) dispatch(setCurExercise(curUser.curExercise - 1));
   };
 
   const handleNext = (completedDay: boolean) => {
@@ -604,6 +656,14 @@ export const CompleteDay = () => {
                       />
                     </div>
                     <div className={classes.actions}>
+                      {idx !== 0 && (
+                        <button
+                          className={classes.previousExerciseButton}
+                          onClick={handleBack}
+                        >
+                          Previous
+                        </button>
+                      )}
                       <button
                         className={classes.completeExerciseButton}
                         onClick={() => handleNext(idx === exercises.length - 1)}
