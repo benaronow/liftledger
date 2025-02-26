@@ -11,20 +11,20 @@ import {
   setCurDay,
   setCurExercise,
   setCurWeek,
-  setEditingBlock,
-  setTemplate,
+  // setEditingBlock,
+  // setTemplate,
 } from "@/lib/features/user/userSlice";
 import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
 import { History } from "../history";
 import { CreateBlock } from "../createBlock";
 import { CompleteDay } from "../completeDay";
-import { Block, RouteType } from "@/types";
+import { RouteType } from "@/types";
 
 const useStyles = makeStyles()((theme) => ({
   superDuperContainer: {
     display: "flex",
     width: "100%",
-    height: "calc(100dvh - 120px)",
+    height: "calc(100dvh - 50px)",
     overflow: "scroll",
     outline: "none",
     [theme.breakpoints.up("sm")]: {
@@ -42,21 +42,12 @@ const useStyles = makeStyles()((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    padding: "10px 10px 0px 10px",
   },
   title: {
     fontFamily: "League+Spartan",
     fontWeight: 900,
     fontSize: "22px",
     marginBottom: "10px",
-  },
-  horizontalDivider: {
-    width: "100%",
-    height: "2px",
-    background: "black",
-    marginBottom: "10px",
-    border: "solid",
-    borderWidth: "1px",
   },
   entry: {
     display: "flex",
@@ -66,10 +57,12 @@ const useStyles = makeStyles()((theme) => ({
     width: "100%",
     justifyContent: "space-around",
     alignItems: "center",
+    color: "white",
+    whiteSpace: "nowrap",
   },
   name: {
     display: "flex",
-    fontWeight: 600,
+    fontWeight: 700,
     width: "75%",
     justifyContent: "flex-start",
     textAlign: "left",
@@ -130,27 +123,14 @@ const useStyles = makeStyles()((theme) => ({
 const boxStyle = (theme: Theme) => ({
   display: "flex",
   flexDirection: "column",
-  justifyContent: "flex-start",
+  justifyContent: "space-between",
   alignItems: "center",
-  background: "white",
   outline: 0,
-  border: "none",
-  borderRadius: "25px 25px 25px 25px",
-  padding: "0px 10px 10px 10px",
   width: "100%",
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
-  marginBottom: "10px",
-  [theme.breakpoints.up("sm")]: {
-    paddingTop: "5px",
-    border: "solid",
-    maxHeight: "100%",
-    overflow: "scroll",
-    boxShadow: "5px 5px 5px gray",
-  },
-  [theme.breakpoints.up("md")]: {
-    maxHeight: "calc(100dvh - 70px)",
-    overflow: "scroll",
-  },
+  margin: "50px 0px 50px 0px",
+  height: "calc(100dvh - 150px)",
+  padding: "0px 50px 0px 50px",
 });
 
 export const Dashboard = () => {
@@ -206,50 +186,50 @@ export const Dashboard = () => {
 
   const noUserBackground = curUser ? {} : { background: "white" };
 
-  const getTemplateFromBlock = (block: Block, editing: boolean) => {
-    return {
-      name: block.name,
-      startDate: block.startDate,
-      length: block.length,
-      weeks: editing
-        ? block.weeks
-        : [
-            {
-              number: 1,
-              days: block.weeks[block.length - 1].days.map((day) => {
-                return {
-                  name: day.name,
-                  hasGroup: day.hasGroup,
-                  groupName: day.groupName,
-                  exercises: day.exercises.map((exercise) => {
-                    return {
-                      name: exercise.name,
-                      apparatus: exercise.apparatus,
-                      sets: exercise.sets,
-                      reps: exercise.reps,
-                      weight: exercise.weight,
-                      weightType: exercise.weightType,
-                      unilateral: exercise.unilateral,
-                      note: "",
-                      completed: false,
-                    };
-                  }),
-                  completed: false,
-                  completedDate: undefined,
-                };
-              }),
-              completed: false,
-            },
-          ],
-      completed: false,
-    };
-  };
+  // const getTemplateFromBlock = (block: Block, editing: boolean) => {
+  //   return {
+  //     name: block.name,
+  //     startDate: block.startDate,
+  //     length: block.length,
+  //     weeks: editing
+  //       ? block.weeks
+  //       : [
+  //           {
+  //             number: 1,
+  //             days: block.weeks[block.length - 1].days.map((day) => {
+  //               return {
+  //                 name: day.name,
+  //                 hasGroup: day.hasGroup,
+  //                 groupName: day.groupName,
+  //                 exercises: day.exercises.map((exercise) => {
+  //                   return {
+  //                     name: exercise.name,
+  //                     apparatus: exercise.apparatus,
+  //                     sets: exercise.sets,
+  //                     reps: exercise.reps,
+  //                     weight: exercise.weight,
+  //                     weightType: exercise.weightType,
+  //                     unilateral: exercise.unilateral,
+  //                     note: "",
+  //                     completed: false,
+  //                   };
+  //                 }),
+  //                 completed: false,
+  //                 completedDate: undefined,
+  //               };
+  //             }),
+  //             completed: false,
+  //           },
+  //         ],
+  //     completed: false,
+  //   };
+  // };
 
-  const handleCreateFromTemplate = (block: Block) => {
-    dispatch(setTemplate(getTemplateFromBlock(block, true)));
-    dispatch(setEditingBlock(true));
-    router.push("/create-block");
-  };
+  // const handleCreateFromTemplate = (block: Block) => {
+  //   dispatch(setTemplate(getTemplateFromBlock(block, true)));
+  //   dispatch(setEditingBlock(true));
+  //   router.push("/create-block");
+  // };
 
   return (
     <div className={classes.superDuperContainer} style={noUserBackground}>
@@ -257,8 +237,35 @@ export const Dashboard = () => {
         <div className={classes.container}>
           {session ? (
             <Box sx={boxStyle}>
-              <span className={classes.title}>Current Training Block</span>
-              <div className={classes.horizontalDivider} />
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "League+Spartan",
+                    color: "white",
+                    fontWeight: 900,
+                    fontSize: "16px",
+                    margin: "0px 0px 5px 0px",
+                  }}
+                >
+                  Currently Completing:
+                </span>
+                <span
+                  style={{
+                    fontFamily: "League+Spartan",
+                    color: "white",
+                    fontWeight: 900,
+                    fontSize: "24px",
+                  }}
+                >
+                  {curUser?.curBlock?.name}
+                </span>
+              </div>
               {!curUser && <span className={classes.noBlockText}>Loading</span>}
               {curUser && (!curUser.curBlock || curUser.curBlock.completed) && (
                 <span className={classes.noBlockText}>
@@ -268,53 +275,38 @@ export const Dashboard = () => {
               {curUser?.curBlock && !curUser.curBlock.completed && (
                 <>
                   <div className={classes.entry}>
-                    <span className={classes.name}>Name: </span>
-                    <span className={classes.value}>
-                      {curUser.curBlock.name}
-                    </span>
-                  </div>
-                  <div className={classes.entry}>
-                    <span className={classes.name}>Start Date: </span>
+                    <span className={classes.name}>Start Date:</span>
                     <span className={classes.value}>
                       {dayjs(curUser.curBlock.startDate).format("MM/DD/YYYY")}
                     </span>
                   </div>
                   <div className={classes.entry}>
-                    <span className={classes.name}>Length: </span>
+                    <span className={classes.name}>Block Length:</span>
                     <span className={classes.value}>{`${
                       curUser.curBlock.length
                     } week${curUser.curBlock.length > 1 ? "s" : ""}`}</span>
                   </div>
-                  <div className={classes.horizontalDivider} />
                   <div className={classes.entry}>
-                    <span className={classes.name}>Current Week: </span>
+                    <span className={classes.name}>Current Week:</span>
                     <span className={classes.value}>{`Week ${
                       curWeekIdx + 1
                     }`}</span>
                   </div>
                   <div className={classes.entry}>
-                    <span className={classes.name}>Current Day: </span>
-                    <span className={classes.value}>{`${curDayName}${
-                      curDayGroupName ? ` (${curDayGroupName})` : ""
+                    <span className={classes.name}>Current Day:</span>
+                    <span className={classes.value}>{`${curDayName}`}</span>
+                  </div>
+                  <div className={classes.entry}>
+                    <span className={classes.name}>Current Group:</span>
+                    <span className={classes.value}>{`${
+                      curDayGroupName ? `${curDayGroupName}` : "None"
                     }`}</span>
                   </div>
-                  <div className={classes.horizontalDivider}></div>
                   <div className={classes.entry}>
-                    <button
-                      className={`${classes.startDayButton} ${
-                        curUser.curExercise && classes.startedDayButton
-                      }`}
-                      onClick={() =>
-                        handleStartDay(curWeekIdx, curDayIdx, curExerciseIdx)
-                      }
-                    >
-                      {`${
-                        !curExerciseIdx || curExerciseIdx === 0
-                          ? "Start"
-                          : "Resume"
-                      }: Week ${curWeekIdx + 1}, ${curDayName}`}
-                    </button>
-                    <button
+                    <span className={classes.name}>Total Weight Lifted:</span>
+                    <span className={classes.value}>{`some value`}</span>
+                  </div>
+                  {/* <button
                       className={classes.editBlockButton}
                       onClick={() =>
                         curUser?.curBlock &&
@@ -322,8 +314,32 @@ export const Dashboard = () => {
                       }
                     >
                       Edit Block
-                    </button>
-                  </div>
+                    </button> */}
+                  <button
+                    style={{
+                      display: "flex",
+                      width: "100%",
+                      background: "#0096FF",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      color: "white",
+                      fontFamily: "League+Spartan",
+                      fontSize: "20px",
+                      fontWeight: 600,
+                      border: "solid white 5px",
+                      borderRadius: "25px",
+                      height: "60px",
+                    }}
+                    onClick={() =>
+                      handleStartDay(curWeekIdx, curDayIdx, curExerciseIdx)
+                    }
+                  >
+                    <span>{`${
+                      !curExerciseIdx || curExerciseIdx === 0
+                        ? "Start"
+                        : "Resume"
+                    } Workout`}</span>
+                  </button>
                 </>
               )}
             </Box>

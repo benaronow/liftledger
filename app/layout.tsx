@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import "./styles/globals.css";
 import styles from "./styles/layout.module.css";
 import { Providers } from "./providers";
-import { Footer } from "./components/footer";
 import { auth0 } from "@/lib/auth0";
 import { Header } from "./components/header";
 import { MessageModal } from "./components/messageModal";
@@ -85,10 +84,6 @@ const RootLayout = async ({ children }: Props) => {
                 <MessageModal />
               </>
             </main>
-
-            <footer className={styles.footer}>
-              <Footer />
-            </footer>
           </section>
         </body>
       </html>

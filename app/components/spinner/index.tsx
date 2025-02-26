@@ -18,7 +18,7 @@ const useStyles = makeStyles()({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    height: "calc(100dvh - 90px)",
+    height: "calc(100dvh - 100px)",
     alignItems: "center",
   },
   logo: {
@@ -30,14 +30,16 @@ export const Spinner = () => {
   const { classes } = useStyles();
 
   return (
-    <div className={classes.container}>
-      <Image
-        className={classes.logo}
-        src="/icon.png"
-        alt="Description of image"
-        height={50}
-        width={50}
-      />
-    </div>
+    <>
+      <div className={classes.container}>
+        <Image
+          className={classes.logo}
+          src="/icon.png"
+          alt="Description of image"
+          height={50}
+          width={50}
+        />
+      </div>
+    </>
   );
 };
