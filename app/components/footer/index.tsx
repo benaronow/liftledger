@@ -14,7 +14,13 @@ import { useContext, useEffect, useState } from "react";
 import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
 import { useTheme } from "@mui/material";
 import { useAppDispatch } from "@/lib/hooks";
-import { setEditingBlock, setTemplate } from "@/lib/features/user/userSlice";
+import {
+  setCurDay,
+  setCurExercise,
+  setCurWeek,
+  setEditingBlock,
+  setTemplate,
+} from "@/lib/features/user/userSlice";
 import Link from "next/link";
 
 const useStyles = makeStyles()((theme) => ({
@@ -106,6 +112,10 @@ export const Footer = () => {
   const handleIconClick = () => {
     dispatch(setTemplate(undefined));
     dispatch(setEditingBlock(false));
+    dispatch(setCurWeek(undefined));
+    dispatch(setCurDay(undefined));
+    dispatch(setCurExercise(undefined));
+    console.log("ello mate");
   };
 
   return (
