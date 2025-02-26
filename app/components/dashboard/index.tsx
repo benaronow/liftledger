@@ -128,7 +128,7 @@ const boxStyle = (theme: Theme) => ({
   outline: 0,
   width: "100%",
   maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
-  margin: "50px 0px 50px 0px",
+  margin: "40px 0px 60px 0px",
   height: "calc(100dvh - 150px)",
   padding: "0px 50px 0px 50px",
 });
@@ -250,7 +250,7 @@ export const Dashboard = () => {
                     color: "white",
                     fontWeight: 900,
                     fontSize: "16px",
-                    margin: "0px 0px 5px 0px",
+                    marginBottom: "5px",
                   }}
                 >
                   Currently Completing:
