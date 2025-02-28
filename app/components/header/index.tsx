@@ -191,6 +191,7 @@ export const Header = () => {
           <div className={classes.menuItem}>
             <button
               className={classes.menuButton}
+              style={{ color: "red" }}
               onClick={() => {
                 toggleMenuOpen();
                 router.push(RouteType.Home);
@@ -205,6 +206,7 @@ export const Header = () => {
           <div className={classes.menuItem}>
             <button
               className={classes.menuButton}
+              style={{ color: "#a3258c" }}
               onClick={() => {
                 toggleMenuOpen();
                 router.push(RouteType.Progress);
@@ -217,6 +219,7 @@ export const Header = () => {
           <div className={classes.menuItem}>
             <button
               className={classes.menuButton}
+              style={{ color: "gray" }}
               onClick={() => {
                 toggleMenuOpen();
                 router.push(RouteType.Settings);
