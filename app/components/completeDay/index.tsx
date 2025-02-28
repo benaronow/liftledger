@@ -13,11 +13,12 @@ import {
 import { useAppDispatch } from "@/lib/hooks";
 import { BlockOp, NumberChange, RouteType } from "@/types";
 import { Add, Remove } from "@mui/icons-material";
-import { Box, Input, Theme, useTheme } from "@mui/material";
+import { Box, Input, useTheme } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { makeStyles } from "tss-react/mui";
+import { Overlay } from "../overlay";
 
 const useStyles = makeStyles()((theme) => ({
   container: {
@@ -25,11 +26,11 @@ const useStyles = makeStyles()((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    height: "calc(100dvh - 120px)",
-    padding: "10px 10px 0px 10px",
+    height: "calc(100dvh - 60px)",
+    padding: "0px 10px",
     overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
-      height: "calc(100dvh - 50px)",
+      height: "calc(100dvh - 60px)",
       overflow: "hidden",
     },
   },
@@ -57,7 +58,6 @@ const useStyles = makeStyles()((theme) => ({
     fontFamily: "League+Spartan",
     fontWeight: 600,
     fontSize: "10px",
-    color: "gray",
   },
   entryTitle: {
     fontFamily: "League+Spartan",
@@ -161,27 +161,6 @@ const useStyles = makeStyles()((theme) => ({
     color: "red",
   },
 }));
-
-const boxStyle = (theme: Theme) => ({
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  background: "white",
-  outline: 0,
-  border: "none",
-  borderRadius: "25px 25px 25px 25px",
-  padding: "0px 10px 10px 10px",
-  width: "100%",
-  maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
-  [theme.breakpoints.up("sm")]: {
-    paddingTop: "5px",
-    border: "solid",
-    maxHeight: "calc(100dvh - 70px)",
-    overflow: "scroll",
-    boxShadow: "5px 5px 5px gray",
-  },
-});
 
 const exerciseBoxStyle = {
   display: "flex",
@@ -539,13 +518,14 @@ export const CompleteDay = () => {
 
   return (
     <div className={classes.container}>
+      <Overlay />
       {((pathname === "/dashboard" &&
         innerWidth &&
         innerWidth > theme.breakpoints.values["sm"]) ||
         (pathname === "/complete-day" &&
           innerWidth &&
           innerWidth < theme.breakpoints.values["sm"])) && (
-        <Box sx={boxStyle}>
+        <>
           <span className={classes.title}>Complete Workout</span>
           <div className={classes.horizontalDivider}></div>
           <div className={classes.entry}>
@@ -696,7 +676,7 @@ export const CompleteDay = () => {
               </Box>
             </div>
           ))}
-        </Box>
+        </>
       )}
     </div>
   );

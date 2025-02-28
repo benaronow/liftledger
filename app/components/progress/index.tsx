@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
+import { Overlay } from "../overlay";
 
 const useStyles = makeStyles()((theme) => ({
   container: {
@@ -21,11 +22,11 @@ const useStyles = makeStyles()((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    padding: "10px 10px 10px 10px",
-    height: "calc(100dvh - 120px)",
+    padding: "0px 10px",
+    height: "calc(100dvh - 60px)",
     overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
-      height: "calc(100dvh - 50px)",
+      height: "calc(100dvh - 60px)",
     },
   },
   dayLabel: {
@@ -245,6 +246,7 @@ export const Progress = () => {
 
   return (
     <div className={`${classes.container}`}>
+      <Overlay />
       <span className={classes.title}>Progress</span>
       <div className={classes.horizontalDivider} />
       <>

@@ -1,7 +1,7 @@
 "use client";
 
 import { makeStyles } from "tss-react/mui";
-import { Box, Theme, useTheme } from "@mui/material";
+import { useTheme } from "@mui/material";
 import dayjs from "dayjs";
 import {
   selectCurUser,
@@ -15,6 +15,8 @@ import { useAppDispatch } from "@/lib/hooks";
 import { usePathname, useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
 import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
+import { getTemplateFromBlock } from "../utils";
+import { Overlay } from "../overlay";
 
 const useStyles = makeStyles()((theme) => ({
   container: {
@@ -22,11 +24,11 @@ const useStyles = makeStyles()((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    height: "calc(100dvh - 120px)",
-    padding: "10px 10px 0px 10px",
+    height: "calc(100dvh - 60px)",
+    padding: "10px 10px",
     overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
-      height: "calc(100dvh - 50px)",
+      height: "calc(100dvh - 60px)",
       overflow: "hidden",
     },
   },
@@ -71,32 +73,6 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-const boxStyle = (theme: Theme) => ({
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  background: "white",
-  outline: 0,
-  border: "none",
-  borderRadius: "25px 25px 25px 25px",
-  padding: "0px 10px 10px 10px",
-  width: "100%",
-  maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
-  marginBottom: "10px",
-  [theme.breakpoints.up("sm")]: {
-    paddingTop: "5px",
-    border: "solid",
-    maxHeight: "100%",
-    overflow: "scroll",
-    boxShadow: "5px 5px 5px gray",
-  },
-  [theme.breakpoints.up("md")]: {
-    maxHeight: "calc(100dvh - 70px)",
-    overflow: "scroll",
-  },
-});
-
 export const History = () => {
   const { classes } = useStyles();
   const dispatch = useAppDispatch();
@@ -124,45 +100,8 @@ export const History = () => {
     ].completedDate;
   };
 
-  const getTemplateFromBlock = (block: Block) => {
-    return {
-      name: `${block.name} (copy)`,
-      startDate: undefined,
-      length: block.length,
-      weeks: [
-        {
-          number: 1,
-          days: block.weeks[block.length - 1].days.map((day) => {
-            return {
-              name: day.name,
-              hasGroup: day.hasGroup,
-              groupName: day.groupName,
-              exercises: day.exercises.map((exercise) => {
-                return {
-                  name: exercise.name,
-                  apparatus: exercise.apparatus,
-                  sets: exercise.sets,
-                  reps: exercise.reps,
-                  weight: exercise.weight,
-                  weightType: exercise.weightType,
-                  unilateral: exercise.unilateral,
-                  note: "",
-                  completed: false,
-                };
-              }),
-              completed: false,
-              completedDate: undefined,
-            };
-          }),
-          completed: false,
-        },
-      ],
-      completed: false,
-    };
-  };
-
   const handleCreateFromTemplate = (block: Block) => {
-    dispatch(setTemplate(getTemplateFromBlock(block)));
+    dispatch(setTemplate(getTemplateFromBlock(block, false)));
     dispatch(setEditingBlock(false));
     router.push("/create-block");
   };
@@ -190,13 +129,14 @@ export const History = () => {
 
   return (
     <div className={`${classes.container}`}>
+      <Overlay />
       {((pathname === "/dashboard" &&
         innerWidth &&
         innerWidth > theme.breakpoints.values["sm"]) ||
         (pathname === "/history" &&
           innerWidth &&
           innerWidth < theme.breakpoints.values["sm"])) && (
-        <Box sx={boxStyle}>
+        <>
           <span className={classes.title}>Completed Training Blocks</span>
           <div className={classes.horizontalDivider} />
           {!curUser && <span className={classes.noBlockText}>Loading</span>}
@@ -212,7 +152,7 @@ export const History = () => {
                 </span>
               </div>
             ))}
-        </Box>
+        </>
       )}
     </div>
   );

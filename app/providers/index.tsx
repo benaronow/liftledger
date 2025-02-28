@@ -9,6 +9,7 @@ import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { InnerSizeProvider } from "./innerSizeProvider";
 import { SessionData } from "@auth0/nextjs-auth0/types";
+import { MenuOpenProvider } from "./MenuOpenProvider";
 
 interface ProvidersProps {
   readonly children: ReactNode;
@@ -24,7 +25,9 @@ export const Providers = ({ children, session }: ProvidersProps) => {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <ThemeProvider theme={theme}>
             <InnerSizeProvider>
-              <LoginProvider session={session}>{children}</LoginProvider>
+              <MenuOpenProvider>
+                <LoginProvider session={session}>{children}</LoginProvider>
+              </MenuOpenProvider>
             </InnerSizeProvider>
           </ThemeProvider>
         </LocalizationProvider>

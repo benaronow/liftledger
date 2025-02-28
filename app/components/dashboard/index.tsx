@@ -11,21 +11,22 @@ import {
   setCurDay,
   setCurExercise,
   setCurWeek,
-  // setEditingBlock,
-  // setTemplate,
 } from "@/lib/features/user/userSlice";
 import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
 import { History } from "../history";
 import { CreateBlock } from "../createBlock";
 import { CompleteDay } from "../completeDay";
-import { RouteType } from "@/types";
+import { Day, Exercise, RouteType, Week, WeightType } from "@/types";
+import { Spinner } from "../spinner";
+import { Overlay } from "../overlay";
 
 const useStyles = makeStyles()((theme) => ({
   superDuperContainer: {
+    position: "relative",
     display: "flex",
     width: "100%",
     height: "calc(100dvh - 50px)",
-    overflow: "scroll",
+    overflow: "hidden",
     outline: "none",
     [theme.breakpoints.up("sm")]: {
       height: "calc(100dvh - 50px)",
@@ -157,13 +158,14 @@ export const Dashboard = () => {
   const curDayName =
     curUser?.curBlock?.weeks[curWeekIdx]?.days.find((day) => !day.completed)
       ?.name || "Unavailable";
-  const curDayGroupName =
-    curUser?.curBlock?.weeks[curWeekIdx]?.days.find((day) => !day.completed)
-      ?.groupName || "";
   const curExerciseIdx =
     curUser?.curBlock?.weeks[curWeekIdx]?.days[curDayIdx].exercises.findIndex(
       (exercise) => !exercise.completed
     ) || 0;
+  const curExerciseName =
+    curUser?.curBlock?.weeks[curWeekIdx]?.days[curDayIdx].exercises.find(
+      (exercise) => !exercise.completed
+    )?.name || "Unavailable";
 
   useEffect(() => {
     if (session && attemptedLogin && !curUser) {
@@ -180,59 +182,74 @@ export const Dashboard = () => {
     }
   };
 
+  const getTotalWeight = (type: "lbs" | "kgs") => {
+    return `${curUser?.curBlock?.weeks.reduce(
+      (accWeek: number, curWeek: Week) => {
+        return (
+          accWeek +
+          curWeek.days.reduce((accDay: number, curDay: Day) => {
+            return (
+              accDay +
+              curDay.exercises.reduce((accEx: number, curEx: Exercise) => {
+                return (
+                  accEx +
+                  (curEx.completed
+                    ? curEx.weight.reduce(
+                        (accWeight: number, curWeight: number, idx) =>
+                          accWeight +
+                          curWeight *
+                            curEx.reps[idx] *
+                            (curEx.weightType === type
+                              ? 1
+                              : curEx.weightType === WeightType.Kilograms
+                              ? 2.205
+                              : 0.454),
+                        0
+                      )
+                    : 0)
+                );
+              }, 0)
+            );
+          }, 0)
+        );
+      },
+      0
+    )} lbs`;
+  };
+
+  const getDaysSinceLast = () => {
+    let lastWorkoutDate = new Date(0);
+    curUser?.curBlock?.weeks.forEach((week) =>
+      week.days.forEach((day) =>
+        day.exercises.forEach((exercise) => {
+          const completionDate = day.completedDate
+            ? new Date(day.completedDate)
+            : new Date();
+          if (exercise.completed && lastWorkoutDate < completionDate) {
+            lastWorkoutDate = completionDate;
+          }
+        })
+      )
+    );
+    const timeDifference =
+      new Date().getTime() - new Date(lastWorkoutDate).getTime();
+    const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    return daysDifference;
+  };
+
   const handleLogin = () => {
     router.push(`/auth/login`);
   };
 
   const noUserBackground = curUser ? {} : { background: "white" };
 
-  // const getTemplateFromBlock = (block: Block, editing: boolean) => {
-  //   return {
-  //     name: block.name,
-  //     startDate: block.startDate,
-  //     length: block.length,
-  //     weeks: editing
-  //       ? block.weeks
-  //       : [
-  //           {
-  //             number: 1,
-  //             days: block.weeks[block.length - 1].days.map((day) => {
-  //               return {
-  //                 name: day.name,
-  //                 hasGroup: day.hasGroup,
-  //                 groupName: day.groupName,
-  //                 exercises: day.exercises.map((exercise) => {
-  //                   return {
-  //                     name: exercise.name,
-  //                     apparatus: exercise.apparatus,
-  //                     sets: exercise.sets,
-  //                     reps: exercise.reps,
-  //                     weight: exercise.weight,
-  //                     weightType: exercise.weightType,
-  //                     unilateral: exercise.unilateral,
-  //                     note: "",
-  //                     completed: false,
-  //                   };
-  //                 }),
-  //                 completed: false,
-  //                 completedDate: undefined,
-  //               };
-  //             }),
-  //             completed: false,
-  //           },
-  //         ],
-  //     completed: false,
-  //   };
-  // };
-
-  // const handleCreateFromTemplate = (block: Block) => {
-  //   dispatch(setTemplate(getTemplateFromBlock(block, true)));
-  //   dispatch(setEditingBlock(true));
-  //   router.push("/create-block");
-  // };
+  if (session && !curUser) {
+    return <Spinner />;
+  }
 
   return (
     <div className={classes.superDuperContainer} style={noUserBackground}>
+      <Overlay />
       <div className={classes.superContainer}>
         <div className={classes.container}>
           {session ? (
@@ -287,24 +304,30 @@ export const Dashboard = () => {
                     } week${curUser.curBlock.length > 1 ? "s" : ""}`}</span>
                   </div>
                   <div className={classes.entry}>
-                    <span className={classes.name}>Current Week:</span>
+                    <span className={classes.name}>Week:</span>
                     <span className={classes.value}>{`Week ${
                       curWeekIdx + 1
                     }`}</span>
                   </div>
                   <div className={classes.entry}>
-                    <span className={classes.name}>Current Day:</span>
-                    <span className={classes.value}>{`${curDayName}`}</span>
+                    <span className={classes.name}>Day:</span>
+                    <span className={classes.value}>{curDayName}</span>
                   </div>
                   <div className={classes.entry}>
-                    <span className={classes.name}>Current Group:</span>
-                    <span className={classes.value}>{`${
-                      curDayGroupName ? `${curDayGroupName}` : "None"
-                    }`}</span>
+                    <span className={classes.name}>Exercise:</span>
+                    <span className={classes.value}>{curExerciseName}</span>
+                  </div>
+                  <div className={classes.entry}>
+                    <span className={classes.name}>
+                      Days Since Last Workout:
+                    </span>
+                    <span className={classes.value}>{getDaysSinceLast()}</span>
                   </div>
                   <div className={classes.entry}>
                     <span className={classes.name}>Total Weight Lifted:</span>
-                    <span className={classes.value}>{`some value`}</span>
+                    <span className={classes.value}>
+                      {getTotalWeight("lbs")}
+                    </span>
                   </div>
                   {/* <button
                       className={classes.editBlockButton}

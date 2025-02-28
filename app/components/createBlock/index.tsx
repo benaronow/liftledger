@@ -1,7 +1,7 @@
 "use client";
 
 import { Block, RouteType, WeightType } from "@/types";
-import { Box, Theme, useTheme } from "@mui/material";
+import { useTheme } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   selectCurUser,
@@ -14,6 +14,7 @@ import { EditWeek } from "./editWeek";
 import { makeStyles } from "tss-react/mui";
 import { usePathname, useRouter } from "next/navigation";
 import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
+import { Overlay } from "../overlay";
 
 const useStyles = makeStyles()((theme) => ({
   container: {
@@ -21,11 +22,11 @@ const useStyles = makeStyles()((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    height: "calc(100dvh - 120px)",
-    padding: "10px 10px 10px 10px",
+    height: "calc(100dvh - 60px)",
+    padding: "0px 10px",
     overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
-      height: "calc(100dvh - 50px)",
+      height: "calc(100dvh - 60px)",
       overflow: "hidden",
     },
   },
@@ -71,28 +72,6 @@ const useStyles = makeStyles()((theme) => ({
     },
   },
 }));
-
-const boxStyle = (theme: Theme) => ({
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  background: "white",
-  outline: 0,
-  border: "none",
-  borderRadius: "25px 25px 25px 25px",
-  padding: "0px 10px 10px 10px",
-  width: "100%",
-  maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
-  marginBottom: "10px",
-  [theme.breakpoints.up("sm")]: {
-    paddingTop: "5px",
-    border: "solid",
-    maxHeight: "calc(100dvh - 70px)",
-    overflow: "scroll",
-    boxShadow: "5px 5px 5px gray",
-  },
-});
 
 export const CreateBlock = () => {
   const { classes } = useStyles();
@@ -198,13 +177,14 @@ export const CreateBlock = () => {
 
   return (
     <div className={classes.container}>
+      <Overlay />
       {((pathname === "/dashboard" &&
         innerWidth &&
         innerWidth > theme.breakpoints.values["sm"]) ||
         (pathname === "/create-block" &&
           innerWidth &&
           innerWidth < theme.breakpoints.values["sm"])) && (
-        <Box sx={boxStyle}>
+        <>
           <span className={classes.title}>Create Training Block</span>
           <div className={classes.horizontalDivider}></div>
           {editingDay === -1 ? (
@@ -237,7 +217,7 @@ export const CreateBlock = () => {
               </button>
             </div>
           )}
-        </Box>
+        </>
       )}
     </div>
   );

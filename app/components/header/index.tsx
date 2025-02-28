@@ -1,18 +1,35 @@
 "use client";
 
 import { makeStyles } from "tss-react/mui";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Menu, Person } from "@mui/icons-material";
+import { useContext } from "react";
+import { MenuOpenContext } from "@/app/providers/MenuOpenProvider";
+import { useAppDispatch } from "@/lib/hooks";
+import { setEditingBlock, setTemplate } from "@/lib/features/user/userSlice";
+import { getTemplateFromBlock } from "../utils";
+import { Block, RouteType } from "@/types";
+import { FaEdit } from "react-icons/fa";
+import { IoMdCloseCircle } from "react-icons/io";
+import { GiProgression } from "react-icons/gi";
+import { IoSettingsSharp } from "react-icons/io5";
+import { LoginContext } from "@/app/providers/loginProvider";
 
 const useStyles = makeStyles()({
   container: {
     display: "flex",
+    alignItems: "flex-start",
+    height: "150px",
+    width: "100%",
+    position: "relative",
+  },
+  head: {
     background: "#6d6e71",
-    justifyContent: "center",
+    display: "flex",
     alignItems: "center",
     height: "50px",
     width: "100%",
-    zIndex: 10,
+    zIndex: 1,
   },
   noHeader: {
     height: "50px",
@@ -36,14 +53,10 @@ const useStyles = makeStyles()({
     display: "flex",
     justifyContent: "flex-start",
   },
-  changePage: {
+  menuIcon: {
     display: "flex",
-    alignContent: "center",
     marginLeft: "10px",
     color: "white",
-    fontSize: "18px",
-    fontFamily: "League+Spartan",
-    fontWeight: 600,
     alignItems: "center",
     "&:hover": {
       cursor: "pointer",
@@ -58,10 +71,16 @@ const useStyles = makeStyles()({
     justifyContent: "flex-end",
     alignItems: "center",
   },
-  profileContainer: {
+  profileIcon: {
     display: "flex",
-    alignContent: "center",
     marginRight: "10px",
+    height: "30px",
+    width: "30px",
+    borderRadius: "15px",
+    background: "white",
+    color: "#6d6e71",
+    justifyContent: "center",
+    alignItems: "center",
     "&:hover": {
       cursor: "pointer",
     },
@@ -73,37 +92,71 @@ const useStyles = makeStyles()({
     height: "35px",
     width: "35px",
   },
+  menu: {
+    position: "absolute",
+    top: 50,
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    height: "100px",
+    background: "white",
+    borderRadius: "0px 0px 10px 10px",
+    transform: "translateY(-100px)",
+    transition: "transform 0.4s ease-out",
+  },
+  menuOpen: {
+    transform: "translateY(0px)",
+  },
+  menuRow: {
+    display: "flex",
+    width: "100%",
+  },
+  menuItem: {
+    display: "flex",
+    width: "100%",
+    height: "50px",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  menuButton: {
+    display: "flex",
+    alignItems: "center",
+    fontFamily: "League+Spartan",
+    fontSize: "18px",
+    border: "none",
+    background: "none",
+  },
+  menuText: {
+    marginRight: "5px",
+    whiteSpace: "nowrap",
+  },
 });
 
 export const Header = () => {
   const { classes } = useStyles();
+  const dispatch = useAppDispatch();
   const router = useRouter();
-  const pathname = usePathname();
+  const { curUser } = useContext(LoginContext);
+  const { menuOpen, toggleMenuOpen } = useContext(MenuOpenContext);
 
   const handleDashboardClick = () => {
     router.push("/dashboard");
-  };
-
-  const handleProgressClick = () => {
-    router.push("/progress");
   };
 
   const handleProfileClick = () => {
     router.push("/profile");
   };
 
+  const handleCreateFromTemplate = (block: Block) => {
+    dispatch(setTemplate(getTemplateFromBlock(block, true)));
+    dispatch(setEditingBlock(true));
+  };
+
   return (
-    <>
-      <div className={classes.container}>
+    <div className={classes.container}>
+      <div className={classes.head}>
         <div className={classes.leftPad}>
-          <div
-            className={classes.changePage}
-            onClick={
-              pathname === "/dashboard"
-                ? handleProgressClick
-                : handleDashboardClick
-            }
-          >
+          <div className={classes.menuIcon} onClick={toggleMenuOpen}>
             <Menu style={{ fontSize: "35px" }} />
           </div>
         </div>
@@ -113,32 +166,68 @@ export const Header = () => {
           </span>
         </div>
         <div className={classes.rightPad}>
-          <div
-            className={classes.profileContainer}
-            onClick={handleProfileClick}
-            style={{
-              display: "flex",
-              height: "30px",
-              width: "30px",
-              borderRadius: "15px",
-              background: "white",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Person style={{ color: "#6d6e71", fontSize: "27px" }} />
+          <div className={classes.profileIcon} onClick={handleProfileClick}>
+            <Person style={{ fontSize: "27px" }} />
           </div>
         </div>
       </div>
-      <div
-        style={{
-          display: "flex",
-          background: "white",
-          height: "2px",
-          width: "94%",
-          transform: "translateX(3%)",
-        }}
-      ></div>
-    </>
+      <div className={`${classes.menu} ${menuOpen && classes.menuOpen}`}>
+        <div className={classes.menuRow}>
+          <div className={classes.menuItem}>
+            <button
+              className={classes.menuButton}
+              style={{ color: "#32CD32" }}
+              onClick={() => {
+                if (curUser?.curBlock)
+                  handleCreateFromTemplate(curUser?.curBlock);
+                toggleMenuOpen();
+                router.push(RouteType.Add);
+              }}
+            >
+              <span className={classes.menuText}>Edit Block</span>
+              <FaEdit />
+            </button>
+          </div>
+          <div className={classes.menuItem}>
+            <button
+              className={classes.menuButton}
+              onClick={() => {
+                toggleMenuOpen();
+                router.push(RouteType.Home);
+              }}
+            >
+              <span className={classes.menuText}>Quit Block</span>
+              <IoMdCloseCircle />
+            </button>
+          </div>
+        </div>
+        <div className={classes.menuRow}>
+          <div className={classes.menuItem}>
+            <button
+              className={classes.menuButton}
+              onClick={() => {
+                toggleMenuOpen();
+                router.push(RouteType.Progress);
+              }}
+            >
+              <span className={classes.menuText}>View Progress</span>
+              <GiProgression />
+            </button>
+          </div>
+          <div className={classes.menuItem}>
+            <button
+              className={classes.menuButton}
+              onClick={() => {
+                toggleMenuOpen();
+                router.push(RouteType.Settings);
+              }}
+            >
+              <span className={classes.menuText}>Settings</span>
+              <IoSettingsSharp />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };

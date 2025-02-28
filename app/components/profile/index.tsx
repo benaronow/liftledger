@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Box, Theme } from "@mui/material";
+import { Avatar } from "@mui/material";
 import { useContext, useEffect } from "react";
 import { makeStyles } from "tss-react/mui";
 import { LoginContext } from "../../providers/loginProvider";
@@ -9,18 +9,20 @@ import { useAppDispatch } from "@/lib/hooks";
 import { deleteUser } from "@/lib/features/user/userSlice";
 import { useRouter } from "next/navigation";
 import { RouteType } from "@/types";
+import { Overlay } from "../overlay";
 
 const useStyles = makeStyles()((theme) => ({
   container: {
     display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center",
     width: "100%",
-    height: "calc(100dvh - 120px)",
-    padding: "10px 10px 10px 10px",
+    height: "calc(100dvh - 60px)",
+    padding: "0px 10px",
     overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
-      height: "calc(100dvh - 50px)",
+      height: "calc(100dvh - 60px)",
     },
   },
   title: {
@@ -84,24 +86,6 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-const boxStyle = (theme: Theme) => ({
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  background: "white",
-  outline: 0,
-  border: "none",
-  borderRadius: "25px 25px 25px 25px",
-  padding: "0px 10px 0px 10px",
-  width: "100%",
-  maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
-  [theme.breakpoints.up("sm")]: {
-    maxHeight: "calc(100dvh - 70px)",
-    boxShadow: "5px 5px 5px gray",
-  },
-});
-
 export const Profile = () => {
   const { classes } = useStyles();
   const { session, curUser } = useContext(LoginContext);
@@ -126,7 +110,8 @@ export const Profile = () => {
 
   return (
     <div className={classes.container}>
-      <Box sx={boxStyle}>
+      <Overlay />
+      <>
         <span className={classes.title}>Profile</span>
         <div className={classes.horizontalDivider}></div>
         <Avatar
@@ -182,7 +167,7 @@ export const Profile = () => {
             Delete Account
           </button>
         </div>
-      </Box>
+      </>
     </div>
   );
 };

@@ -206,4 +206,5 @@ export enum RouteType {
   Home = "/dashboard",
   Add = "/create-block",
   Profile = "/profile",
+  Settings = "/settings"
 }
