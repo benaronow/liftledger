@@ -8,8 +8,8 @@ export const useDashboardStyles = makeStyles()({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    height: "calc(100dvh - 50px)",
-    padding: "25px 50px 50px",
+    height: "calc(100dvh - 120px)",
+    padding: "10px 50px 20px",
   },
   titleContainer: {
     display: "flex",

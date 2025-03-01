@@ -1,18 +1,14 @@
 import { makeStyles } from "tss-react/mui";
 
-export const useCreateBlockStyles = makeStyles()((theme) => ({
+export const useCreateBlockStyles = makeStyles()({
   container: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    height: "calc(100dvh - 60px)",
-    padding: "0px 10px",
+    height: "calc(100dvh - 50px)",
+    padding: "25px",
     overflow: "scroll",
-    [theme.breakpoints.up("sm")]: {
-      height: "calc(100dvh - 60px)",
-      overflow: "hidden",
-    },
   },
   title: {
     fontFamily: "League+Spartan",
@@ -55,4 +51,4 @@ export const useCreateBlockStyles = makeStyles()((theme) => ({
       cursor: "pointer",
     },
   },
-}));
+});

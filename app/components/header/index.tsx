@@ -39,7 +39,6 @@ export const Header = () => {
     route: RouteType;
     title: string;
     icon: ReactElement;
-    colorClass: string;
     isEdit: boolean;
   };
 
@@ -47,29 +46,25 @@ export const Header = () => {
     {
       route: RouteType.Add,
       title: "Edit Block",
-      icon: <FaEdit />,
-      colorClass: classes.editButton,
+      icon: <FaEdit className={classes.menuButtonIcon} />,
       isEdit: true,
     },
     {
       route: RouteType.Home,
       title: "Quit Block",
-      icon: <IoMdCloseCircle />,
-      colorClass: classes.quitButton,
+      icon: <IoMdCloseCircle className={classes.menuButtonIcon} />,
       isEdit: false,
     },
     {
       route: RouteType.Progress,
       title: "Progress",
-      icon: <GiProgression />,
-      colorClass: classes.progressButton,
+      icon: <GiProgression className={classes.menuButtonIcon} />,
       isEdit: false,
     },
     {
       route: RouteType.Settings,
       title: "Settings",
-      icon: <IoSettingsSharp />,
-      colorClass: classes.settingsButton,
+      icon: <IoSettingsSharp className={classes.menuButtonIcon} />,
       isEdit: false,
     },
   ];
@@ -77,7 +72,7 @@ export const Header = () => {
   const buildMenuButton = (button: MenuButton, key: number) => (
     <div key={key} className={classes.menuItem}>
       <button
-        className={`${classes.menuButton} ${button.colorClass}`}
+        className={classes.menuButton}
         onClick={() => {
           if (button.isEdit && curUser?.curBlock)
             handleCreateFromTemplate(curUser?.curBlock);
@@ -101,7 +96,7 @@ export const Header = () => {
         </div>
         <div className={classes.titleContainer}>
           <span className={classes.title} onClick={handleDashboardClick}>
-            liftledger
+            Home
           </span>
         </div>
         <div className={classes.rightPad}>

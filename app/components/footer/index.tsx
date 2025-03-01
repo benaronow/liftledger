@@ -4,8 +4,6 @@ import { usePathname } from "next/navigation";
 import {
   AddCircleOutline,
   History,
-  HomeOutlined,
-  InsightsRounded,
   PersonOutline,
 } from "@mui/icons-material";
 import { RouteType } from "@/types";
@@ -22,6 +20,8 @@ import {
 } from "@/lib/features/user/userSlice";
 import Link from "next/link";
 import { useFooterStyles } from "./useFooterStyles";
+import Image from "next/image";
+import { GiProgression } from "react-icons/gi";
 
 export const Footer = () => {
   const { classes } = useFooterStyles();
@@ -46,9 +46,7 @@ export const Footer = () => {
   const navButtonMap = [
     {
       route: RouteType.Progress,
-      icon: (
-        <InsightsRounded className={classes.progressIcon}></InsightsRounded>
-      ),
+      icon: <GiProgression className={classes.progressIcon} />,
       isHome: false,
     },
     {
@@ -58,7 +56,14 @@ export const Footer = () => {
     },
     {
       route: RouteType.Home,
-      icon: <HomeOutlined className={classes.homeIcon}></HomeOutlined>,
+      icon: (
+        <Image
+          src="/icon.png"
+          alt="Description of image"
+          height={40}
+          width={40}
+        />
+      ),
       isHome: true,
     },
     {
@@ -80,28 +85,22 @@ export const Footer = () => {
           className={classes.container}
           style={{ transform: `translateY(${isStandalone ? "0px" : "10px"})` }}
         >
-          {innerWidth && innerWidth < theme.breakpoints.values["sm"] && (
-            <>
-              {navButtonMap.map((button, idx) => (
-                <Link
-                  key={idx}
-                  className={`${classes.iconContainer} ${
-                    button.isHome && classes.homeIconContainer
-                  }`}
-                  href={button.route}
-                  onClick={handleIconClick}
-                >
-                  <div
-                    className={`${classes.iconCircle} ${
-                      button.isHome && classes.homeIconCircle
-                    }`}
+          <div className={classes.iconRow}>
+            {innerWidth && innerWidth < theme.breakpoints.values["sm"] && (
+              <>
+                {navButtonMap.map((button, idx) => (
+                  <Link
+                    key={idx}
+                    className={classes.iconContainer}
+                    href={button.route}
+                    onClick={handleIconClick}
                   >
                     {button.icon}
-                  </div>
-                </Link>
-              ))}
-            </>
-          )}
+                  </Link>
+                ))}
+              </>
+            )}
+          </div>
         </div>
       )}
     </>

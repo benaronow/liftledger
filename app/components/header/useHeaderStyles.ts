@@ -23,11 +23,12 @@ export const useHeaderStyles = makeStyles()({
   },
   title: {
     color: "#a3258c",
-    fontSize: "30px",
+    fontSize: "25px",
     fontFamily: "Mina",
     fontWeight: "700",
     textShadow:
       "-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff",
+    transform: "translateY(2px)",
   },
   leftPad: {
     width: "50%",
@@ -74,10 +75,11 @@ export const useHeaderStyles = makeStyles()({
     top: 50,
     display: "flex",
     flexDirection: "column",
+    alignItems: "center",
     width: "100%",
     height: "100px",
     background: "white",
-    borderRadius: "0px 0px 10px 10px",
+    borderRadius: "0px 0px 20px 20px",
     transform: "translateY(-101px)",
     transition: "transform 0.25s ease-out",
   },
@@ -86,7 +88,7 @@ export const useHeaderStyles = makeStyles()({
   },
   menuRow: {
     display: "flex",
-    width: "100%",
+    width: "90%",
   },
   menuItem: {
     display: "flex",
@@ -99,24 +101,16 @@ export const useHeaderStyles = makeStyles()({
     display: "flex",
     alignItems: "center",
     fontFamily: "League+Spartan",
-    fontSize: "18px",
+    fontSize: "20px",
     border: "none",
     background: "none",
   },
-  editButton: {
-    color: "#32CD32",
-  },
-  quitButton: {
-    color: "red",
-  },
-  progressButton: {
-    color: "#a3258c",
-  },
-  settingsButton: {
-    color: "gray",
+  menuButtonIcon: {
+    color: "#0096FF",
   },
   menuText: {
     marginRight: "5px",
     whiteSpace: "nowrap",
+    color: "#0096FF",
   },
 });
