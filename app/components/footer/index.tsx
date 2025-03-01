@@ -1,11 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import {
-  AddCircleOutline,
-  History,
-  PersonOutline,
-} from "@mui/icons-material";
 import { RouteType } from "@/types";
 import { useContext, useEffect, useState } from "react";
 import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
@@ -22,6 +17,8 @@ import Link from "next/link";
 import { useFooterStyles } from "./useFooterStyles";
 import Image from "next/image";
 import { GiProgression } from "react-icons/gi";
+import { FaEdit, FaHistory } from "react-icons/fa";
+import { IoSettingsSharp } from "react-icons/io5";
 
 export const Footer = () => {
   const { classes } = useFooterStyles();
@@ -46,12 +43,12 @@ export const Footer = () => {
   const navButtonMap = [
     {
       route: RouteType.Progress,
-      icon: <GiProgression className={classes.progressIcon} />,
+      icon: <GiProgression />,
       isHome: false,
     },
     {
       route: RouteType.History,
-      icon: <History className={classes.historyIcon}></History>,
+      icon: <FaHistory />,
       isHome: false,
     },
     {
@@ -68,12 +65,12 @@ export const Footer = () => {
     },
     {
       route: RouteType.Add,
-      icon: <AddCircleOutline className={classes.addIcon}></AddCircleOutline>,
+      icon: <FaEdit />,
       isHome: false,
     },
     {
       route: RouteType.Profile,
-      icon: <PersonOutline className={classes.profileIcon}></PersonOutline>,
+      icon: <IoSettingsSharp />,
       isHome: false,
     },
   ];

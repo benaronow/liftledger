@@ -1,17 +1,16 @@
 .container {
   min-height: 100dvh;
   max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
-  position: fixed;
-  top: 0;
   width: 100%;
   z-index: 10;
 }
 
 .main {
-  position: fixed;
   top: 50px;
   display: flex;
   flex-direction: column;
@@ -21,10 +20,10 @@
   max-height: calc(100dvh - 120px);
   width: 100%;
   background: #6d6e71;
+  transform: translateY(-100px);
 }
 
 .footer {
-  position: fixed;
-  top: calc(100dvh - 70px);
   width: 100%;
+  transform: translateY(-100px);
 }

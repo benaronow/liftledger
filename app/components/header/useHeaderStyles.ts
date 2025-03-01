@@ -9,7 +9,7 @@ export const useHeaderStyles = makeStyles()({
     position: "relative",
   },
   head: {
-    background: "#6d6e71",
+    background: "#58585b",
     display: "flex",
     alignItems: "center",
     height: "50px",
@@ -28,7 +28,6 @@ export const useHeaderStyles = makeStyles()({
     fontWeight: "700",
     textShadow:
       "-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff",
-    transform: "translateY(2px)",
   },
   leftPad: {
     width: "50%",
