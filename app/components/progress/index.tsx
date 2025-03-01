@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useContext, useEffect } from "react";
-import { makeStyles } from "tss-react/mui";
 import { LoginContext } from "@/app/providers/loginProvider";
 import { RouteType, TableData, TableDay, TableExercise, Week } from "@/types";
 import {
@@ -14,74 +13,10 @@ import {
   TableRow,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { Overlay } from "../overlay";
-
-const useStyles = makeStyles()((theme) => ({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    width: "100%",
-    padding: "0px 10px",
-    height: "calc(100dvh - 60px)",
-    overflow: "scroll",
-    [theme.breakpoints.up("sm")]: {
-      height: "calc(100dvh - 60px)",
-    },
-  },
-  dayLabel: {
-    display: "flex",
-    width: "100%",
-    justifyContent: "center",
-    background: "black",
-    minHeight: "30px",
-    alignItems: "center",
-    border: "solid",
-    borderWidth: "1px",
-    borderColor: "black",
-    color: "white",
-  },
-  bottom: {
-    borderRadius: "0px 0px 25px 25px",
-  },
-  cell: {
-    border: "solid",
-    borderWidth: "1px",
-    left: 0,
-    minWidth: 100,
-    maxWidth: 100,
-    width: 100,
-  },
-  stickyCell: {
-    position: "sticky",
-    zIndex: 2,
-  },
-  title: {
-    fontFamily: "League+Spartan",
-    fontWeight: 900,
-    fontSize: "22px",
-    marginBottom: "10px",
-  },
-  horizontalDivider: {
-    width: "100%",
-    height: "2px",
-    background: "black",
-    marginBottom: "10px",
-    border: "solid",
-    borderWidth: "1px",
-  },
-  noBlockText: {
-    marginBottom: "10px",
-    fontFamily: "League+Spartan",
-    fontSize: "16px",
-    textAlign: "center",
-  },
-}));
-
-const paperStyle = { width: "100%" };
+import { useProgressStyles } from "./useProgressStyles";
 
 export const Progress = () => {
-  const { classes } = useStyles();
+  const { classes } = useProgressStyles();
   const { curUser } = useContext(LoginContext);
   const router = useRouter();
 
@@ -246,84 +181,81 @@ export const Progress = () => {
 
   return (
     <div className={`${classes.container}`}>
-      <Overlay />
       <span className={classes.title}>Progress</span>
       <div className={classes.horizontalDivider} />
-      <>
-        {allTableData.map((tableData, idx) => (
-          <React.Fragment key={idx}>
-            <div
-              className={classes.dayLabel}
-              style={{
-                borderRadius: `${idx === 0 ? "25px 25px 0px 0px" : ""}`,
-              }}
-            >
-              <span>{tableData[0].day}</span>
-            </div>
-            <Paper sx={paperStyle}>
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      {Object.keys(tableData[0]?.data || {}).map((key, idx) => (
+      {allTableData.map((tableData, idx) => (
+        <React.Fragment key={idx}>
+          <div
+            className={classes.dayLabel}
+            style={{
+              borderRadius: `${idx === 0 ? "25px 25px 0px 0px" : ""}`,
+            }}
+          >
+            <span>{tableData[0].day}</span>
+          </div>
+          <Paper sx={{ width: "100%" }}>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {Object.keys(tableData[0]?.data || {}).map((key, idx) => (
+                      <TableCell
+                        className={`${classes.cell} ${
+                          idx === 0 && classes.stickyCell
+                        }`}
+                        key={idx}
+                        align={idx === 0 ? "left" : "center"}
+                        colSpan={idx === 0 ? 1 : tableData[0]?.colspan}
+                        style={{
+                          background: getHeaderColor(key, tableData[0]),
+                        }}
+                      >
+                        <>
+                          <span>{key.split(" ")[0]}</span>
+                          <br />
+                          <span>{key.split(" ")[1]}</span>
+                        </>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {tableData.map((data, idx) => (
+                    <TableRow key={idx}>
+                      {Object.values(data?.data || {}).map((key, idx) => (
                         <TableCell
                           className={`${classes.cell} ${
                             idx === 0 && classes.stickyCell
                           }`}
                           key={idx}
                           align={idx === 0 ? "left" : "center"}
-                          colSpan={idx === 0 ? 1 : tableData[0]?.colspan}
+                          colSpan={idx === 0 ? 1 : data.colspan}
                           style={{
-                            background: getHeaderColor(key, tableData[0]),
+                            background: `${getCellColor(key)}`,
                           }}
                         >
-                          <>
-                            <span>{key.split(" ")[0]}</span>
-                            <br />
-                            <span>{key.split(" ")[1]}</span>
-                          </>
+                          {key.includes("true")
+                            ? `${key[0]}x${key[1]}, ${key[2]}${key[3]}`
+                            : key.includes("false")
+                            ? ""
+                            : key}
                         </TableCell>
                       ))}
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {tableData.map((data, idx) => (
-                      <TableRow key={idx}>
-                        {Object.values(data?.data || {}).map((key, idx) => (
-                          <TableCell
-                            className={`${classes.cell} ${
-                              idx === 0 && classes.stickyCell
-                            }`}
-                            key={idx}
-                            align={idx === 0 ? "left" : "center"}
-                            colSpan={idx === 0 ? 1 : data.colspan}
-                            style={{
-                              background: `${getCellColor(key)}`,
-                            }}
-                          >
-                            {key.includes("true")
-                              ? `${key[0]}x${key[1]}, ${key[2]}${key[3]}`
-                              : key.includes("false")
-                              ? ""
-                              : key}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-          </React.Fragment>
-        ))}
-        {allTableData.length ? (
-          <div className={`${classes.dayLabel} ${classes.bottom}`} />
-        ) : (
-          <span className={classes.noBlockText}>
-            Start training to see your progress!
-          </span>
-        )}
-      </>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </React.Fragment>
+      ))}
+      {allTableData.length ? (
+        <div className={`${classes.dayLabel} ${classes.bottom}`} />
+      ) : (
+        <span className={classes.noBlockText}>
+          Start training to see your progress!
+        </span>
+      )}
     </div>
   );
 };

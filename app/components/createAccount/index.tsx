@@ -3,127 +3,18 @@
 import { updateUser } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { RouteType, User } from "@/types";
-import { Box, Input, Theme } from "@mui/material";
+import { Input } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useContext, useEffect, useState } from "react";
-import { makeStyles } from "tss-react/mui";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
 import { LoginContext } from "../../providers/loginProvider";
-
-const useStyles = makeStyles()((theme) => ({
-  container: {
-    display: "flex",
-    alignItems: "flex-start",
-    justifyContent: "center",
-    width: "100%",
-    height: "calc(100dvh - 120px)",
-    padding: "10px 10px 10px 10px",
-    overflow: "scroll",
-    [theme.breakpoints.up("sm")]: {
-      height: "calc(100dvh - 50px)",
-      overflow: "hidden",
-    },
-  },
-  title: {
-    fontFamily: "League+Spartan",
-    fontWeight: 900,
-    fontSize: "22px",
-    marginBottom: "10px",
-  },
-  horizontalDivider: {
-    width: "100%",
-    height: "2px",
-    background: "black",
-    marginBottom: "10px",
-    border: "solid",
-    borderWidth: "1px",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-  },
-  entry: {
-    display: "flex",
-    alignItems: "center",
-    marginBottom: "10px",
-    width: "100%",
-    justifyContent: "flex-start",
-  },
-  entryName: {
-    fontFamily: "League+Spartan",
-    width: "60%",
-    fontWeight: 600,
-    fontSize: "16px",
-  },
-  input: {
-    border: "solid",
-    borderColor: "gray",
-    borderWidth: "1px",
-    borderRadius: "5px",
-    marginLeft: "5px",
-    width: "100%",
-    paddingLeft: "5px",
-    fontSize: "16px",
-  },
-  dateInput: {
-    paddingLeft: "0px",
-  },
-  buttons: {
-    display: "flex",
-    width: "70%",
-    justifyContent: "space-around",
-  },
-  accountButton: {
-    border: "none",
-    background: "transparent",
-    fontFamily: "League+Spartan",
-    fontSize: "16px",
-    color: "#0096FF",
-    fontWeight: 600,
-    "&:hover": {
-      cursor: "pointer",
-    },
-  },
-  deleteButton: {
-    border: "none",
-    background: "transparent",
-    fontFamily: "League+Spartan",
-    fontSize: "16px",
-    color: "#FF0000",
-    fontWeight: 600,
-    "&:hover": {
-      cursor: "pointer",
-    },
-  },
-}));
-
-const boxStyle = (theme: Theme) => ({
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  background: "white",
-  outline: 0,
-  border: "none",
-  borderRadius: "25px 25px 25px 25px",
-  padding: "0px 10px 10px 10px",
-  width: "100%",
-  maxWidth: `calc(${theme.breakpoints.values["sm"]}px - 20px)`,
-  marginBottom: "10px",
-  [theme.breakpoints.up("sm")]: {
-    maxHeight: "calc(100dvh - 70px)",
-    boxShadow: "5px 5px 5px gray",
-  },
-});
+import { useCreateAccountStyles } from "./useCreateAccountStyles";
 
 export const CreateAccount = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { classes } = useStyles();
+  const { classes } = useCreateAccountStyles();
   const { session, attemptedLogin, curUser } = useContext(LoginContext);
 
   useEffect(() => {
@@ -191,50 +82,46 @@ export const CreateAccount = () => {
 
   return (
     <div className={classes.container}>
-      <Box sx={boxStyle}>
-        <span className={classes.title}>Create Account</span>
-        <div className={classes.horizontalDivider} />
-        <form
-          className={classes.form}
-          id="create-account-form"
-          onSubmit={handleSubmit}
+      <span className={classes.title}>Create Account</span>
+      <div className={classes.horizontalDivider} />
+      <form
+        className={classes.form}
+        id="create-account-form"
+        onSubmit={handleSubmit}
+      >
+        {Object.values(input).map((entry, idx) => (
+          <div className={classes.entry} key={idx}>
+            <span className={classes.entryName}>{`${entryNames[idx]}: `}</span>
+            {entryNames[idx] === "Birthday" ? (
+              <DatePicker
+                className={`${classes.input} ${classes.dateInput}`}
+                onChange={(value: Dayjs | null) => handleDateInput(value)}
+              />
+            ) : (
+              <Input
+                className={classes.input}
+                value={entry}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  handleInput(e, entryNames[idx])
+                }
+              ></Input>
+            )}
+          </div>
+        ))}
+      </form>
+      <div className={classes.horizontalDivider} />
+      <div className={classes.buttons}>
+        <button
+          className={classes.accountButton}
+          form="create-account-form"
+          type="submit"
         >
-          {Object.values(input).map((entry, idx) => (
-            <div className={classes.entry} key={idx}>
-              <span
-                className={classes.entryName}
-              >{`${entryNames[idx]}: `}</span>
-              {entryNames[idx] === "Birthday" ? (
-                <DatePicker
-                  className={`${classes.input} ${classes.dateInput}`}
-                  onChange={(value: Dayjs | null) => handleDateInput(value)}
-                />
-              ) : (
-                <Input
-                  className={classes.input}
-                  value={entry}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    handleInput(e, entryNames[idx])
-                  }
-                ></Input>
-              )}
-            </div>
-          ))}
-        </form>
-        <div className={classes.horizontalDivider} />
-        <div className={classes.buttons}>
-          <button
-            className={classes.accountButton}
-            form="create-account-form"
-            type="submit"
-          >
-            Save Info
-          </button>
-          <button className={classes.deleteButton} onClick={handleLogout}>
-            Log out
-          </button>
-        </div>
-      </Box>
+          Save Info
+        </button>
+        <button className={classes.deleteButton} onClick={handleLogout}>
+          Log out
+        </button>
+      </div>
     </div>
   );
 };

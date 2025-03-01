@@ -1,9 +1,8 @@
 "use client";
 
-import { makeStyles } from "tss-react/mui";
 import { useRouter } from "next/navigation";
 import { Menu, Person } from "@mui/icons-material";
-import { useContext } from "react";
+import { ReactElement, useContext } from "react";
 import { MenuOpenContext } from "@/app/providers/MenuOpenProvider";
 import { useAppDispatch } from "@/lib/hooks";
 import { setEditingBlock, setTemplate } from "@/lib/features/user/userSlice";
@@ -14,126 +13,10 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { GiProgression } from "react-icons/gi";
 import { IoSettingsSharp } from "react-icons/io5";
 import { LoginContext } from "@/app/providers/loginProvider";
-
-const useStyles = makeStyles()({
-  container: {
-    display: "flex",
-    alignItems: "flex-start",
-    height: "150px",
-    width: "100%",
-    position: "relative",
-  },
-  head: {
-    background: "#6d6e71",
-    display: "flex",
-    alignItems: "center",
-    height: "50px",
-    width: "100%",
-    zIndex: 1,
-  },
-  noHeader: {
-    height: "50px",
-    display: "none",
-  },
-  titleContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  title: {
-    color: "#a3258c",
-    fontSize: "30px",
-    fontFamily: "Mina",
-    fontWeight: "700",
-    textShadow:
-      "-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff",
-  },
-  leftPad: {
-    width: "50%",
-    display: "flex",
-    justifyContent: "flex-start",
-  },
-  menuIcon: {
-    display: "flex",
-    marginLeft: "10px",
-    color: "white",
-    alignItems: "center",
-    "&:hover": {
-      cursor: "pointer",
-    },
-  },
-  goTo: {
-    marginRight: "5px",
-  },
-  rightPad: {
-    width: "50%",
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  profileIcon: {
-    display: "flex",
-    marginRight: "10px",
-    height: "30px",
-    width: "30px",
-    borderRadius: "15px",
-    background: "white",
-    color: "#6d6e71",
-    justifyContent: "center",
-    alignItems: "center",
-    "&:hover": {
-      cursor: "pointer",
-    },
-  },
-  profile: {
-    color: "#a3258c",
-    background: "white",
-    borderRadius: "20px",
-    height: "35px",
-    width: "35px",
-  },
-  menu: {
-    position: "absolute",
-    top: 50,
-    display: "flex",
-    flexDirection: "column",
-    width: "100%",
-    height: "100px",
-    background: "white",
-    borderRadius: "0px 0px 10px 10px",
-    transform: "translateY(-100px)",
-    transition: "transform 0.4s ease-out",
-  },
-  menuOpen: {
-    transform: "translateY(0px)",
-  },
-  menuRow: {
-    display: "flex",
-    width: "100%",
-  },
-  menuItem: {
-    display: "flex",
-    width: "100%",
-    height: "50px",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  menuButton: {
-    display: "flex",
-    alignItems: "center",
-    fontFamily: "League+Spartan",
-    fontSize: "18px",
-    border: "none",
-    background: "none",
-  },
-  menuText: {
-    marginRight: "5px",
-    whiteSpace: "nowrap",
-  },
-});
+import { useHeaderStyles } from "./useHeaderStyles";
 
 export const Header = () => {
-  const { classes } = useStyles();
+  const { classes } = useHeaderStyles();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { curUser } = useContext(LoginContext);
@@ -152,12 +35,68 @@ export const Header = () => {
     dispatch(setEditingBlock(true));
   };
 
+  type MenuButton = {
+    route: RouteType;
+    title: string;
+    icon: ReactElement;
+    colorClass: string;
+    isEdit: boolean;
+  };
+
+  const menuButtonMap: MenuButton[] = [
+    {
+      route: RouteType.Add,
+      title: "Edit Block",
+      icon: <FaEdit />,
+      colorClass: classes.editButton,
+      isEdit: true,
+    },
+    {
+      route: RouteType.Home,
+      title: "Quit Block",
+      icon: <IoMdCloseCircle />,
+      colorClass: classes.quitButton,
+      isEdit: false,
+    },
+    {
+      route: RouteType.Progress,
+      title: "Progress",
+      icon: <GiProgression />,
+      colorClass: classes.progressButton,
+      isEdit: false,
+    },
+    {
+      route: RouteType.Settings,
+      title: "Settings",
+      icon: <IoSettingsSharp />,
+      colorClass: classes.settingsButton,
+      isEdit: false,
+    },
+  ];
+
+  const buildMenuButton = (button: MenuButton, key: number) => (
+    <div key={key} className={classes.menuItem}>
+      <button
+        className={`${classes.menuButton} ${button.colorClass}`}
+        onClick={() => {
+          if (button.isEdit && curUser?.curBlock)
+            handleCreateFromTemplate(curUser?.curBlock);
+          toggleMenuOpen();
+          router.push(button.route);
+        }}
+      >
+        <span className={classes.menuText}>{button.title}</span>
+        {button.icon}
+      </button>
+    </div>
+  );
+
   return (
     <div className={classes.container}>
       <div className={classes.head}>
         <div className={classes.leftPad}>
           <div className={classes.menuIcon} onClick={toggleMenuOpen}>
-            <Menu style={{ fontSize: "35px" }} />
+            <Menu className={classes.menuIconImg} />
           </div>
         </div>
         <div className={classes.titleContainer}>
@@ -167,68 +106,20 @@ export const Header = () => {
         </div>
         <div className={classes.rightPad}>
           <div className={classes.profileIcon} onClick={handleProfileClick}>
-            <Person style={{ fontSize: "27px" }} />
+            <Person className={classes.profileIconImg} />
           </div>
         </div>
       </div>
       <div className={`${classes.menu} ${menuOpen && classes.menuOpen}`}>
         <div className={classes.menuRow}>
-          <div className={classes.menuItem}>
-            <button
-              className={classes.menuButton}
-              style={{ color: "#32CD32" }}
-              onClick={() => {
-                if (curUser?.curBlock)
-                  handleCreateFromTemplate(curUser?.curBlock);
-                toggleMenuOpen();
-                router.push(RouteType.Add);
-              }}
-            >
-              <span className={classes.menuText}>Edit Block</span>
-              <FaEdit />
-            </button>
-          </div>
-          <div className={classes.menuItem}>
-            <button
-              className={classes.menuButton}
-              style={{ color: "red" }}
-              onClick={() => {
-                toggleMenuOpen();
-                router.push(RouteType.Home);
-              }}
-            >
-              <span className={classes.menuText}>Quit Block</span>
-              <IoMdCloseCircle />
-            </button>
-          </div>
+          {menuButtonMap
+            .slice(0, 2)
+            .map((button, idx) => buildMenuButton(button, idx))}
         </div>
         <div className={classes.menuRow}>
-          <div className={classes.menuItem}>
-            <button
-              className={classes.menuButton}
-              style={{ color: "#a3258c" }}
-              onClick={() => {
-                toggleMenuOpen();
-                router.push(RouteType.Progress);
-              }}
-            >
-              <span className={classes.menuText}>View Progress</span>
-              <GiProgression />
-            </button>
-          </div>
-          <div className={classes.menuItem}>
-            <button
-              className={classes.menuButton}
-              style={{ color: "gray" }}
-              onClick={() => {
-                toggleMenuOpen();
-                router.push(RouteType.Settings);
-              }}
-            >
-              <span className={classes.menuText}>Settings</span>
-              <IoSettingsSharp />
-            </button>
-          </div>
+          {menuButtonMap
+            .slice(2)
+            .map((button, idx) => buildMenuButton(button, idx))}
         </div>
       </div>
     </div>
