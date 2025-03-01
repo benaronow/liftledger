@@ -2,14 +2,14 @@ import { makeStyles } from "tss-react/mui";
 
 export const useDashboardStyles = makeStyles()({
   container: {
+    position: "relative",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
     height: "calc(100dvh - 50px)",
-    margin: "25px 0px 50px 0px",
-    padding: "0px 50px 0px 50px",
+    padding: "25px 50px 50px",
   },
   titleContainer: {
     display: "flex",
@@ -90,7 +90,7 @@ export const useDashboardStyles = makeStyles()({
   },
   startButtonTop: {
     background: "#0096FF",
-    transition: "transform 0.05s",
+    transition: "transform 0.1s",
     transform: "translateY(-60px)",
     "&:active": {
       transform: "translateY(-55px)",
