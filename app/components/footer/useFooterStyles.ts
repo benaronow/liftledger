@@ -23,7 +23,12 @@ export const useFooterStyles = makeStyles()({
     alignItems: "center",
     height: "50px",
     width: "50px",
-    color: "white",
     fontSize: "28px",
+  },
+  activeIcon: {
+    color: "white",
+  },
+  inactiveIcon: {
+    color: "#adafb3",
   },
 });

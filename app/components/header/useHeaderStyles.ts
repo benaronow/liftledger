@@ -28,6 +28,7 @@ export const useHeaderStyles = makeStyles()({
     fontWeight: "700",
     textShadow:
       "-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff",
+    whiteSpace: "nowrap",
   },
   leftPad: {
     width: "50%",

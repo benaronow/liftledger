@@ -15,7 +15,7 @@ export const useSpinnerStyles = makeStyles()({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    height: "calc(100dvh - 100px)",
+    height: "calc(100dvh - 120px)",
     alignItems: "center",
   },
   logo: {

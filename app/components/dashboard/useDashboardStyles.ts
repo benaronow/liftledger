@@ -9,7 +9,7 @@ export const useDashboardStyles = makeStyles()({
     alignItems: "center",
     width: "100%",
     height: "calc(100dvh - 120px)",
-    padding: "20px 50px 20px",
+    padding: "0px 50px 0px",
   },
   titleContainer: {
     display: "flex",

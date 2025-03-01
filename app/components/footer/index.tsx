@@ -69,7 +69,7 @@ export const Footer = () => {
       isHome: false,
     },
     {
-      route: RouteType.Profile,
+      route: RouteType.Settings,
       icon: <IoSettingsSharp />,
       isHome: false,
     },
@@ -80,7 +80,7 @@ export const Footer = () => {
       {pathname !== "/" && (
         <div
           className={classes.container}
-          style={{ transform: `translateY(${isStandalone ? "0px" : "10px"})` }}
+          style={{ transform: `translateY(${isStandalone ? "0px" : "0px"})` }}
         >
           <div className={classes.iconRow}>
             {innerWidth && innerWidth < theme.breakpoints.values["sm"] && (
@@ -88,7 +88,11 @@ export const Footer = () => {
                 {navButtonMap.map((button, idx) => (
                   <Link
                     key={idx}
-                    className={classes.iconContainer}
+                    className={`${classes.iconContainer} ${
+                      pathname.includes(button.route)
+                        ? classes.activeIcon
+                        : classes.inactiveIcon
+                    }`}
                     href={button.route}
                     onClick={handleIconClick}
                   >

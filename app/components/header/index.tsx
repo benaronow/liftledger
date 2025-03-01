@@ -1,11 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Menu, Person } from "@mui/icons-material";
 import { ReactElement, useContext } from "react";
 import { MenuOpenContext } from "@/app/providers/MenuOpenProvider";
 import { useAppDispatch } from "@/lib/hooks";
-import { setEditingBlock, setTemplate } from "@/lib/features/user/userSlice";
+import {
+  selectEditingBlock,
+  setEditingBlock,
+  setTemplate,
+} from "@/lib/features/user/userSlice";
 import { getTemplateFromBlock } from "../utils";
 import { Block, RouteType } from "@/types";
 import { FaEdit } from "react-icons/fa";
@@ -14,21 +18,16 @@ import { GiProgression } from "react-icons/gi";
 import { IoSettingsSharp } from "react-icons/io5";
 import { LoginContext } from "@/app/providers/loginProvider";
 import { useHeaderStyles } from "./useHeaderStyles";
+import { useSelector } from "react-redux";
 
 export const Header = () => {
   const { classes } = useHeaderStyles();
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const pathname = usePathname();
   const { curUser } = useContext(LoginContext);
   const { menuOpen, toggleMenuOpen } = useContext(MenuOpenContext);
-
-  const handleDashboardClick = () => {
-    router.push("/dashboard");
-  };
-
-  const handleProfileClick = () => {
-    router.push("/profile");
-  };
+  const editingBlock = useSelector(selectEditingBlock);
 
   const handleCreateFromTemplate = (block: Block) => {
     dispatch(setTemplate(getTemplateFromBlock(block, true)));
@@ -40,6 +39,16 @@ export const Header = () => {
     title: string;
     icon: ReactElement;
     isEdit: boolean;
+  };
+
+  const getTitle = () => {
+    if (pathname.includes(RouteType.Progress)) return "Progress";
+    if (pathname.includes(RouteType.History)) return "History";
+    if (pathname.includes(RouteType.Home)) return "Home";
+    if (pathname.includes(RouteType.Add))
+      return editingBlock ? "Edit Block" : "Create Block";
+    if (pathname.includes(RouteType.Settings)) return "Settings";
+    if (pathname.includes(RouteType.Profile)) return "Profile";
   };
 
   const menuButtonMap: MenuButton[] = [
@@ -95,12 +104,13 @@ export const Header = () => {
           </div>
         </div>
         <div className={classes.titleContainer}>
-          <span className={classes.title} onClick={handleDashboardClick}>
-            Home
-          </span>
+          <span className={classes.title}>{getTitle()}</span>
         </div>
         <div className={classes.rightPad}>
-          <div className={classes.profileIcon} onClick={handleProfileClick}>
+          <div
+            className={classes.profileIcon}
+            onClick={() => router.push("/profile")}
+          >
             <Person className={classes.profileIconImg} />
           </div>
         </div>
