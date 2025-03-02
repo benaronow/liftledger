@@ -12,7 +12,7 @@ export const useCreateBlockStyles = makeStyles()({
   },
   box: {
     width: "100%",
-    borderRadius: "25px",
+    borderRadius: "10px",
     background: "#58585b",
   },
   title: {
@@ -34,7 +34,7 @@ export const useCreateBlockStyles = makeStyles()({
     width: "100%",
     justifyContent: "space-around",
     padding: "0px 10px",
-    marginBottom: "15px",
+    marginBottom: "10px",
   },
   buttonContainer: {
     width: "100%",

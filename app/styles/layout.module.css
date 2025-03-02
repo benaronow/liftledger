@@ -27,4 +27,5 @@
   top: calc(100dvh - 70px);
   height: 70px;
   width: 100%;
+  z-index: 10;
 }

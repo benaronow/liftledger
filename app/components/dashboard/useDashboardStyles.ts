@@ -5,7 +5,7 @@ export const useDashboardStyles = makeStyles()({
     position: "relative",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     alignItems: "center",
     width: "100%",
     height: "calc(100dvh - 120px)",

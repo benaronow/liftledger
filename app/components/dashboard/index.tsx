@@ -142,7 +142,6 @@ export const Dashboard = () => {
     <div className={classes.container}>
       {session ? (
         <>
-          <div />
           <div className={classes.titleContainer}>
             <span className={classes.titleSmall}>Currently Completing:</span>
             <span className={classes.titleBig}>{curUser?.curBlock?.name}</span>
@@ -175,7 +174,6 @@ export const Dashboard = () => {
                   } Workout`}</span>
                 </button>
               </div>
-              <div />
             </>
           )}
         </>

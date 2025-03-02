@@ -7,7 +7,7 @@ export const useEditDayStyles = makeStyles()({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-    padding: "15px 10px 0px",
+    padding: "10px 10px 0px",
     fontFamily: "League+Spartan",
     fontSize: "16px",
   },

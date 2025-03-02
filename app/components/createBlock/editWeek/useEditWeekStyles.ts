@@ -7,13 +7,12 @@ export const useEditWeekStyles = makeStyles()({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-    padding: "0px 10px",
+    padding: "10px 10px 0px",
     fontFamily: "League+Spartan",
     fontSize: "16px",
   },
   head: {
     width: "100%",
-    padding: "15px 0px 0px",
     color: "white",
   },
   day: {
