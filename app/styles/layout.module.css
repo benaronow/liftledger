@@ -1,6 +1,6 @@
 .container {
-  min-height: 100vh;
-  max-height: 100vh;
+  min-height: 100dvh;
+  max-height: 100dvh;
   display: flex;
   flex-direction: column;
   background: #6d6e71;
@@ -19,13 +19,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: calc(100vh - 50px);
+  height: calc(100dvh - 50px);
   width: 100%;
 }
 
 .footer {
   position: absolute;
-  top: calc(100vh - 70px);
+  top: calc(100dvh - 70px);
   height: 70px;
   width: 100%;
 }

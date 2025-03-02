@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { RouteType } from "@/types";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
 import { useTheme } from "@mui/material";
 import { useAppDispatch } from "@/lib/hooks";
@@ -27,12 +27,10 @@ export const Footer = () => {
   const { innerWidth } = useContext(InnerSizeContext);
   const theme = useTheme();
 
-  console.log(innerHeight);
-
-  // const [isStandalone, setIsStandalone] = useState(true);
-  // useEffect(() => {
-  //   setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
-  // }, []);
+  const [isStandalone, setIsStandalone] = useState(true);
+  useEffect(() => {
+    setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
+  }, []);
 
   const handleIconClick = () => {
     dispatch(setTemplate(undefined));
@@ -84,7 +82,7 @@ export const Footer = () => {
           className={`${
             innerHeight < 500 ? classes.noDisplay : classes.container
           }`}
-          // style={{ transform: `translateY(${isStandalone ? "0px" : "0px"})` }}
+          style={{ transform: `translateY(${isStandalone ? "0px" : "0px"})` }}
         >
           <div className={classes.iconRow}>
             {innerWidth && innerWidth < theme.breakpoints.values["sm"] && (
