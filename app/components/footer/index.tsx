@@ -27,6 +27,8 @@ export const Footer = () => {
   const { innerWidth } = useContext(InnerSizeContext);
   const theme = useTheme();
 
+  console.log(innerHeight);
+
   const [isStandalone, setIsStandalone] = useState(true);
   useEffect(() => {
     setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
@@ -79,8 +81,10 @@ export const Footer = () => {
     <>
       {pathname !== "/" && (
         <div
-          className={classes.container}
-          style={{ transform: `translateY(${isStandalone ? "0px" : "0px"})` }}
+          className={`${
+            innerHeight < 500 ? classes.noDisplay : classes.container
+          }`}
+          // style={{ transform: `translateY(${isStandalone ? "0px" : "0px"})` }}
         >
           <div className={classes.iconRow}>
             {innerWidth && innerWidth < theme.breakpoints.values["sm"] && (

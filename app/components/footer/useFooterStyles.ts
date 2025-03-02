@@ -1,6 +1,9 @@
 import { makeStyles } from "tss-react/mui";
 
 export const useFooterStyles = makeStyles()({
+  noDisplay: {
+    display: "none",
+  },
   container: {
     display: "flex",
     flexDirection: "column",
