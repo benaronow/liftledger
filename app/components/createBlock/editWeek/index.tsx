@@ -257,7 +257,7 @@ export const EditWeek = ({
               />
               <button
                 className={`${classes.sideButton} ${classes.sideButtonTopTop} ${
-                  idx === 0 && classes.disabled
+                  idx === 0 ? classes.disabled : classes.enabled
                 }`}
                 onClick={() => handleMoveDay(day, idx, "up")}
               >
@@ -269,7 +269,11 @@ export const EditWeek = ({
               <button
                 className={`${classes.sideButton} ${
                   classes.sideButtonBottomTop
-                } ${idx === block.weeks[0].days.length - 1 && classes.disabled}`}
+                } ${
+                  idx === block.weeks[0].days.length - 1
+                    ? classes.disabled
+                    : classes.enabled
+                }`}
                 onClick={() => handleMoveDay(day, idx, "down")}
               >
                 <ArrowBackIosNew className={classes.moveDownButton} />
@@ -336,9 +340,9 @@ export const EditWeek = ({
               >
                 <DeleteOutline
                   className={`${
-                    block.weeks[0].days.length > 1
-                      ? classes.removeButton
-                      : classes.disabled
+                    block.weeks[0].days.length === 1
+                      ? classes.disabled
+                      : classes.enabled
                   }`}
                 />
               </button>
@@ -351,9 +355,9 @@ export const EditWeek = ({
               >
                 <ControlPointDuplicate
                   className={`${
-                    block.weeks[0].days.length < 7
-                      ? classes.removeButton
-                      : classes.disabled
+                    block.weeks[0].days.length > 6
+                      ? classes.disabled
+                      : classes.enabled
                   }`}
                 />
               </button>

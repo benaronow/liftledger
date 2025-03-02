@@ -9,8 +9,7 @@ export const useEditDayStyles = makeStyles()({
     width: "100%",
     padding: "15px 10px 0px",
     fontFamily: "League+Spartan",
-    fontSize: "15px",
-    color: "white",
+    fontSize: "16px",
   },
   entryContainer: {
     display: "flex",
@@ -34,9 +33,8 @@ export const useEditDayStyles = makeStyles()({
     margin: "-10px 0px -10px 0px",
   },
   entryName: {
-    fontFamily: "League+Spartan",
     fontWeight: 600,
-    fontSize: "16px",
+    color: "white",
   },
   sideButtons: {
     display: "flex",
@@ -54,7 +52,6 @@ export const useEditDayStyles = makeStyles()({
     padding: "0px 0px 0px 3px",
   },
   sideButton: {
-    color: "white",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -126,13 +123,11 @@ export const useEditDayStyles = makeStyles()({
     width: "100%",
     background: "white",
   },
-  removeButton: {
-    "&:hover": {
-      cursor: "pointer",
-    },
+  enabled: {
+    color: "white",
   },
   disabled: {
-    color: "lightgray",
+    color: "#adafb3",
   },
   addExerciseButton: {
     color: "blue",

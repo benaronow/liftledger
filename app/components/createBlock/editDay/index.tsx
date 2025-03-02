@@ -290,7 +290,7 @@ export const EditDay = ({ block, setBlock, editingDay }: EditDayProps) => {
               />
               <button
                 className={`${classes.sideButton} ${classes.sideButtonTopTop} ${
-                  idx === 0 && classes.disabled
+                  idx === 0 ? classes.disabled : classes.enabled
                 }`}
                 onClick={() => handleMoveExercise(exercise, idx, "up")}
               >
@@ -303,9 +303,9 @@ export const EditDay = ({ block, setBlock, editingDay }: EditDayProps) => {
                 className={`${classes.sideButton} ${classes.leftButton} ${
                   classes.sideButtonBottomTop
                 } ${
-                  idx ===
-                    block.weeks[0].days[editingDay].exercises.length - 1 &&
-                  classes.disabled
+                  idx === block.weeks[0].days[editingDay].exercises.length - 1
+                    ? classes.disabled
+                    : classes.enabled
                 }`}
                 onClick={() => handleMoveExercise(exercise, idx, "down")}
               >
@@ -433,9 +433,9 @@ export const EditDay = ({ block, setBlock, editingDay }: EditDayProps) => {
               >
                 <DeleteOutline
                   className={`${
-                    block.weeks[0].days[editingDay].exercises.length > 1
-                      ? classes.removeButton
-                      : classes.disabled
+                    block.weeks[0].days[editingDay].exercises.length === 1
+                      ? classes.disabled
+                      : classes.enabled
                   }`}
                 />
               </button>

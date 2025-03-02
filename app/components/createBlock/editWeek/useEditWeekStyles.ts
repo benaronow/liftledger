@@ -9,8 +9,7 @@ export const useEditWeekStyles = makeStyles()({
     width: "100%",
     padding: "0px 10px",
     fontFamily: "League+Spartan",
-    fontSize: "15px",
-    color: "white",
+    fontSize: "16px",
   },
   head: {
     width: "100%",
@@ -50,7 +49,6 @@ export const useEditWeekStyles = makeStyles()({
     padding: "0px 0px 0px 3px",
   },
   sideButton: {
-    color: "white",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -102,12 +100,20 @@ export const useEditWeekStyles = makeStyles()({
   headEntry: {
     fontWeight: 600,
     marginBottom: "10px",
+    whiteSpace: "nowrap",
   },
   entryName: {
+    color: "white",
+    fontWeight: 600,
     width: "60%",
   },
   dayName: {
+    color: "white",
+    fontWeight: 600,
     width: "25%",
+  },
+  enabled: {
+    color: "white",
   },
   disabled: {
     color: "#adafb3",
@@ -150,11 +156,6 @@ export const useEditWeekStyles = makeStyles()({
     marginLeft: "5px",
     fontSize: "15px",
     fontWeight: 600,
-    "&:hover": {
-      cursor: "pointer",
-    },
-  },
-  removeButton: {
     "&:hover": {
       cursor: "pointer",
     },
