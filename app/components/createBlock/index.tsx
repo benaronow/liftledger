@@ -144,16 +144,29 @@ export const CreateBlock = () => {
           )}
           {editingDay === -1 && (
             <div className={classes.actions} ref={saveRef}>
-              <button
-                className={classes.submitButton}
-                form="create-block-form"
-                type="submit"
-              >
-                Save Block
-              </button>
-              <button className={classes.clearButton} onClick={handleClear}>
-                Clear
-              </button>
+              <div className={classes.buttonContainer}>
+                <div
+                  className={`${classes.actionButton} ${classes.submitButtonBottom}`}
+                />
+                <button
+                  className={`${classes.actionButton} ${classes.submitButtonTop}`}
+                  form="create-block-form"
+                  type="submit"
+                >
+                  Save Block
+                </button>
+              </div>
+              <div className={classes.buttonContainer}>
+                <div
+                  className={`${classes.actionButton} ${classes.clearButtonBottom}`}
+                />
+                <button
+                  className={`${classes.actionButton} ${classes.clearButtonTop}`}
+                  onClick={handleClear}
+                >
+                  Clear
+                </button>
+              </div>
             </div>
           )}
         </div>

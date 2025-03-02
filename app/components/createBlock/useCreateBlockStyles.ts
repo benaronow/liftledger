@@ -31,29 +31,53 @@ export const useCreateBlockStyles = makeStyles()({
   },
   actions: {
     display: "flex",
-    width: "70%",
+    width: "100%",
     justifyContent: "space-around",
+    padding: "0px 10px",
+    marginBottom: "15px",
   },
-  submitButton: {
+  buttonContainer: {
+    width: "100%",
+    height: "35px",
+  },
+  actionButton: {
+    width: "100%",
+    height: "30px",
     border: "none",
-    background: "transparent",
+    color: "white",
     fontFamily: "League+Spartan",
     fontSize: "16px",
-    color: "#0096FF",
     fontWeight: 600,
     "&:hover": {
       cursor: "pointer",
     },
   },
-  clearButton: {
-    border: "none",
-    background: "transparent",
-    fontFamily: "League+Spartan",
-    fontSize: "16px",
-    color: "#FF0000",
-    fontWeight: 600,
-    "&:hover": {
-      cursor: "pointer",
+  submitButtonTop: {
+    borderRadius: "5px 0px 0px 5px",
+    background: "#0096FF",
+    transform: "translateY(-30px)",
+    transition: "transform 0.1s",
+    "&:active": {
+      transform: "translateY(-27px)",
     },
+  },
+  submitButtonBottom: {
+    borderRadius: "5px 0px 0px 5px",
+    background: "#004c81",
+    transform: "translateY(5px)",
+  },
+  clearButtonTop: {
+    borderRadius: "0px 5px 5px 0px",
+    background: "red",
+    transform: "translateY(-30px)",
+    transition: "transform 0.1s",
+    "&:active": {
+      transform: "translateY(-27px)",
+    },
+  },
+  clearButtonBottom: {
+    borderRadius: "0px 5px 5px 0px",
+    background: "#830000",
+    transform: "translateY(5px)",
   },
 });

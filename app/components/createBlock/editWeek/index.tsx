@@ -177,15 +177,17 @@ export const EditWeek = ({
   };
 
   const handleMoveDay = (day: Day, dayIdx: number, type: "up" | "down") => {
-    setBlock({
-      ...block,
-      weeks: block.weeks.map((week) => ({
-        ...week,
-        days: week.days
-          .toSpliced(dayIdx, 1)
-          .toSpliced(type === "up" ? dayIdx - 1 : dayIdx + 1, 0, day),
-      })),
-    });
+    if ((dayIdx !== 0 || type !== "up") && (dayIdx !== 6 || type !== "down")) {
+      setBlock({
+        ...block,
+        weeks: block.weeks.map((week) => ({
+          ...week,
+          days: week.days
+            .toSpliced(dayIdx, 1)
+            .toSpliced(type === "up" ? dayIdx - 1 : dayIdx + 1, 0, day),
+        })),
+      });
+    }
   };
 
   const handleLengthInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -219,7 +221,7 @@ export const EditWeek = ({
       onSubmit={handleSubmit}
     >
       <div className={classes.head}>
-        <div className={classes.entry}>
+        <div className={`${classes.entry} ${classes.headEntry}`}>
           <span className={classes.entryName}>Block Name: </span>
           <Input
             className={classes.input}
@@ -227,7 +229,7 @@ export const EditWeek = ({
             onChange={handleBlockNameInput}
           ></Input>
         </div>
-        <div className={classes.entry}>
+        <div className={`${classes.entry} ${classes.headEntry}`}>
           <span className={classes.entryName}>Start Date: </span>
           <DatePicker
             className={`${classes.input} ${classes.dateInput}`}
@@ -235,7 +237,7 @@ export const EditWeek = ({
             onChange={(value: Dayjs | null) => handleDateInput(value)}
           />
         </div>
-        <div className={classes.entry}>
+        <div className={`${classes.entry} ${classes.headEntry}`}>
           <span className={classes.entryName}>Length (weeks): </span>
           <Input
             className={classes.input}
@@ -251,74 +253,85 @@ export const EditWeek = ({
           <div className={`${classes.entry} ${classes.day}`}>
             <div className={`${classes.sideButtons} ${classes.leftButtons}`}>
               <div
-                className={classes.sideButton}
+                className={`${classes.sideButton} ${classes.sideButtonTopBottom}`}
+              />
+              <button
+                className={`${classes.sideButton} ${classes.sideButtonTopTop} ${
+                  idx === 0 && classes.disabled
+                }`}
                 onClick={() => handleMoveDay(day, idx, "up")}
               >
                 <ArrowBackIosNew className={classes.moveUpButton} />
-              </div>
+              </button>
               <div
-                className={classes.sideButton}
+                className={`${classes.sideButton} ${classes.sideButtonBottomBottom}`}
+              />
+              <button
+                className={`${classes.sideButton} ${
+                  classes.sideButtonBottomTop
+                } ${idx === block.weeks[0].days.length - 1 && classes.disabled}`}
                 onClick={() => handleMoveDay(day, idx, "down")}
               >
                 <ArrowBackIosNew className={classes.moveDownButton} />
-              </div>
+              </button>
             </div>
-            <div className={classes.entryContainer}>
-              <div className={classes.entryColumn}>
-                <div className={classes.entry}>
-                  <span className={classes.dayName}>Name: </span>
-                  <Input
-                    className={classes.nameInput}
-                    value={day.name}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      handleDayNameInput(e, idx)
-                    }
-                  ></Input>
-                  <button
-                    className={classes.editButton}
-                    onClick={() => handleEditDay(idx)}
-                  >
-                    Edit
-                  </button>
-                </div>
-                <div className={classes.entry}>
-                  <span
-                    className={`${classes.dayName} ${
-                      !day.hasGroup && classes.dayNameDisabled
-                    }`}
-                  >
-                    Group:
-                  </span>
-                  <Input
-                    className={classes.nameInput}
-                    disabled={!day.hasGroup}
-                    value={day.groupName}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      handleGroupNameInput(e, idx)
-                    }
-                  ></Input>
-                  <Checkbox
-                    className={classes.editButton}
-                    checked={day.hasGroup}
-                    onClick={() => handleCheckGroup(idx)}
-                  />
-                </div>
+            <div className={classes.dayInfo}>
+              <div className={classes.entry}>
+                <span className={classes.dayName}>Name: </span>
+                <Input
+                  className={classes.nameInput}
+                  value={day.name}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    handleDayNameInput(e, idx)
+                  }
+                ></Input>
+                <button
+                  className={classes.editButton}
+                  onClick={() => handleEditDay(idx)}
+                >
+                  Edit
+                </button>
+              </div>
+              <div className={classes.entry}>
                 <span
-                  className={`${classes.dayValidText} ${
-                    !day.exercises[0].name && classes.invalid
+                  className={`${classes.dayName} ${
+                    !day.hasGroup && classes.disabled
                   }`}
                 >
-                  {day.exercises[0].name
-                    ? `${day.exercises.length} Exercise${
-                        day.exercises.length > 1 ? "s" : ""
-                      } Added`
-                    : "No Exercises Added!"}
+                  Group:
                 </span>
+                <Input
+                  className={classes.nameInput}
+                  disabled={!day.hasGroup}
+                  value={day.groupName}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    handleGroupNameInput(e, idx)
+                  }
+                ></Input>
+                <Checkbox
+                  className={classes.editButton}
+                  checked={day.hasGroup}
+                  onClick={() => handleCheckGroup(idx)}
+                />
               </div>
+              <span
+                className={`${classes.dayValidText} ${
+                  !day.exercises[0].name && classes.invalid
+                }`}
+              >
+                {day.exercises[0].name
+                  ? `${day.exercises.length} Exercise${
+                      day.exercises.length > 1 ? "s" : ""
+                    } Added`
+                  : "No Exercises Added!"}
+              </span>
             </div>
             <div className={`${classes.sideButtons} ${classes.rightButtons}`}>
               <div
-                className={classes.sideButton}
+                className={`${classes.sideButton} ${classes.sideButtonTopBottom}`}
+              />
+              <button
+                className={`${classes.sideButton} ${classes.sideButtonTopTop}`}
                 onClick={() => handleRemoveDay(idx)}
               >
                 <DeleteOutline
@@ -328,9 +341,12 @@ export const EditWeek = ({
                       : classes.disabled
                   }`}
                 />
-              </div>
+              </button>
               <div
-                className={classes.sideButton}
+                className={`${classes.sideButton} ${classes.sideButtonBottomBottom}`}
+              />
+              <button
+                className={`${classes.sideButton} ${classes.sideButtonBottomTop}`}
                 onClick={() => handleDuplicateDay(idx)}
               >
                 <ControlPointDuplicate
@@ -340,14 +356,22 @@ export const EditWeek = ({
                       : classes.disabled
                   }`}
                 />
-              </div>
+              </button>
             </div>
           </div>
         </div>
       ))}
       {block.weeks[0].days.length < 7 && (
-        <div className={classes.addDayButton} onClick={handleAddDay}>
-          <AddCircleOutline></AddCircleOutline>
+        <div className={classes.addDayButtonContainer}>
+          <div
+            className={`${classes.addDayButton} ${classes.addDayButtonBottom}`}
+          />
+          <div
+            className={`${classes.addDayButton} ${classes.addDayButtonTop}`}
+            onClick={handleAddDay}
+          >
+            <AddCircleOutline />
+          </div>
         </div>
       )}
     </form>

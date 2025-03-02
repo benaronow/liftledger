@@ -84,10 +84,6 @@ export const useDashboardStyles = makeStyles()({
     borderRadius: "25px",
     height: "60px",
   },
-  startButtonBottom: {
-    background: "#004c81",
-    transform: "translateY(7px)",
-  },
   startButtonTop: {
     background: "#0096FF",
     transition: "transform 0.1s",
@@ -95,5 +91,9 @@ export const useDashboardStyles = makeStyles()({
     "&:active": {
       transform: "translateY(-55px)",
     },
+  },
+  startButtonBottom: {
+    background: "#004c81",
+    transform: "translateY(7px)",
   },
 });
