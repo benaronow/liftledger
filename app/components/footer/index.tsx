@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { RouteType } from "@/types";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
 import { useTheme } from "@mui/material";
 import { useAppDispatch } from "@/lib/hooks";
@@ -29,10 +29,10 @@ export const Footer = () => {
 
   console.log(innerHeight);
 
-  const [isStandalone, setIsStandalone] = useState(true);
-  useEffect(() => {
-    setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
-  }, []);
+  // const [isStandalone, setIsStandalone] = useState(true);
+  // useEffect(() => {
+  //   setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
+  // }, []);
 
   const handleIconClick = () => {
     dispatch(setTemplate(undefined));
