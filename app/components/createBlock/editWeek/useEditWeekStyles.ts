@@ -7,84 +7,85 @@ export const useEditWeekStyles = makeStyles()({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-  },
-  entry: {
-    display: "flex",
-    alignItems: "center",
-    marginBottom: "10px",
-    width: "100%",
-    justifyContent: "flex-start",
-  },
-  entriesContainer: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  entryName: {
+    padding: "0px 10px",
     fontFamily: "League+Spartan",
-    width: "60%",
     fontWeight: 600,
-    fontSize: "16px",
+    fontSize: "14px",
   },
-  dayName: {
-    fontFamily: "League+Spartan",
-    width: "25%",
-    fontWeight: 600,
-    fontSize: "16px",
-  },
-  dayNameDisabled: {
-    color: "gray",
-  },
-  entryDivider: {
+  head: {
     width: "100%",
-    height: "2px",
-    background: "#0096FF",
-    marginBottom: "10px",
+    padding: "15px 0px",
+    color: "white",
   },
   day: {
-    justifyContent: "space-between",
+    width: "100%",
+    height: "130px",
+    marginBottom: "10px",
   },
-  dayInfo: {
-    marginTop: "0px",
+  dayName: {
+    width: "25%",
+    color: "white",
   },
-  moveDayButtons: {
+  dayNameDisabled: {
+    color: "#adafb3",
+  },
+  sideButtons: {
     display: "flex",
     flexDirection: "column",
-    height: "50px",
+    justifyContent: "space-between",
+    width: "40px",
+    height: "130px",
+  },
+  leftButtons: {
+    padding: "0px 3px 0px 0px",
+  },
+  rightButtons: {
+    padding: "0px 0px 0px 3px",
+  },
+  sideButton: {
+    background: "#3a3a3d",
+    color: "white",
+    display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    width: "34",
+    height: "60px",
+    borderRadius: "5px",
+    "&:hover": {
+      cursor: "pointer",
+    },
   },
   moveUpButton: {
-    height: "15px",
-    color: "#0096FF",
     transform: "rotate(90deg)",
-    "&:hover": {
-      cursor: "pointer",
-    },
   },
   moveDownButton: {
-    height: "15px",
-    color: "#0096FF",
     transform: "rotate(270deg)",
-    "&:hover": {
-      cursor: "pointer",
-    },
   },
   entryContainer: {
     display: "flex",
-    flex: 1,
-    padding: "10px 10px 10px 10px",
-    background: "lightgray",
-    borderRadius: "10px 10px 10px 10px",
-    marginLeft: "5px",
-    marginRight: "5px",
+    flexDirection: "column",
+    justifyContent: "center",
+    padding: "0px 3px",
   },
   entryColumn: {
     display: "flex",
     flexDirection: "column",
+    justifyContent: "space-between",
     width: "100%",
+    height: "130px",
+    borderRadius: "5px",
     alignItems: "center",
+    background: "#3a3a3d",
+    padding: "10px",
+  },
+  entry: {
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
+    justifyContent: "flex-start",
+  },
+  entryName: {
+    width: "60%",
   },
   dayValidText: {
     color: "#32CD32",
@@ -103,7 +104,7 @@ export const useEditWeekStyles = makeStyles()({
     marginLeft: "5px",
     background: "white",
     width: "100%",
-    fontSize: "16px",
+    fontSize: "14px",
   },
   dateInput: {
     paddingLeft: "0px",
@@ -117,16 +118,13 @@ export const useEditWeekStyles = makeStyles()({
     background: "white",
     width: "100%",
     paddingLeft: "5px",
-    fontSize: "16px",
+    fontSize: "14px",
   },
   editButton: {
     background: "transparent",
     border: "none",
     color: "#0096FF",
     marginLeft: "5px",
-    fontSize: "16px",
-    fontWeight: 600,
-    fontFamily: "League+Spartan",
     "&:hover": {
       cursor: "pointer",
     },

@@ -125,9 +125,7 @@ export const CreateBlock = () => {
         (pathname === "/create-block" &&
           innerWidth &&
           innerWidth < theme.breakpoints.values["sm"])) && (
-        <>
-          <span className={classes.title}>Create Training Block</span>
-          <div className={classes.horizontalDivider}></div>
+        <div className={classes.box}>
           {editingDay === -1 ? (
             <EditWeek
               uid={curUser?._id || ""}
@@ -158,7 +156,7 @@ export const CreateBlock = () => {
               </button>
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );

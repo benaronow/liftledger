@@ -7,8 +7,13 @@ export const useCreateBlockStyles = makeStyles()({
     alignItems: "center",
     width: "100%",
     height: "calc(100dvh - 50px)",
-    padding: "25px",
+    padding: "15px 15px 85px",
     overflow: "scroll",
+  },
+  box: {
+    width: "100%",
+    borderRadius: "25px",
+    background: "#58585b",
   },
   title: {
     fontFamily: "League+Spartan",

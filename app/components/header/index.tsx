@@ -49,6 +49,7 @@ export const Header = () => {
       return editingBlock ? "Edit Block" : "Create Block";
     if (pathname.includes(RouteType.Settings)) return "Settings";
     if (pathname.includes(RouteType.Profile)) return "Profile";
+    if (pathname.includes(RouteType.Workout)) return "Workout";
   };
 
   const menuButtonMap: MenuButton[] = [

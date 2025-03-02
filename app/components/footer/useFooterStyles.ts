@@ -9,6 +9,7 @@ export const useFooterStyles = makeStyles()({
     background: "#58585b",
     height: "70px",
     zIndex: 10,
+    borderRadius: "20px 20px 0px 0px",
   },
   iconRow: {
     width: "95%",
