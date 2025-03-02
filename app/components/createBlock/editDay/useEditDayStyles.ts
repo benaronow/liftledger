@@ -6,6 +6,22 @@ export const useEditDayStyles = makeStyles()({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
+    width: "100%",
+    padding: "15px 10px 0px",
+    fontFamily: "League+Spartan",
+    fontSize: "15px",
+    color: "white",
+  },
+  entryContainer: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    height: "240px",
+    flex: 1,
+    background: "#3a3a3d",
+    borderRadius: "5px",
+    padding: "10px",
+    margin: "0px 3px",
   },
   entry: {
     display: "flex",
@@ -13,9 +29,6 @@ export const useEditDayStyles = makeStyles()({
     marginBottom: "10px",
     width: "100%",
     justifyContent: "center",
-  },
-  entriesContainer: {
-    width: "100%",
   },
   uniEntry: {
     margin: "-10px 0px -10px 0px",
@@ -25,48 +38,84 @@ export const useEditDayStyles = makeStyles()({
     fontWeight: 600,
     fontSize: "16px",
   },
-  entryDivider: {
-    width: "100%",
-    height: "2px",
-    background: "#0096FF",
-    marginBottom: "10px",
-  },
-  moveDayButtons: {
+  sideButtons: {
     display: "flex",
     flexDirection: "column",
-    height: "50px",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "40px",
+    minWidth: "40px",
+    height: "240px",
+  },
+  leftButtons: {
+    padding: "0px 3px 0px 0px",
+  },
+  rightButtons: {
+    padding: "0px 0px 0px 3px",
+  },
+  sideButton: {
+    color: "white",
+    display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    width: "34px",
+    height: "110px",
+    minHeight: "110px",
+    border: "none",
+    borderRadius: "5px",
+    "&:hover": {
+      cursor: "pointer",
+    },
+  },
+  leftButton: {
+    height: "110px",
+    minHeight: "110px",
+  },
+  sideButtonTopTop: {
+    background: "#3a3a3d",
+    transform: "translateY(-110px)",
+    transition: "transform 0.1s",
+    "&:active": {
+      transform: "translateY(-107px)",
+    },
+  },
+  sideButtonTopBottom: {
+    background: "#202021",
+    transform: "translateY(5px)",
+  },
+  sideButtonBottomTop: {
+    background: "#3a3a3d",
+    transform: "translateY(-205px)",
+    transition: "transform 0.1s",
+    "&:active": {
+      transform: "translateY(-202px)",
+    },
+  },
+  sideButtonBottomBottom: {
+    background: "#202021",
+    transform: "translateY(-90px)",
+  },
+  rightButton: {
+    height: "235px",
+    minHeight: "235px",
+  },
+  sideButtonTop: {
+    background: "#3a3a3d",
+    transform: "translateY(-235px)",
+    transition: "transform 0.1s",
+    "&:active": {
+      transform: "translateY(-232px)",
+    },
+  },
+  sideButtonBottom: {
+    background: "#202021",
+    transform: "translateY(5px)",
   },
   moveUpButton: {
-    height: "15px",
-    color: "#0096FF",
     transform: "rotate(90deg)",
-    "&:hover": {
-      cursor: "pointer",
-    },
   },
   moveDownButton: {
-    height: "15px",
-    color: "#0096FF",
     transform: "rotate(270deg)",
-    "&:hover": {
-      cursor: "pointer",
-    },
-  },
-  entryContainer: {
-    display: "flex",
-    flex: 1,
-    padding: "10px 10px 10px 10px",
-    background: "lightgray",
-    borderRadius: "10px 10px 10px 10px",
-    marginLeft: "5px",
-    marginRight: "5px",
-  },
-  entryColumn: {
-    display: "flex",
-    flexDirection: "column",
-    width: "100%",
   },
   input: {
     border: "solid",
@@ -110,10 +159,14 @@ export const useEditDayStyles = makeStyles()({
     borderColor: "gray",
     borderWidth: "1px",
     borderRadius: "5px 0px 0px 5px",
-    width: "100%",
+    width: "80%",
     height: "38px",
     paddingLeft: "5px",
     background: "white",
+  },
+  weightType: {
+    width: "100%",
+    fontSize: "16px",
   },
   goBack: {
     display: "flex",
@@ -132,5 +185,34 @@ export const useEditDayStyles = makeStyles()({
   backArrow: {
     height: "15px",
     color: "#0096FF",
+  },
+  addDayButtonContainer: {
+    width: "100%",
+    height: "35px",
+    marginBottom: "10px",
+  },
+  addDayButton: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "30px",
+    borderRadius: "5px",
+    "&:hover": {
+      cursor: "pointer",
+    },
+  },
+  addDayButtonTop: {
+    background: "#3a3a3d",
+    color: "white",
+    transform: "translateY(-30px)",
+    transition: "transform 0.1s",
+    "&:active": {
+      transform: "translateY(-27px)",
+    },
+  },
+  addDayButtonBottom: {
+    background: "#202021",
+    transform: "translateY(5px)",
   },
 });

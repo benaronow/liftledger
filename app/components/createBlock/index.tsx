@@ -142,33 +142,32 @@ export const CreateBlock = () => {
               setEditingDay={setEditingDay}
             />
           )}
-          {editingDay === -1 && (
-            <div className={classes.actions} ref={saveRef}>
-              <div className={classes.buttonContainer}>
-                <div
-                  className={`${classes.actionButton} ${classes.submitButtonBottom}`}
-                />
-                <button
-                  className={`${classes.actionButton} ${classes.submitButtonTop}`}
-                  form="create-block-form"
-                  type="submit"
-                >
-                  Save Block
-                </button>
-              </div>
-              <div className={classes.buttonContainer}>
-                <div
-                  className={`${classes.actionButton} ${classes.clearButtonBottom}`}
-                />
-                <button
-                  className={`${classes.actionButton} ${classes.clearButtonTop}`}
-                  onClick={handleClear}
-                >
-                  Clear
-                </button>
-              </div>
+          <div className={classes.actions} ref={saveRef}>
+            <div className={classes.buttonContainer}>
+              <div
+                className={`${classes.actionButton} ${classes.submitButtonBottom}`}
+              />
+              <button
+                className={`${classes.actionButton} ${classes.submitButtonTop}`}
+                form="create-block-form"
+                type="submit"
+                onClick={() => editingDay !== -1 && setEditingDay(-1)}
+              >
+                {`Save ${editingDay === -1 ? "Block" : "Day"}`}
+              </button>
             </div>
-          )}
+            <div className={classes.buttonContainer}>
+              <div
+                className={`${classes.actionButton} ${classes.clearButtonBottom}`}
+              />
+              <button
+                className={`${classes.actionButton} ${classes.clearButtonTop}`}
+                onClick={handleClear}
+              >
+                {`Clear ${editingDay === -1 ? "Block" : "Day"}`}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

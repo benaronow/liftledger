@@ -40,6 +40,7 @@ export const useEditWeekStyles = makeStyles()({
     alignItems: "center",
     justifyContent: "space-between",
     width: "40px",
+    minWidth: "40px",
     height: "130px",
   },
   leftButtons: {
@@ -49,7 +50,6 @@ export const useEditWeekStyles = makeStyles()({
     padding: "0px 0px 0px 3px",
   },
   sideButton: {
-    background: "#3a3a3d",
     color: "white",
     display: "flex",
     justifyContent: "center",
@@ -64,6 +64,7 @@ export const useEditWeekStyles = makeStyles()({
     },
   },
   sideButtonTopTop: {
+    background: "#3a3a3d",
     transform: "translateY(-55px)",
     transition: "transform 0.1s",
     "&:active": {
@@ -75,6 +76,7 @@ export const useEditWeekStyles = makeStyles()({
     transform: "translateY(5px)",
   },
   sideButtonBottomTop: {
+    background: "#3a3a3d",
     transform: "translateY(-95px)",
     transition: "transform 0.1s",
     "&:active": {

@@ -14,7 +14,7 @@ export const useHeaderStyles = makeStyles()({
     alignItems: "center",
     height: "50px",
     width: "100%",
-    zIndex: 1,
+    zIndex: 10,
   },
   titleContainer: {
     display: "flex",
@@ -82,6 +82,7 @@ export const useHeaderStyles = makeStyles()({
     borderRadius: "0px 0px 20px 20px",
     transform: "translateY(-101px)",
     transition: "transform 0.25s ease-out",
+    zIndex: 9,
   },
   menuOpen: {
     transform: "translateY(0px)",
