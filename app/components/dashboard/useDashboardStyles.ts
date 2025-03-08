@@ -83,6 +83,7 @@ export const useDashboardStyles = makeStyles()({
     border: "none",
     borderRadius: "25px",
     height: "60px",
+    textDecoration: "none",
   },
   startButtonTop: {
     background: "#0096FF",

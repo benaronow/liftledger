@@ -158,6 +158,7 @@ export const useCompleteDayStyles = makeStyles()({
     "&:active": {
       transform: "translateY(-27px)",
     },
+    textDecoration: "none",
   },
   pauseButtonBottom: {
     borderRadius: "0px 5px 5px 0px",

@@ -1,6 +1,5 @@
 "use client";
 
-import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
 import {
   blockOp,
   selectCurUser,
@@ -13,9 +12,9 @@ import {
 import { useAppDispatch } from "@/lib/hooks";
 import { BlockOp, NumberChange, RouteType } from "@/types";
 import { Add, Remove } from "@mui/icons-material";
-import { Input, useTheme } from "@mui/material";
+import { Input } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useCompleteDayStyles } from "./useCompleteDayStyles";
 import { Spinner } from "../spinner";
@@ -25,8 +24,6 @@ export const CompleteDay = () => {
   const dispatch = useAppDispatch();
   const curUser = useSelector(selectCurUser);
   const router = useRouter();
-  const { innerWidth } = useContext(InnerSizeContext);
-  const theme = useTheme();
   const curRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -69,17 +66,6 @@ export const CompleteDay = () => {
       }
     }
   }, [exercises]);
-
-  useEffect(() => {
-    if (innerWidth && innerWidth > theme.breakpoints.values["sm"])
-      router.push("/dashboard");
-  }, [innerWidth]);
-
-  useEffect(() => {
-    if (curUser?.curWeek === undefined || curUser?.curDay === undefined) {
-      router.push("/dashboard");
-    }
-  }, [curUser]);
 
   useEffect(() => {
     if (curRef.current && curUser?.curExercise)
