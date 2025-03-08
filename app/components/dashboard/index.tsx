@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { LoginContext } from "../../providers/loginProvider";
 import dayjs from "dayjs";
 import { useAppDispatch } from "@/lib/hooks";
@@ -20,6 +20,8 @@ export const Dashboard = () => {
   const { session, attemptedLogin, curUser } = useContext(LoginContext);
   const dispatch = useAppDispatch();
   const router = useRouter();
+
+  const [fetchingWorkout, setFetchingWorkout] = useState(false);
 
   useEffect(() => {
     if (session && attemptedLogin && !curUser) {
@@ -135,7 +137,7 @@ export const Dashboard = () => {
     { metric: "Total Weight Lifted:", value: getTotalWeight("lbs") },
   ];
 
-  if (session && !curUser) return <Spinner />;
+  if ((session && !curUser) || fetchingWorkout) return <Spinner />;
 
   return (
     <div className={classes.container}>
@@ -166,7 +168,7 @@ export const Dashboard = () => {
                   className={`${classes.startButtonBase} ${classes.startButtonTop}`}
                   href={RouteType.Workout}
                   onClick={() => {
-                    window.alert("hiiii");
+                    setFetchingWorkout(true);
                     handleStartDay();
                   }}
                 >
