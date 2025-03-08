@@ -97,32 +97,36 @@ export const Header = () => {
   );
 
   return (
-    <div className={classes.container}>
-      <div className={classes.head}>
-        <div className={classes.leftPad}>
-          <span className={classes.title}>{getTitle()}</span>
-        </div>
-        <div className={classes.rightPad}>
-          <div
-            className={classes.profileIcon}
-            onClick={() => router.push("/profile")}
-          >
-            <Person className={classes.profileIconImg} />
+    <>
+      {pathname !== "/" && (
+        <div className={classes.container}>
+          <div className={classes.head}>
+            <div className={classes.leftPad}>
+              <span className={classes.title}>{getTitle()}</span>
+            </div>
+            <div className={classes.rightPad}>
+              <div
+                className={classes.profileIcon}
+                onClick={() => router.push("/profile")}
+              >
+                <Person className={classes.profileIconImg} />
+              </div>
+            </div>
+          </div>
+          <div className={`${classes.menu} ${menuOpen && classes.menuOpen}`}>
+            <div className={classes.menuRow}>
+              {menuButtonMap
+                .slice(0, 2)
+                .map((button, idx) => buildMenuButton(button, idx))}
+            </div>
+            <div className={classes.menuRow}>
+              {menuButtonMap
+                .slice(2)
+                .map((button, idx) => buildMenuButton(button, idx))}
+            </div>
           </div>
         </div>
-      </div>
-      <div className={`${classes.menu} ${menuOpen && classes.menuOpen}`}>
-        <div className={classes.menuRow}>
-          {menuButtonMap
-            .slice(0, 2)
-            .map((button, idx) => buildMenuButton(button, idx))}
-        </div>
-        <div className={classes.menuRow}>
-          {menuButtonMap
-            .slice(2)
-            .map((button, idx) => buildMenuButton(button, idx))}
-        </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };

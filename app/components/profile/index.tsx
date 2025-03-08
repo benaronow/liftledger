@@ -34,8 +34,6 @@ export const Profile = () => {
 
   return (
     <div className={classes.container}>
-      <span className={classes.title}>Profile</span>
-      <div className={classes.horizontalDivider}></div>
       <Avatar
         sx={{ height: "75px", width: "75px", marginBottom: "10px" }}
         src={session?.user.picture}

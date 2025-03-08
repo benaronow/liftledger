@@ -1,12 +1,27 @@
+import { keyframes } from "tss-react";
 import { makeStyles } from "tss-react/mui";
 
+const appear = keyframes`
+  from {
+    transform: translateY(-50px);
+  }
+  to {
+    transform: translateY(0px);
+  }
+`;
+
 export const useHeaderStyles = makeStyles()({
+  noDisplay: {
+    display: "none",
+  },
   container: {
     display: "flex",
     alignItems: "flex-start",
     height: "150px",
     width: "100%",
     position: "relative",
+    transform: "translateY(-50px)",
+    animation: `${appear} 0.5s forwards`,
   },
   head: {
     background: "#58585b",

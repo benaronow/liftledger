@@ -13,6 +13,7 @@ import {
 import { Day, Exercise, RouteType, Week, WeightType } from "@/types";
 import { Spinner } from "../spinner";
 import { useDashboardStyles } from "./useDashboardStyles";
+import Link from "next/link";
 
 export const Dashboard = () => {
   const { classes } = useDashboardStyles();
@@ -42,7 +43,6 @@ export const Dashboard = () => {
     dispatch(setCurWeek(cwIDx));
     dispatch(setCurDay(cdIdx));
     dispatch(setCurExercise(ceIdx));
-    router.push("/complete-day");
   };
 
   const curWeekIdx =
@@ -163,8 +163,9 @@ export const Dashboard = () => {
                 <div
                   className={`${classes.startButtonBase} ${classes.startButtonBottom}`}
                 ></div>
-                <button
+                <Link
                   className={`${classes.startButtonBase} ${classes.startButtonTop}`}
+                  href={RouteType.Workout}
                   onClick={() =>
                     handleStartDay(curWeekIdx, curDayIdx, curExerciseIdx)
                   }
@@ -172,7 +173,7 @@ export const Dashboard = () => {
                   <span>{`${
                     !curExerciseIdx || curExerciseIdx === 0 ? "Start" : "Resume"
                   } Workout`}</span>
-                </button>
+                </Link>
               </div>
             </>
           )}
