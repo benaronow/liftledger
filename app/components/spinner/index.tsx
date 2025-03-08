@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useSpinnerStyles } from "./useSpinnerStyles";
 
 export const Spinner = () => {
@@ -8,7 +7,7 @@ export const Spinner = () => {
 
   return (
     <div className={classes.container}>
-      <Image
+      <img
         className={classes.logo}
         src="/icon.png"
         alt="Description of image"

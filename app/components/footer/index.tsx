@@ -15,7 +15,6 @@ import {
 } from "@/lib/features/user/userSlice";
 import Link from "next/link";
 import { useFooterStyles } from "./useFooterStyles";
-import Image from "next/image";
 import { GiProgression } from "react-icons/gi";
 import { FaEdit, FaHistory } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
@@ -24,7 +23,7 @@ export const Footer = () => {
   const { classes } = useFooterStyles();
   const dispatch = useAppDispatch();
   const pathname = usePathname();
-  const { innerWidth } = useContext(InnerSizeContext);
+  const { innerWidth, innerHeight } = useContext(InnerSizeContext);
   const theme = useTheme();
 
   const [isStandalone, setIsStandalone] = useState(true);
@@ -54,7 +53,7 @@ export const Footer = () => {
     {
       route: RouteType.Home,
       icon: (
-        <Image
+        <img
           src="/icon.png"
           alt="Description of image"
           height={40}
@@ -80,29 +79,30 @@ export const Footer = () => {
       {pathname !== "/" && (
         <div
           className={`${
-            innerHeight < 500 ? classes.noDisplay : classes.container
+            innerHeight &&
+            innerHeight < 500 &&
+            innerWidth &&
+            innerWidth > theme.breakpoints.values["sm"]
+              ? classes.noDisplay
+              : classes.container
           }`}
           style={{ transform: `translateY(${isStandalone ? "0px" : "0px"})` }}
         >
           <div className={classes.iconRow}>
-            {innerWidth && innerWidth < theme.breakpoints.values["sm"] && (
-              <>
-                {navButtonMap.map((button, idx) => (
-                  <Link
-                    key={idx}
-                    className={`${classes.iconContainer} ${
-                      pathname.includes(button.route)
-                        ? classes.activeIcon
-                        : classes.inactiveIcon
-                    }`}
-                    href={button.route}
-                    onClick={handleIconClick}
-                  >
-                    {button.icon}
-                  </Link>
-                ))}
-              </>
-            )}
+            {navButtonMap.map((button, idx) => (
+              <Link
+                key={idx}
+                className={`${classes.iconContainer} ${
+                  pathname.includes(button.route)
+                    ? classes.activeIcon
+                    : classes.inactiveIcon
+                }`}
+                href={button.route}
+                onClick={handleIconClick}
+              >
+                {button.icon}
+              </Link>
+            ))}
           </div>
         </div>
       )}

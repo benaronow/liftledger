@@ -23,12 +23,13 @@ export const useHeaderStyles = makeStyles()({
   },
   title: {
     color: "#a3258c",
-    fontSize: "25px",
+    fontSize: "28px",
     fontFamily: "Mina",
     fontWeight: "700",
     textShadow:
       "-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff",
     whiteSpace: "nowrap",
+    marginLeft: "10px",
   },
   leftPad: {
     width: "50%",

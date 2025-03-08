@@ -14,17 +14,17 @@ import { useAppDispatch } from "@/lib/hooks";
 import { BlockOp, NumberChange, RouteType } from "@/types";
 import { Add, Remove } from "@mui/icons-material";
 import { Input, useTheme } from "@mui/material";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useCompleteDayStyles } from "./useCompleteDayStyles";
+import { Spinner } from "../spinner";
 
 export const CompleteDay = () => {
   const { classes } = useCompleteDayStyles();
   const dispatch = useAppDispatch();
   const curUser = useSelector(selectCurUser);
   const router = useRouter();
-  const pathname = usePathname();
   const { innerWidth } = useContext(InnerSizeContext);
   const theme = useTheme();
   const curRef = useRef<HTMLDivElement>(null);
@@ -355,184 +355,173 @@ export const CompleteDay = () => {
     dispatch(setCurExercise(undefined));
   };
 
+  if (!exercises.length) return <Spinner />;
+
   return (
     <div className={classes.container}>
-      {((pathname === "/dashboard" &&
-        innerWidth &&
-        innerWidth > theme.breakpoints.values["sm"]) ||
-        (pathname === "/complete-day" &&
-          innerWidth &&
-          innerWidth < theme.breakpoints.values["sm"])) && (
-        <div className={classes.box}>
-          {exercises?.map((exercise, idx) => (
-            <div
-              className={classes.exerciseContainer}
-              ref={idx === curUser?.curExercise ? curRef : null}
-              key={idx}
-            >
-              <div className={classes.eName}>
-                <span className={classes.entryTitle}>{exercise.name}</span>
-                <span className={classes.entryTitle}>{`(${
-                  exercise.apparatus
-                }, ${exercise.unilateral ? "Unilateral" : "Bilateral"})`}</span>
-              </div>
-              {idx === curUser?.curExercise && (
-                <>
-                  <div className={classes.entry}>
-                    <span
-                      className={classes.entryName}
-                    >{`Previous session note: ${getPreviousSessionNote(
-                      idx
-                    )}`}</span>
-                  </div>
-                  <div className={classes.setsEntry}>
-                    <div
-                      className={`${classes.changeSetButtonContainer} ${classes.leftContainer}`}
-                    >
-                      <div
-                        className={`${classes.changeSetButton} ${classes.subtractSetButtonBottom}`}
-                      />
-                      <div
-                        className={`${classes.changeSetButton} ${classes.subtractSetButtonTop}`}
-                        onClick={() =>
-                          handleSetsChange(NumberChange.SubtractSet)
-                        }
-                      >
-                        <Remove className={classes.changeSetIcon} />
-                      </div>
-                    </div>
-                    <span className={`${classes.entryName} ${classes.sets}`}>
-                      {`Sets: ${exercisesState[idx].sets}`}
-                    </span>
-                    <div
-                      className={`${classes.changeSetButtonContainer} ${classes.rightContainer}`}
-                    >
-                      <div
-                        className={`${classes.changeSetButton} ${classes.addSetButtonBottom}`}
-                      />
-                      <div
-                        className={`${classes.changeSetButton} ${classes.addSetButtonTop}`}
-                        onClick={() => handleSetsChange(NumberChange.AddSet)}
-                      >
-                        <Add className={classes.changeSetIcon} />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    {Array.from(Array(exercisesState[idx].sets).keys()).map(
-                      (set) => (
-                        <div
-                          className={classes.entry}
-                          key={`${exercisesState[idx].name}${set}`}
-                        >
-                          <span
-                            className={`${classes.entryName} ${classes.entrySetsReps}`}
-                          >
-                            Reps:
-                          </span>
-                          <Input
-                            className={classes.input}
-                            inputProps={{
-                              style: { textAlign: "center" },
-                            }}
-                            value={
-                              set < exercisesState[idx].reps.length
-                                ? exercisesState[idx].reps[set]
-                                : exercisesState[idx].reps[0]
-                            }
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                              if (/^\d*$/.test(e.target.value))
-                                handleRepsWeightChange(
-                                  e,
-                                  NumberChange.Reps,
-                                  set
-                                );
-                            }}
-                          />
-                          <span
-                            className={`${classes.entryName} ${classes.entryWeight}`}
-                          >
-                            Weight:
-                          </span>
-                          <Input
-                            className={classes.input}
-                            inputProps={{
-                              style: { textAlign: "center" },
-                            }}
-                            value={
-                              set < exercisesState[idx].weight.length
-                                ? exercisesState[idx].weight[set]
-                                : exercisesState[idx].weight[0]
-                            }
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                              if (/^\d*\.?\d*$/.test(e.target.value))
-                                handleRepsWeightChange(
-                                  e,
-                                  NumberChange.Weight,
-                                  set
-                                );
-                            }}
-                          />
-                          <span className={classes.entryName}>lbs</span>
-                        </div>
-                      )
-                    )}
-                  </div>
-                  <div className={classes.entry}>
-                    <span className={classes.noteName}>Leave a note: </span>
-                    <Input
-                      className={classes.noteInput}
-                      value={exercisesState[idx].note}
-                      onChange={handleNoteChange}
-                    />
-                  </div>
-                  <div className={classes.actions}>
-                    {idx !== 0 && (
-                      <div className={classes.buttonContainer}>
-                        <div
-                          className={`${classes.actionButton} ${classes.prevButtonBottom}`}
-                        />
-                        <button
-                          className={`${classes.actionButton} ${classes.prevButtonTop}`}
-                          onClick={handleBack}
-                        >
-                          Previous
-                        </button>
-                      </div>
-                    )}
-                    <div className={classes.buttonContainer}>
-                      <div
-                        className={`${classes.actionButton} ${
-                          classes.nextButtonBottom
-                        } ${idx === 0 && classes.nextButtonSide}`}
-                      />
-                      <button
-                        className={`${classes.actionButton} ${
-                          classes.nextButtonTop
-                        } ${idx === 0 && classes.nextButtonSide}`}
-                        onClick={() => handleNext(idx === exercises.length - 1)}
-                      >
-                        {idx === exercises.length - 1 ? "Finish" : "Next"}
-                      </button>
-                    </div>
-                    <div className={classes.buttonContainer}>
-                      <div
-                        className={`${classes.actionButton} ${classes.pauseButtonBottom}`}
-                      />
-                      <button
-                        className={`${classes.actionButton} ${classes.pauseButtonTop}`}
-                        onClick={handleQuit}
-                      >
-                        Pause
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
+      <div className={classes.box}>
+        {exercises?.map((exercise, idx) => (
+          <div
+            className={classes.exerciseContainer}
+            ref={idx === curUser?.curExercise ? curRef : null}
+            key={idx}
+          >
+            <div className={classes.eName}>
+              <span className={classes.entryTitle}>{exercise.name}</span>
+              <span className={classes.entryTitle}>{`(${exercise.apparatus}, ${
+                exercise.unilateral ? "Unilateral" : "Bilateral"
+              })`}</span>
             </div>
-          ))}
-        </div>
-      )}
+            {idx === curUser?.curExercise && (
+              <>
+                <div className={classes.entry}>
+                  <span
+                    className={classes.entryName}
+                  >{`Previous session note: ${getPreviousSessionNote(
+                    idx
+                  )}`}</span>
+                </div>
+                <div className={classes.setsEntry}>
+                  <div
+                    className={`${classes.changeSetButtonContainer} ${classes.leftContainer}`}
+                  >
+                    <div
+                      className={`${classes.changeSetButton} ${classes.subtractSetButtonBottom}`}
+                    />
+                    <div
+                      className={`${classes.changeSetButton} ${classes.subtractSetButtonTop}`}
+                      onClick={() => handleSetsChange(NumberChange.SubtractSet)}
+                    >
+                      <Remove className={classes.changeSetIcon} />
+                    </div>
+                  </div>
+                  <span className={`${classes.entryName} ${classes.sets}`}>
+                    {`Sets: ${exercisesState[idx].sets}`}
+                  </span>
+                  <div
+                    className={`${classes.changeSetButtonContainer} ${classes.rightContainer}`}
+                  >
+                    <div
+                      className={`${classes.changeSetButton} ${classes.addSetButtonBottom}`}
+                    />
+                    <div
+                      className={`${classes.changeSetButton} ${classes.addSetButtonTop}`}
+                      onClick={() => handleSetsChange(NumberChange.AddSet)}
+                    >
+                      <Add className={classes.changeSetIcon} />
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  {Array.from(Array(exercisesState[idx].sets).keys()).map(
+                    (set) => (
+                      <div
+                        className={classes.entry}
+                        key={`${exercisesState[idx].name}${set}`}
+                      >
+                        <span
+                          className={`${classes.entryName} ${classes.entrySetsReps}`}
+                        >
+                          Reps:
+                        </span>
+                        <Input
+                          className={classes.input}
+                          inputProps={{
+                            style: { textAlign: "center" },
+                          }}
+                          value={
+                            set < exercisesState[idx].reps.length
+                              ? exercisesState[idx].reps[set]
+                              : exercisesState[idx].reps[0]
+                          }
+                          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                            if (/^\d*$/.test(e.target.value))
+                              handleRepsWeightChange(e, NumberChange.Reps, set);
+                          }}
+                        />
+                        <span
+                          className={`${classes.entryName} ${classes.entryWeight}`}
+                        >
+                          Weight:
+                        </span>
+                        <Input
+                          className={classes.input}
+                          inputProps={{
+                            style: { textAlign: "center" },
+                          }}
+                          value={
+                            set < exercisesState[idx].weight.length
+                              ? exercisesState[idx].weight[set]
+                              : exercisesState[idx].weight[0]
+                          }
+                          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                            if (/^\d*\.?\d*$/.test(e.target.value))
+                              handleRepsWeightChange(
+                                e,
+                                NumberChange.Weight,
+                                set
+                              );
+                          }}
+                        />
+                        <span className={classes.entryName}>lbs</span>
+                      </div>
+                    )
+                  )}
+                </div>
+                <div className={classes.entry}>
+                  <span className={classes.noteName}>Leave a note: </span>
+                  <Input
+                    className={classes.noteInput}
+                    value={exercisesState[idx].note}
+                    onChange={handleNoteChange}
+                  />
+                </div>
+                <div className={classes.actions}>
+                  {idx !== 0 && (
+                    <div className={classes.buttonContainer}>
+                      <div
+                        className={`${classes.actionButton} ${classes.prevButtonBottom}`}
+                      />
+                      <button
+                        className={`${classes.actionButton} ${classes.prevButtonTop}`}
+                        onClick={handleBack}
+                      >
+                        Previous
+                      </button>
+                    </div>
+                  )}
+                  <div className={classes.buttonContainer}>
+                    <div
+                      className={`${classes.actionButton} ${
+                        classes.nextButtonBottom
+                      } ${idx === 0 && classes.nextButtonSide}`}
+                    />
+                    <button
+                      className={`${classes.actionButton} ${
+                        classes.nextButtonTop
+                      } ${idx === 0 && classes.nextButtonSide}`}
+                      onClick={() => handleNext(idx === exercises.length - 1)}
+                    >
+                      {idx === exercises.length - 1 ? "Finish" : "Next"}
+                    </button>
+                  </div>
+                  <div className={classes.buttonContainer}>
+                    <div
+                      className={`${classes.actionButton} ${classes.pauseButtonBottom}`}
+                    />
+                    <button
+                      className={`${classes.actionButton} ${classes.pauseButtonTop}`}
+                      onClick={handleQuit}
+                    >
+                      Pause
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

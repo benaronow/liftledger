@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, Person } from "@mui/icons-material";
+import { Person } from "@mui/icons-material";
 import { ReactElement, useContext } from "react";
 import { MenuOpenContext } from "@/app/providers/MenuOpenProvider";
 import { useAppDispatch } from "@/lib/hooks";
@@ -44,12 +44,12 @@ export const Header = () => {
   const getTitle = () => {
     if (pathname.includes(RouteType.Progress)) return "Progress";
     if (pathname.includes(RouteType.History)) return "History";
-    if (pathname.includes(RouteType.Home)) return "Home";
     if (pathname.includes(RouteType.Add))
       return editingBlock ? "Edit Block" : "Create Block";
     if (pathname.includes(RouteType.Settings)) return "Settings";
     if (pathname.includes(RouteType.Profile)) return "Profile";
     if (pathname.includes(RouteType.Workout)) return "Workout";
+    return "Home";
   };
 
   const menuButtonMap: MenuButton[] = [
@@ -100,11 +100,6 @@ export const Header = () => {
     <div className={classes.container}>
       <div className={classes.head}>
         <div className={classes.leftPad}>
-          <div className={classes.menuIcon} onClick={toggleMenuOpen}>
-            <Menu className={classes.menuIconImg} />
-          </div>
-        </div>
-        <div className={classes.titleContainer}>
           <span className={classes.title}>{getTitle()}</span>
         </div>
         <div className={classes.rightPad}>

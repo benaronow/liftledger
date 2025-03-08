@@ -136,7 +136,7 @@ export const Dashboard = () => {
     { metric: "Total Weight Lifted:", value: getTotalWeight("lbs") },
   ];
 
-  if (session && !curUser) return <Spinner />;
+  if ((session && !curUser) || curUser?.curExercise) return <Spinner />;
 
   return (
     <div className={classes.container}>
