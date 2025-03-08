@@ -1,4 +1,14 @@
+import { keyframes } from "tss-react";
 import { makeStyles } from "tss-react/mui";
+
+const appear = keyframes`
+  from {
+    transform: translateY(70px);
+  }
+  to {
+    transform: translateY(0px);
+  }
+`;
 
 export const useFooterStyles = makeStyles()({
   noDisplay: {
@@ -13,6 +23,8 @@ export const useFooterStyles = makeStyles()({
     height: "70px",
     zIndex: 10,
     borderRadius: "20px 20px 0px 0px",
+    transform: "translateY(70px)",
+    animation: `${appear} 0.5s forwards`,
   },
   iconRow: {
     width: "95%",
