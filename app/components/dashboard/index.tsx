@@ -39,12 +39,6 @@ export const Dashboard = () => {
     router.push(`/auth/login`);
   };
 
-  const handleStartDay = (cwIDx: number, cdIdx: number, ceIdx: number) => {
-    dispatch(setCurWeek(cwIDx));
-    dispatch(setCurDay(cdIdx));
-    dispatch(setCurExercise(ceIdx));
-  };
-
   const curWeekIdx =
     curUser?.curBlock?.weeks.findIndex((week) => !week.completed) || 0;
   const curDayIdx =
@@ -62,6 +56,11 @@ export const Dashboard = () => {
     curUser?.curBlock?.weeks[curWeekIdx]?.days[curDayIdx].exercises.find(
       (exercise) => !exercise.completed
     )?.name || "Unavailable";
+  const handleStartDay = () => {
+    dispatch(setCurWeek(curWeekIdx));
+    dispatch(setCurDay(curDayIdx));
+    dispatch(setCurExercise(curExerciseIdx));
+  };
 
   const getTotalWeight = (type: "lbs" | "kgs") => {
     return `${curUser?.curBlock?.weeks.reduce(
@@ -166,9 +165,10 @@ export const Dashboard = () => {
                 <Link
                   className={`${classes.startButtonBase} ${classes.startButtonTop}`}
                   href={RouteType.Workout}
-                  onClick={() =>
-                    handleStartDay(curWeekIdx, curDayIdx, curExerciseIdx)
-                  }
+                  onClick={() => {
+                    window.alert("hiiii");
+                    handleStartDay();
+                  }}
                 >
                   <span>{`${
                     !curExerciseIdx || curExerciseIdx === 0 ? "Start" : "Resume"
