@@ -17,16 +17,18 @@ import { Checkbox, Input } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, RefObject, useEffect } from "react";
+import { ChangeEvent, FormEvent, useContext } from "react";
 import { useSelector } from "react-redux";
 import { useEditWeekStyles } from "./useEditWeekStyles";
+import { useCreateBlockStyles } from "../useCreateBlockStyles";
+import { emptyBlock } from "..";
+import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 
 interface EditWeekProps {
   uid: string;
   block: Block;
   setBlock: (block: Block) => void;
   setEditingDay: (day: number) => void;
-  saveRef: RefObject<HTMLDivElement | null>;
 }
 
 export const EditWeek = ({
@@ -34,21 +36,14 @@ export const EditWeek = ({
   block,
   setBlock,
   setEditingDay,
-  saveRef,
 }: EditWeekProps) => {
   const { classes } = useEditWeekStyles();
+  const { classes: createBlockClasses } = useCreateBlockStyles();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const editingBlock = useSelector(selectEditingBlock);
   const curUser = useSelector(selectCurUser);
-
-  useEffect(() => {
-    if (saveRef.current && block.weeks[0].days.length > 1)
-      saveRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-  }, [block.weeks[0].days.length]);
+  const { toggleScreenState } = useContext(ScreenStateContext);
 
   const handleBlockNameInput = (e: ChangeEvent<HTMLInputElement>) => {
     setBlock({ ...block, name: e.target.value });
@@ -209,6 +204,7 @@ export const EditWeek = ({
         type: BlockOp.Create,
       })
     );
+    toggleScreenState("fetching", true);
     dispatch(setTemplate(undefined));
     setEditingBlock(false);
     router.push("/dashboard");
@@ -378,6 +374,30 @@ export const EditWeek = ({
           </div>
         </div>
       )}
+      <div className={createBlockClasses.actions}>
+        <div className={createBlockClasses.buttonContainer}>
+          <div
+            className={`${createBlockClasses.actionButton} ${classes.submitButtonBottom}`}
+          />
+          <button
+            className={`${createBlockClasses.actionButton} ${classes.submitButtonTop}`}
+            type="submit"
+          >
+            Save Block
+          </button>
+        </div>
+        <div className={createBlockClasses.buttonContainer}>
+          <div
+            className={`${createBlockClasses.actionButton} ${classes.clearButtonBottom}`}
+          />
+          <button
+            className={`${createBlockClasses.actionButton} ${classes.clearButtonTop}`}
+            onClick={() => setBlock(emptyBlock)}
+          >
+            Clear Block
+          </button>
+        </div>
+      </div>
     </form>
   );
 };

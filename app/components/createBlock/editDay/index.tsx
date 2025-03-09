@@ -15,16 +15,23 @@ import { Checkbox, Input } from "@mui/material";
 import { ChangeEvent, useEffect, useRef } from "react";
 import Select from "react-select";
 import { useEditDayStyles } from "./useEditDayStyles";
+import { useCreateBlockStyles } from "../useCreateBlockStyles";
 
 interface EditDayProps {
   block: Block;
-  editingDay: number;
   setBlock: (block: Block) => void;
+  editingDay: number;
   setEditingDay: (day: number) => void;
 }
 
-export const EditDay = ({ block, setBlock, editingDay }: EditDayProps) => {
+export const EditDay = ({
+  block,
+  setBlock,
+  editingDay,
+  setEditingDay,
+}: EditDayProps) => {
   const { classes } = useEditDayStyles();
+  const { classes: createBlockClasses } = useCreateBlockStyles();
   const addRef = useRef<HTMLDivElement>(null);
 
   const dayGroup = block.weeks[0].days[editingDay].groupName;
@@ -453,6 +460,20 @@ export const EditDay = ({ block, setBlock, editingDay }: EditDayProps) => {
           ref={addRef}
         >
           <AddCircleOutline />
+        </div>
+      </div>
+      <div className={createBlockClasses.actions}>
+        <div className={createBlockClasses.buttonContainer}>
+          <div
+            className={`${createBlockClasses.actionButton} ${classes.submitButtonBottom}`}
+          />
+          <button
+            className={`${createBlockClasses.actionButton} ${classes.submitButtonTop}`}
+            type="submit"
+            onClick={() => setEditingDay(-1)}
+          >
+            Save Day
+          </button>
         </div>
       </div>
     </div>

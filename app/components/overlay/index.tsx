@@ -1,17 +1,17 @@
 "use client";
 
-import { MenuOpenContext } from "@/app/providers/MenuOpenProvider";
 import { useContext } from "react";
 import { useOverlayStyles } from "./useOverlayStyles";
+import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 
 export const Overlay = () => {
   const { classes } = useOverlayStyles();
-  const { menuOpen, toggleMenuOpen } = useContext(MenuOpenContext);
+  const { overlayOn, toggleScreenState } = useContext(ScreenStateContext);
 
   return (
     <div
-      className={`${classes.overlay} ${menuOpen && classes.overlayUp}`}
-      onClick={toggleMenuOpen}
+      className={`${classes.overlay} ${overlayOn && classes.overlayUp}`}
+      onClick={() => toggleScreenState("overlay", false)}
     ></div>
   );
 };

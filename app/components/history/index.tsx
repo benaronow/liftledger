@@ -11,22 +11,24 @@ import { useSelector } from "react-redux";
 import { ControlPointDuplicate } from "@mui/icons-material";
 import { Block, RouteType } from "@/types";
 import { useAppDispatch } from "@/lib/hooks";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
-import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
+import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 import { getTemplateFromBlock } from "../utils";
 import { useHistoryStyles } from "./useHistoryStyles";
+import { Spinner } from "../spinner";
 
 export const History = () => {
   const { classes } = useHistoryStyles();
   const dispatch = useAppDispatch();
   const curUser = useSelector(selectCurUser);
   const router = useRouter();
-  const pathname = usePathname();
-  const { innerWidth } = useContext(InnerSizeContext);
+  const { innerWidth, isFetching, toggleScreenState } =
+    useContext(ScreenStateContext);
   const theme = useTheme();
 
   useEffect(() => {
+    toggleScreenState("fetching", false);
     router.prefetch(RouteType.Add);
     router.prefetch(RouteType.Home);
     router.prefetch(RouteType.Profile);
@@ -50,18 +52,19 @@ export const History = () => {
     router.push("/create-block");
   };
 
-  const completedBlocks = curUser?.blocks.map((block, idx) => {
-    if (block.completed)
+  const completedBlocks = curUser?.blocks
+    .filter((block) => block.completed)
+    .map((block, idx) => {
       return (
         <div
           key={idx}
           className={`${classes.entry} ${classes.completedBlockEntry}`}
         >
-          <span>{`${block.name}: ${dayjs(block.startDate).format(
-            "MM/DD/YYYY"
-          )} -  ${
+          <span className={classes.title}>{`${idx + 1}. ${block.name}`}</span>
+          <div className={classes.middlePad} />
+          <span>{`${dayjs(block.startDate).format("M/DD/YYYY")} -  ${
             getCompletedDate(block)
-              ? dayjs(getCompletedDate(block)).format("MM/DD/YYYY")
+              ? dayjs(getCompletedDate(block)).format("M/DD/YYYY")
               : "N/A"
           }`}</span>
           <div onClick={() => handleCreateFromTemplate(block)}>
@@ -69,34 +72,23 @@ export const History = () => {
           </div>
         </div>
       );
-  });
+    });
+
+  if (!curUser || isFetching) return <Spinner />;
 
   return (
     <div className={`${classes.container}`}>
-      {((pathname === "/dashboard" &&
-        innerWidth &&
-        innerWidth > theme.breakpoints.values["sm"]) ||
-        (pathname === "/history" &&
-          innerWidth &&
-          innerWidth < theme.breakpoints.values["sm"])) && (
-        <>
-          <span className={classes.title}>Completed Training Blocks</span>
-          <div className={classes.horizontalDivider} />
-          {!curUser && <span className={classes.noBlockText}>Loading</span>}
-          {curUser &&
-            (completedBlocks && completedBlocks[0] ? (
-              completedBlocks
-            ) : (
-              <div
-                className={`${classes.entry} ${classes.completedBlockEntry}`}
-              >
-                <span className={classes.noBlockText}>
-                  No completed blocks yet
-                </span>
-              </div>
-            ))}
-        </>
-      )}
+      <div className={classes.box}>
+        {completedBlocks && completedBlocks[0] ? (
+          completedBlocks
+        ) : (
+          <div className={`${classes.entry} ${classes.completedBlockEntry}`}>
+            <span className={`${classes.noBlockText} ${classes.title}`}>
+              No completed blocks yet
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -210,4 +210,18 @@ export const useEditDayStyles = makeStyles()({
     background: "#202021",
     transform: "translateY(5px)",
   },
+  submitButtonTop: {
+    borderRadius: "5px",
+    background: "#0096FF",
+    transform: "translateY(-30px)",
+    transition: "transform 0.1s",
+    "&:active": {
+      transform: "translateY(-27px)",
+    },
+  },
+  submitButtonBottom: {
+    borderRadius: "5px",
+    background: "#004c81",
+    transform: "translateY(5px)",
+  },
 });

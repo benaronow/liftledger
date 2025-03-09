@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { LoginContext } from "../../providers/loginProvider";
 import dayjs from "dayjs";
 import { useAppDispatch } from "@/lib/hooks";
@@ -14,14 +14,14 @@ import { Day, Exercise, RouteType, Week, WeightType } from "@/types";
 import { Spinner } from "../spinner";
 import { useDashboardStyles } from "./useDashboardStyles";
 import Link from "next/link";
+import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 
 export const Dashboard = () => {
   const { classes } = useDashboardStyles();
   const { session, attemptedLogin, curUser } = useContext(LoginContext);
+  const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
   const dispatch = useAppDispatch();
   const router = useRouter();
-
-  const [fetchingWorkout, setFetchingWorkout] = useState(false);
 
   useEffect(() => {
     if (session && attemptedLogin && !curUser) {
@@ -30,6 +30,7 @@ export const Dashboard = () => {
   }, [attemptedLogin]);
 
   useEffect(() => {
+    toggleScreenState("fetching", false);
     router.prefetch(RouteType.Add);
     router.prefetch(RouteType.History);
     router.prefetch(RouteType.Profile);
@@ -137,7 +138,7 @@ export const Dashboard = () => {
     { metric: "Total Weight Lifted:", value: getTotalWeight("lbs") },
   ];
 
-  if ((session && !curUser) || fetchingWorkout) return <Spinner />;
+  if ((session && !curUser) || isFetching) return <Spinner />;
 
   return (
     <div className={classes.container}>
@@ -168,7 +169,7 @@ export const Dashboard = () => {
                   className={`${classes.startButtonBase} ${classes.startButtonTop}`}
                   href={RouteType.Workout}
                   onClick={() => {
-                    setFetchingWorkout(true);
+                    toggleScreenState("fetching", true);
                     handleStartDay();
                   }}
                 >

@@ -188,4 +188,32 @@ export const useEditWeekStyles = makeStyles()({
     background: "#202021",
     transform: "translateY(5px)",
   },
+  submitButtonTop: {
+    borderRadius: "5px 0px 0px 5px",
+    background: "#0096FF",
+    transform: "translateY(-30px)",
+    transition: "transform 0.1s",
+    "&:active": {
+      transform: "translateY(-27px)",
+    },
+  },
+  submitButtonBottom: {
+    borderRadius: "5px 0px 0px 5px",
+    background: "#004c81",
+    transform: "translateY(5px)",
+  },
+  clearButtonTop: {
+    borderRadius: "0px 5px 5px 0px",
+    background: "red",
+    transform: "translateY(-30px)",
+    transition: "transform 0.1s",
+    "&:active": {
+      transform: "translateY(-27px)",
+    },
+  },
+  clearButtonBottom: {
+    borderRadius: "0px 5px 5px 0px",
+    background: "#830000",
+    transform: "translateY(5px)",
+  },
 });

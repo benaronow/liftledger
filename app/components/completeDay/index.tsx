@@ -14,10 +14,11 @@ import { BlockOp, NumberChange, RouteType } from "@/types";
 import { Add, Remove } from "@mui/icons-material";
 import { Input } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useCompleteDayStyles } from "./useCompleteDayStyles";
 import { Spinner } from "../spinner";
+import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 
 export const CompleteDay = () => {
   const { classes } = useCompleteDayStyles();
@@ -25,8 +26,10 @@ export const CompleteDay = () => {
   const curUser = useSelector(selectCurUser);
   const router = useRouter();
   const curRef = useRef<HTMLDivElement>(null);
+  const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
 
   useEffect(() => {
+    toggleScreenState("fetching", false);
     router.prefetch(RouteType.Add);
     router.prefetch(RouteType.Home);
     router.prefetch(RouteType.Profile);
@@ -327,6 +330,7 @@ export const CompleteDay = () => {
       );
     }
     if (completedDay) {
+      toggleScreenState("fetching", true);
       router.push("/dashboard");
       dispatch(setCurWeek(undefined));
       dispatch(setCurDay(undefined));
@@ -335,13 +339,14 @@ export const CompleteDay = () => {
   };
 
   const handleQuit = () => {
+    toggleScreenState("fetching", true);
     router.push("/dashboard");
     dispatch(setCurWeek(undefined));
     dispatch(setCurDay(undefined));
     dispatch(setCurExercise(undefined));
   };
 
-  if (!exercises.length) return <Spinner />;
+  if (!exercises.length || isFetching) return <Spinner />;
 
   return (
     <div className={classes.container}>

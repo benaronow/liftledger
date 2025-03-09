@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { RouteType } from "@/types";
 import { useContext, useEffect, useState } from "react";
-import { InnerSizeContext } from "@/app/providers/innerSizeProvider";
+import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 import { useTheme } from "@mui/material";
 import { useAppDispatch } from "@/lib/hooks";
 import {
@@ -18,12 +18,16 @@ import { useFooterStyles } from "./useFooterStyles";
 import { GiProgression } from "react-icons/gi";
 import { FaEdit, FaHistory } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
+import { getTemplateFromBlock } from "../utils";
+import { LoginContext } from "@/app/providers/loginProvider";
 
 export const Footer = () => {
   const { classes } = useFooterStyles();
   const dispatch = useAppDispatch();
   const pathname = usePathname();
-  const { innerWidth, innerHeight } = useContext(InnerSizeContext);
+  const { curUser } = useContext(LoginContext);
+  const { innerWidth, innerHeight, toggleScreenState } =
+    useContext(ScreenStateContext);
   const theme = useTheme();
 
   const [isStandalone, setIsStandalone] = useState(true);
@@ -31,9 +35,15 @@ export const Footer = () => {
     setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
   }, []);
 
-  const handleIconClick = () => {
-    dispatch(setTemplate(undefined));
-    dispatch(setEditingBlock(false));
+  const handleIconClick = (isEdit: boolean) => {
+    toggleScreenState("fetching", true);
+    if (isEdit && curUser?.curBlock) {
+      dispatch(setTemplate(getTemplateFromBlock(curUser?.curBlock, true)));
+      dispatch(setEditingBlock(true));
+    } else {
+      dispatch(setTemplate(undefined));
+      dispatch(setEditingBlock(false));
+    }
     dispatch(setCurWeek(undefined));
     dispatch(setCurDay(undefined));
     dispatch(setCurExercise(undefined));
@@ -98,7 +108,7 @@ export const Footer = () => {
                     : classes.inactiveIcon
                 }`}
                 href={button.route}
-                onClick={handleIconClick}
+                onClick={() => handleIconClick(button.route === RouteType.Add)}
               >
                 {button.icon}
               </Link>

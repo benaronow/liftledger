@@ -14,13 +14,17 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useProgressStyles } from "./useProgressStyles";
+import { Spinner } from "../spinner";
+import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 
 export const Progress = () => {
   const { classes } = useProgressStyles();
   const { curUser } = useContext(LoginContext);
+  const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
   const router = useRouter();
 
   useEffect(() => {
+    toggleScreenState("fetching", false);
     router.prefetch(RouteType.Add);
     router.prefetch(RouteType.Home);
     router.prefetch(RouteType.Profile);
@@ -179,10 +183,10 @@ export const Progress = () => {
     })
   );
 
+  if (!curUser || isFetching) return <Spinner />;
+
   return (
     <div className={`${classes.container}`}>
-      <span className={classes.title}>Progress</span>
-      <div className={classes.horizontalDivider} />
       {allTableData.map((tableData, idx) => (
         <React.Fragment key={idx}>
           <div

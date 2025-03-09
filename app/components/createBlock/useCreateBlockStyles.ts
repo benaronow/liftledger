@@ -6,8 +6,8 @@ export const useCreateBlockStyles = makeStyles()({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    height: "calc(100dvh - 50px)",
-    padding: "15px 15px 85px",
+    height: "100dvh",
+    padding: "65px 15px 85px",
     overflow: "scroll",
   },
   box: {
@@ -33,7 +33,6 @@ export const useCreateBlockStyles = makeStyles()({
     display: "flex",
     width: "100%",
     justifyContent: "space-around",
-    padding: "0px 10px",
     marginBottom: "10px",
   },
   buttonContainer: {
@@ -51,33 +50,5 @@ export const useCreateBlockStyles = makeStyles()({
     "&:hover": {
       cursor: "pointer",
     },
-  },
-  submitButtonTop: {
-    borderRadius: "5px 0px 0px 5px",
-    background: "#0096FF",
-    transform: "translateY(-30px)",
-    transition: "transform 0.1s",
-    "&:active": {
-      transform: "translateY(-27px)",
-    },
-  },
-  submitButtonBottom: {
-    borderRadius: "5px 0px 0px 5px",
-    background: "#004c81",
-    transform: "translateY(5px)",
-  },
-  clearButtonTop: {
-    borderRadius: "0px 5px 5px 0px",
-    background: "red",
-    transform: "translateY(-30px)",
-    transition: "transform 0.1s",
-    "&:active": {
-      transform: "translateY(-27px)",
-    },
-  },
-  clearButtonBottom: {
-    borderRadius: "0px 5px 5px 0px",
-    background: "#830000",
-    transform: "translateY(5px)",
   },
 });

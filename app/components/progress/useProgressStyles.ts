@@ -6,8 +6,8 @@ export const useProgressStyles = makeStyles()((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    padding: "0px 10px",
-    height: "calc(100dvh - 60px)",
+    padding: "65px 10px 85px",
+    height: "100dvh",
     overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
       height: "calc(100dvh - 60px)",

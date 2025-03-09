@@ -9,14 +9,18 @@ import { deleteUser } from "@/lib/features/user/userSlice";
 import { useRouter } from "next/navigation";
 import { RouteType } from "@/types";
 import { useProfileStyles } from "./useProfileStyles";
+import { ScreenStateContext } from "@/app/providers/screenStateProvider";
+import { Spinner } from "../spinner";
 
 export const Profile = () => {
   const { classes } = useProfileStyles();
   const { session, curUser } = useContext(LoginContext);
+  const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
   const dispatch = useAppDispatch();
   const router = useRouter();
 
   useEffect(() => {
+    toggleScreenState("fetching", false);
     router.prefetch(RouteType.Add);
     router.prefetch(RouteType.Home);
     router.prefetch(RouteType.History);
@@ -31,6 +35,8 @@ export const Profile = () => {
     dispatch(deleteUser(session?.user.email || ""));
     handleLogout();
   };
+
+  if (!curUser || isFetching) return <Spinner />;
 
   return (
     <div className={classes.container}>
