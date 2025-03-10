@@ -58,7 +58,6 @@ export const useProfileStyles = makeStyles()((theme) => ({
   entry: {
     display: "flex",
     fontFamily: "League+Spartan",
-    fontSize: "16px",
     width: "100%",
     justifyContent: "space-between",
   },
