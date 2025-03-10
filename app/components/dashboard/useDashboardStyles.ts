@@ -57,7 +57,6 @@ export const useDashboardStyles = makeStyles()({
     fontSize: "16px",
     color: "#0096FF",
     fontWeight: 600,
-    transform: "translateY(calc(50dvh - 70px))",
     "&:hover": {
       cursor: "pointer",
     },
@@ -96,5 +95,44 @@ export const useDashboardStyles = makeStyles()({
   startButtonBottom: {
     background: "#004c81",
     transform: "translateY(7px)",
+  },
+  welcome: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    height: "80px",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  actionButtonContainer: {
+    width: "80px",
+    height: "35px",
+  },
+  actionButton: {
+    width: "100%",
+    height: "30px",
+    border: "none",
+    color: "white",
+    fontFamily: "League+Spartan",
+    fontSize: "16px",
+    fontWeight: 600,
+    "&:hover": {
+      cursor: "pointer",
+    },
+    whiteSpace: "nowrap",
+  },
+  accountButtonTop: {
+    borderRadius: "5px",
+    background: "#0096FF",
+    transform: "translateY(-30px)",
+    transition: "transform 0.1s",
+    "&:active": {
+      transform: "translateY(-27px)",
+    },
+  },
+  accountButtonBottom: {
+    borderRadius: "5px",
+    background: "#004c81",
+    transform: "translateY(5px)",
   },
 });

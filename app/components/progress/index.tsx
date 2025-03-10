@@ -19,16 +19,20 @@ import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 
 export const Progress = () => {
   const { classes } = useProgressStyles();
-  const { curUser } = useContext(LoginContext);
+  const { curUser, session } = useContext(LoginContext);
   const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
   const router = useRouter();
 
   useEffect(() => {
-    toggleScreenState("fetching", false);
-    router.prefetch(RouteType.Add);
-    router.prefetch(RouteType.Home);
-    router.prefetch(RouteType.Profile);
-    router.prefetch(RouteType.History);
+    if (!session) {
+      router.push("/dashboard");
+    } else {
+      toggleScreenState("fetching", false);
+      router.prefetch(RouteType.Add);
+      router.prefetch(RouteType.Home);
+      router.prefetch(RouteType.Profile);
+      router.prefetch(RouteType.History);
+    }
   }, []);
 
   const laterSessions = (curWeek: Week, curDay: number) => {

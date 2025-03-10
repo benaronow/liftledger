@@ -8,15 +8,18 @@ import { useHeaderStyles } from "./useHeaderStyles";
 import { useSelector } from "react-redux";
 import { useContext } from "react";
 import { ScreenStateContext } from "@/app/providers/screenStateProvider";
+import { LoginContext } from "@/app/providers/loginProvider";
 
 export const Header = () => {
   const { classes } = useHeaderStyles();
   const router = useRouter();
   const pathname = usePathname();
   const editingBlock = useSelector(selectEditingBlock);
+  const { session } = useContext(LoginContext);
   const { toggleScreenState } = useContext(ScreenStateContext);
 
   const getTitle = () => {
+    if (pathname.includes(RouteType.Signup)) return "Create Account";
     if (pathname.includes(RouteType.Progress)) return "Progress";
     if (pathname.includes(RouteType.History)) return "History";
     if (pathname.includes(RouteType.Add))
@@ -29,7 +32,7 @@ export const Header = () => {
 
   return (
     <>
-      {pathname !== "/" && (
+      {pathname !== "/" && session && (
         <div className={classes.container}>
           <div className={classes.leftPad}>
             <span className={classes.title}>{getTitle()}</span>

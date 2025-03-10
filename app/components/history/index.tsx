@@ -17,22 +17,28 @@ import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 import { getTemplateFromBlock } from "../utils";
 import { useHistoryStyles } from "./useHistoryStyles";
 import { Spinner } from "../spinner";
+import { LoginContext } from "@/app/providers/loginProvider";
 
 export const History = () => {
   const { classes } = useHistoryStyles();
   const dispatch = useAppDispatch();
   const curUser = useSelector(selectCurUser);
   const router = useRouter();
+  const { session } = useContext(LoginContext);
   const { innerWidth, isFetching, toggleScreenState } =
     useContext(ScreenStateContext);
   const theme = useTheme();
 
   useEffect(() => {
-    toggleScreenState("fetching", false);
-    router.prefetch(RouteType.Add);
-    router.prefetch(RouteType.Home);
-    router.prefetch(RouteType.Profile);
-    router.prefetch(RouteType.Progress);
+    if (!session) {
+      router.push("/dashboard");
+    } else {
+      toggleScreenState("fetching", false);
+      router.prefetch(RouteType.Add);
+      router.prefetch(RouteType.Home);
+      router.prefetch(RouteType.Profile);
+      router.prefetch(RouteType.Progress);
+    }
   }, []);
 
   useEffect(() => {

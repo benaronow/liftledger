@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 import { useCreateBlockStyles } from "./useCreateBlockStyles";
 import { Spinner } from "../spinner";
+import { LoginContext } from "@/app/providers/loginProvider";
 
 export const emptyBlock: Block = {
   name: "",
@@ -54,17 +55,22 @@ export const CreateBlock = () => {
   const { classes } = useCreateBlockStyles();
   const curUser = useSelector(selectCurUser);
   const router = useRouter();
+  const { session } = useContext(LoginContext);
   const { innerWidth, isFetching, toggleScreenState } =
     useContext(ScreenStateContext);
   const theme = useTheme();
   const [editingDay, setEditingDay] = useState(-1);
 
   useEffect(() => {
-    toggleScreenState("fetching", false);
-    router.prefetch(RouteType.Progress);
-    router.prefetch(RouteType.Home);
-    router.prefetch(RouteType.Profile);
-    router.prefetch(RouteType.History);
+    if (!session) {
+      router.push("/dashboard");
+    } else {
+      toggleScreenState("fetching", false);
+      router.prefetch(RouteType.Progress);
+      router.prefetch(RouteType.Home);
+      router.prefetch(RouteType.Profile);
+      router.prefetch(RouteType.History);
+    }
   }, []);
 
   useEffect(() => {

@@ -1,24 +1,47 @@
 import { makeStyles } from "tss-react/mui";
 
-export const useCreateAccountStyles = makeStyles()((theme) => ({
+export const useCreateAccountStyles = makeStyles()({
   container: {
     display: "flex",
-    alignItems: "flex-start",
-    justifyContent: "center",
+    flexDirection: "column",
+    alignItems: "center",
     width: "100%",
-    height: "calc(100dvh - 50px)",
-    padding: "10px 10px 10px 10px",
+    height: "100dvh",
+    padding: "65px 15px 85px",
     overflow: "scroll",
-    [theme.breakpoints.up("sm")]: {
-      height: "calc(100dvh - 50px)",
-      overflow: "hidden",
-    },
+  },
+  box: {
+    width: "100%",
+    borderRadius: "10px",
+    background: "#58585b",
+    padding: "10px 10px 0px",
+  },
+  titleContainer: {
+    display: "flex",
+    width: "100%",
+    justifyContent: "center",
   },
   title: {
     fontFamily: "League+Spartan",
-    fontWeight: 900,
+    fontWeight: 700,
     fontSize: "22px",
     marginBottom: "10px",
+    color: "white",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    color: "white",
+    background: "#3a3a3d",
+    fontFamily: "League+Spartan",
+    fontSize: "14px",
+    marginBottom: "10px",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "10px",
+    borderRadius: "5px",
+    whiteSpace: "nowrap",
   },
   horizontalDivider: {
     width: "100%",
@@ -27,13 +50,6 @@ export const useCreateAccountStyles = makeStyles()((theme) => ({
     marginBottom: "10px",
     border: "solid",
     borderWidth: "1px",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
   },
   entry: {
     display: "flex",
@@ -57,35 +73,60 @@ export const useCreateAccountStyles = makeStyles()((theme) => ({
     width: "100%",
     paddingLeft: "5px",
     fontSize: "16px",
+    background: "white",
   },
   dateInput: {
     paddingLeft: "0px",
+    background: "white",
   },
-  buttons: {
+  actions: {
     display: "flex",
-    width: "70%",
+    width: "100%",
     justifyContent: "space-around",
+    marginBottom: "10px",
   },
-  accountButton: {
+  buttonContainer: {
+    width: "100%",
+    height: "35px",
+  },
+  actionButton: {
+    width: "100%",
+    height: "30px",
     border: "none",
-    background: "transparent",
+    color: "white",
     fontFamily: "League+Spartan",
     fontSize: "16px",
-    color: "#0096FF",
     fontWeight: 600,
     "&:hover": {
       cursor: "pointer",
     },
   },
-  deleteButton: {
-    border: "none",
-    background: "transparent",
-    fontFamily: "League+Spartan",
-    fontSize: "16px",
-    color: "#FF0000",
-    fontWeight: 600,
-    "&:hover": {
-      cursor: "pointer",
+  submitButtonTop: {
+    borderRadius: "5px 0px 0px 5px",
+    background: "#0096FF",
+    transform: "translateY(-30px)",
+    transition: "transform 0.1s",
+    "&:active": {
+      transform: "translateY(-27px)",
     },
   },
-}));
+  submitButtonBottom: {
+    borderRadius: "5px 0px 0px 5px",
+    background: "#004c81",
+    transform: "translateY(5px)",
+  },
+  cancelButtonTop: {
+    borderRadius: "0px 5px 5px 0px",
+    background: "red",
+    transform: "translateY(-30px)",
+    transition: "transform 0.1s",
+    "&:active": {
+      transform: "translateY(-27px)",
+    },
+  },
+  cancelButtonBottom: {
+    borderRadius: "0px 5px 5px 0px",
+    background: "#830000",
+    transform: "translateY(5px)",
+  },
+});

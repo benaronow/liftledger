@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import { useCompleteDayStyles } from "./useCompleteDayStyles";
 import { Spinner } from "../spinner";
 import { ScreenStateContext } from "@/app/providers/screenStateProvider";
+import { LoginContext } from "@/app/providers/loginProvider";
 
 export const CompleteDay = () => {
   const { classes } = useCompleteDayStyles();
@@ -26,15 +27,20 @@ export const CompleteDay = () => {
   const curUser = useSelector(selectCurUser);
   const router = useRouter();
   const curRef = useRef<HTMLDivElement>(null);
+  const { session } = useContext(LoginContext);
   const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
 
   useEffect(() => {
-    toggleScreenState("fetching", false);
-    router.prefetch(RouteType.Add);
-    router.prefetch(RouteType.Home);
-    router.prefetch(RouteType.Profile);
-    router.prefetch(RouteType.History);
-    router.prefetch(RouteType.Progress);
+    if (!session) {
+      router.push("/dashboard");
+    } else {
+      toggleScreenState("fetching", false);
+      router.prefetch(RouteType.Add);
+      router.prefetch(RouteType.Home);
+      router.prefetch(RouteType.Profile);
+      router.prefetch(RouteType.History);
+      router.prefetch(RouteType.Progress);
+    }
   }, []);
 
   const exercises =

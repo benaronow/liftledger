@@ -3,7 +3,6 @@
 import { Avatar } from "@mui/material";
 import { useContext, useEffect } from "react";
 import { LoginContext } from "../../providers/loginProvider";
-import dayjs from "dayjs";
 import { useAppDispatch } from "@/lib/hooks";
 import { deleteUser } from "@/lib/features/user/userSlice";
 import { useRouter } from "next/navigation";
@@ -11,6 +10,7 @@ import { RouteType } from "@/types";
 import { useProfileStyles } from "./useProfileStyles";
 import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 import { Spinner } from "../spinner";
+import dayjs from "dayjs";
 
 export const Profile = () => {
   const { classes } = useProfileStyles();
@@ -20,15 +20,21 @@ export const Profile = () => {
   const router = useRouter();
 
   useEffect(() => {
-    toggleScreenState("fetching", false);
-    router.prefetch(RouteType.Add);
-    router.prefetch(RouteType.Home);
-    router.prefetch(RouteType.History);
-    router.prefetch(RouteType.Progress);
+    if (!session) {
+      router.push("/dashboard");
+    } else if (!curUser) {
+      router.push("/create-account");
+    } else {
+      toggleScreenState("fetching", false);
+      router.prefetch(RouteType.Add);
+      router.prefetch(RouteType.Home);
+      router.prefetch(RouteType.History);
+      router.prefetch(RouteType.Progress);
+    }
   }, []);
 
   const handleLogout = () => {
-    router.push(`/auth/logout`);
+    router.push("/auth/logout");
   };
 
   const handleDelete = () => {
@@ -40,58 +46,59 @@ export const Profile = () => {
 
   return (
     <div className={classes.container}>
-      <Avatar
-        sx={{ height: "75px", width: "75px", marginBottom: "10px" }}
-        src={session?.user.picture}
-      />
-      <div className={classes.entry}>
-        <span className={classes.name}>Name: </span>
-        <span className={classes.value}>
-          {curUser
-            ? `${curUser?.firstName} ${curUser?.lastName}`
-            : "Unavailable"}
-        </span>
-      </div>
-      <div className={classes.entry}>
-        <span className={classes.name}>Email: </span>
-        <span className={classes.value}>
-          {curUser ? curUser.email : "Unavailable"}
-        </span>
-      </div>
-      <div className={classes.entry}>
-        <span className={classes.name}>Birthday: </span>
-        <span className={classes.value}>
-          {curUser
-            ? dayjs(curUser.birthday).format("MM/DD/YYYY")
-            : "Unavailable"}
-        </span>
-      </div>
-      <div className={classes.entry}>
-        <span className={classes.name}>Max Bench Press: </span>
-        <span className={classes.value}>
-          {curUser ? curUser.benchMax : "Unavailable"}
-        </span>
-      </div>
-      <div className={classes.entry}>
-        <span className={classes.name}>Max Squat: </span>
-        <span className={classes.value}>
-          {curUser ? curUser.squatMax : "Unavailable"}
-        </span>
-      </div>
-      <div className={classes.entry}>
-        <span className={classes.name}>Max Deadlift: </span>
-        <span className={classes.value}>
-          {curUser ? curUser.deadMax : "Unavailable"}
-        </span>
-      </div>
-      <div className={classes.horizontalDivider} />
-      <div className={`${classes.entry} ${classes.actions}`}>
-        <button className={classes.accountButton} onClick={handleLogout}>
-          Log out
-        </button>
-        <button className={classes.deleteButton} onClick={handleDelete}>
-          Delete Account
-        </button>
+      <div className={classes.box}>
+        <div className={classes.head}>
+          <Avatar
+            sx={{ height: "75px", width: "75px", marginRight: "20px" }}
+            src={session?.user.picture}
+          />
+          <div className={classes.info}>
+            <div className={classes.entry}>
+              <span>Name:</span>
+              <span>
+                {curUser
+                  ? `${curUser?.firstName} ${curUser?.lastName}`
+                  : "Unavailable"}
+              </span>
+            </div>
+            <div className={classes.entry}>
+              <span>Email:</span>
+              <span>{curUser ? curUser.email : "Unavailable"}</span>
+            </div>
+            <div className={classes.entry}>
+              <span>Birthday:</span>
+              <span>
+                {curUser
+                  ? dayjs(curUser.birthday).format("MM/DD/YYYY")
+                  : "Unavailable"}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className={classes.actions}>
+          <div className={classes.buttonContainer}>
+            <div
+              className={`${classes.actionButton} ${classes.submitButtonBottom}`}
+            />
+            <button
+              className={`${classes.actionButton} ${classes.submitButtonTop}`}
+              onClick={handleLogout}
+            >
+              Log Out
+            </button>
+          </div>
+          <div className={classes.buttonContainer}>
+            <div
+              className={`${classes.actionButton} ${classes.clearButtonBottom}`}
+            />
+            <button
+              className={`${classes.actionButton} ${classes.clearButtonTop}`}
+              onClick={handleDelete}
+            >
+              Delete Account
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -86,7 +86,7 @@ export const Footer = () => {
 
   return (
     <>
-      {pathname !== "/" && (
+      {pathname !== "/" && curUser && (
         <div
           className={`${
             innerHeight &&

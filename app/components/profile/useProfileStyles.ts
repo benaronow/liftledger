@@ -7,12 +7,39 @@ export const useProfileStyles = makeStyles()((theme) => ({
     justifyContent: "flex-start",
     alignItems: "center",
     width: "100%",
-    height: "calc(100dvh - 60px)",
-    padding: "0px 10px",
+    height: "100dvh",
+    padding: "65px 15px 85px",
     overflow: "scroll",
     [theme.breakpoints.up("sm")]: {
       height: "calc(100dvh - 60px)",
     },
+  },
+  box: {
+    width: "100%",
+    borderRadius: "10px",
+    background: "#58585b",
+    padding: "10px",
+  },
+  head: {
+    display: "flex",
+    color: "white",
+    background: "#3a3a3d",
+    fontFamily: "League+Spartan",
+    fontSize: "14px",
+    marginBottom: "10px",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "10px",
+    borderRadius: "5px",
+    whiteSpace: "nowrap",
+  },
+  info: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    height: "75px",
+    justifyContent: "space-between",
   },
   title: {
     fontFamily: "League+Spartan",
@@ -32,24 +59,14 @@ export const useProfileStyles = makeStyles()((theme) => ({
     display: "flex",
     fontFamily: "League+Spartan",
     fontSize: "16px",
-    marginBottom: "10px",
     width: "100%",
+    justifyContent: "space-between",
   },
   name: {
     display: "flex",
     fontWeight: 600,
     width: "100%",
     justifyContent: "flex-start",
-  },
-  value: {
-    display: "flex",
-    width: "100%",
-    justifyContent: "flex-end",
-  },
-  actions: {
-    display: "flex",
-    width: "70%",
-    justifyContent: "space-around",
   },
   accountButton: {
     border: "none",
@@ -72,5 +89,54 @@ export const useProfileStyles = makeStyles()((theme) => ({
     "&:hover": {
       cursor: "pointer",
     },
+  },
+  actions: {
+    display: "flex",
+    width: "100%",
+    justifyContent: "space-around",
+  },
+  buttonContainer: {
+    width: "100%",
+    height: "35px",
+  },
+  actionButton: {
+    width: "100%",
+    height: "30px",
+    border: "none",
+    color: "white",
+    fontFamily: "League+Spartan",
+    fontSize: "16px",
+    fontWeight: 600,
+    "&:hover": {
+      cursor: "pointer",
+    },
+  },
+  submitButtonTop: {
+    borderRadius: "5px 0px 0px 5px",
+    background: "#0096FF",
+    transform: "translateY(-30px)",
+    transition: "transform 0.1s",
+    "&:active": {
+      transform: "translateY(-27px)",
+    },
+  },
+  submitButtonBottom: {
+    borderRadius: "5px 0px 0px 5px",
+    background: "#004c81",
+    transform: "translateY(5px)",
+  },
+  clearButtonTop: {
+    borderRadius: "0px 5px 5px 0px",
+    background: "red",
+    transform: "translateY(-30px)",
+    transition: "transform 0.1s",
+    "&:active": {
+      transform: "translateY(-27px)",
+    },
+  },
+  clearButtonBottom: {
+    borderRadius: "0px 5px 5px 0px",
+    background: "#830000",
+    transform: "translateY(5px)",
   },
 }));

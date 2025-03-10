@@ -164,9 +164,6 @@ export interface User {
   firstName: string;
   lastName: string;
   birthday: Date;
-  benchMax: number;
-  squatMax: number;
-  deadMax: number;
   progress: ExerciseProgress;
   blocks: Block[];
   curBlock: Block | undefined;
@@ -201,6 +198,7 @@ export enum NumberChange {
 }
 
 export enum RouteType {
+  Signup = "/create-account",
   Progress = "/progress",
   History = "/history",
   Home = "/dashboard",

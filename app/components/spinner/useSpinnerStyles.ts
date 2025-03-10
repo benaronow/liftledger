@@ -30,6 +30,6 @@ export const useSpinnerStyles = makeStyles()({
   },
   logo: {
     opacity: 0,
-    animation: `${spin} 1s infinite ease, ${appear} 0.5s forwards`,
+    animation: `${spin} 1s infinite ease, ${appear} 1s forwards`,
   },
 });

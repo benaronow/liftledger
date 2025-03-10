@@ -38,10 +38,6 @@ export const Dashboard = () => {
     router.prefetch(RouteType.Workout);
   }, []);
 
-  const handleLogin = () => {
-    router.push(`/auth/login`);
-  };
-
   const curWeekIdx =
     curUser?.curBlock?.weeks.findIndex((week) => !week.completed) || 0;
   const curDayIdx =
@@ -182,9 +178,25 @@ export const Dashboard = () => {
           )}
         </>
       ) : (
-        <button className={classes.loginButton} onClick={handleLogin}>
-          Log in to get started
-        </button>
+        <div className={classes.welcome}>
+          <span className={`${classes.titleContainer} ${classes.titleBig}`}>
+            Welcome to LiftLedger!
+          </span>
+          <div className={classes.actionButtonContainer}>
+            <div
+              className={`${classes.actionButton} ${classes.accountButtonBottom}`}
+            />
+            <button
+              className={`${classes.actionButton} ${classes.accountButtonTop}`}
+              onClick={() => {
+                toggleScreenState("fetching", true);
+                router.push("/auth/login");
+              }}
+            >
+              Log in
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

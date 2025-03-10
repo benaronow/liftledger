@@ -55,9 +55,6 @@ export const userSlice = createAppSlice({
         firstName: string;
         lastName: string;
         birthday: Date;
-        benchMax: number;
-        squatMax: number;
-        deadMax: number;
         progress: ExerciseProgress;
         blocks: Block[];
         curBlock: Block | undefined;
