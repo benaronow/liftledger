@@ -37,7 +37,6 @@ export const useHistoryStyles = makeStyles()({
     width: "100%",
   },
   noBlockText: {
-    marginBottom: "10px",
     fontFamily: "League+Spartan",
     fontSize: "16px",
     textAlign: "center",
