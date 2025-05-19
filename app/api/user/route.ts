@@ -17,9 +17,7 @@ export const POST = async (req: NextRequest) => {
   const user: User = await req.json();
   const existingUser = await UserModel.findOneAndUpdate(
     { _id: user._id },
-    {
-      $set: { progress: user.progress },
-    },
+    { $set: user },
     { new: true }
   );
   if (existingUser) return NextResponse.json(existingUser);

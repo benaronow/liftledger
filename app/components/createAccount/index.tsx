@@ -52,9 +52,8 @@ export const CreateAccount = () => {
     const user: User = {
       ...input,
       email: session?.user.email || "",
-      progress: {},
       blocks: [],
-      curBlock: undefined,
+      curBlock: "",
     };
     dispatch(updateUser(user));
   };
