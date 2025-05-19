@@ -17,7 +17,7 @@ import { Checkbox, Input } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useContext } from "react";
+import { ChangeEvent, useContext } from "react";
 import { useSelector } from "react-redux";
 import { useEditWeekStyles } from "./useEditWeekStyles";
 import { useCreateBlockStyles } from "../useCreateBlockStyles";
@@ -114,13 +114,16 @@ export const EditWeek = ({
         {
           name: "",
           apparatus: "",
-          sets: 0,
-          reps: [0],
-          weight: [0],
+          sets: [
+            {
+              reps: 0,
+              weight: 0,
+              completed: false,
+              note: "",
+            },
+          ],
           weightType: WeightType.Pounds,
           unilateral: false,
-          note: "",
-          completed: false,
         },
       ],
       completed: false,
@@ -161,6 +164,7 @@ export const EditWeek = ({
     const day: Day = {
       ...block.weeks[block.weeks.length - 1].days[dayIdx],
       name: `${block.weeks[0].days[dayIdx].name} (copy)`,
+      completed: false,
     };
     setBlock({
       ...block,
@@ -189,33 +193,23 @@ export const EditWeek = ({
     setBlock({ ...block, length: parseInt(e.target.value) || 0 });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const newWeeks = [...block.weeks];
-    Array.from(Array(block.length - 1)).forEach(() =>
-      newWeeks.push(block.weeks[0])
-    );
-    const fullBlock = { ...block, weeks: newWeeks };
+  const handleSubmit = () => {
+    toggleScreenState("fetching", true);
     dispatch(
       blockOp({
         uid,
-        block: editingBlock ? block : fullBlock,
-        curWeek: editingBlock ? curUser?.curWeek || 0 : 0,
-        type: BlockOp.Create,
+        block,
+        curWeek: editingBlock ? curUser?.curWeekIdx || 0 : 0,
+        type: editingBlock ? BlockOp.Edit : BlockOp.Create,
       })
     );
-    toggleScreenState("fetching", true);
     dispatch(setTemplate(undefined));
     setEditingBlock(false);
     router.push("/dashboard");
   };
 
   return (
-    <form
-      className={classes.container}
-      id="create-block-form"
-      onSubmit={handleSubmit}
-    >
+    <div className={classes.container}>
       <div className={classes.head}>
         <div className={`${classes.entry} ${classes.headEntry}`}>
           <span className={classes.entryName}>Block Name: </span>
@@ -381,7 +375,7 @@ export const EditWeek = ({
           />
           <button
             className={`${createBlockClasses.actionButton} ${classes.submitButtonTop}`}
-            type="submit"
+            onClick={handleSubmit}
           >
             Save Block
           </button>
@@ -398,6 +392,6 @@ export const EditWeek = ({
           </button>
         </div>
       </div>
-    </form>
+    </div>
   );
 };

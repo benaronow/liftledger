@@ -32,13 +32,16 @@ export const emptyBlock: Block = {
             {
               name: "",
               apparatus: "",
-              sets: 0,
-              reps: [0],
-              weight: [0],
+              sets: [
+                {
+                  reps: 0,
+                  weight: 0,
+                  completed: false,
+                  note: "",
+                },
+              ],
               weightType: WeightType.Pounds,
               unilateral: false,
-              note: "",
-              completed: false,
             },
           ],
           completed: false,
@@ -79,6 +82,7 @@ export const CreateBlock = () => {
   }, [innerWidth]);
 
   const template = useSelector(selectTemplate);
+  console.log(template)
   const editingBlock = useSelector(selectEditingBlock);
   const [block, setBlock] = useState<Block>(
     template

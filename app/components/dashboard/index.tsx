@@ -6,19 +6,21 @@ import { LoginContext } from "../../providers/loginProvider";
 import dayjs from "dayjs";
 import { useAppDispatch } from "@/lib/hooks";
 import {
+  selectCurBlock,
   setCurDay,
-  setCurExercise,
   setCurWeek,
 } from "@/lib/features/user/userSlice";
-import { Day, Exercise, RouteType, Week, WeightType } from "@/types";
+import { Day, Exercise, RouteType, Set, Week, WeightType } from "@/types";
 import { Spinner } from "../spinner";
 import { useDashboardStyles } from "./useDashboardStyles";
 import Link from "next/link";
 import { ScreenStateContext } from "@/app/providers/screenStateProvider";
+import { useSelector } from "react-redux";
 
 export const Dashboard = () => {
   const { classes } = useDashboardStyles();
   const { session, attemptedLogin, curUser } = useContext(LoginContext);
+  const curBlock = useSelector(selectCurBlock);
   const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -38,73 +40,68 @@ export const Dashboard = () => {
     router.prefetch(RouteType.Workout);
   }, []);
 
-  const curWeekIdx =
-    curUser?.curBlock?.weeks.findIndex((week) => !week.completed) || 0;
+  const curWeekIdx = curBlock?.weeks.findIndex((week) => !week.completed) || 0;
   const curDayIdx =
-    curUser?.curBlock?.weeks[curWeekIdx]?.days.findIndex(
-      (day) => !day.completed
-    ) || 0;
+    curBlock?.weeks[curWeekIdx]?.days.findIndex((day) => !day.completed) || 0;
   const curDayName =
-    curUser?.curBlock?.weeks[curWeekIdx]?.days.find((day) => !day.completed)
-      ?.name || "Unavailable";
-  const curExerciseIdx =
-    curUser?.curBlock?.weeks[curWeekIdx]?.days[curDayIdx].exercises.findIndex(
-      (exercise) => !exercise.completed
-    ) || 0;
-  const curExerciseName =
-    curUser?.curBlock?.weeks[curWeekIdx]?.days[curDayIdx].exercises.find(
-      (exercise) => !exercise.completed
-    )?.name || "Unavailable";
+    curBlock?.weeks[curWeekIdx]?.days.find((day) => !day.completed)?.name ||
+    "Unavailable";
   const handleStartDay = () => {
     dispatch(setCurWeek(curWeekIdx));
     dispatch(setCurDay(curDayIdx));
-    dispatch(setCurExercise(curExerciseIdx));
+  };
+
+  const getExerciseCompleted = (exercise: Exercise) => {
+    return exercise.sets.reduce(
+      (accSet: boolean, curSet: Set) => accSet && curSet.completed,
+      true
+    );
   };
 
   const getTotalWeight = (type: "lbs" | "kgs") => {
-    return `${curUser?.curBlock?.weeks.reduce(
-      (accWeek: number, curWeek: Week) => {
-        return (
-          accWeek +
-          curWeek.days.reduce((accDay: number, curDay: Day) => {
-            return (
-              accDay +
-              curDay.exercises.reduce((accEx: number, curEx: Exercise) => {
-                return (
-                  accEx +
-                  (curEx.completed
-                    ? curEx.weight.reduce(
-                        (accWeight: number, curWeight: number, idx) =>
-                          accWeight +
-                          curWeight *
-                            curEx.reps[idx] *
-                            (curEx.weightType === type
-                              ? 1
-                              : curEx.weightType === WeightType.Kilograms
-                              ? 2.205
-                              : 0.454),
-                        0
-                      )
-                    : 0)
-                );
-              }, 0)
-            );
-          }, 0)
-        );
-      },
-      0
-    )} lbs`;
+    return `${curBlock?.weeks.reduce((accWeek: number, curWeek: Week) => {
+      return (
+        accWeek +
+        curWeek.days.reduce((accDay: number, curDay: Day) => {
+          return (
+            accDay +
+            curDay.exercises.reduce((accEx: number, curEx: Exercise) => {
+              return (
+                accEx +
+                curEx.sets.reduce(
+                  (accWeight: number, curSet: Set) =>
+                    accWeight +
+                    (curSet.completed
+                      ? curSet.reps *
+                        curSet.weight *
+                        (curEx.weightType === type
+                          ? 1
+                          : curEx.weightType === WeightType.Kilograms
+                          ? 2.205
+                          : 0.454)
+                      : 0),
+                  0
+                )
+              );
+            }, 0)
+          );
+        }, 0)
+      );
+    }, 0)} lbs`;
   };
 
   const getDaysSinceLast = () => {
     let lastWorkoutDate = new Date(0);
-    curUser?.curBlock?.weeks.forEach((week) =>
+    curBlock?.weeks.forEach((week) =>
       week.days.forEach((day) =>
         day.exercises.forEach((exercise) => {
           const completionDate = day.completedDate
             ? new Date(day.completedDate)
             : new Date();
-          if (exercise.completed && lastWorkoutDate < completionDate) {
+          if (
+            getExerciseCompleted(exercise) &&
+            lastWorkoutDate < completionDate
+          ) {
             lastWorkoutDate = completionDate;
           }
         })
@@ -119,7 +116,7 @@ export const Dashboard = () => {
   const metricValueMap = [
     {
       metric: "Start Date",
-      value: dayjs(curUser?.curBlock?.startDate).format("MM/DD/YYYY"),
+      value: dayjs(curBlock?.startDate).format("MM/DD/YYYY"),
     },
     {
       metric: "Block Length:",
@@ -129,7 +126,6 @@ export const Dashboard = () => {
     },
     { metric: "Week:", value: `Week ${curWeekIdx + 1}` },
     { metric: "Day:", value: curDayName },
-    { metric: "Exercise:", value: curExerciseName },
     { metric: "Days Since Last Workout:", value: getDaysSinceLast() },
     { metric: "Total Weight Lifted:", value: getTotalWeight("lbs") },
   ];
@@ -142,14 +138,14 @@ export const Dashboard = () => {
         <>
           <div className={classes.titleContainer}>
             <span className={classes.titleSmall}>Currently Completing:</span>
-            <span className={classes.titleBig}>{curUser?.curBlock?.name}</span>
+            <span className={classes.titleBig}>{curBlock?.name}</span>
           </div>
-          {curUser && (!curUser.curBlock || curUser.curBlock.completed) && (
+          {curUser && (!curBlock || curBlock.completed) && (
             <span className={classes.noBlockText}>
               Create a training block to get started!
             </span>
           )}
-          {curUser?.curBlock && !curUser.curBlock.completed && (
+          {curBlock && !curBlock.completed && (
             <>
               {metricValueMap.map((pair, idx) => (
                 <div key={idx} className={classes.entry}>
@@ -169,9 +165,7 @@ export const Dashboard = () => {
                     handleStartDay();
                   }}
                 >
-                  <span>{`${
-                    !curExerciseIdx || curExerciseIdx === 0 ? "Start" : "Resume"
-                  } Workout`}</span>
+                  <span>Lift!</span>
                 </Link>
               </div>
             </>

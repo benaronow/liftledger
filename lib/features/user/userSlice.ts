@@ -5,7 +5,7 @@ import {
   blockOpRequest,
   updateUserRequest,
 } from "./userAPI";
-import { Block, BlockOp, ExerciseProgress, User } from "@/types";
+import { Block, BlockOp, User } from "@/types";
 import { PayloadAction } from "@reduxjs/toolkit";
 
 export interface UserSliceState {
@@ -55,9 +55,8 @@ export const userSlice = createAppSlice({
         firstName: string;
         lastName: string;
         birthday: Date;
-        progress: ExerciseProgress;
         blocks: Block[];
-        curBlock: Block | undefined;
+        curBlock: string;
       }) => {
         const response: User = await updateUserRequest(user);
         return response;
@@ -68,11 +67,7 @@ export const userSlice = createAppSlice({
         },
         fulfilled: (state, action) => {
           state.status = "idle";
-          if (state.curUser) {
-            state.curUser.progress = action.payload.progress;
-          } else {
-            state.curUser = action.payload;
-          }
+          state.curUser = action.payload;
         },
         rejected: (state) => {
           state.status = "failed";
@@ -120,8 +115,13 @@ export const userSlice = createAppSlice({
         fulfilled: (state, action) => {
           state.status = "idle";
           if (state.curUser) {
-            state.curUser.curBlock = action.payload;
-            state.curUser.blocks.push(action.payload);
+            state.curUser.curBlock = action.payload._id || "";
+            state.curUser.blocks = [
+              ...state.curUser.blocks.filter(
+                (block) => block._id !== action.payload._id
+              ),
+              action.payload,
+            ];
           }
         },
         rejected: (state) => {
@@ -140,30 +140,27 @@ export const userSlice = createAppSlice({
     setMessageOpen: create.reducer((state, action: PayloadAction<boolean>) => {
       state.messageOpen = action.payload;
     }),
-    setCurBlock: create.reducer(
-      (state, action: PayloadAction<Block | undefined>) => {
-        if (state.curUser) state.curUser.curBlock = action.payload;
-      }
-    ),
+    setCurBlock: create.reducer((state, action: PayloadAction<string>) => {
+      if (state.curUser) state.curUser.curBlock = action.payload;
+    }),
     setCurWeek: create.reducer(
       (state, action: PayloadAction<number | undefined>) => {
-        if (state.curUser) state.curUser.curWeek = action.payload;
+        if (state.curUser) state.curUser.curWeekIdx = action.payload;
       }
     ),
     setCurDay: create.reducer(
       (state, action: PayloadAction<number | undefined>) => {
-        if (state.curUser) state.curUser.curDay = action.payload;
-      }
-    ),
-    setCurExercise: create.reducer(
-      (state, action: PayloadAction<number | undefined>) => {
-        if (state.curUser) state.curUser.curExercise = action.payload;
+        if (state.curUser) state.curUser.curDayIdx = action.payload;
       }
     ),
   }),
   selectors: {
     selectAttemptedLogin: (state) => state.attemptedLogin,
     selectCurUser: (state) => state.curUser,
+    selectCurBlock: (state) =>
+      state.curUser?.blocks.find(
+        (block) => block._id === state.curUser?.curBlock
+      ),
     selectTemplate: (state) => state.template,
     selectEditingBlock: (state) => state.editingBlock,
     selectMessageOpen: (state) => state.messageOpen,
@@ -182,12 +179,12 @@ export const {
   setCurBlock,
   setCurWeek,
   setCurDay,
-  setCurExercise,
 } = userSlice.actions;
 
 export const {
   selectAttemptedLogin,
   selectCurUser,
+  selectCurBlock,
   selectTemplate,
   selectEditingBlock,
   selectMessageOpen,

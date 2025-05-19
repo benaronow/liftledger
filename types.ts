@@ -102,18 +102,21 @@ export enum WeightType {
   Kilograms = "kgs",
 }
 
-export interface Exercise {
-  _id?: string;
-  name: ExerciseName | string;
-  apparatus: ExerciseApparatus | string;
-  musclesWorked?: Muscle[];
-  sets: number;
-  reps: number[];
-  weight: number[];
-  weightType: WeightType | string;
-  unilateral: boolean;
+export interface Set {
+  reps: number;
+  weight: number;
   note: string;
   completed: boolean;
+}
+
+export interface Exercise {
+  _id?: string;
+  name: ExerciseName | "";
+  apparatus: ExerciseApparatus | "";
+  musclesWorked?: Muscle[];
+  sets: Set[];
+  weightType: WeightType | "";
+  unilateral: boolean;
 }
 
 export interface TableExercise extends Exercise {
@@ -164,12 +167,10 @@ export interface User {
   firstName: string;
   lastName: string;
   birthday: Date;
-  progress: ExerciseProgress;
   blocks: Block[];
-  curBlock: Block | undefined;
-  curWeek?: number | undefined;
-  curDay?: number | undefined;
-  curExercise?: number | undefined;
+  curBlock: string;
+  curWeekIdx?: number | undefined;
+  curDayIdx?: number | undefined;
 }
 
 export interface GetParams {
@@ -188,6 +189,7 @@ export interface TableData {
 export enum BlockOp {
   Create = "create",
   Edit = "edit",
+  NewWeek = "newWeek",
 }
 
 export enum NumberChange {

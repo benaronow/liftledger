@@ -9,7 +9,6 @@ export const GET = async (req: NextRequest, { params }: GetParams) => {
 
   const user = await UserModel.findOne({ email: (await params).id }).populate([
     { path: "blocks", model: BlockModel },
-    { path: "curBlock", model: BlockModel },
   ]);
 
   return NextResponse.json(user);

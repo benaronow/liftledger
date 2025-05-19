@@ -7,8 +7,8 @@ import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 import { useTheme } from "@mui/material";
 import { useAppDispatch } from "@/lib/hooks";
 import {
+  selectCurBlock,
   setCurDay,
-  setCurExercise,
   setCurWeek,
   setEditingBlock,
   setTemplate,
@@ -20,12 +20,14 @@ import { FaEdit, FaHistory } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
 import { getTemplateFromBlock } from "../utils";
 import { LoginContext } from "@/app/providers/loginProvider";
+import { useSelector } from "react-redux";
 
 export const Footer = () => {
   const { classes } = useFooterStyles();
   const dispatch = useAppDispatch();
   const pathname = usePathname();
   const { curUser } = useContext(LoginContext);
+  const curBlock = useSelector(selectCurBlock);
   const { innerWidth, innerHeight, toggleScreenState } =
     useContext(ScreenStateContext);
   const theme = useTheme();
@@ -37,8 +39,9 @@ export const Footer = () => {
 
   const handleIconClick = (isEdit: boolean) => {
     toggleScreenState("fetching", true);
-    if (isEdit && curUser?.curBlock) {
-      dispatch(setTemplate(getTemplateFromBlock(curUser?.curBlock, true)));
+    if (isEdit && curBlock) {
+      console.log(curBlock);
+      dispatch(setTemplate(getTemplateFromBlock(curBlock, true)));
       dispatch(setEditingBlock(true));
     } else {
       dispatch(setTemplate(undefined));
@@ -46,7 +49,6 @@ export const Footer = () => {
     }
     dispatch(setCurWeek(undefined));
     dispatch(setCurDay(undefined));
-    dispatch(setCurExercise(undefined));
   };
 
   const navButtonMap = [

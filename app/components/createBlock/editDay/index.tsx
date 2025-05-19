@@ -4,6 +4,7 @@ import {
   Exercise,
   ExerciseApparatus,
   ExerciseName,
+  Set,
   WeightType,
 } from "@/types";
 import {
@@ -12,7 +13,7 @@ import {
   DeleteOutline,
 } from "@mui/icons-material";
 import { Checkbox, Input } from "@mui/material";
-import { ChangeEvent, useEffect, useRef } from "react";
+import { ChangeEvent } from "react";
 import Select from "react-select";
 import { useEditDayStyles } from "./useEditDayStyles";
 import { useCreateBlockStyles } from "../useCreateBlockStyles";
@@ -32,7 +33,6 @@ export const EditDay = ({
 }: EditDayProps) => {
   const { classes } = useEditDayStyles();
   const { classes: createBlockClasses } = useCreateBlockStyles();
-  const addRef = useRef<HTMLDivElement>(null);
 
   const dayGroup = block.weeks[0].days[editingDay].groupName;
   const shouldEditDay = (day: Day) => {
@@ -43,14 +43,6 @@ export const EditDay = ({
           .includes(day.name)
       : day.name === block.weeks[0].days[editingDay].name;
   };
-
-  useEffect(() => {
-    if (addRef.current)
-      addRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-  }, [block.weeks[0].days[editingDay].exercises.length]);
 
   const exerciseNameOptions = Object.values(ExerciseName).map((value) => ({
     value,
@@ -97,7 +89,7 @@ export const EditDay = ({
   };
 
   const handleExerciseNameSelect = (
-    name: ExerciseName | string,
+    name: ExerciseName | "",
     exerciseIdx: number
   ) => {
     setBlock({
@@ -124,7 +116,7 @@ export const EditDay = ({
   };
 
   const handleExerciseApparatusSelect = (
-    apparatus: ExerciseApparatus | string,
+    apparatus: ExerciseApparatus | "",
     exerciseIdx: number
   ) => {
     setBlock({
@@ -151,7 +143,7 @@ export const EditDay = ({
   };
 
   const handleWeightTypeSelect = (
-    weightType: WeightType | string,
+    weightType: WeightType | "",
     exerciseIdx: number
   ) => {
     setBlock({
@@ -180,7 +172,7 @@ export const EditDay = ({
   const handleNumberInput = (
     e: ChangeEvent<HTMLInputElement>,
     exerciseIdx: number,
-    type: string
+    type: "sets" | "reps" | "weight"
   ) => {
     setBlock({
       ...block,
@@ -196,16 +188,25 @@ export const EditDay = ({
                         ...exercise,
                         sets:
                           type === "sets"
-                            ? (e.target.value as unknown as number)
-                            : day.exercises[exerciseIdx].sets,
-                        reps:
-                          type === "reps"
-                            ? [e.target.value as unknown as number]
-                            : day.exercises[exerciseIdx].reps,
-                        weight:
-                          type === "weight"
-                            ? [e.target.value as unknown as number]
-                            : day.exercises[exerciseIdx].weight,
+                            ? Array<Set>(parseInt(e.target.value) || 0).fill(
+                                exercise.sets[0] || {
+                                  reps: 0,
+                                  weight: 0,
+                                  completed: false,
+                                  note: "",
+                                }
+                              )
+                            : exercise.sets.map((set: Set) => ({
+                                ...set,
+                                reps:
+                                  type === "reps"
+                                    ? parseInt(e.target.value) || 0
+                                    : set.reps,
+                                weight:
+                                  type === "weight"
+                                    ? parseInt(e.target.value) || 0
+                                    : set.weight,
+                              })),
                       }
                     : exercise
                 ),
@@ -244,13 +245,16 @@ export const EditDay = ({
     const newExercise: Exercise = {
       name: "",
       apparatus: "",
-      sets: 0,
-      reps: [0],
-      weight: [0],
+      sets: [
+        {
+          reps: 0,
+          weight: 0,
+          completed: false,
+          note: "",
+        },
+      ],
       weightType: WeightType.Pounds,
       unilateral: false,
-      note: "",
-      completed: false,
     };
     setBlock({
       ...block,
@@ -361,25 +365,25 @@ export const EditDay = ({
                 <span className={classes.entryName}>Sets: </span>
                 <Input
                   disabled={
-                    block.weeks[0].days[editingDay].exercises[idx].completed
+                    block.weeks[0].days[editingDay].exercises[idx].sets[0]
+                      ?.completed
                   }
                   className={classes.numberInput}
-                  value={exercise.sets}
+                  value={exercise.sets.length}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    if (/^\d*$/.test(e.target.value))
-                      handleNumberInput(e, idx, "sets");
+                    handleNumberInput(e, idx, "sets");
                   }}
                 />
                 <span className={classes.entryName}>Reps: </span>
                 <Input
                   disabled={
-                    block.weeks[0].days[editingDay].exercises[idx].completed
+                    block.weeks[0].days[editingDay].exercises[idx].sets[0]
+                      ?.completed
                   }
                   className={classes.numberInput}
-                  value={exercise.reps[0]}
+                  value={exercise.sets[0]?.reps || 0}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    if (/^\d*$/.test(e.target.value))
-                      handleNumberInput(e, idx, "reps");
+                    handleNumberInput(e, idx, "reps");
                   }}
                 />
               </div>
@@ -387,19 +391,20 @@ export const EditDay = ({
                 <span className={classes.entryName}>Weight: </span>
                 <Input
                   disabled={
-                    block.weeks[0].days[editingDay].exercises[idx].completed
+                    block.weeks[0].days[editingDay].exercises[idx].sets[0]
+                      ?.completed
                   }
                   className={classes.weightInput}
-                  value={exercise.weight[0]}
+                  value={exercise.sets[0]?.weight || 0}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    if (/^\d*\.?\d*$/.test(e.target.value))
-                      handleNumberInput(e, idx, "weight");
+                    handleNumberInput(e, idx, "weight");
                   }}
                 />
                 <Select
                   className={classes.weightType}
                   isDisabled={
-                    block.weeks[0].days[editingDay].exercises[idx].completed
+                    block.weeks[0].days[editingDay].exercises[idx].sets[0]
+                      ?.completed
                   }
                   value={
                     exercise.weightType
@@ -457,7 +462,6 @@ export const EditDay = ({
         <div
           className={`${classes.addDayButton} ${classes.addDayButtonTop}`}
           onClick={handleAddExercise}
-          ref={addRef}
         >
           <AddCircleOutline />
         </div>
@@ -469,7 +473,6 @@ export const EditDay = ({
           />
           <button
             className={`${createBlockClasses.actionButton} ${classes.submitButtonTop}`}
-            type="submit"
             onClick={() => setEditingDay(-1)}
           >
             Save Day
