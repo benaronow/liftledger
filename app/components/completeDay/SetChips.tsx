@@ -1,6 +1,6 @@
 import { Exercise, Set } from "@/types";
 import { makeStyles } from "tss-react/mui";
-import { CiCirclePlus } from "react-icons/ci";
+import { BiPlusCircle } from "react-icons/bi";
 import { Dispatch, SetStateAction } from "react";
 
 const useStyles = makeStyles()({
@@ -74,7 +74,11 @@ export const SetChips = ({ exercise, setSetToEdit }: Props) => {
               ? classes.nextChip
               : classes.incompleteChip
           }`}
-          onClick={() => setSetToEdit({ setIdx: idx, exercise })}
+          onClick={() =>
+            idx === getNextSetIdx()
+              ? setSetToEdit({ setIdx: idx, exercise })
+              : {}
+          }
           key={`${idx}${set.reps}${set.weight}`}
         >
           <span>{`${exercise.sets[idx].reps} reps`}</span>
@@ -85,9 +89,13 @@ export const SetChips = ({ exercise, setSetToEdit }: Props) => {
         className={`${classes.chip} ${
           getNextSetIdx() === -1 ? classes.nextChip : classes.incompleteChip
         }`}
-        onClick={() => setSetToEdit({ setIdx: exercise.sets.length, exercise })}
+        onClick={() =>
+          getNextSetIdx() === -1
+            ? setSetToEdit({ setIdx: exercise.sets.length, exercise })
+            : {}
+        }
       >
-        <CiCirclePlus />
+        <BiPlusCircle style={{ fontSize: "25px" }} />
       </div>
     </div>
   );
