@@ -2,18 +2,9 @@ import { Schema } from "mongoose";
 
 const blockSchema: Schema = new Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-    startDate: {
-      type: Date,
-      required: true,
-    },
-    length: {
-      type: String,
-      required: true,
-    },
+    name: { type: String, required: true },
+    startDate: { type: Date, required: true },
+    length: { type: Number, required: true },
     weeks: [
       {
         number: Number,
@@ -46,10 +37,9 @@ const blockSchema: Schema = new Schema(
         completed: Boolean,
       },
     ],
-    completed: {
-      type: Boolean,
-      required: true,
-    },
+    completed: { type: Boolean, required: true },
+    curDayIdx: { type: Number, required: true },
+    curWeekIdx: { type: Number, required: true },
   },
   { collection: "Block" }
 );

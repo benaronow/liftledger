@@ -154,6 +154,8 @@ export interface Block {
   startDate: Date | undefined;
   length: number;
   weeks: Week[];
+  curWeekIdx: number;
+  curDayIdx: number;
   completed: boolean;
 }
 
@@ -169,8 +171,6 @@ export interface User {
   birthday: Date;
   blocks: Block[];
   curBlock: string;
-  curWeekIdx?: number | undefined;
-  curDayIdx?: number | undefined;
 }
 
 export interface GetParams {

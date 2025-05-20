@@ -8,22 +8,26 @@ const useStyles = makeStyles()({
     display: "flex",
     gap: "10px",
     flexWrap: "wrap",
+    color: "white",
+  },
+  chip: {
+    color: "white",
+    padding: "10px",
+    fontSize: "14px",
+    borderRadius: "10px",
+    whiteSpace: "nowrap",
   },
   completeChip: {
     background: "#0096FF",
-    color: "white",
-    whiteSpace: "nowrap",
-    borderRadius: "15px",
-    padding: "10px",
-    fontSize: "14px",
+    border: "solid 1px white",
+  },
+  nextChip: {
+    background: "#004b7f",
+    border: "dotted 1px #0096FF",
   },
   incompleteChip: {
-    background: "red",
-    color: "white",
-    whiteSpace: "nowrap",
-    borderRadius: "15px",
-    padding: "10px",
-    fontSize: "14px",
+    background: "transparent",
+    border: "dotted 1px #0096FF",
   },
 });
 
@@ -42,13 +46,25 @@ interface Props {
 
 export const SetChips = ({ exercise, setSetToEdit }: Props) => {
   const { classes } = useStyles();
+
+  const getNextSetIdx = () => {
+    for (let i = 0; i < exercise.sets.length; i++) {
+      if (!exercise.sets[i].completed) return i;
+    }
+    return -1;
+  };
+
   return (
     <div className={classes.chipsContainer}>
       {exercise.sets.map((set: Set, idx: number) => (
         <div
-          className={
-            set.completed ? classes.completeChip : classes.incompleteChip
-          }
+          className={`${classes.chip} ${
+            set.completed
+              ? classes.completeChip
+              : idx === getNextSetIdx()
+              ? classes.nextChip
+              : classes.incompleteChip
+          }`}
           onClick={() => setSetToEdit({ setIdx: idx, exercise })}
           key={`${idx}${set.reps}${set.weight}`}
         >
@@ -56,7 +72,9 @@ export const SetChips = ({ exercise, setSetToEdit }: Props) => {
         </div>
       ))}
       <div
-        className={classes.incompleteChip}
+        className={`${classes.chip} ${
+          getNextSetIdx() === -1 ? classes.nextChip : classes.incompleteChip
+        }`}
         onClick={() => setSetToEdit({ setIdx: exercise.sets.length, exercise })}
       >
         <CiCirclePlus />

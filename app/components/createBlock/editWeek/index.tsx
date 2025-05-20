@@ -1,6 +1,5 @@
 import {
   blockOp,
-  selectCurUser,
   selectEditingBlock,
   setEditingBlock,
   setTemplate,
@@ -42,7 +41,6 @@ export const EditWeek = ({
   const dispatch = useAppDispatch();
   const router = useRouter();
   const editingBlock = useSelector(selectEditingBlock);
-  const curUser = useSelector(selectCurUser);
   const { toggleScreenState } = useContext(ScreenStateContext);
 
   const handleBlockNameInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -199,7 +197,6 @@ export const EditWeek = ({
       blockOp({
         uid,
         block,
-        curWeek: editingBlock ? curUser?.curWeekIdx || 0 : 0,
         type: editingBlock ? BlockOp.Edit : BlockOp.Create,
       })
     );

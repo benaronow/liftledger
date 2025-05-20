@@ -1,7 +1,11 @@
 "use client";
 
-import { selectCurBlock, selectCurUser } from "@/lib/features/user/userSlice";
-import { Exercise, RouteType } from "@/types";
+import {
+  blockOp,
+  selectCurBlock,
+  selectCurUser,
+} from "@/lib/features/user/userSlice";
+import { Block, BlockOp, Exercise, RouteType } from "@/types";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -11,9 +15,12 @@ import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 import { LoginContext } from "@/app/providers/loginProvider";
 import { SetChips } from "./SetChips";
 import { EditSetDialog } from "./EditSetDialog";
+import { Button } from "@mui/material";
+import { useAppDispatch } from "@/lib/hooks";
 
 export const CompleteDay = () => {
   const { classes } = useCompleteDayStyles();
+  const dispatch = useAppDispatch();
   const curUser = useSelector(selectCurUser);
   const curBlock = useSelector(selectCurBlock);
   const router = useRouter();
@@ -37,17 +44,44 @@ export const CompleteDay = () => {
     }
   }, []);
 
-  const exercises =
-    curBlock &&
-    curUser?.curWeekIdx !== undefined &&
-    curUser?.curDayIdx !== undefined
-      ? curBlock?.weeks[curUser.curWeekIdx].days[curUser.curDayIdx].exercises
-      : [];
+  const exercises = curBlock
+    ? curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx].exercises
+    : [];
   useEffect(() => {
     if (!exercises.length) router.push("/dashboard");
   }, [exercises]);
 
   const [exercisesState, setExercisesState] = useState(exercises);
+
+  const finishDay = () => {
+    if (curBlock) {
+      const newBlock: Block = {
+        ...curBlock,
+        weeks: curBlock.weeks.toSpliced(curBlock.curWeekIdx, 1, {
+          ...curBlock.weeks[curBlock.curWeekIdx],
+          days: curBlock.weeks[curBlock.curWeekIdx].days.toSpliced(
+            curBlock.curDayIdx,
+            1,
+            {
+              ...curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx],
+              completed: true,
+              completedDate: new Date(),
+            }
+          ),
+        }),
+      };
+
+      dispatch(
+        blockOp({
+          uid: curUser?._id || "",
+          block: newBlock,
+          type: BlockOp.Edit,
+        })
+      );
+
+      router.push("/dashboard");
+    }
+  };
 
   if (!exercises.length || isFetching) return <Spinner />;
 
@@ -70,6 +104,7 @@ export const CompleteDay = () => {
             </div>
           ))}
         </div>
+        <Button onClick={finishDay}>Finish</Button>
       </div>
       {setToEdit && (
         <EditSetDialog

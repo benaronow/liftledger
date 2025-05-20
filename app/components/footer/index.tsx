@@ -8,8 +8,6 @@ import { useTheme } from "@mui/material";
 import { useAppDispatch } from "@/lib/hooks";
 import {
   selectCurBlock,
-  setCurDay,
-  setCurWeek,
   setEditingBlock,
   setTemplate,
 } from "@/lib/features/user/userSlice";
@@ -40,15 +38,12 @@ export const Footer = () => {
   const handleIconClick = (isEdit: boolean) => {
     toggleScreenState("fetching", true);
     if (isEdit && curBlock) {
-      console.log(curBlock);
       dispatch(setTemplate(getTemplateFromBlock(curBlock, true)));
       dispatch(setEditingBlock(true));
     } else {
       dispatch(setTemplate(undefined));
       dispatch(setEditingBlock(false));
     }
-    dispatch(setCurWeek(undefined));
-    dispatch(setCurDay(undefined));
   };
 
   const navButtonMap = [

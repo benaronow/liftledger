@@ -7,8 +7,7 @@ import dayjs from "dayjs";
 import { useAppDispatch } from "@/lib/hooks";
 import {
   selectCurBlock,
-  setCurDay,
-  setCurWeek,
+  setCompletingDay,
 } from "@/lib/features/user/userSlice";
 import { Day, Exercise, RouteType, Set, Week, WeightType } from "@/types";
 import { Spinner } from "../spinner";
@@ -40,15 +39,15 @@ export const Dashboard = () => {
     router.prefetch(RouteType.Workout);
   }, []);
 
-  const curWeekIdx = curBlock?.weeks.findIndex((week) => !week.completed) || 0;
-  const curDayIdx =
-    curBlock?.weeks[curWeekIdx]?.days.findIndex((day) => !day.completed) || 0;
-  const curDayName =
-    curBlock?.weeks[curWeekIdx]?.days.find((day) => !day.completed)?.name ||
-    "Unavailable";
   const handleStartDay = () => {
-    dispatch(setCurWeek(curWeekIdx));
-    dispatch(setCurDay(curDayIdx));
+    if (curBlock) {
+      dispatch(
+        setCompletingDay({
+          dayIdx: curBlock.curDayIdx,
+          weekIdx: curBlock.curWeekIdx,
+        })
+      );
+    }
   };
 
   const getExerciseCompleted = (exercise: Exercise) => {
@@ -91,6 +90,8 @@ export const Dashboard = () => {
   };
 
   const getDaysSinceLast = () => {
+    if (!curBlock?.weeks[0].days[0].completed) return 0;
+
     let lastWorkoutDate = new Date(0);
     curBlock?.weeks.forEach((week) =>
       week.days.forEach((day) =>
@@ -113,6 +114,11 @@ export const Dashboard = () => {
     return daysDifference;
   };
 
+  const curDayName = curBlock
+    ? curBlock.weeks[curBlock.curWeekIdx].days.find((day) => !day.completed)
+        ?.name || "Unavailable"
+    : "Unavailable";
+
   const metricValueMap = [
     {
       metric: "Start Date",
@@ -120,11 +126,11 @@ export const Dashboard = () => {
     },
     {
       metric: "Block Length:",
-      value: `${curUser?.curBlock?.length} week${
-        (curUser?.curBlock?.length || 0) > 1 ? "s" : ""
+      value: `${curBlock?.length} week${
+        (curBlock?.length || 0) > 1 ? "s" : ""
       }`,
     },
-    { metric: "Week:", value: `Week ${curWeekIdx + 1}` },
+    { metric: "Week:", value: `Week ${(curBlock?.curWeekIdx || 0) + 1}` },
     { metric: "Day:", value: curDayName },
     { metric: "Days Since Last Workout:", value: getDaysSinceLast() },
     { metric: "Total Weight Lifted:", value: getTotalWeight("lbs") },

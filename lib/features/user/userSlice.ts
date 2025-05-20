@@ -2,15 +2,21 @@ import { createAppSlice } from "@/lib/createAppSlice";
 import {
   loginUserRequest,
   deleteUserRequest,
-  blockOpRequest,
   updateUserRequest,
 } from "./userAPI";
+import { blockOpRequest } from "./blockApi";
 import { Block, BlockOp, User } from "@/types";
 import { PayloadAction } from "@reduxjs/toolkit";
+
+interface CompletingDay {
+  dayIdx: number;
+  weekIdx: number;
+}
 
 export interface UserSliceState {
   attemptedLogin: boolean;
   curUser: User | undefined;
+  completingDay: CompletingDay | undefined;
   template: Block | undefined;
   editingBlock: boolean;
   messageOpen: boolean;
@@ -20,6 +26,7 @@ export interface UserSliceState {
 const initialState: UserSliceState = {
   attemptedLogin: false,
   curUser: undefined,
+  completingDay: undefined,
   template: undefined,
   editingBlock: false,
   messageOpen: false,
@@ -94,16 +101,10 @@ export const userSlice = createAppSlice({
       }
     ),
     blockOp: create.asyncThunk(
-      async (data: {
-        uid: string;
-        block: Block;
-        curWeek: number;
-        type: BlockOp;
-      }) => {
+      async (data: { uid: string; block: Block; type: BlockOp }) => {
         const response: Block = await blockOpRequest({
           uid: data.uid,
           block: data.block,
-          curWeek: data.curWeek,
           type: data.type,
         });
         return response;
@@ -114,8 +115,17 @@ export const userSlice = createAppSlice({
         },
         fulfilled: (state, action) => {
           state.status = "idle";
+
           if (state.curUser) {
-            state.curUser.curBlock = action.payload._id || "";
+            if (
+              state.curUser.curBlock === action.payload._id &&
+              action.payload.completed
+            ) {
+              state.curUser.curBlock = "";
+            } else if (!state.curUser.curBlock && action.payload._id) {
+              state.curUser.curBlock = action.payload._id;
+            }
+
             state.curUser.blocks = [
               ...state.curUser.blocks.filter(
                 (block) => block._id !== action.payload._id
@@ -143,14 +153,9 @@ export const userSlice = createAppSlice({
     setCurBlock: create.reducer((state, action: PayloadAction<string>) => {
       if (state.curUser) state.curUser.curBlock = action.payload;
     }),
-    setCurWeek: create.reducer(
-      (state, action: PayloadAction<number | undefined>) => {
-        if (state.curUser) state.curUser.curWeekIdx = action.payload;
-      }
-    ),
-    setCurDay: create.reducer(
-      (state, action: PayloadAction<number | undefined>) => {
-        if (state.curUser) state.curUser.curDayIdx = action.payload;
+    setCompletingDay: create.reducer(
+      (state, action: PayloadAction<CompletingDay | undefined>) => {
+        state.completingDay = action.payload;
       }
     ),
   }),
@@ -177,8 +182,7 @@ export const {
   setEditingBlock,
   setMessageOpen,
   setCurBlock,
-  setCurWeek,
-  setCurDay,
+  setCompletingDay,
 } = userSlice.actions;
 
 export const {

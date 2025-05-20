@@ -52,6 +52,8 @@ export const emptyBlock: Block = {
     },
   ],
   completed: false,
+  curDayIdx: 0,
+  curWeekIdx: 0,
 };
 
 export const CreateBlock = () => {
@@ -82,7 +84,6 @@ export const CreateBlock = () => {
   }, [innerWidth]);
 
   const template = useSelector(selectTemplate);
-  console.log(template)
   const editingBlock = useSelector(selectEditingBlock);
   const [block, setBlock] = useState<Block>(
     template

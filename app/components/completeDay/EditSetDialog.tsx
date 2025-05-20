@@ -4,7 +4,7 @@ import {
   selectCurUser,
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
-import { Block, BlockOp, Day, Exercise } from "@/types";
+import { Block, BlockOp, Day, Exercise, Set } from "@/types";
 import { Button, Dialog, Input } from "@mui/material";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { useSelector } from "react-redux";
@@ -53,26 +53,22 @@ export const EditSetDialog = ({
           ...exercise,
           sets: [
             ...exercise.sets,
-            { ...exercise.sets[setIdx - 1], completed: false },
+            { ...exercise.sets[setIdx - 1], completed: false, note: "" },
           ],
         }
       : exercise
   );
 
   const getLaterSessionIdx = () => {
-    if (
-      curBlock &&
-      curUser?.curWeekIdx !== undefined &&
-      curUser?.curDayIdx !== undefined
-    ) {
+    if (curBlock) {
       const curDayDetail =
-        curBlock.weeks[curUser.curWeekIdx].days[curUser.curDayIdx];
+        curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx];
       for (
-        let i = curUser.curDayIdx + 1;
-        i < curBlock.weeks[curUser.curWeekIdx || 0].days.length;
+        let i = curBlock.curDayIdx + 1;
+        i < curBlock.weeks[curBlock.curWeekIdx || 0].days.length;
         i++
       ) {
-        const laterSessionDetail = curBlock.weeks[curUser.curWeekIdx].days[i];
+        const laterSessionDetail = curBlock.weeks[curBlock.curWeekIdx].days[i];
         if (
           curDayDetail.hasGroup &&
           laterSessionDetail.hasGroup &&
@@ -108,30 +104,27 @@ export const EditSetDialog = ({
     setExerciseState(newExercise);
   };
 
-  const saveExercises = (completeEx: Exercise[], incompleteEx: Exercise[]) => {
-    if (
-      curUser &&
-      curBlock &&
-      curUser.curWeekIdx !== undefined &&
-      curUser.curDayIdx !== undefined
-    ) {
-      const newDays: Day[] = curBlock.weeks[curUser.curWeekIdx].days.toSpliced(
-        curUser.curDayIdx,
+  const saveExercises = (complete: Exercise[], nextWeek: Exercise[]) => {
+    if (curBlock) {
+      const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].days.toSpliced(
+        curBlock.curDayIdx,
         1,
         {
-          ...curBlock.weeks[curUser.curWeekIdx].days[curUser.curDayIdx],
-          exercises: completeEx,
+          ...curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx],
+          exercises: complete,
         }
       );
 
       const newBlock: Block = {
         ...curBlock,
-        weeks: curBlock?.weeks.toSpliced(curUser?.curWeekIdx, 1, {
-          ...curBlock.weeks[curUser.curWeekIdx],
+        weeks: curBlock?.weeks.toSpliced(curBlock.curWeekIdx, 1, {
+          ...curBlock.weeks[curBlock.curWeekIdx],
           days: getLaterSessionIdx()
-            ? newDays.toSpliced(curUser.curDayIdx + getLaterSessionIdx(), 1, {
-                ...curBlock.weeks[curUser.curWeekIdx].days[curUser.curDayIdx],
-                exercises: incompleteEx,
+            ? newDays.toSpliced(getLaterSessionIdx(), 1, {
+                ...curBlock.weeks[curBlock.curWeekIdx].days[
+                  getLaterSessionIdx()
+                ],
+                exercises: nextWeek,
               })
             : newDays,
         }),
@@ -139,22 +132,29 @@ export const EditSetDialog = ({
 
       dispatch(
         blockOp({
-          uid: curUser._id || "",
+          uid: curUser?._id || "",
           block: newBlock,
-          curWeek: curUser.curWeekIdx,
           type: BlockOp.Edit,
         })
       );
     }
   };
 
-  const handleSave = () => {
-    const completedSetExercise: Exercise = {
+  const handleSubmit = (deleteSetIdx?: number) => {
+    const updatedExercise: Exercise = {
       ...exerciseState,
-      sets: exerciseState?.sets.toSpliced(setIdx, 1, {
-        ...exerciseState.sets[setIdx],
-        completed: true,
-      }),
+      sets:
+        deleteSetIdx === undefined
+          ? exerciseState?.sets.toSpliced(setIdx, 1, {
+              ...exerciseState.sets[setIdx],
+              completed: true,
+            })
+          : exerciseState.sets.toSpliced(
+              deleteSetIdx === undefined
+                ? exerciseState.sets.length
+                : deleteSetIdx,
+              1
+            ),
     };
 
     const createNewExercisesState = (state: Exercise) =>
@@ -164,43 +164,53 @@ export const EditSetDialog = ({
         state
       );
 
-    setExercisesState(createNewExercisesState(completedSetExercise));
+    setExercisesState(createNewExercisesState(updatedExercise));
+    // One state being saved represents the current exercises being completed
+    // The other state represents the updated exercises to be completed next session
     saveExercises(
-      createNewExercisesState(completedSetExercise),
-      createNewExercisesState(exerciseState)
+      createNewExercisesState(updatedExercise),
+      createNewExercisesState({
+        ...updatedExercise,
+        sets: updatedExercise.sets.map((set: Set) => ({
+          ...set,
+          completed: false,
+          note: "",
+        })),
+      })
     );
     onClose();
   };
 
   const getPreviousSessionNote = (exerciseIdx: number, setIdx: number) => {
-    if (curUser?.curWeekIdx !== undefined && curUser?.curDayIdx !== undefined) {
+    if (curBlock) {
       const curDayDetail =
-        curBlock?.weeks[curUser.curWeekIdx].days[curUser.curDayIdx];
+        curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx];
       if (curDayDetail?.hasGroup) {
         let note = "";
-        for (let i = 0; i < curUser.curDayIdx; i++) {
-          const checkDayDetail = curBlock?.weeks[curUser.curWeekIdx].days[i];
+        for (let i = 0; i < curBlock.curDayIdx; i++) {
+          const checkDayDetail = curBlock.weeks[curBlock.curWeekIdx].days[i];
           if (
             checkDayDetail?.hasGroup &&
             checkDayDetail.groupName === curDayDetail.groupName
           )
             note =
-              checkDayDetail.exercises[exerciseIdx].sets[setIdx].note || "None";
+              checkDayDetail.exercises[exerciseIdx].sets[setIdx]?.note ||
+              "None";
         }
         if (note) return note;
       }
-      if (curUser.curWeekIdx > 0) {
+      if (curBlock.curWeekIdx > 0) {
         if (!curDayDetail?.hasGroup)
           return (
-            curBlock?.weeks[curUser.curWeekIdx - 1].days[curUser.curDayIdx]
+            curBlock.weeks[curBlock.curWeekIdx - 1].days[curBlock.curDayIdx]
               .exercises[exerciseIdx].sets[setIdx].note || "None"
           );
         const prevWeekDayIdx =
-          curBlock?.weeks[curUser.curWeekIdx - 1].days.findLastIndex(
+          curBlock.weeks[curBlock.curWeekIdx - 1].days.findLastIndex(
             (day) => day.hasGroup && day.groupName === curDayDetail.groupName
-          ) || curUser.curDayIdx;
+          ) || curBlock.curDayIdx;
         return (
-          curBlock?.weeks[curUser.curWeekIdx - 1].days[prevWeekDayIdx]
+          curBlock.weeks[curBlock.curWeekIdx - 1].days[prevWeekDayIdx]
             .exercises[exerciseIdx].sets[setIdx].note || "None"
         );
       }
@@ -248,7 +258,8 @@ export const EditSetDialog = ({
             }}
           />
         </div>
-        <Button onClick={handleSave}>Save</Button>
+        <Button onClick={() => handleSubmit(setIdx)}>Delete</Button>
+        <Button onClick={() => handleSubmit()}>Save</Button>
       </div>
     </Dialog>
   );

@@ -21,10 +21,9 @@ export const useCompleteDayStyles = makeStyles()({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    height: "calc(100dvh - 170px)",
     background: "#3a3a3d",
     borderRadius: "10px",
-    padding: "10px 10px 0px",
+    padding: "10px 10px",
     marginBottom: "10px",
   },
   horizontalDivider: {

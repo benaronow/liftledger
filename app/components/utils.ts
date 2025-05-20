@@ -32,6 +32,8 @@ export const getTemplateFromBlock = (block: Block, editing: boolean) => {
           },
         ],
         completed: false,
+        curDayIdx: 0,
+        curWeekIdx: 0,
       };
 
   return template;
