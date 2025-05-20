@@ -5,29 +5,38 @@ import { Dispatch, SetStateAction } from "react";
 
 const useStyles = makeStyles()({
   chipsContainer: {
+    padding: "15px",
     display: "flex",
-    gap: "10px",
     flexWrap: "wrap",
     color: "white",
+    width: "100%",
+    gap: "15px",
   },
   chip: {
     color: "white",
     padding: "10px",
-    fontSize: "14px",
+    fontSize: "13px",
     borderRadius: "10px",
     whiteSpace: "nowrap",
+    display: "flex",
+    flexDirection: "column",
+    height: "60px",
+    width: "60px",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "5px",
   },
   completeChip: {
     background: "#0096FF",
-    border: "solid 1px white",
+    border: "solid 2px white",
   },
   nextChip: {
     background: "#004b7f",
-    border: "dotted 1px #0096FF",
+    border: "dotted 2px #0096FF",
   },
   incompleteChip: {
-    background: "transparent",
-    border: "dotted 1px #0096FF",
+    background: "#58585b",
+    border: "dotted 2px #0096FF",
   },
 });
 
@@ -68,7 +77,8 @@ export const SetChips = ({ exercise, setSetToEdit }: Props) => {
           onClick={() => setSetToEdit({ setIdx: idx, exercise })}
           key={`${idx}${set.reps}${set.weight}`}
         >
-          <span>{`${exercise.sets[idx].reps} x ${exercise.sets[idx].weight}${exercise.weightType}`}</span>
+          <span>{`${exercise.sets[idx].reps} reps`}</span>
+          <span>{`${exercise.sets[idx].weight}${exercise.weightType}`}</span>
         </div>
       ))}
       <div

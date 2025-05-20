@@ -15,8 +15,8 @@ import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 import { LoginContext } from "@/app/providers/loginProvider";
 import { SetChips } from "./SetChips";
 import { EditSetDialog } from "./EditSetDialog";
-import { Button } from "@mui/material";
 import { useAppDispatch } from "@/lib/hooks";
+import { PushButton } from "../pushButton";
 
 export const CompleteDay = () => {
   const { classes } = useCompleteDayStyles();
@@ -62,6 +62,12 @@ export const CompleteDay = () => {
   const currentExIdx = exercisesState.findIndex(
     (exercise: Exercise) => !isExerciseComplete(exercise)
   );
+  const getAccentColor = (exercise: Exercise, idx: number) =>
+    idx === currentExIdx
+      ? "#a3258c"
+      : isExerciseComplete(exercise)
+      ? "#04c500"
+      : "#58585b";
 
   const finishDay = () => {
     if (curBlock) {
@@ -99,20 +105,11 @@ export const CompleteDay = () => {
     <>
       <div className={classes.container}>
         {exercises?.map((exercise, idx) => (
-          <div
-            className={classes.exerciseContainer}
-            style={{
-              border: `solid 2px ${
-                idx === currentExIdx
-                  ? "#a3258c"
-                  : isExerciseComplete(exercise)
-                  ? "#05ff00"
-                  : "#131314"
-              }`,
-            }}
-            key={idx}
-          >
-            <div className={classes.eName}>
+          <div className={classes.exerciseContainer} key={idx}>
+            <div
+              className={classes.eName}
+              style={{ background: getAccentColor(exercise, idx) }}
+            >
               <span className={classes.entryTitle}>{exercise.name}</span>
               <span className={classes.entryTitle}>{`(${exercise.apparatus}${
                 exercise.unilateral ? ", Unilateral" : ""
@@ -124,7 +121,9 @@ export const CompleteDay = () => {
             />
           </div>
         ))}
-        <Button onClick={finishDay}>Finish</Button>
+        <PushButton height={40} width={80} onClick={finishDay}>
+          <span className={classes.finish}>Finish</span>
+        </PushButton>
       </div>
       {setToEdit && (
         <EditSetDialog

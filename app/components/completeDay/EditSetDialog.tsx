@@ -157,27 +157,25 @@ export const EditSetDialog = ({
             ),
     };
 
-    const createNewExercisesState = (state: Exercise) =>
-      exercisesState.toSpliced(
-        exercisesState.findIndex((e) => e.name === state.name),
-        1,
-        state
-      );
+    const updatedExercises = exercisesState.toSpliced(
+      exercisesState.findIndex((e) => e.name === updatedExercise.name),
+      1,
+      updatedExercise
+    );
 
-    setExercisesState(createNewExercisesState(updatedExercise));
-    // One state being saved represents the current exercises being completed
-    // The other state represents the updated exercises to be completed next session
-    saveExercises(
-      createNewExercisesState(updatedExercise),
-      createNewExercisesState({
-        ...updatedExercise,
-        sets: updatedExercise.sets.map((set: Set) => ({
+    const nextWeekExercises: Exercise[] = updatedExercises.map(
+      (exercise: Exercise) => ({
+        ...exercise,
+        sets: exercise.sets.map((set: Set) => ({
           ...set,
           completed: false,
           note: "",
         })),
       })
     );
+
+    setExercisesState(updatedExercises);
+    saveExercises(updatedExercises, nextWeekExercises);
     onClose();
   };
 

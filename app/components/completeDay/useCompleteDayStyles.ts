@@ -22,10 +22,10 @@ export const useCompleteDayStyles = makeStyles()({
     alignItems: "center",
     width: "100%",
     background: "#131314",
-    border: "solid 2px #a3258c",
     borderRadius: "10px",
-    padding: "10px 10px",
-    marginBottom: "10px",
+    marginBottom: "20px",
+    border: "solid 5px #131314",
+    boxShadow: "0px 5px 8px #131314",
   },
   horizontalDivider: {
     width: "100%",
@@ -47,11 +47,13 @@ export const useCompleteDayStyles = makeStyles()({
     color: "white",
   },
   eName: {
+    width: "100%",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    marginBottom: "10px",
     textWrap: "nowrap",
+    borderRadius: "5px 5px 0px 0px",
+    padding: "5px",
   },
   entry: {
     display: "flex",
@@ -232,5 +234,11 @@ export const useCompleteDayStyles = makeStyles()({
   },
   sets: {
     marginBottom: "10px",
+  },
+  finish: {
+    color: "white",
+    fontFamily: "League+Spartan",
+    fontSize: "16px",
+    fontWeight: 600,
   },
 });
