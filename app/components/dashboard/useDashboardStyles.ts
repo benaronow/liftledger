@@ -22,6 +22,7 @@ export const useDashboardStyles = makeStyles()({
   titleSmall: {
     fontSize: "16px",
     marginBottom: "5px",
+    whiteSpace: "nowrap",
   },
   titleBig: {
     fontSize: "24px",

@@ -35,14 +35,16 @@ export const Footer = () => {
     setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
   }, []);
 
-  const handleIconClick = (isEdit: boolean) => {
-    toggleScreenState("fetching", true);
-    if (isEdit && curBlock) {
-      dispatch(setTemplate(getTemplateFromBlock(curBlock, true)));
-      dispatch(setEditingBlock(true));
-    } else {
-      dispatch(setTemplate(undefined));
-      dispatch(setEditingBlock(false));
+  const handleIconClick = (route: string) => {
+    if (!pathname.includes(route)) {
+      toggleScreenState("fetching", true);
+      if (route === RouteType.Add && curBlock) {
+        dispatch(setTemplate(getTemplateFromBlock(curBlock, true)));
+        dispatch(setEditingBlock(true));
+      } else {
+        dispatch(setTemplate(undefined));
+        dispatch(setEditingBlock(false));
+      }
     }
   };
 
@@ -105,7 +107,7 @@ export const Footer = () => {
                     : classes.inactiveIcon
                 }`}
                 href={button.route}
-                onClick={() => handleIconClick(button.route === RouteType.Add)}
+                onClick={() => handleIconClick(button.route)}
               >
                 {button.icon}
               </Link>

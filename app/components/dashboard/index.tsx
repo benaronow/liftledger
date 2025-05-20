@@ -143,14 +143,19 @@ export const Dashboard = () => {
       {session ? (
         <>
           <div className={classes.titleContainer}>
-            <span className={classes.titleSmall}>Currently Completing:</span>
-            <span className={classes.titleBig}>{curBlock?.name}</span>
+            {curUser && (!curBlock || curBlock.completed) ? (
+              <span className={classes.titleSmall}>
+                Create a training block to get started!
+              </span>
+            ) : (
+              <>
+                <span className={classes.titleSmall}>
+                  Currently Completing:
+                </span>
+                <span className={classes.titleBig}>{curBlock?.name}</span>
+              </>
+            )}
           </div>
-          {curUser && (!curBlock || curBlock.completed) && (
-            <span className={classes.noBlockText}>
-              Create a training block to get started!
-            </span>
-          )}
           {curBlock && !curBlock.completed && (
             <>
               {metricValueMap.map((pair, idx) => (
