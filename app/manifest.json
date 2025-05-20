@@ -3,8 +3,8 @@
   "short_name": "LiftLedger",
   "start_url": "/",
   "scope": "/",
-  "theme_color": "#3c3c3e",
-  "background_color": "#3c3c3e",
+  "theme_color": "#131314",
+  "background_color": "#131314",
   "display": "standalone",
   "icons": [
     {
