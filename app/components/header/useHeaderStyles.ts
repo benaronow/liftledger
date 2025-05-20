@@ -15,7 +15,7 @@ export const useHeaderStyles = makeStyles()({
     display: "none",
   },
   container: {
-    background: "#58585b",
+    background: "#131314",
     display: "flex",
     alignItems: "center",
     height: "50px",

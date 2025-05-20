@@ -19,7 +19,7 @@ export const useFooterStyles = makeStyles()({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    background: "#58585b",
+    background: "#131314",
     height: "70px",
     zIndex: 10,
     borderRadius: "20px 20px 0px 0px",

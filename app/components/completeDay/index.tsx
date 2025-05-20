@@ -5,7 +5,7 @@ import {
   selectCurBlock,
   selectCurUser,
 } from "@/lib/features/user/userSlice";
-import { Block, BlockOp, Exercise, RouteType } from "@/types";
+import { Block, BlockOp, Exercise, RouteType, Set } from "@/types";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -47,11 +47,21 @@ export const CompleteDay = () => {
   const exercises = curBlock
     ? curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx].exercises
     : [];
+
   useEffect(() => {
     if (!exercises.length) router.push("/dashboard");
   }, [exercises]);
 
   const [exercisesState, setExercisesState] = useState(exercises);
+
+  const isExerciseComplete = (exercise: Exercise) =>
+    exercise.sets.reduce(
+      (acc: boolean, curSet: Set) => acc && curSet.completed,
+      true
+    );
+  const currentExIdx = exercisesState.findIndex(
+    (exercise: Exercise) => !isExerciseComplete(exercise)
+  );
 
   const finishDay = () => {
     if (curBlock) {
@@ -88,22 +98,32 @@ export const CompleteDay = () => {
   return (
     <>
       <div className={classes.container}>
-        <div className={classes.box}>
-          {exercises?.map((exercise, idx) => (
-            <div className={classes.exerciseContainer} key={idx}>
-              <div className={classes.eName}>
-                <span className={classes.entryTitle}>{exercise.name}</span>
-                <span className={classes.entryTitle}>{`(${
-                  exercise.apparatus
-                }, ${exercise.unilateral ? "Unilateral" : "Bilateral"})`}</span>
-              </div>
-              <SetChips
-                exercise={exercisesState[idx]}
-                setSetToEdit={setSetToEdit}
-              />
+        {exercises?.map((exercise, idx) => (
+          <div
+            className={classes.exerciseContainer}
+            style={{
+              border: `solid 2px ${
+                idx === currentExIdx
+                  ? "#a3258c"
+                  : isExerciseComplete(exercise)
+                  ? "#05ff00"
+                  : "#131314"
+              }`,
+            }}
+            key={idx}
+          >
+            <div className={classes.eName}>
+              <span className={classes.entryTitle}>{exercise.name}</span>
+              <span className={classes.entryTitle}>{`(${exercise.apparatus}${
+                exercise.unilateral ? ", Unilateral" : ""
+              })`}</span>
             </div>
-          ))}
-        </div>
+            <SetChips
+              exercise={exercisesState[idx]}
+              setSetToEdit={setSetToEdit}
+            />
+          </div>
+        ))}
         <Button onClick={finishDay}>Finish</Button>
       </div>
       {setToEdit && (
