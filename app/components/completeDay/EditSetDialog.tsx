@@ -58,6 +58,9 @@ export const EditSetDialog = ({
         }
       : exercise
   );
+  const [tempWeight, setTempWeight] = useState(
+    `${exerciseState.sets[setIdx].weight}`
+  );
 
   const getLaterSessionIdx = () => {
     if (curBlock) {
@@ -94,12 +97,18 @@ export const EditSetDialog = ({
             : exerciseState.sets[setIdx].reps,
         weight:
           type === "weight"
-            ? parseInt(e.target.value) || 0
+            ? parseFloat(e.target.value) || 0
             : exerciseState.sets[setIdx].weight,
         note:
           type === "note" ? e.target.value : exerciseState.sets[setIdx].note,
       }),
     };
+
+    if (
+      type === "weight" &&
+      /^$|^-?(?:\d+\.\d*|\d+\.?|\.?\d+)$/.test(e.target.value)
+    )
+      setTempWeight(e.target.value);
 
     setExerciseState(newExercise);
   };
@@ -237,9 +246,7 @@ export const EditSetDialog = ({
         <div className={classes.inputRow}>
           <span className={classes.rowName}>Weight:</span>
           <Input
-            value={
-              setIdx !== undefined ? exerciseState?.sets[setIdx]?.weight : ""
-            }
+            value={tempWeight}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               handleSetChange(e, "weight");
             }}

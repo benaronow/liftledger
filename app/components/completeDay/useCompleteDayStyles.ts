@@ -7,7 +7,7 @@ export const useCompleteDayStyles = makeStyles()({
     alignItems: "center",
     width: "100%",
     height: "100dvh",
-    padding: "65px 15px 75px",
+    padding: "65px 15px 90px",
     overflow: "scroll",
   },
   box: {

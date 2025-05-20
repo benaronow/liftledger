@@ -75,7 +75,7 @@ export const SetChips = ({ exercise, setSetToEdit }: Props) => {
               : classes.incompleteChip
           }`}
           onClick={() =>
-            idx === getNextSetIdx()
+            idx <= getNextSetIdx()
               ? setSetToEdit({ setIdx: idx, exercise })
               : {}
           }

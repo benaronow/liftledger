@@ -204,7 +204,7 @@ export const EditDay = ({
                                     : set.reps,
                                 weight:
                                   type === "weight"
-                                    ? parseInt(e.target.value) || 0
+                                    ? parseFloat(e.target.value) || 0
                                     : set.weight,
                               })),
                       }

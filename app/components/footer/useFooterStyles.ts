@@ -20,7 +20,7 @@ export const useFooterStyles = makeStyles()({
     alignItems: "center",
     width: "100%",
     background: "#131314",
-    height: "70px",
+    height: "75px",
     zIndex: 10,
     borderRadius: "20px 20px 0px 0px",
     transform: "translateY(70px)",
@@ -28,7 +28,7 @@ export const useFooterStyles = makeStyles()({
   },
   iconRow: {
     width: "95%",
-    height: "50px",
+    height: "55px",
     display: "flex",
     justifyContent: "space-around",
     alignItems: "center",
@@ -38,7 +38,6 @@ export const useFooterStyles = makeStyles()({
     justifyContent: "center",
     alignItems: "center",
     height: "50px",
-    width: "50px",
     fontSize: "28px",
   },
   activeIcon: {

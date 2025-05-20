@@ -26,8 +26,8 @@
 
 .footer {
   position: absolute;
-  top: calc(100dvh - 70px);
-  height: 70px;
+  top: calc(100dvh - 75px);
+  height: 75px;
   width: 100%;
   z-index: 10;
 }

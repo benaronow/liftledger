@@ -62,12 +62,20 @@ export const Footer = () => {
     {
       route: RouteType.Home,
       icon: (
-        <img
-          src="/icon.png"
-          alt="Description of image"
-          height={40}
-          width={40}
-        />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            minWidth: "60px",
+          }}
+        >
+          <img
+            src="/icon.png"
+            alt="Description of image"
+            height={40}
+            width={40}
+          />
+        </div>
       ),
       isHome: true,
     },
@@ -101,6 +109,9 @@ export const Footer = () => {
             {navButtonMap.map((button, idx) => (
               <Link
                 key={idx}
+                style={{
+                  width: button.route === RouteType.Home ? "60px" : "50px",
+                }}
                 className={`${classes.iconContainer} ${
                   pathname.includes(button.route)
                     ? classes.activeIcon
