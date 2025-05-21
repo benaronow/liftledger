@@ -66,7 +66,7 @@ export const CompleteDay = () => {
     idx === currentExIdx
       ? "#a3258c"
       : isExerciseComplete(exercise)
-      ? "#04c500"
+      ? "#09c104"
       : "#58585b";
 
   const finishDay = () => {
@@ -105,11 +105,15 @@ export const CompleteDay = () => {
     <>
       <div className={classes.container}>
         {exercises?.map((exercise, idx) => (
-          <div className={classes.exerciseContainer} key={idx}>
-            <div
-              className={classes.eName}
-              style={{ background: getAccentColor(exercise, idx) }}
-            >
+          <div
+            className={classes.exerciseContainer}
+            style={{
+              borderColor: getAccentColor(exercise, idx),
+              background: getAccentColor(exercise, idx),
+            }}
+            key={idx}
+          >
+            <div className={classes.eName}>
               <span className={classes.entryTitle}>{exercise.name}</span>
               <span className={classes.entryTitle}>{`(${exercise.apparatus}${
                 exercise.unilateral ? ", Unilateral" : ""

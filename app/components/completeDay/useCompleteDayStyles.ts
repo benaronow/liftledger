@@ -21,11 +21,10 @@ export const useCompleteDayStyles = makeStyles()({
     flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    background: "#131314",
     borderRadius: "10px",
     marginBottom: "20px",
-    border: "solid 5px #131314",
-    boxShadow: "0px 5px 8px #131314",
+    border: "solid 5px",
+    boxShadow: "0px 5px 10px #131314",
   },
   horizontalDivider: {
     width: "100%",
@@ -53,7 +52,7 @@ export const useCompleteDayStyles = makeStyles()({
     alignItems: "center",
     textWrap: "nowrap",
     borderRadius: "5px 5px 0px 0px",
-    padding: "5px",
+    padding: "5px 0px 10px",
   },
   entry: {
     display: "flex",

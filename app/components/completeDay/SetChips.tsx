@@ -1,4 +1,4 @@
-import { Exercise, Set } from "@/types";
+import { Exercise } from "@/types";
 import { makeStyles } from "tss-react/mui";
 import { BiPlusCircle } from "react-icons/bi";
 import { Dispatch, SetStateAction } from "react";
@@ -7,10 +7,16 @@ const useStyles = makeStyles()({
   chipsContainer: {
     padding: "15px",
     display: "flex",
-    flexWrap: "wrap",
+    flexDirection: "column",
     color: "white",
     width: "100%",
+    background: "#131314",
+    borderRadius: "10px",
     gap: "15px",
+  },
+  chipsRow: {
+    display: "flex",
+    justifyContent: "space-between",
   },
   chip: {
     color: "white",
@@ -37,6 +43,9 @@ const useStyles = makeStyles()({
   incompleteChip: {
     background: "#58585b",
     border: "dotted 2px #0096FF",
+  },
+  emptyChip: {
+    background: "transparent",
   },
 });
 
@@ -65,38 +74,62 @@ export const SetChips = ({ exercise, setSetToEdit }: Props) => {
 
   return (
     <div className={classes.chipsContainer}>
-      {exercise.sets.map((set: Set, idx: number) => (
-        <div
-          className={`${classes.chip} ${
-            set.completed
-              ? classes.completeChip
-              : idx === getNextSetIdx()
-              ? classes.nextChip
-              : classes.incompleteChip
-          }`}
-          onClick={() =>
-            idx <= getNextSetIdx()
-              ? setSetToEdit({ setIdx: idx, exercise })
-              : {}
-          }
-          key={`${idx}${set.reps}${set.weight}`}
-        >
-          <span>{`${exercise.sets[idx].reps} reps`}</span>
-          <span>{`${exercise.sets[idx].weight}${exercise.weightType}`}</span>
-        </div>
-      ))}
-      <div
-        className={`${classes.chip} ${
-          getNextSetIdx() === -1 ? classes.nextChip : classes.incompleteChip
-        }`}
-        onClick={() =>
-          getNextSetIdx() === -1
-            ? setSetToEdit({ setIdx: exercise.sets.length, exercise })
-            : {}
-        }
-      >
-        <BiPlusCircle style={{ fontSize: "25px" }} />
-      </div>
+      {Array.from(Array(Math.ceil((exercise.sets.length + 1) / 4)).keys()).map(
+        (i: number) => (
+          <div className={classes.chipsRow} key={i}>
+            {[0 + i * 4, 1 + i * 4, 2 + i * 4, 3 + i * 4].map((j: number) => {
+              if (j === exercise.sets.length)
+                return (
+                  <div
+                    className={`${classes.chip} ${
+                      getNextSetIdx() === -1
+                        ? classes.nextChip
+                        : classes.incompleteChip
+                    }`}
+                    onClick={() =>
+                      getNextSetIdx() === -1
+                        ? setSetToEdit({
+                            setIdx: exercise.sets.length,
+                            exercise,
+                          })
+                        : {}
+                    }
+                    key={`${j}addset`}
+                  >
+                    <BiPlusCircle style={{ fontSize: "25px" }} />
+                  </div>
+                );
+              if (j < exercise.sets.length)
+                return (
+                  <div
+                    className={`${classes.chip} ${
+                      exercise.sets[j].completed
+                        ? classes.completeChip
+                        : j === getNextSetIdx()
+                        ? classes.nextChip
+                        : classes.incompleteChip
+                    }`}
+                    onClick={() =>
+                      j <= getNextSetIdx()
+                        ? setSetToEdit({ setIdx: j, exercise })
+                        : {}
+                    }
+                    key={`${j}${exercise.sets[j].reps}${exercise.sets[j].weight}`}
+                  >
+                    <span>{`${exercise.sets[j].reps} reps`}</span>
+                    <span>{`${exercise.sets[j].weight}${exercise.weightType}`}</span>
+                  </div>
+                );
+              return (
+                <div
+                  className={`${classes.chip} ${classes.emptyChip}`}
+                  key={`${j}empty`}
+                />
+              );
+            })}
+          </div>
+        )
+      )}
     </div>
   );
 };
