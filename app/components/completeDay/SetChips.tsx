@@ -38,11 +38,11 @@ const useStyles = makeStyles()({
   },
   nextChip: {
     background: "#004b7f",
-    border: "dotted 2px #0096FF",
+    border: "dashed 2px #0096FF",
   },
   incompleteChip: {
     background: "#58585b",
-    border: "dotted 2px #0096FF",
+    border: "dashed 2px #0096FF",
   },
   emptyChip: {
     background: "transparent",
