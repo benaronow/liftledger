@@ -49,10 +49,10 @@ const useStyles = makeStyles()({
 
 interface Props {
   exercise: Exercise;
-  setSetToEdit: Dispatch<
+  setExerciseToEdit: Dispatch<
     SetStateAction<
       | {
-          setIdx: number;
+          setIdx: number | undefined;
           exercise: Exercise;
         }
       | undefined
@@ -60,14 +60,14 @@ interface Props {
   >;
 }
 
-export const SetChips = ({ exercise, setSetToEdit }: Props) => {
+export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
   const { classes } = useStyles();
   const { innerWidth } = useContext(ScreenStateContext);
   const chipSideLength = innerWidth ? `${(innerWidth - 115) / 4}px` : "60px";
 
   const getNextSetIdx = () => {
-    for (let i = 0; i < exercise.sets.length; i++) {
-      if (!exercise.sets[i].completed) return i;
+    for (let i = 0; i <= exercise.sets.length; i++) {
+      if (!exercise.sets[i]?.completed || i === exercise.sets.length) return i;
     }
     return -1;
   };
@@ -82,14 +82,14 @@ export const SetChips = ({ exercise, setSetToEdit }: Props) => {
                 return (
                   <div
                     className={`${classes.chip} ${
-                      getNextSetIdx() === -1
+                      getNextSetIdx() === exercise.sets.length
                         ? classes.nextChip
                         : classes.incompleteChip
                     }`}
                     style={{ height: chipSideLength, width: chipSideLength }}
                     onClick={() =>
-                      getNextSetIdx() === -1
-                        ? setSetToEdit({
+                      getNextSetIdx() === exercise.sets.length
+                        ? setExerciseToEdit({
                             setIdx: exercise.sets.length,
                             exercise,
                           })
@@ -113,7 +113,7 @@ export const SetChips = ({ exercise, setSetToEdit }: Props) => {
                     style={{ height: chipSideLength, width: chipSideLength }}
                     onClick={() =>
                       j <= getNextSetIdx()
-                        ? setSetToEdit({ setIdx: j, exercise })
+                        ? setExerciseToEdit({ setIdx: j, exercise })
                         : {}
                     }
                     key={`${j}${exercise.sets[j].reps}${exercise.sets[j].weight}`}

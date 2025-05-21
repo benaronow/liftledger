@@ -14,9 +14,10 @@ import { Spinner } from "../spinner";
 import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 import { LoginContext } from "@/app/providers/loginProvider";
 import { SetChips } from "./SetChips";
-import { EditSetDialog } from "./EditSetDialog";
+import { EditDialog } from "./EditDialog";
 import { useAppDispatch } from "@/lib/hooks";
 import { PushButton } from "../pushButton";
+import { BiSolidEdit } from "react-icons/bi";
 
 export const CompleteDay = () => {
   const { classes } = useCompleteDayStyles();
@@ -26,10 +27,11 @@ export const CompleteDay = () => {
   const router = useRouter();
   const { session } = useContext(LoginContext);
   const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
-  const [setToEdit, setSetToEdit] = useState<{
-    setIdx: number;
+  const [exerciseToEdit, setExerciseToEdit] = useState<{
+    setIdx: number | undefined;
     exercise: Exercise;
   }>();
+  console.log(exerciseToEdit);
 
   useEffect(() => {
     if (!session) {
@@ -113,15 +115,26 @@ export const CompleteDay = () => {
             }}
             key={idx}
           >
-            <div className={classes.eName}>
-              <span className={classes.entryTitle}>{exercise.name}</span>
-              <span className={classes.entryTitle}>{`(${exercise.apparatus}${
-                exercise.unilateral ? ", Unilateral" : ""
-              })`}</span>
+            <div className={classes.exerciseTop}>
+              <div className={classes.leftPad} />
+              <div className={classes.eName}>
+                <span className={classes.entryTitle}>{exercise.name}</span>
+                <span className={classes.entryTitle}>{`(${exercise.apparatus}${
+                  exercise.unilateral ? ", Unilateral" : ""
+                })`}</span>
+              </div>
+              <button
+                className={classes.editButton}
+                onClick={() =>
+                  setExerciseToEdit({ setIdx: undefined, exercise })
+                }
+              >
+                <BiSolidEdit />
+              </button>
             </div>
             <SetChips
               exercise={exercisesState[idx]}
-              setSetToEdit={setSetToEdit}
+              setExerciseToEdit={setExerciseToEdit}
             />
           </div>
         ))}
@@ -129,13 +142,13 @@ export const CompleteDay = () => {
           <span className={classes.finish}>Finish</span>
         </PushButton>
       </div>
-      {setToEdit && (
-        <EditSetDialog
-          setIdx={setToEdit.setIdx}
-          exercise={setToEdit.exercise}
+      {exerciseToEdit && (
+        <EditDialog
+          setIdx={exerciseToEdit.setIdx}
+          exercise={exerciseToEdit.exercise}
           exercisesState={exercisesState}
           setExercisesState={setExercisesState}
-          onClose={() => setSetToEdit(undefined)}
+          onClose={() => setExerciseToEdit(undefined)}
         />
       )}
     </>

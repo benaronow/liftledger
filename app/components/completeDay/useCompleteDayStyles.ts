@@ -45,6 +45,27 @@ export const useCompleteDayStyles = makeStyles()({
     fontWeight: 600,
     color: "white",
   },
+  exerciseTop: {
+    width: "95%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  editButton: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "30px",
+    width: "30px",
+    background: "#0096FF",
+    color: "white",
+    border: "solid 1px white",
+    borderRadius: "5px",
+    fontSize: "20px",
+  },
+  leftPad: {
+    width: "30px",
+  },
   eName: {
     width: "100%",
     display: "flex",

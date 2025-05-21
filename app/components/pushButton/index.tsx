@@ -3,6 +3,7 @@ import { usePushButtonStyles } from "./usePushButtonStyles";
 
 interface PushButtonProps {
   readonly children?: ReactNode;
+  className?: string;
   height?: number;
   width?: number;
   topColor?: string;
@@ -14,6 +15,7 @@ interface PushButtonProps {
 
 export const PushButton = ({
   children,
+  className,
   height,
   width,
   topColor,
@@ -35,7 +37,7 @@ export const PushButton = ({
     <div className={classes.container}>
       <div className={`${classes.button} ${classes.buttonBottom}`} />
       <button
-        className={`${classes.button} ${classes.buttonTop}`}
+        className={`${className} ${classes.button} ${classes.buttonTop}`}
         onClick={onClick}
       >
         {children}
