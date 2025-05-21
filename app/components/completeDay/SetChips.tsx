@@ -1,7 +1,8 @@
 import { Exercise } from "@/types";
 import { makeStyles } from "tss-react/mui";
 import { BiPlusCircle } from "react-icons/bi";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useContext } from "react";
+import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 
 const useStyles = makeStyles()({
   chipsContainer: {
@@ -26,8 +27,6 @@ const useStyles = makeStyles()({
     whiteSpace: "nowrap",
     display: "flex",
     flexDirection: "column",
-    height: "60px",
-    width: "60px",
     justifyContent: "center",
     alignItems: "center",
     gap: "5px",
@@ -63,6 +62,8 @@ interface Props {
 
 export const SetChips = ({ exercise, setSetToEdit }: Props) => {
   const { classes } = useStyles();
+  const { innerWidth } = useContext(ScreenStateContext);
+  const chipSideLength = innerWidth ? `${(innerWidth - 115) / 4}px` : "60px";
 
   const getNextSetIdx = () => {
     for (let i = 0; i < exercise.sets.length; i++) {
@@ -85,6 +86,7 @@ export const SetChips = ({ exercise, setSetToEdit }: Props) => {
                         ? classes.nextChip
                         : classes.incompleteChip
                     }`}
+                    style={{ height: chipSideLength, width: chipSideLength }}
                     onClick={() =>
                       getNextSetIdx() === -1
                         ? setSetToEdit({
@@ -108,6 +110,7 @@ export const SetChips = ({ exercise, setSetToEdit }: Props) => {
                         ? classes.nextChip
                         : classes.incompleteChip
                     }`}
+                    style={{ height: chipSideLength, width: chipSideLength }}
                     onClick={() =>
                       j <= getNextSetIdx()
                         ? setSetToEdit({ setIdx: j, exercise })
@@ -122,6 +125,7 @@ export const SetChips = ({ exercise, setSetToEdit }: Props) => {
               return (
                 <div
                   className={`${classes.chip} ${classes.emptyChip}`}
+                  style={{ height: chipSideLength, width: chipSideLength }}
                   key={`${j}empty`}
                 />
               );
