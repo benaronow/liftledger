@@ -1,8 +1,9 @@
 import { Exercise, ExerciseApparatus, ExerciseName, WeightType } from "@/types";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { BiSolidEdit } from "react-icons/bi";
 import { IoArrowBack } from "react-icons/io5";
 import { makeStyles } from "tss-react/mui";
+import { ChangeExerciseType } from ".";
 
 const useStyles = makeStyles()({
   container: {
@@ -49,7 +50,7 @@ const useStyles = makeStyles()({
     alignItems: "center",
     whiteSpace: "nowrap",
     padding: "5px",
-    fontSize: "14px",
+    fontSize: "13px",
   },
   selectedItem: {
     background: "#0096FF",
@@ -69,12 +70,17 @@ const useStyles = makeStyles()({
 interface Props {
   exerciseState: Exercise;
   setExerciseState: Dispatch<SetStateAction<Exercise>>;
+  editingType: ChangeExerciseType | "";
+  setEditingType: Dispatch<SetStateAction<ChangeExerciseType | "">>;
 }
 
-export const EditExercise = ({ exerciseState, setExerciseState }: Props) => {
+export const EditExercise = ({
+  exerciseState,
+  setExerciseState,
+  editingType,
+  setEditingType,
+}: Props) => {
   const { classes } = useStyles();
-  type ChangeExerciseType = "name" | "apparatus" | "weightType";
-  const [editingType, setEditingType] = useState<ChangeExerciseType | "">("");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollToButtonRef = useRef<HTMLButtonElement>(null);
 

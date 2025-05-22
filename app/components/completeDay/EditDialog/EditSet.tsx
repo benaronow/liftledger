@@ -1,6 +1,5 @@
 import { selectCurBlock } from "@/lib/features/user/userSlice";
 import { Exercise } from "@/types";
-import { Input } from "@mui/material";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { useSelector } from "react-redux";
 import { makeStyles } from "tss-react/mui";
@@ -13,10 +12,17 @@ const useStyles = makeStyles()({
     display: "flex",
     fontSize: "14px",
     alignItems: "center",
+    border: "solid 2px #adafb3",
+    borderRadius: "5px",
+    padding: "5px",
+    marginBottom: "10px",
+  },
+  input: {
+    border: "none",
+    outline: "none",
   },
   rowName: {
     marginRight: "5px",
-    width: "60px",
   },
 });
 
@@ -138,7 +144,8 @@ export const EditSet = ({
       {setInfoMap.map((setInfo) => (
         <div className={classes.inputRow} key={setInfo.name}>
           <span className={classes.rowName}>{setInfo.title}</span>
-          <Input
+          <input
+            className={classes.input}
             value={setInfo.value}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               handleSetChange(e, setInfo.name as ChangeSetType);

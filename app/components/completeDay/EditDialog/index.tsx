@@ -31,12 +31,18 @@ const useStyles = makeStyles()({
     padding: "10px",
   },
   saveButton: {
-    background: "#0096FF",
-    color: "white",
     fontSize: "14px",
     border: "none",
     borderRadius: "5px",
     padding: "10px",
+  },
+  saveEnabled: {
+    background: "#0096FF",
+    color: "white",
+  },
+  saveDisabled: {
+    background: "#306a93",
+    color: "#bababa",
   },
   smallButton: {
     display: "flex",
@@ -65,6 +71,8 @@ interface Props {
   onClose: () => void;
 }
 
+export type ChangeExerciseType = "name" | "apparatus" | "weightType";
+
 export const EditDialog = ({
   setIdx,
   exercise,
@@ -88,6 +96,7 @@ export const EditDialog = ({
         }
       : exercise
   );
+  const [editingType, setEditingType] = useState<ChangeExerciseType | "">("");
 
   const getLaterSessionIdx = () => {
     if (curBlock) {
@@ -209,6 +218,8 @@ export const EditDialog = ({
           <EditExercise
             exerciseState={exerciseState}
             setExerciseState={setExerciseState}
+            editingType={editingType}
+            setEditingType={setEditingType}
           />
         )}
       </div>
@@ -220,10 +231,13 @@ export const EditDialog = ({
           <IoArrowBackCircle />
         </button>
         <button
-          className={classes.saveButton}
+          className={`${classes.saveButton} ${
+            editingType ? classes.saveDisabled : classes.saveEnabled
+          }`}
           onClick={() =>
             setIdx !== undefined ? handleSubmitSet() : handleSubmitExercise()
           }
+          disabled={!!editingType}
         >
           {`Save ${setIdx !== undefined ? "Set" : "Exercise"}`}
         </button>
