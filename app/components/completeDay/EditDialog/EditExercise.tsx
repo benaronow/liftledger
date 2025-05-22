@@ -49,10 +49,14 @@ const useStyles = makeStyles()({
     alignItems: "center",
     whiteSpace: "nowrap",
     padding: "5px",
+    fontSize: "13px",
   },
   selectedItem: {
     background: "#0096FF",
     color: "white",
+  },
+  unselectedItem: {
+    color: "#0096FF",
   },
   pad: {
     width: "100%",
@@ -152,7 +156,9 @@ export const EditExercise = ({ exerciseState, setExerciseState }: Props) => {
                   {entry.options.map((option) => (
                     <button
                       className={`${classes.itemButton} ${
-                        isCurrentlySelected(option) && classes.selectedItem
+                        isCurrentlySelected(option)
+                          ? classes.selectedItem
+                          : classes.unselectedItem
                       }`}
                       key={option}
                       onClick={() => {
