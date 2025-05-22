@@ -20,9 +20,12 @@ const useStyles = makeStyles()({
   input: {
     border: "none",
     outline: "none",
+    fontSize: "16px",
+    width: "100%",
   },
   rowName: {
     marginRight: "5px",
+    fontWeight: "600",
   },
 });
 
