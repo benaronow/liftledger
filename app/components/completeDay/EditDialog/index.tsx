@@ -7,12 +7,12 @@ import { useAppDispatch } from "@/lib/hooks";
 import { Block, BlockOp, Day, Exercise, Set } from "@/types";
 import { Dialog } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
-import { FaTrash } from "react-icons/fa";
+import { FaSave, FaTrash } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { makeStyles } from "tss-react/mui";
 import { EditExercise } from "./EditExercise";
 import { EditSet } from "./EditSet";
-import { IoArrowBackCircle } from "react-icons/io5";
+import { IoCloseCircle } from "react-icons/io5";
 
 const useStyles = makeStyles()({
   inputContainer: {
@@ -28,7 +28,13 @@ const useStyles = makeStyles()({
     alignItems: "center",
     color: "white",
     background: "#adafb3",
-    padding: "10px",
+    padding: "10px 25px",
+  },
+  buttonSpacing: {
+    width: "100%",
+    height: "2px",
+    background: "white",
+    margin: "0px 10px",
   },
   saveButton: {
     fontSize: "14px",
@@ -37,12 +43,12 @@ const useStyles = makeStyles()({
     padding: "10px",
   },
   saveEnabled: {
-    background: "#0096FF",
-    color: "white",
+    color: "#0096FF",
+    fontSize: "24px",
   },
   saveDisabled: {
-    background: "#306a93",
-    color: "#bababa",
+    color: "#306a93",
+    fontSize: "24px",
   },
   smallButton: {
     display: "flex",
@@ -52,14 +58,16 @@ const useStyles = makeStyles()({
     border: "none",
     padding: "0px",
     width: "30px",
+    height: "30px",
+    borderRadius: "5px",
   },
   backButton: {
     color: "black",
-    fontSize: "24px",
+    fontSize: "28px",
   },
   deleteButton: {
     color: "red",
-    fontSize: "18px",
+    fontSize: "20px",
   },
 });
 
@@ -228,10 +236,11 @@ export const EditDialog = ({
           className={`${classes.smallButton} ${classes.backButton}`}
           onClick={onClose}
         >
-          <IoArrowBackCircle />
+          <IoCloseCircle />
         </button>
+        <div className={classes.buttonSpacing} />
         <button
-          className={`${classes.saveButton} ${
+          className={`${classes.smallButton} ${
             editingType ? classes.saveDisabled : classes.saveEnabled
           }`}
           onClick={() =>
@@ -239,8 +248,9 @@ export const EditDialog = ({
           }
           disabled={!!editingType}
         >
-          {`Save ${setIdx !== undefined ? "Set" : "Exercise"}`}
+          <FaSave />
         </button>
+        <div className={classes.buttonSpacing} />
         <button
           className={`${classes.smallButton} ${classes.deleteButton}`}
           onClick={() =>

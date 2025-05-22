@@ -1,5 +1,5 @@
 import { Exercise, ExerciseApparatus, ExerciseName, WeightType } from "@/types";
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { BiSolidEdit } from "react-icons/bi";
 import { IoArrowBack } from "react-icons/io5";
 import { makeStyles } from "tss-react/mui";
@@ -156,9 +156,9 @@ export const EditExercise = ({
       ) : (
         <div className={classes.optionsContainer} ref={scrollContainerRef}>
           {exerciseMap.map((entry) => (
-            <>
+            <React.Fragment key={entry.name}>
               {editingType === entry.name && (
-                <>
+                <React.Fragment key={`${entry.name}${editingType}`}>
                   {entry.options.map((option) => (
                     <button
                       className={`${classes.itemButton} ${
@@ -183,9 +183,9 @@ export const EditExercise = ({
                       <div className={classes.pad}></div>
                     </button>
                   ))}
-                </>
+                </React.Fragment>
               )}
-            </>
+            </React.Fragment>
           ))}
         </div>
       )}
