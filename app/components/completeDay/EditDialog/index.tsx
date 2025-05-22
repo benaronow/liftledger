@@ -19,7 +19,7 @@ const useStyles = makeStyles()({
     display: "flex",
     flexDirection: "column",
     padding: "10px 10px 0px",
-    width: "220px",
+    width: "240px",
     borderRadius: "20px",
   },
   buttonRow: {

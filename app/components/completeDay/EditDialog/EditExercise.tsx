@@ -8,7 +8,7 @@ const useStyles = makeStyles()({
   container: {
     display: "flex",
     flexDirection: "column",
-    height: "160px",
+    height: "180px",
     alignItems: "flex-start",
     justifyContent: "space-between",
   },
@@ -28,7 +28,7 @@ const useStyles = makeStyles()({
   valueLabel: {
     fontSize: "14px",
     fontWeight: 600,
-    marginBottom: "5px",
+    marginBottom: "10px",
   },
   valueButton: {
     display: "flex",
@@ -49,7 +49,7 @@ const useStyles = makeStyles()({
     alignItems: "center",
     whiteSpace: "nowrap",
     padding: "5px",
-    fontSize: "13px",
+    fontSize: "14px",
   },
   selectedItem: {
     background: "#0096FF",
