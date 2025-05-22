@@ -31,7 +31,6 @@ export const CompleteDay = () => {
     setIdx: number | undefined;
     exercise: Exercise;
   }>();
-  console.log(exerciseToEdit);
 
   useEffect(() => {
     if (!session) {

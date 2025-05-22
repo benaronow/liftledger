@@ -1,25 +1,36 @@
 import { Exercise, ExerciseApparatus, ExerciseName, WeightType } from "@/types";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { BiSolidEdit } from "react-icons/bi";
-import Select from "react-select";
+import { IoArrowBack } from "react-icons/io5";
 import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
   container: {
     display: "flex",
     flexDirection: "column",
-    gap: "10px",
-    overflow: "scroll",
-    height: "200px",
+    height: "160px",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
   },
   optionsContainer: {
-    justifyContent: "space-evenly",
-    alignItems: "flex-start",
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    gap: "5px",
+    alignItems: "center",
+    overflow: "scroll",
+    paddingBottom: "5px",
   },
-  exerciseLabel: {
+  value: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  valueLabel: {
     fontSize: "14px",
+    fontWeight: 600,
+    marginBottom: "5px",
   },
-  exerciseButton: {
+  valueButton: {
     display: "flex",
     alignItems: "center",
     gap: "5px",
@@ -28,6 +39,26 @@ const useStyles = makeStyles()({
     color: "#0096FF",
     padding: "0",
     border: "none",
+    marginBottom: "12px",
+  },
+  itemButton: {
+    width: "100%",
+    border: "none",
+    borderRadius: "50px",
+    display: "flex",
+    alignItems: "center",
+    whiteSpace: "nowrap",
+    padding: "5px",
+  },
+  selectedItem: {
+    background: "#0096FF",
+    color: "white",
+  },
+  pad: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
 });
 
@@ -40,23 +71,37 @@ export const EditExercise = ({ exerciseState, setExerciseState }: Props) => {
   const { classes } = useStyles();
   type ChangeExerciseType = "name" | "apparatus" | "weightType";
   const [editingType, setEditingType] = useState<ChangeExerciseType | "">("");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollToButtonRef = useRef<HTMLButtonElement>(null);
 
-  const exerciseNameOptions = Object.values(ExerciseName).map((value) => ({
-    value,
-    label: value,
-  }));
+  useEffect(() => {
+    if (scrollToButtonRef.current && scrollContainerRef.current) {
+      console.log("hi");
+      const itemPosition = scrollToButtonRef.current.offsetTop - 30;
+      scrollContainerRef.current.scrollTop = itemPosition;
+    }
+  }, [editingType]);
 
-  const exerciseApparatusOptions = Object.values(ExerciseApparatus).map(
-    (value) => ({
-      value,
-      label: value,
-    })
-  );
-
-  const weightTypeOptions = Object.values(WeightType).map((value) => ({
-    value,
-    label: value,
-  }));
+  const exerciseMap = [
+    {
+      name: "name",
+      title: "Exercise:",
+      value: exerciseState.name,
+      options: Object.values(ExerciseName),
+    },
+    {
+      name: "apparatus",
+      title: "Apparatus:",
+      value: exerciseState.apparatus,
+      options: Object.values(ExerciseApparatus),
+    },
+    {
+      name: "weightType",
+      title: "Weight Type:",
+      value: exerciseState.weightType,
+      options: Object.values(WeightType),
+    },
+  ];
 
   const handleExerciseChange = (
     e: ExerciseName | ExerciseApparatus | WeightType | "",
@@ -74,108 +119,63 @@ export const EditExercise = ({ exerciseState, setExerciseState }: Props) => {
     });
   };
 
+  const isCurrentlySelected = (
+    option: ExerciseName | ExerciseApparatus | WeightType
+  ) =>
+    option === exerciseState.name ||
+    option === exerciseState.apparatus ||
+    option === exerciseState.weightType;
+
   return (
-    <div
-      className={`${classes.container} ${
-        editingType === "" && classes.optionsContainer
-      }`}
-    >
-      {editingType === "" && (
+    <div className={classes.container}>
+      {editingType === "" ? (
         <>
-          <span className={classes.exerciseLabel}>Exercise:</span>
-          <button
-            className={classes.exerciseButton}
-            onClick={() => setEditingType("name")}
-          >
-            <BiSolidEdit />
-            {exerciseState.name}
-          </button>
-          <span className={classes.exerciseLabel}>Apparatus:</span>
-          <button
-            className={classes.exerciseButton}
-            onClick={() => setEditingType("apparatus")}
-          >
-            <BiSolidEdit />
-            {exerciseState.apparatus}
-          </button>
-          <span className={classes.exerciseLabel}>Weight Type:</span>
-          <button
-            className={classes.exerciseButton}
-            onClick={() => setEditingType("weightType")}
-          >
-            <BiSolidEdit />
-            {exerciseState.weightType}
-          </button>
+          {exerciseMap.map((entry) => (
+            <div className={classes.value} key={entry.name}>
+              <span className={classes.valueLabel}>{entry.title}</span>
+              <button
+                className={classes.valueButton}
+                onClick={() => setEditingType(entry.name as ChangeExerciseType)}
+              >
+                <BiSolidEdit />
+                {entry.value}
+              </button>
+            </div>
+          ))}
         </>
-      )}
-      {editingType === "name" && (
-        <Select
-          className=""
-          menuIsOpen={true}
-          value={
-            exerciseState.name
-              ? {
-                  value: exerciseState.name,
-                  label: exerciseState.name,
-                }
-              : null
-          }
-          defaultValue={exerciseNameOptions.find(
-            (option) => option.value === exerciseState.name
-          )}
-          options={exerciseNameOptions}
-          isSearchable
-          onChange={(e) => {
-            handleExerciseChange(e?.value || "", "name");
-            setEditingType("");
-          }}
-        />
-      )}
-      {editingType === "apparatus" && (
-        <Select
-          className=""
-          menuIsOpen={true}
-          value={
-            exerciseState.apparatus
-              ? {
-                  value: exerciseState.apparatus,
-                  label: exerciseState.apparatus,
-                }
-              : null
-          }
-          defaultValue={exerciseApparatusOptions.find(
-            (option) => option.value === exerciseState.apparatus
-          )}
-          options={exerciseApparatusOptions}
-          isSearchable
-          onChange={(e) => {
-            handleExerciseChange(e?.value || "", "apparatus");
-            setEditingType("");
-          }}
-        />
-      )}
-      {editingType === "weightType" && (
-        <Select
-          className=""
-          menuIsOpen={true}
-          value={
-            exerciseState.weightType
-              ? {
-                  value: exerciseState.weightType,
-                  label: exerciseState.weightType,
-                }
-              : null
-          }
-          defaultValue={weightTypeOptions.find(
-            (option) => option.value === exerciseState.weightType
-          )}
-          options={weightTypeOptions}
-          isSearchable
-          onChange={(e) => {
-            handleExerciseChange(e?.value || "", "weightType");
-            setEditingType("");
-          }}
-        />
+      ) : (
+        <div className={classes.optionsContainer} ref={scrollContainerRef}>
+          {exerciseMap.map((entry) => (
+            <>
+              {editingType === entry.name && (
+                <>
+                  {entry.options.map((option) => (
+                    <button
+                      className={`${classes.itemButton} ${
+                        isCurrentlySelected(option) && classes.selectedItem
+                      }`}
+                      key={option}
+                      onClick={() => {
+                        if (editingType)
+                          handleExerciseChange(option, editingType);
+                        setEditingType("");
+                      }}
+                      ref={
+                        isCurrentlySelected(option) ? scrollToButtonRef : null
+                      }
+                    >
+                      <div className={classes.pad}>
+                        {isCurrentlySelected(option) && <IoArrowBack />}
+                      </div>
+                      {option}
+                      <div className={classes.pad}></div>
+                    </button>
+                  ))}
+                </>
+              )}
+            </>
+          ))}
+        </div>
       )}
     </div>
   );

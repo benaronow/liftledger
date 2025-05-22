@@ -66,31 +66,31 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
   const chipSideLength = innerWidth ? `${(innerWidth - 115) / 4}px` : "60px";
 
   const getNextSetIdx = () => {
-    for (let i = 0; i <= exercise.sets.length; i++) {
-      if (!exercise.sets[i]?.completed || i === exercise.sets.length) return i;
+    for (let i = 0; i <= exercise?.sets.length; i++) {
+      if (!exercise?.sets[i]?.completed || i === exercise?.sets.length) return i;
     }
     return -1;
   };
 
   return (
     <div className={classes.chipsContainer}>
-      {Array.from(Array(Math.ceil((exercise.sets.length + 1) / 4)).keys()).map(
+      {Array.from(Array(Math.ceil((exercise?.sets.length + 1) / 4)).keys()).map(
         (i: number) => (
           <div className={classes.chipsRow} key={i}>
             {[0 + i * 4, 1 + i * 4, 2 + i * 4, 3 + i * 4].map((j: number) => {
-              if (j === exercise.sets.length)
+              if (j === exercise?.sets.length)
                 return (
                   <div
                     className={`${classes.chip} ${
-                      getNextSetIdx() === exercise.sets.length
+                      getNextSetIdx() === exercise?.sets.length
                         ? classes.nextChip
                         : classes.incompleteChip
                     }`}
                     style={{ height: chipSideLength, width: chipSideLength }}
                     onClick={() =>
-                      getNextSetIdx() === exercise.sets.length
+                      getNextSetIdx() === exercise?.sets.length
                         ? setExerciseToEdit({
-                            setIdx: exercise.sets.length,
+                            setIdx: exercise?.sets.length,
                             exercise,
                           })
                         : {}
@@ -100,11 +100,11 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
                     <BiPlusCircle style={{ fontSize: "25px" }} />
                   </div>
                 );
-              if (j < exercise.sets.length)
+              if (j < exercise?.sets.length)
                 return (
                   <div
                     className={`${classes.chip} ${
-                      exercise.sets[j].completed
+                      exercise?.sets[j].completed
                         ? classes.completeChip
                         : j === getNextSetIdx()
                         ? classes.nextChip
@@ -116,10 +116,10 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
                         ? setExerciseToEdit({ setIdx: j, exercise })
                         : {}
                     }
-                    key={`${j}${exercise.sets[j].reps}${exercise.sets[j].weight}`}
+                    key={`${j}${exercise?.sets[j].reps}${exercise?.sets[j].weight}`}
                   >
-                    <span>{`${exercise.sets[j].reps} reps`}</span>
-                    <span>{`${exercise.sets[j].weight}${exercise.weightType}`}</span>
+                    <span>{`${exercise?.sets[j].reps} reps`}</span>
+                    <span>{`${exercise?.sets[j].weight}${exercise?.weightType}`}</span>
                   </div>
                 );
               return (

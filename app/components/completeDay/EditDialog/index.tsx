@@ -12,17 +12,15 @@ import { useSelector } from "react-redux";
 import { makeStyles } from "tss-react/mui";
 import { EditExercise } from "./EditExercise";
 import { EditSet } from "./EditSet";
+import { IoArrowBackCircle } from "react-icons/io5";
 
 const useStyles = makeStyles()({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-  },
   inputContainer: {
     display: "flex",
     flexDirection: "column",
-    padding: "10px",
-    width: "250px",
+    padding: "10px 10px 0px",
+    width: "220px",
+    borderRadius: "20px",
   },
   buttonRow: {
     display: "flex",
@@ -40,15 +38,22 @@ const useStyles = makeStyles()({
     borderRadius: "5px",
     padding: "10px",
   },
-  deleteButton: {
+  smallButton: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     background: "transparent",
     border: "none",
-    padding: "none",
+    padding: "0px",
+    width: "30px",
+  },
+  backButton: {
+    color: "black",
+    fontSize: "24px",
+  },
+  deleteButton: {
     color: "red",
     fontSize: "18px",
-  },
-  rightPad: {
-    width: "30px",
   },
 });
 
@@ -192,43 +197,46 @@ export const EditDialog = ({
 
   return (
     <Dialog open={!!exerciseState} onClose={onClose}>
-      <div className={classes.container}>
-        <div className={classes.inputContainer}>
-          {setIdx !== undefined ? (
-            <EditSet
-              setIdx={setIdx}
-              exerciseState={exerciseState}
-              exercisesState={exercisesState}
-              setExerciseState={setExerciseState}
-            />
-          ) : (
-            <EditExercise
-              exerciseState={exerciseState}
-              setExerciseState={setExerciseState}
-            />
-          )}
-        </div>
-        <div className={classes.buttonRow}>
-          <button
-            className={`${classes.deleteButton}`}
-            onClick={() =>
-              setIdx !== undefined
-                ? handleSubmitSet(setIdx)
-                : handleSubmitExercise()
-            }
-          >
-            <FaTrash />
-          </button>
-          <button
-            className={classes.saveButton}
-            onClick={() =>
-              setIdx !== undefined ? handleSubmitSet() : handleSubmitExercise()
-            }
-          >
-            {`Save ${setIdx !== undefined ? "Set" : "Exercise"}`}
-          </button>
-          <div className={classes.rightPad} />
-        </div>
+      <div className={classes.inputContainer}>
+        {setIdx !== undefined ? (
+          <EditSet
+            setIdx={setIdx}
+            exerciseState={exerciseState}
+            exercisesState={exercisesState}
+            setExerciseState={setExerciseState}
+          />
+        ) : (
+          <EditExercise
+            exerciseState={exerciseState}
+            setExerciseState={setExerciseState}
+          />
+        )}
+      </div>
+      <div className={classes.buttonRow}>
+        <button
+          className={`${classes.smallButton} ${classes.backButton}`}
+          onClick={onClose}
+        >
+          <IoArrowBackCircle />
+        </button>
+        <button
+          className={classes.saveButton}
+          onClick={() =>
+            setIdx !== undefined ? handleSubmitSet() : handleSubmitExercise()
+          }
+        >
+          {`Save ${setIdx !== undefined ? "Set" : "Exercise"}`}
+        </button>
+        <button
+          className={`${classes.smallButton} ${classes.deleteButton}`}
+          onClick={() =>
+            setIdx !== undefined
+              ? handleSubmitSet(setIdx)
+              : handleSubmitExercise()
+          }
+        >
+          <FaTrash />
+        </button>
       </div>
     </Dialog>
   );
