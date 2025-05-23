@@ -134,13 +134,21 @@ export const EditSet = ({
   return (
     <>
       {getPreviousSessionNote(
-        exercisesState.findIndex((e) => e.name === exerciseState.name),
+        exercisesState.findIndex(
+          (e) =>
+            e.name === exerciseState.name &&
+            e.apparatus === exerciseState.apparatus
+        ),
         setIdx || 0
       ) && (
         <span
           className={classes.note}
         >{`Previous session note: ${getPreviousSessionNote(
-          exercisesState.findIndex((e) => e.name === exerciseState.name),
+          exercisesState.findIndex(
+            (e) =>
+              e.name === exerciseState.name &&
+              e.apparatus === exerciseState.apparatus
+          ),
           setIdx || 0
         )}`}</span>
       )}

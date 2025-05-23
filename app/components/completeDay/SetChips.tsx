@@ -74,7 +74,7 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
 
   return (
     <div className={classes.chipsContainer}>
-      {Array.from(Array(Math.ceil((exercise?.sets.length + 1) / 4)).keys()).map(
+      {Array.from(Array(Math.ceil((exercise?.sets.length || 0 + 1) / 4)).keys()).map(
         (i: number) => (
           <div className={classes.chipsRow} key={i}>
             {[0 + i * 4, 1 + i * 4, 2 + i * 4, 3 + i * 4].map((j: number) => {

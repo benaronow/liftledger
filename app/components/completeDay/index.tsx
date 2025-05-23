@@ -9,7 +9,6 @@ import { Block, BlockOp, Exercise, RouteType, Set } from "@/types";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useCompleteDayStyles } from "./useCompleteDayStyles";
 import { Spinner } from "../spinner";
 import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 import { LoginContext } from "@/app/providers/loginProvider";
@@ -18,9 +17,99 @@ import { EditDialog } from "./EditDialog";
 import { useAppDispatch } from "@/lib/hooks";
 import { PushButton } from "../pushButton";
 import { BiSolidEdit } from "react-icons/bi";
+import { GrFormAdd } from "react-icons/gr";
+import { GrPowerReset } from "react-icons/gr";
+import { makeStyles } from "tss-react/mui";
+
+export const useStyles = makeStyles()({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "100%",
+    height: "100dvh",
+    padding: "65px 15px 90px",
+    overflow: "scroll",
+  },
+  exerciseContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "100%",
+    borderRadius: "10px",
+    marginBottom: "15px",
+    border: "solid 5px",
+    boxShadow: "0px 5px 10px #131314",
+  },
+  entryTitle: {
+    fontFamily: "League+Spartan",
+    fontSize: "16px",
+    fontWeight: 600,
+    color: "white",
+  },
+  exerciseTop: {
+    width: "95%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  squareButton: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "30px",
+    minWidth: "30px",
+    color: "white",
+    border: "solid 1px white",
+    borderRadius: "5px",
+    background: "#0096FF",
+    fontSize: "20px",
+  },
+  eName: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    textWrap: "nowrap",
+    borderRadius: "5px 5px 0px 0px",
+    padding: "5px 0px 10px",
+  },
+  finish: {
+    color: "white",
+    fontFamily: "League+Spartan",
+    fontSize: "16px",
+    fontWeight: 600,
+  },
+  addExercise: {
+    width: "90%",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "15px",
+  },
+  addExerciseSpacing: {
+    width: "100%",
+    height: "2px",
+    background: "#0096FF",
+  },
+  addExerciseButton: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "#0096FF",
+    color: "white",
+    fontSize: "20px",
+    padding: "0px",
+    height: "20px",
+    minWidth: "20px",
+    border: "1px solid white",
+    borderRadius: "20px",
+    margin: "0px 10px",
+  },
+});
 
 export const CompleteDay = () => {
-  const { classes } = useCompleteDayStyles();
+  const { classes } = useStyles();
   const dispatch = useAppDispatch();
   const curUser = useSelector(selectCurUser);
   const curBlock = useSelector(selectCurBlock);
@@ -31,6 +120,9 @@ export const CompleteDay = () => {
     setIdx: number | undefined;
     exercise: Exercise;
   }>();
+  const [addExerciseIdx, setAddExerciseIdx] = useState<number | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     if (!session) {
@@ -70,6 +162,77 @@ export const CompleteDay = () => {
       ? "#09c104"
       : "#58585b";
 
+  const getPreviousSessionExercise = (exercise: Exercise) => {
+    if (curBlock) {
+      const curDayDetail =
+        curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx];
+      if (curDayDetail?.hasGroup) {
+        let prevExercise = undefined;
+        for (let i = 0; i < curBlock.curDayIdx; i++) {
+          const checkDayDetail = curBlock.weeks[curBlock.curWeekIdx].days[i];
+          if (
+            checkDayDetail?.hasGroup &&
+            checkDayDetail.groupName === curDayDetail.groupName
+          )
+            prevExercise = checkDayDetail.exercises.find(
+              (e) =>
+                e.name === exercise.name && e.apparatus === exercise.apparatus
+            );
+        }
+        if (prevExercise) return prevExercise;
+      }
+      if (curBlock.curWeekIdx > 0) {
+        if (!curDayDetail?.hasGroup)
+          return curBlock.weeks[curBlock.curWeekIdx - 1].days[
+            curBlock.curDayIdx
+          ].exercises.find(
+            (e) =>
+              e.name === exercise.name && e.apparatus === exercise.apparatus
+          );
+        const prevWeekDayIdx =
+          curBlock.weeks[curBlock.curWeekIdx - 1].days.findLastIndex(
+            (day) => day.hasGroup && day.groupName === curDayDetail.groupName
+          ) || curBlock.curDayIdx;
+        return curBlock.weeks[curBlock.curWeekIdx - 1].days[
+          prevWeekDayIdx
+        ].exercises.find(
+          (e) => e.name === exercise.name && e.apparatus === exercise.apparatus
+        );
+      }
+    }
+    return undefined;
+  };
+
+  const resetExercise = (idx: number, exercise: Exercise) => {
+    const previousExercise = getPreviousSessionExercise(exercise);
+    if (curBlock && previousExercise) {
+      const newBlock: Block = {
+        ...curBlock,
+        weeks: curBlock.weeks.toSpliced(curBlock.curWeekIdx, 1, {
+          ...curBlock.weeks[curBlock.curWeekIdx],
+          days: curBlock.weeks[curBlock.curWeekIdx].days.toSpliced(
+            curBlock.curDayIdx,
+            1,
+            {
+              ...curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx],
+              exercises: curBlock.weeks[curBlock.curWeekIdx].days[
+                curBlock.curDayIdx
+              ].exercises.toSpliced(idx, 1, previousExercise),
+            }
+          ),
+        }),
+      };
+
+      dispatch(
+        blockOp({
+          uid: curUser?._id || "",
+          block: newBlock,
+          type: BlockOp.Edit,
+        })
+      );
+    }
+  };
+
   const finishDay = () => {
     if (curBlock) {
       const newBlock: Block = {
@@ -100,43 +263,90 @@ export const CompleteDay = () => {
     }
   };
 
+  const newExercise: Exercise = {
+    name: "",
+    apparatus: "",
+    weightType: "",
+    sets: [],
+    unilateral: false,
+  };
+
   if (!exercises.length || isFetching) return <Spinner />;
 
   return (
     <>
       <div className={classes.container}>
         {exercises?.map((exercise, idx) => (
-          <div
-            className={classes.exerciseContainer}
-            style={{
-              borderColor: getAccentColor(exercise, idx),
-              background: getAccentColor(exercise, idx),
-            }}
-            key={idx}
-          >
-            <div className={classes.exerciseTop}>
-              <div className={classes.leftPad} />
-              <div className={classes.eName}>
-                <span className={classes.entryTitle}>{exercise.name}</span>
-                <span className={classes.entryTitle}>{`(${exercise.apparatus}${
-                  exercise.unilateral ? ", Unilateral" : ""
-                })`}</span>
-              </div>
+          <>
+            <div className={classes.addExercise}>
+              <div className={classes.addExerciseSpacing} />
               <button
-                className={classes.editButton}
-                onClick={() =>
-                  setExerciseToEdit({ setIdx: undefined, exercise })
-                }
+                className={classes.addExerciseButton}
+                onClick={() => {
+                  setAddExerciseIdx(idx);
+                  setExerciseToEdit({
+                    setIdx: undefined,
+                    exercise: newExercise,
+                  });
+                }}
               >
-                <BiSolidEdit />
+                <GrFormAdd />
               </button>
+              <div className={classes.addExerciseSpacing} />
             </div>
-            <SetChips
-              exercise={exercisesState[idx]}
-              setExerciseToEdit={setExerciseToEdit}
-            />
-          </div>
+            <div
+              className={classes.exerciseContainer}
+              style={{
+                borderColor: getAccentColor(exercise, idx),
+                background: getAccentColor(exercise, idx),
+              }}
+              key={idx}
+            >
+              <div className={classes.exerciseTop}>
+                <button
+                  className={classes.squareButton}
+                  onClick={() => resetExercise(idx, exercise)}
+                >
+                  <GrPowerReset />
+                </button>
+                <div className={classes.eName}>
+                  <span className={classes.entryTitle}>{exercise.name}</span>
+                  <span className={classes.entryTitle}>{`(${
+                    exercise.apparatus
+                  }${exercise.unilateral ? ", Unilateral" : ""})`}</span>
+                </div>
+                <button
+                  className={classes.squareButton}
+                  onClick={() =>
+                    setExerciseToEdit({ setIdx: undefined, exercise })
+                  }
+                >
+                  <BiSolidEdit />
+                </button>
+              </div>
+              <SetChips
+                exercise={exercisesState[idx]}
+                setExerciseToEdit={setExerciseToEdit}
+              />
+            </div>
+          </>
         ))}
+        <div className={classes.addExercise}>
+          <div className={classes.addExerciseSpacing} />
+          <button
+            className={classes.addExerciseButton}
+            onClick={() => {
+              setAddExerciseIdx(exercisesState.length);
+              setExerciseToEdit({
+                setIdx: undefined,
+                exercise: newExercise,
+              });
+            }}
+          >
+            <GrFormAdd />
+          </button>
+          <div className={classes.addExerciseSpacing} />
+        </div>
         <PushButton height={40} width={80} onClick={finishDay}>
           <span className={classes.finish}>Finish</span>
         </PushButton>
@@ -145,6 +355,8 @@ export const CompleteDay = () => {
         <EditDialog
           setIdx={exerciseToEdit.setIdx}
           exercise={exerciseToEdit.exercise}
+          addIdx={addExerciseIdx}
+          setAddIdx={setAddExerciseIdx}
           exercisesState={exercisesState}
           setExercisesState={setExercisesState}
           onClose={() => setExerciseToEdit(undefined)}

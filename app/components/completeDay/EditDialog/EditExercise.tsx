@@ -86,8 +86,7 @@ export const EditExercise = ({
 
   useEffect(() => {
     if (scrollToButtonRef.current && scrollContainerRef.current) {
-      console.log("hi");
-      const itemPosition = scrollToButtonRef.current.offsetTop - 30;
+      const itemPosition = scrollToButtonRef.current.offsetTop - 60;
       scrollContainerRef.current.scrollTop = itemPosition;
     }
   }, [editingType]);
@@ -96,19 +95,19 @@ export const EditExercise = ({
     {
       name: "name",
       title: "Exercise:",
-      value: exerciseState.name,
+      value: exerciseState.name || 'Select',
       options: Object.values(ExerciseName),
     },
     {
       name: "apparatus",
       title: "Apparatus:",
-      value: exerciseState.apparatus,
+      value: exerciseState.apparatus || 'Select',
       options: Object.values(ExerciseApparatus),
     },
     {
       name: "weightType",
       title: "Weight Type:",
-      value: exerciseState.weightType,
+      value: exerciseState.weightType || 'Select',
       options: Object.values(WeightType),
     },
   ];
