@@ -14,10 +14,10 @@ import { useAppDispatch } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
 import { ScreenStateContext } from "@/app/providers/screenStateProvider";
-import { getTemplateFromBlock } from "../utils";
 import { useHistoryStyles } from "./useHistoryStyles";
 import { Spinner } from "../spinner";
 import { LoginContext } from "@/app/providers/loginProvider";
+import { getTemplateFromBlock } from "@/app/utils";
 
 export const History = () => {
   const { classes } = useHistoryStyles();

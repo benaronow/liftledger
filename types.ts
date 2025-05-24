@@ -153,6 +153,7 @@ export interface Block {
   name: string;
   startDate: Date | undefined;
   length: number;
+  initialWeek: Week;
   weeks: Week[];
   curWeekIdx: number;
   curDayIdx: number;

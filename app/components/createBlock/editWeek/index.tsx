@@ -192,11 +192,18 @@ export const EditWeek = ({
   };
 
   const handleSubmit = () => {
+    const blockToSubmit: Block = editingBlock
+      ? block
+      : {
+          ...block,
+          initialWeek: block.weeks[0],
+        };
+
     toggleScreenState("fetching", true);
     dispatch(
       blockOp({
         uid,
-        block,
+        block: blockToSubmit,
         type: editingBlock ? BlockOp.Edit : BlockOp.Create,
       })
     );

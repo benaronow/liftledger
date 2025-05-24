@@ -16,9 +16,9 @@ import { useFooterStyles } from "./useFooterStyles";
 import { GiProgression } from "react-icons/gi";
 import { FaEdit, FaHistory } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
-import { getTemplateFromBlock } from "../utils";
 import { LoginContext } from "@/app/providers/loginProvider";
 import { useSelector } from "react-redux";
+import { getTemplateFromBlock } from "@/app/utils";
 
 export const Footer = () => {
   const { classes } = useFooterStyles();

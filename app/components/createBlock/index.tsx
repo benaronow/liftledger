@@ -21,6 +21,7 @@ export const emptyBlock: Block = {
   name: "",
   startDate: new Date(),
   length: 0,
+  initialWeek: { number: 0, days: [], completed: true },
   weeks: [
     {
       number: 1,

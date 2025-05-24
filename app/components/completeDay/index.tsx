@@ -20,6 +20,7 @@ import { BiSolidEdit } from "react-icons/bi";
 import { GrFormAdd } from "react-icons/gr";
 import { GrPowerReset } from "react-icons/gr";
 import { makeStyles } from "tss-react/mui";
+import { getPreviousSessionExercise } from "@/app/utils";
 
 export const useStyles = makeStyles()({
   container: {
@@ -162,50 +163,22 @@ export const CompleteDay = () => {
       ? "#09c104"
       : "#58585b";
 
-  const getPreviousSessionExercise = (exercise: Exercise) => {
-    if (curBlock) {
-      const curDayDetail =
-        curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx];
-      if (curDayDetail?.hasGroup) {
-        let prevExercise = undefined;
-        for (let i = 0; i < curBlock.curDayIdx; i++) {
-          const checkDayDetail = curBlock.weeks[curBlock.curWeekIdx].days[i];
-          if (
-            checkDayDetail?.hasGroup &&
-            checkDayDetail.groupName === curDayDetail.groupName
-          )
-            prevExercise = checkDayDetail.exercises.find(
-              (e) =>
-                e.name === exercise.name && e.apparatus === exercise.apparatus
-            );
-        }
-        if (prevExercise) return prevExercise;
-      }
-      if (curBlock.curWeekIdx > 0) {
-        if (!curDayDetail?.hasGroup)
-          return curBlock.weeks[curBlock.curWeekIdx - 1].days[
-            curBlock.curDayIdx
-          ].exercises.find(
-            (e) =>
-              e.name === exercise.name && e.apparatus === exercise.apparatus
-          );
-        const prevWeekDayIdx =
-          curBlock.weeks[curBlock.curWeekIdx - 1].days.findLastIndex(
-            (day) => day.hasGroup && day.groupName === curDayDetail.groupName
-          ) || curBlock.curDayIdx;
-        return curBlock.weeks[curBlock.curWeekIdx - 1].days[
-          prevWeekDayIdx
-        ].exercises.find(
-          (e) => e.name === exercise.name && e.apparatus === exercise.apparatus
-        );
-      }
-    }
-    return undefined;
-  };
-
   const resetExercise = (idx: number, exercise: Exercise) => {
-    const previousExercise = getPreviousSessionExercise(exercise);
-    if (curBlock && previousExercise) {
+    if (curBlock) {
+      const previousExercise = getPreviousSessionExercise(curBlock, exercise);
+
+      const newExercises = previousExercise
+        ? curBlock.weeks[curBlock.curWeekIdx].days[
+            curBlock.curDayIdx
+          ].exercises.toSpliced(idx, 1, {
+            ...previousExercise,
+            sets: previousExercise.sets.map((set: Set) => ({
+              ...set,
+              completed: false,
+            })),
+          })
+        : exercisesState;
+
       const newBlock: Block = {
         ...curBlock,
         weeks: curBlock.weeks.toSpliced(curBlock.curWeekIdx, 1, {
@@ -215,9 +188,7 @@ export const CompleteDay = () => {
             1,
             {
               ...curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx],
-              exercises: curBlock.weeks[curBlock.curWeekIdx].days[
-                curBlock.curDayIdx
-              ].exercises.toSpliced(idx, 1, previousExercise),
+              exercises: newExercises,
             }
           ),
         }),
@@ -230,6 +201,8 @@ export const CompleteDay = () => {
           type: BlockOp.Edit,
         })
       );
+
+      setExercisesState(newExercises);
     }
   };
 
