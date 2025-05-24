@@ -7,7 +7,7 @@ import {
 } from "@/lib/features/user/userSlice";
 import { Block, BlockOp, Exercise, RouteType, Set } from "@/types";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Spinner } from "../spinner";
 import { ScreenStateContext } from "@/app/providers/screenStateProvider";
@@ -277,7 +277,7 @@ export const CompleteDay = () => {
     <>
       <div className={classes.container}>
         {exercises?.map((exercise, idx) => (
-          <>
+          <React.Fragment key={idx}>
             <div className={classes.addExercise}>
               <div className={classes.addExerciseSpacing} />
               <button
@@ -329,7 +329,7 @@ export const CompleteDay = () => {
                 setExerciseToEdit={setExerciseToEdit}
               />
             </div>
-          </>
+          </React.Fragment>
         ))}
         <div className={classes.addExercise}>
           <div className={classes.addExerciseSpacing} />

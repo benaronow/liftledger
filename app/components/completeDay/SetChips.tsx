@@ -67,72 +67,73 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
 
   const getNextSetIdx = () => {
     for (let i = 0; i <= exercise?.sets.length; i++) {
-      if (!exercise?.sets[i]?.completed || i === exercise?.sets.length) return i;
+      if (!exercise?.sets[i]?.completed || i === exercise?.sets.length)
+        return i;
     }
     return -1;
   };
 
   return (
     <div className={classes.chipsContainer}>
-      {Array.from(Array(Math.ceil((exercise?.sets.length || 0 + 1) / 4)).keys()).map(
-        (i: number) => (
-          <div className={classes.chipsRow} key={i}>
-            {[0 + i * 4, 1 + i * 4, 2 + i * 4, 3 + i * 4].map((j: number) => {
-              if (j === exercise?.sets.length)
-                return (
-                  <div
-                    className={`${classes.chip} ${
-                      getNextSetIdx() === exercise?.sets.length
-                        ? classes.nextChip
-                        : classes.incompleteChip
-                    }`}
-                    style={{ height: chipSideLength, width: chipSideLength }}
-                    onClick={() =>
-                      getNextSetIdx() === exercise?.sets.length
-                        ? setExerciseToEdit({
-                            setIdx: exercise?.sets.length,
-                            exercise,
-                          })
-                        : {}
-                    }
-                    key={`${j}addset`}
-                  >
-                    <BiPlusCircle style={{ fontSize: "25px" }} />
-                  </div>
-                );
-              if (j < exercise?.sets.length)
-                return (
-                  <div
-                    className={`${classes.chip} ${
-                      exercise?.sets[j].completed
-                        ? classes.completeChip
-                        : j === getNextSetIdx()
-                        ? classes.nextChip
-                        : classes.incompleteChip
-                    }`}
-                    style={{ height: chipSideLength, width: chipSideLength }}
-                    onClick={() =>
-                      j <= getNextSetIdx()
-                        ? setExerciseToEdit({ setIdx: j, exercise })
-                        : {}
-                    }
-                    key={`${j}${exercise?.sets[j].reps}${exercise?.sets[j].weight}`}
-                  >
-                    <span>{`${exercise?.sets[j].reps} reps`}</span>
-                    <span>{`${exercise?.sets[j].weight}${exercise?.weightType}`}</span>
-                  </div>
-                );
+      {Array.from(
+        Array(Math.ceil(((exercise?.sets.length ?? 0) + 1) / 4)).keys()
+      ).map((i: number) => (
+        <div className={classes.chipsRow} key={i}>
+          {[0 + i * 4, 1 + i * 4, 2 + i * 4, 3 + i * 4].map((j: number) => {
+            if (j === exercise?.sets.length)
               return (
                 <div
-                  className={`${classes.chip} ${classes.emptyChip}`}
+                  className={`${classes.chip} ${
+                    getNextSetIdx() === exercise?.sets.length
+                      ? classes.nextChip
+                      : classes.incompleteChip
+                  }`}
                   style={{ height: chipSideLength, width: chipSideLength }}
-                  key={`${j}empty`}
-                />
+                  onClick={() =>
+                    getNextSetIdx() === exercise?.sets.length
+                      ? setExerciseToEdit({
+                          setIdx: exercise?.sets.length,
+                          exercise,
+                        })
+                      : {}
+                  }
+                  key={`${j}addset`}
+                >
+                  <BiPlusCircle style={{ fontSize: "25px" }} />
+                </div>
               );
-            })}
-          </div>
-        )
-      )}
+            if (j < exercise?.sets.length)
+              return (
+                <div
+                  className={`${classes.chip} ${
+                    exercise?.sets[j].completed
+                      ? classes.completeChip
+                      : j === getNextSetIdx()
+                      ? classes.nextChip
+                      : classes.incompleteChip
+                  }`}
+                  style={{ height: chipSideLength, width: chipSideLength }}
+                  onClick={() =>
+                    j <= getNextSetIdx()
+                      ? setExerciseToEdit({ setIdx: j, exercise })
+                      : {}
+                  }
+                  key={`${j}${exercise?.sets[j].reps}${exercise?.sets[j].weight}`}
+                >
+                  <span>{`${exercise?.sets[j].reps} reps`}</span>
+                  <span>{`${exercise?.sets[j].weight}${exercise?.weightType}`}</span>
+                </div>
+              );
+            return (
+              <div
+                className={`${classes.chip} ${classes.emptyChip}`}
+                style={{ height: chipSideLength, width: chipSideLength }}
+                key={`${j}empty`}
+              />
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 };
