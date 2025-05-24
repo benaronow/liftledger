@@ -1,3 +1,4 @@
+import { getPreviousSessionExercise } from "@/app/utils";
 import { selectCurBlock } from "@/lib/features/user/userSlice";
 import { Exercise } from "@/types";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
@@ -67,40 +68,14 @@ export const EditSet = ({
     },
   ];
 
-  const getPreviousSessionNote = (exerciseIdx: number, setIdx: number) => {
-    if (curBlock) {
-      const curDayDetail =
-        curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx];
-      if (curDayDetail?.hasGroup) {
-        let note = "";
-        for (let i = 0; i < curBlock.curDayIdx; i++) {
-          const checkDayDetail = curBlock.weeks[curBlock.curWeekIdx].days[i];
-          if (
-            checkDayDetail?.hasGroup &&
-            checkDayDetail.groupName === curDayDetail.groupName
-          )
-            note =
-              checkDayDetail.exercises[exerciseIdx].sets[setIdx]?.note || "";
-        }
-        if (note) return note;
-      }
-      if (curBlock.curWeekIdx > 0) {
-        if (!curDayDetail?.hasGroup)
-          return (
-            curBlock.weeks[curBlock.curWeekIdx - 1].days[curBlock.curDayIdx]
-              .exercises[exerciseIdx].sets[setIdx].note || ""
-          );
-        const prevWeekDayIdx =
-          curBlock.weeks[curBlock.curWeekIdx - 1].days.findLastIndex(
-            (day) => day.hasGroup && day.groupName === curDayDetail.groupName
-          ) || curBlock.curDayIdx;
-        return (
-          curBlock.weeks[curBlock.curWeekIdx - 1].days[prevWeekDayIdx]
-            .exercises[exerciseIdx].sets[setIdx].note || ""
-        );
-      }
+  const getPreviousSessionNote = (
+    exercise: Exercise | undefined,
+    setIdx: number
+  ) => {
+    if (curBlock && exercise) {
+      const previousExercise = getPreviousSessionExercise(curBlock, exercise);
+      if (previousExercise) return previousExercise.sets[setIdx].note;
     }
-    return "";
   };
 
   const handleSetChange = (
@@ -134,7 +109,7 @@ export const EditSet = ({
   return (
     <>
       {getPreviousSessionNote(
-        exercisesState.findIndex(
+        exercisesState.find(
           (e) =>
             e.name === exerciseState.name &&
             e.apparatus === exerciseState.apparatus
@@ -144,7 +119,7 @@ export const EditSet = ({
         <span
           className={classes.note}
         >{`Previous session note: ${getPreviousSessionNote(
-          exercisesState.findIndex(
+          exercisesState.find(
             (e) =>
               e.name === exerciseState.name &&
               e.apparatus === exerciseState.apparatus

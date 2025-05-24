@@ -1,5 +1,6 @@
 import {
   blockOp,
+  selectCurBlock,
   selectEditingBlock,
   setEditingBlock,
   setTemplate,
@@ -40,6 +41,7 @@ export const EditWeek = ({
   const { classes: createBlockClasses } = useCreateBlockStyles();
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const curBlock = useSelector(selectCurBlock);
   const editingBlock = useSelector(selectEditingBlock);
   const { toggleScreenState } = useContext(ScreenStateContext);
 
@@ -57,11 +59,14 @@ export const EditWeek = ({
   ) => {
     setBlock({
       ...block,
-      weeks: block.weeks.map((week) => ({
+      weeks: block.weeks.map((week, idx) => ({
         ...week,
-        days: week.days.map((day, idx) =>
-          idx === dayIdx ? { ...day, name: e.target.value } : day
-        ),
+        days:
+          idx === curBlock?.curWeekIdx
+            ? week.days.map((day, idx) =>
+                idx === dayIdx ? { ...day, name: e.target.value } : day
+              )
+            : week.days,
       })),
     });
   };
@@ -69,17 +74,20 @@ export const EditWeek = ({
   const handleCheckGroup = (dayIdx: number) => {
     setBlock({
       ...block,
-      weeks: block.weeks.map((week) => ({
+      weeks: block.weeks.map((week, idx) => ({
         ...week,
-        days: week.days.map((day, idx) =>
-          idx === dayIdx
-            ? {
-                ...day,
-                hasGroup: !day.hasGroup,
-                groupName: "",
-              }
-            : day
-        ),
+        days:
+          idx === curBlock?.curWeekIdx
+            ? week.days.map((day, idx) =>
+                idx === dayIdx
+                  ? {
+                      ...day,
+                      hasGroup: !day.hasGroup,
+                      groupName: "",
+                    }
+                  : day
+              )
+            : week.days,
       })),
     });
   };
@@ -90,16 +98,19 @@ export const EditWeek = ({
   ) => {
     setBlock({
       ...block,
-      weeks: block.weeks.map((week) => ({
+      weeks: block.weeks.map((week, idx) => ({
         ...week,
-        days: week.days.map((day, idx) =>
-          idx === dayIdx
-            ? {
-                ...day,
-                groupName: e.target.value,
-              }
-            : day
-        ),
+        days:
+          idx === curBlock?.curWeekIdx
+            ? week.days.map((day, idx) =>
+                idx === dayIdx
+                  ? {
+                      ...day,
+                      groupName: e.target.value,
+                    }
+                  : day
+              )
+            : week.days,
       })),
     });
   };
@@ -127,19 +138,12 @@ export const EditWeek = ({
       completed: false,
       completedDate: undefined,
     };
+
     setBlock({
       ...block,
-      weeks: block.weeks.map((week) => ({
+      weeks: block.weeks.map((week, idx) => ({
         ...week,
-        days: [
-          ...week.days,
-          week.completed
-            ? {
-                ...newDay,
-                completed: true,
-              }
-            : newDay,
-        ],
+        days: idx === curBlock?.curWeekIdx ? [...week.days, newDay] : week.days,
       })),
     });
   };
@@ -151,9 +155,12 @@ export const EditWeek = ({
   const handleRemoveDay = (dayIdx: number) => {
     setBlock({
       ...block,
-      weeks: block.weeks.map((week) => ({
+      weeks: block.weeks.map((week, idx) => ({
         ...week,
-        days: week.days.toSpliced(dayIdx, 1),
+        days:
+          idx === curBlock?.curWeekIdx
+            ? week.days.toSpliced(dayIdx, 1)
+            : week.days,
       })),
     });
   };
@@ -164,11 +171,15 @@ export const EditWeek = ({
       name: `${block.weeks[0].days[dayIdx].name} (copy)`,
       completed: false,
     };
+
     setBlock({
       ...block,
-      weeks: block.weeks.map((week) => ({
+      weeks: block.weeks.map((week, idx) => ({
         ...week,
-        days: week.days.toSpliced(dayIdx + 1, 0, day),
+        days:
+          idx === curBlock?.curWeekIdx
+            ? week.days.toSpliced(dayIdx + 1, 0, day)
+            : week.days,
       })),
     });
   };
@@ -177,11 +188,14 @@ export const EditWeek = ({
     if ((dayIdx !== 0 || type !== "up") && (dayIdx !== 6 || type !== "down")) {
       setBlock({
         ...block,
-        weeks: block.weeks.map((week) => ({
+        weeks: block.weeks.map((week, idx) => ({
           ...week,
-          days: week.days
-            .toSpliced(dayIdx, 1)
-            .toSpliced(type === "up" ? dayIdx - 1 : dayIdx + 1, 0, day),
+          days:
+            idx === curBlock?.curWeekIdx
+              ? week.days
+                  .toSpliced(dayIdx, 1)
+                  .toSpliced(type === "up" ? dayIdx - 1 : dayIdx + 1, 0, day)
+              : week.days,
         })),
       });
     }
@@ -242,7 +256,7 @@ export const EditWeek = ({
           />
         </div>
       </div>
-      {block.weeks[0].days.map((day, idx) => (
+      {block.weeks[curBlock?.curWeekIdx || 0].days.map((day, idx) => (
         <div className={classes.day} key={idx}>
           <div className={`${classes.entry} ${classes.day}`}>
             <div className={`${classes.sideButtons} ${classes.leftButtons}`}>
@@ -264,7 +278,7 @@ export const EditWeek = ({
                 className={`${classes.sideButton} ${
                   classes.sideButtonBottomTop
                 } ${
-                  idx === block.weeks[0].days.length - 1
+                  idx === block.weeks[curBlock?.curWeekIdx || 0].days.length - 1
                     ? classes.disabled
                     : classes.enabled
                 }`}
@@ -334,7 +348,7 @@ export const EditWeek = ({
               >
                 <DeleteOutline
                   className={`${
-                    block.weeks[0].days.length === 1
+                    block.weeks[curBlock?.curWeekIdx || 0].days.length === 1
                       ? classes.disabled
                       : classes.enabled
                   }`}
@@ -349,7 +363,7 @@ export const EditWeek = ({
               >
                 <ControlPointDuplicate
                   className={`${
-                    block.weeks[0].days.length > 6
+                    block.weeks[curBlock?.curWeekIdx || 0].days.length > 6
                       ? classes.disabled
                       : classes.enabled
                   }`}
@@ -359,7 +373,7 @@ export const EditWeek = ({
           </div>
         </div>
       ))}
-      {block.weeks[0].days.length < 7 && (
+      {block.weeks[curBlock?.curWeekIdx || 0].days.length < 7 && (
         <div className={classes.addDayButtonContainer}>
           <div
             className={`${classes.addDayButton} ${classes.addDayButtonBottom}`}

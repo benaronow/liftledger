@@ -15,7 +15,6 @@ export const useEditDayStyles = makeStyles()({
     display: "flex",
     flexDirection: "column",
     width: "100%",
-    height: "240px",
     flex: 1,
     background: "#3a3a3d",
     borderRadius: "5px",
