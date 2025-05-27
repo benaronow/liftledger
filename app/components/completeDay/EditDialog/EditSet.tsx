@@ -4,31 +4,13 @@ import { Exercise } from "@/types";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { useSelector } from "react-redux";
 import { makeStyles } from "tss-react/mui";
+import { LabeledInput } from "../../LabeledInput";
 
 const useStyles = makeStyles()({
   note: {
     fontSize: "14px",
     whiteSpace: "wrap",
     marginBottom: "10px",
-  },
-  inputRow: {
-    display: "flex",
-    fontSize: "14px",
-    alignItems: "center",
-    border: "solid 2px #adafb3",
-    borderRadius: "5px",
-    padding: "5px",
-    marginBottom: "10px",
-  },
-  input: {
-    border: "none",
-    outline: "none",
-    fontSize: "16px",
-    width: "100%",
-  },
-  rowName: {
-    marginRight: "5px",
-    fontWeight: "600",
   },
 });
 
@@ -130,16 +112,14 @@ export const EditSet = ({
         )}`}</span>
       )}
       {setInfoMap.map((setInfo) => (
-        <div className={classes.inputRow} key={setInfo.name}>
-          <span className={classes.rowName}>{setInfo.title}</span>
-          <input
-            className={classes.input}
-            value={setInfo.value}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              handleSetChange(e, setInfo.name as ChangeSetType);
-            }}
-          />
-        </div>
+        <LabeledInput
+          key={setInfo.name}
+          label={setInfo.title}
+          textValue={setInfo.value}
+          onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
+            handleSetChange(e, setInfo.name as ChangeSetType);
+          }}
+        />
       ))}
     </>
   );

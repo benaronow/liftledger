@@ -17,10 +17,10 @@ import { EditDialog } from "./EditDialog";
 import { useAppDispatch } from "@/lib/hooks";
 import { PushButton } from "../pushButton";
 import { BiSolidEdit } from "react-icons/bi";
-import { GrFormAdd } from "react-icons/gr";
 import { GrPowerReset } from "react-icons/gr";
 import { makeStyles } from "tss-react/mui";
 import { getLastExerciseOccurrence } from "@/app/utils";
+import { AddButton } from "../AddButton";
 
 export const useStyles = makeStyles()({
   container: {
@@ -244,22 +244,15 @@ export const CompleteDay = () => {
       <div className={classes.container}>
         {exercises?.map((exercise, idx) => (
           <React.Fragment key={idx}>
-            <div className={classes.addExercise}>
-              <div className={classes.addExerciseSpacing} />
-              <button
-                className={classes.addExerciseButton}
-                onClick={() => {
-                  setAddExerciseIdx(idx);
-                  setExerciseToEdit({
-                    setIdx: undefined,
-                    exercise: newExercise,
-                  });
-                }}
-              >
-                <GrFormAdd />
-              </button>
-              <div className={classes.addExerciseSpacing} />
-            </div>
+            <AddButton
+              onClick={() => {
+                setAddExerciseIdx(idx);
+                setExerciseToEdit({
+                  setIdx: undefined,
+                  exercise: newExercise,
+                });
+              }}
+            />
             <div
               className={classes.exerciseContainer}
               style={{
@@ -297,22 +290,15 @@ export const CompleteDay = () => {
             </div>
           </React.Fragment>
         ))}
-        <div className={classes.addExercise}>
-          <div className={classes.addExerciseSpacing} />
-          <button
-            className={classes.addExerciseButton}
-            onClick={() => {
-              setAddExerciseIdx(exercisesState.length);
-              setExerciseToEdit({
-                setIdx: undefined,
-                exercise: newExercise,
-              });
-            }}
-          >
-            <GrFormAdd />
-          </button>
-          <div className={classes.addExerciseSpacing} />
-        </div>
+        <AddButton
+          onClick={() => {
+            setAddExerciseIdx(exercisesState.length);
+            setExerciseToEdit({
+              setIdx: undefined,
+              exercise: newExercise,
+            });
+          }}
+        />
         <PushButton height={40} width={80} onClick={finishDay}>
           <span className={classes.finish}>Finish</span>
         </PushButton>

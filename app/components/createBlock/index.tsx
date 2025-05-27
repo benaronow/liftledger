@@ -91,23 +91,21 @@ export const CreateBlock = () => {
 
   return (
     <div className={classes.container}>
-      <div className={classes.box}>
-        {editingDay === -1 ? (
-          <EditWeek
-            uid={curUser?._id || ""}
-            block={block}
-            setBlock={setBlock}
-            setEditingDay={setEditingDay}
-          />
-        ) : (
-          <EditDay
-            block={block}
-            setBlock={setBlock}
-            editingDay={editingDay}
-            setEditingDay={setEditingDay}
-          />
-        )}
-      </div>
+      {editingDay === -1 ? (
+        <EditWeek
+          uid={curUser?._id || ""}
+          block={block}
+          setBlock={setBlock}
+          setEditingDay={setEditingDay}
+        />
+      ) : (
+        <EditDay
+          block={block}
+          setBlock={setBlock}
+          editingDay={editingDay}
+          setEditingDay={setEditingDay}
+        />
+      )}
     </div>
   );
 };

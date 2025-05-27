@@ -25,64 +25,32 @@ export const useEditWeekStyles = makeStyles()({
     flexDirection: "column",
     justifyContent: "space-between",
     width: "100%",
-    height: "130px",
+    height: "80px",
     borderRadius: "5px",
     alignItems: "center",
-    background: "#3a3a3d",
+    background: "#131314",
     padding: "10px",
-    margin: "0px 3px",
+    margin: "0px 5px",
   },
   sideButtons: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "space-between",
-    width: "40px",
-    minWidth: "40px",
-    height: "130px",
-  },
-  leftButtons: {
-    padding: "0px 3px 0px 0px",
-  },
-  rightButtons: {
-    padding: "0px 0px 0px 3px",
+    gap: "10px",
   },
   sideButton: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    width: "34px",
-    height: "55px",
-    minHeight: "55px",
+    width: "35px",
+    height: "35px",
+    minHeight: "35px",
     border: "none",
     borderRadius: "5px",
+    background: "#0096FF",
     "&:hover": {
       cursor: "pointer",
     },
-  },
-  sideButtonTopTop: {
-    background: "#3a3a3d",
-    transform: "translateY(-55px)",
-    transition: "transform 0.1s",
-    "&:active": {
-      transform: "translateY(-52px)",
-    },
-  },
-  sideButtonTopBottom: {
-    background: "#202021",
-    transform: "translateY(5px)",
-  },
-  sideButtonBottomTop: {
-    background: "#3a3a3d",
-    transform: "translateY(-95px)",
-    transition: "transform 0.1s",
-    "&:active": {
-      transform: "translateY(-92px)",
-    },
-  },
-  sideButtonBottomBottom: {
-    background: "#202021",
-    transform: "translateY(-35px)",
   },
   moveUpButton: {
     transform: "rotate(90deg)",
@@ -94,7 +62,7 @@ export const useEditWeekStyles = makeStyles()({
     display: "flex",
     alignItems: "center",
     width: "100%",
-    justifyContent: "flex-start",
+    padding: "0px",
   },
   headEntry: {
     fontWeight: 600,
@@ -152,7 +120,7 @@ export const useEditWeekStyles = makeStyles()({
     background: "transparent",
     border: "none",
     color: "#0096FF",
-    marginLeft: "5px",
+    margin: "0px 0px 10px 5px",
     fontSize: "15px",
     fontWeight: 600,
     "&:hover": {
@@ -186,34 +154,6 @@ export const useEditWeekStyles = makeStyles()({
   },
   addDayButtonBottom: {
     background: "#202021",
-    transform: "translateY(5px)",
-  },
-  submitButtonTop: {
-    borderRadius: "5px 0px 0px 5px",
-    background: "#0096FF",
-    transform: "translateY(-30px)",
-    transition: "transform 0.1s",
-    "&:active": {
-      transform: "translateY(-27px)",
-    },
-  },
-  submitButtonBottom: {
-    borderRadius: "5px 0px 0px 5px",
-    background: "#004c81",
-    transform: "translateY(5px)",
-  },
-  clearButtonTop: {
-    borderRadius: "0px 5px 5px 0px",
-    background: "red",
-    transform: "translateY(-30px)",
-    transition: "transform 0.1s",
-    "&:active": {
-      transform: "translateY(-27px)",
-    },
-  },
-  clearButtonBottom: {
-    borderRadius: "0px 5px 5px 0px",
-    background: "#830000",
     transform: "translateY(5px)",
   },
 });
