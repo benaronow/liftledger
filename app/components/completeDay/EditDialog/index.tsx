@@ -56,6 +56,7 @@ const useStyles = makeStyles()({
     borderRadius: "5px",
     whiteSpace: "nowrap",
     justifyContent: "space-between",
+    gap: "10px",
   },
   buttonRow: {
     display: "flex",

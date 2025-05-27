@@ -7,21 +7,138 @@ import {
   Set,
   WeightType,
 } from "@/types";
-import {
-  AddCircleOutline,
-  ArrowBackIosNew,
-  DeleteOutline,
-} from "@mui/icons-material";
+import { ArrowBackIosNew, DeleteOutline } from "@mui/icons-material";
 import { Input } from "@mui/material";
-import { ChangeEvent } from "react";
+import React, { ChangeEvent } from "react";
 import Select from "react-select";
-import { useEditDayStyles } from "./useEditDayStyles";
-import { useCreateBlockStyles } from "../useCreateBlockStyles";
 import { useSelector } from "react-redux";
 import {
   selectCurBlock,
   selectEditingBlock,
 } from "@/lib/features/user/userSlice";
+import { PushButton } from "../../pushButton";
+import { makeStyles } from "tss-react/mui";
+import { AddButton } from "../../AddButton";
+import { LabeledInput } from "../../LabeledInput";
+
+const useStyles = makeStyles()({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    fontFamily: "League+Spartan",
+    fontSize: "16px",
+  },
+  entryContainer: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    flex: 1,
+    borderRadius: "5px",
+    marginLeft: "15px",
+    justifyContent: "space-between",
+  },
+  exercise: {
+    background: "#131314",
+    padding: "10px",
+    borderRadius: "5px",
+    marginBottom: "15px",
+  },
+  entry: {
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
+    justifyContent: "center",
+  },
+  entryName: {
+    fontWeight: 600,
+    color: "white",
+  },
+  sideButtons: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "40px",
+    minWidth: "40px",
+  },
+  sideButton: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "35px",
+    height: "35px",
+    minHeight: "35px",
+    border: "none",
+    borderRadius: "5px",
+    "&:hover": {
+      cursor: "pointer",
+    },
+  },
+  moveUpButton: {
+    transform: "rotate(90deg)",
+  },
+  moveDownButton: {
+    transform: "rotate(270deg)",
+  },
+  input: {
+    border: "solid",
+    borderColor: "gray",
+    borderWidth: "1px",
+    borderRadius: "5px",
+    marginLeft: "5px",
+    width: "100%",
+    background: "white",
+  },
+  enabled: {
+    color: "white",
+  },
+  disabled: {
+    color: "#adafb3",
+  },
+  addExerciseButton: {
+    color: "blue",
+    marginBottom: "-5px",
+    "&:hover": {
+      cursor: "pointer",
+    },
+  },
+  numberInput: {
+    marginLeft: "5px",
+    marginRight: "5px",
+    border: "solid",
+    borderColor: "gray",
+    borderWidth: "1px",
+    borderRadius: "5px",
+    width: "100%",
+    height: "38px",
+    paddingLeft: "5px",
+    background: "white",
+  },
+  weightInput: {
+    marginLeft: "5px",
+    border: "solid",
+    borderColor: "gray",
+    borderWidth: "1px",
+    borderRadius: "5px 0px 0px 5px",
+    width: "80%",
+    height: "38px",
+    paddingLeft: "5px",
+    background: "white",
+  },
+  weightType: {
+    width: "100%",
+    fontSize: "16px",
+  },
+  back: {
+    color: "white",
+    fontFamily: "League+Spartan",
+    fontSize: "16px",
+    fontWeight: 600,
+  },
+});
 
 interface EditDayProps {
   block: Block;
@@ -36,8 +153,7 @@ export const EditDay = ({
   editingDay,
   setEditingDay,
 }: EditDayProps) => {
-  const { classes } = useEditDayStyles();
-  const { classes: createBlockClasses } = useCreateBlockStyles();
+  const { classes } = useStyles();
   const curBlock = useSelector(selectCurBlock);
   const editingBlock = useSelector(selectEditingBlock);
   const editingWeekIdx = editingBlock ? curBlock?.curWeekIdx || 0 : 0;
@@ -231,7 +347,7 @@ export const EditDay = ({
     });
   };
 
-  const handleAddExercise = () => {
+  const handleAddExercise = (idx: number) => {
     const newExercise: Exercise = {
       name: "",
       apparatus: "",
@@ -248,13 +364,13 @@ export const EditDay = ({
 
     setBlock({
       ...block,
-      weeks: block.weeks.map((week, idx) =>
-        idx === editingWeekIdx
+      weeks: block.weeks.map((week, wIdx) =>
+        wIdx === editingWeekIdx
           ? week.map((day) =>
               shouldEditDay(day)
                 ? {
                     ...day,
-                    exercises: [...day.exercises, newExercise],
+                    exercises: day.exercises.splice(idx, 0, newExercise),
                   }
                 : day
             )
@@ -286,27 +402,33 @@ export const EditDay = ({
     <div className={classes.container}>
       {block.weeks[editingWeekIdx][editingDay].exercises.map(
         (exercise, idx) => (
-          <div key={idx}>
-            <div className={classes.entry}>
-              <div className={`${classes.sideButtons} ${classes.leftButtons}`}>
-                <div
-                  className={`${classes.sideButton} ${classes.leftButton} ${classes.sideButtonTopBottom}`}
-                />
+          <React.Fragment key={idx}>
+            <AddButton onClick={() => handleAddExercise(idx)} />
+            <div className={`${classes.exercise} ${classes.entry}`}>
+              <div className={classes.sideButtons}>
                 <button
                   className={`${classes.sideButton} ${
-                    classes.sideButtonTopTop
-                  } ${idx === 0 ? classes.disabled : classes.enabled}`}
+                    idx === 0 ? classes.disabled : classes.enabled
+                  }`}
                   onClick={() => handleMoveExercise(exercise, idx, "up")}
                 >
                   <ArrowBackIosNew className={classes.moveUpButton} />
                 </button>
-                <div
-                  className={`${classes.sideButton} ${classes.leftButton} ${classes.sideButtonBottomBottom}`}
-                />
                 <button
-                  className={`${classes.sideButton} ${classes.leftButton} ${
-                    classes.sideButtonBottomTop
-                  } ${
+                  className={classes.sideButton}
+                  onClick={() => handleRemoveExercise(idx)}
+                >
+                  <DeleteOutline
+                    className={`${
+                      block.weeks[editingWeekIdx][editingDay].exercises
+                        .length === 1
+                        ? classes.disabled
+                        : classes.enabled
+                    }`}
+                  />
+                </button>
+                <button
+                  className={`${classes.sideButton} ${
                     idx ===
                     block.weeks[editingWeekIdx][editingDay].exercises.length - 1
                       ? classes.disabled
@@ -319,7 +441,7 @@ export const EditDay = ({
               </div>
               <div
                 className={classes.entryContainer}
-                style={{ height: editingBlock ? "160px" : "240px" }}
+                style={{ height: editingBlock ? "160px" : "180px" }}
               >
                 <div className={classes.entry}>
                   <span className={classes.entryName}>Lift: </span>
@@ -359,25 +481,21 @@ export const EditDay = ({
                   />
                 </div>
                 <div className={classes.entry}>
-                  <span className={classes.entryName}>Sets: </span>
-                  <Input
-                    className={classes.numberInput}
-                    value={exercise.sets.length}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  <LabeledInput
+                    label="Sets: "
+                    textValue={exercise.sets.length}
+                    onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
                       handleNumberInput(e, idx, "sets");
                     }}
                   />
                   {!editingBlock && (
-                    <>
-                      <span className={classes.entryName}>Reps: </span>
-                      <Input
-                        className={classes.numberInput}
-                        value={exercise.sets[0]?.reps || 0}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                          handleNumberInput(e, idx, "reps");
-                        }}
-                      />
-                    </>
+                    <LabeledInput
+                      label="Reps: "
+                      textValue={exercise.sets[0]?.reps || 0}
+                      onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
+                        handleNumberInput(e, idx, "reps");
+                      }}
+                    />
                   )}
                 </div>
                 {!editingBlock && (
@@ -419,52 +537,20 @@ export const EditDay = ({
                   </>
                 )}
               </div>
-              <div className={`${classes.sideButtons} ${classes.rightButtons}`}>
-                <div
-                  className={`${classes.sideButton} ${classes.rightButton} ${classes.sideButtonBottom}`}
-                />
-                <button
-                  className={`${classes.sideButton} ${classes.rightButton} ${classes.sideButtonTop}`}
-                  onClick={() => handleRemoveExercise(idx)}
-                >
-                  <DeleteOutline
-                    className={`${
-                      block.weeks[editingWeekIdx][editingDay].exercises
-                        .length === 1
-                        ? classes.disabled
-                        : classes.enabled
-                    }`}
-                  />
-                </button>
-              </div>
             </div>
-          </div>
+          </React.Fragment>
         )
       )}
-      <div className={classes.addDayButtonContainer}>
-        <div
-          className={`${classes.addDayButton} ${classes.addDayButtonBottom}`}
-        />
-        <div
-          className={`${classes.addDayButton} ${classes.addDayButtonTop}`}
-          onClick={handleAddExercise}
-        >
-          <AddCircleOutline />
-        </div>
-      </div>
-      <div className={createBlockClasses.actions}>
-        <div className={createBlockClasses.buttonContainer}>
-          <div
-            className={`${createBlockClasses.actionButton} ${classes.submitButtonBottom}`}
-          />
-          <button
-            className={`${createBlockClasses.actionButton} ${classes.submitButtonTop}`}
-            onClick={() => setEditingDay(-1)}
-          >
-            Save Day
-          </button>
-        </div>
-      </div>
+      <AddButton
+        onClick={() =>
+          handleAddExercise(
+            block.weeks[editingWeekIdx][editingDay].exercises.length
+          )
+        }
+      />
+      <PushButton height={40} width={70} onClick={() => setEditingDay(-1)}>
+        <span className={classes.back}>Back</span>
+      </PushButton>
     </div>
   );
 };
