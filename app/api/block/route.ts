@@ -2,15 +2,15 @@ import { connectDB } from "@/app/connectDB";
 import BlockModel from "@/app/models/block";
 import UserModel from "@/app/models/user";
 import { checkIsBlockDone, checkIsCurWeekDone } from "@/app/utils";
-import { Block, BlockOp, Day, Exercise, Set, Week } from "@/types";
+import { Block, BlockOp, Day, Exercise, Set } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
-const createNextWeek = (curBlock: Block): Week => {
+const createNextWeek = (curBlock: Block): Day[] => {
   const thisWeek = curBlock.weeks[curBlock.curWeekIdx];
 
   const getLatestExerciseOccurrence = (curBlock: Block, exercise: Exercise) => {
     for (const w of curBlock.weeks.toReversed().concat(curBlock.initialWeek)) {
-      for (const d of w.days.toReversed()) {
+      for (const d of w.toReversed()) {
         for (const e of d.exercises) {
           if (e.name === exercise.name && e.apparatus === exercise.apparatus)
             return e;
@@ -19,29 +19,24 @@ const createNextWeek = (curBlock: Block): Week => {
     }
   };
 
-  return {
-    number: thisWeek.number + 1,
-    days: thisWeek.days.map((day) => {
-      return {
-        name: day.name,
-        exercises: day.exercises.map((exercise) => {
-          const latestEx = getLatestExerciseOccurrence(curBlock, exercise);
+  return thisWeek.map((day) => ({
+    name: day.name,
+    exercises: day.exercises.map((exercise) => {
+      const latestEx = getLatestExerciseOccurrence(curBlock, exercise);
 
-          return latestEx
-            ? {
-                ...exercise,
-                sets: latestEx?.sets.map((set: Set) => ({
-                  ...set,
-                  completed: false,
-                  note: "",
-                })),
-              }
-            : exercise;
-        }),
-        completedDate: undefined,
-      } as Day;
+      return latestEx
+        ? {
+            ...exercise,
+            sets: latestEx?.sets.map((set: Set) => ({
+              ...set,
+              completed: false,
+              note: "",
+            })),
+          }
+        : exercise;
     }),
-  };
+    completedDate: undefined,
+  }));
 };
 
 export const POST = async (req: NextRequest) => {
@@ -63,7 +58,7 @@ export const POST = async (req: NextRequest) => {
   }
 
   if (type === BlockOp.Edit) {
-    const curDay: Day = block.weeks[block.curWeekIdx].days[block.curDayIdx];
+    const curDay: Day = block.weeks[block.curWeekIdx][block.curDayIdx];
 
     const isCurWeekDone = checkIsCurWeekDone(block);
 

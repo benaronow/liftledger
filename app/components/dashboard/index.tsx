@@ -9,7 +9,7 @@ import {
   selectCurBlock,
   setCompletingDay,
 } from "@/lib/features/user/userSlice";
-import { Day, Exercise, RouteType, Set, Week, WeightType } from "@/types";
+import { Day, Exercise, RouteType, Set, WeightType } from "@/types";
 import { Spinner } from "../spinner";
 import { useDashboardStyles } from "./useDashboardStyles";
 import Link from "next/link";
@@ -59,10 +59,10 @@ export const Dashboard = () => {
   };
 
   const getTotalWeight = (type: "lbs" | "kgs") => {
-    return `${curBlock?.weeks.reduce((accWeek: number, curWeek: Week) => {
+    return `${curBlock?.weeks.reduce((accWeek: number, curWeek: Day[]) => {
       return (
         accWeek +
-        curWeek.days.reduce((accDay: number, curDay: Day) => {
+        curWeek.reduce((accDay: number, curDay: Day) => {
           return (
             accDay +
             curDay.exercises.reduce((accEx: number, curEx: Exercise) => {
@@ -91,11 +91,11 @@ export const Dashboard = () => {
   };
 
   const getDaysSinceLast = () => {
-    if (!curBlock?.weeks[0].days[0].completedDate) return 0;
+    if (!curBlock?.weeks[0][0].completedDate) return 0;
 
     let lastWorkoutDate = new Date(0);
     curBlock?.weeks.forEach((week) =>
-      week.days.forEach((day) =>
+      week.forEach((day) =>
         day.exercises.forEach((exercise) => {
           const completionDate = day.completedDate
             ? new Date(day.completedDate)
@@ -116,7 +116,7 @@ export const Dashboard = () => {
   };
 
   const curDayName = curBlock
-    ? curBlock.weeks[curBlock.curWeekIdx].days.find((day) => !day.completedDate)
+    ? curBlock.weeks[curBlock.curWeekIdx].find((day) => !day.completedDate)
         ?.name || "Unavailable"
     : "Unavailable";
 

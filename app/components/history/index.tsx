@@ -47,8 +47,8 @@ export const History = () => {
   }, [innerWidth]);
 
   const getCompletedDate = (block: Block) => {
-    return block.weeks[block.length - 1].days[
-      block.weeks[block.length - 1].days.length - 1
+    return block.weeks[block.length - 1][
+      block.weeks[block.length - 1].length - 1
     ].completedDate;
   };
 

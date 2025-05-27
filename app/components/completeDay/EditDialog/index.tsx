@@ -137,11 +137,11 @@ export const EditDialog = ({
 
   const saveExercises = (complete: Exercise[]) => {
     if (curBlock) {
-      const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].days.toSpliced(
+      const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].toSpliced(
         curBlock.curDayIdx,
         1,
         {
-          ...curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx],
+          ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
           exercises: complete,
         }
       );
@@ -174,10 +174,11 @@ export const EditDialog = ({
 
       const newBlock: Block = {
         ...curBlock,
-        weeks: curBlock?.weeks.toSpliced(curBlock.curWeekIdx, 1, {
-          ...curBlock.weeks[curBlock.curWeekIdx],
-          days: updatedLaterDays,
-        }),
+        weeks: curBlock?.weeks.toSpliced(
+          curBlock.curWeekIdx,
+          1,
+          updatedLaterDays
+        ),
       };
 
       dispatch(

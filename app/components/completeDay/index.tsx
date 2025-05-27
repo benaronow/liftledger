@@ -139,7 +139,7 @@ export const CompleteDay = () => {
   }, []);
 
   const exercises = curBlock
-    ? curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx].exercises
+    ? curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].exercises
     : [];
 
   useEffect(() => {
@@ -168,7 +168,7 @@ export const CompleteDay = () => {
       const previousExercise = getLastExerciseOccurrence(curBlock, exercise);
 
       const newExercises = previousExercise
-        ? curBlock.weeks[curBlock.curWeekIdx].days[
+        ? curBlock.weeks[curBlock.curWeekIdx][
             curBlock.curDayIdx
           ].exercises.toSpliced(idx, 1, {
             ...previousExercise,
@@ -182,17 +182,14 @@ export const CompleteDay = () => {
 
       const newBlock: Block = {
         ...curBlock,
-        weeks: curBlock.weeks.toSpliced(curBlock.curWeekIdx, 1, {
-          ...curBlock.weeks[curBlock.curWeekIdx],
-          days: curBlock.weeks[curBlock.curWeekIdx].days.toSpliced(
-            curBlock.curDayIdx,
-            1,
-            {
-              ...curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx],
-              exercises: newExercises,
-            }
-          ),
-        }),
+        weeks: curBlock.weeks.toSpliced(
+          curBlock.curWeekIdx,
+          1,
+          curBlock.weeks[curBlock.curWeekIdx].toSpliced(curBlock.curDayIdx, 1, {
+            ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
+            exercises: newExercises,
+          })
+        ),
       };
 
       dispatch(
@@ -211,17 +208,14 @@ export const CompleteDay = () => {
     if (curBlock) {
       const newBlock: Block = {
         ...curBlock,
-        weeks: curBlock.weeks.toSpliced(curBlock.curWeekIdx, 1, {
-          ...curBlock.weeks[curBlock.curWeekIdx],
-          days: curBlock.weeks[curBlock.curWeekIdx].days.toSpliced(
-            curBlock.curDayIdx,
-            1,
-            {
-              ...curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx],
-              completedDate: new Date(),
-            }
-          ),
-        }),
+        weeks: curBlock.weeks.toSpliced(
+          curBlock.curWeekIdx,
+          1,
+          curBlock.weeks[curBlock.curWeekIdx].toSpliced(curBlock.curDayIdx, 1, {
+            ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
+            completedDate: new Date(),
+          })
+        ),
       };
 
       dispatch(

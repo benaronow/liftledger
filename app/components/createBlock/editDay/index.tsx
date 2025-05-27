@@ -43,7 +43,7 @@ export const EditDay = ({
   const editingWeekIdx = editingBlock ? curBlock?.curWeekIdx || 0 : 0;
 
   const shouldEditDay = (day: Day) => {
-    return day.name === block.weeks[editingWeekIdx].days[editingDay].name;
+    return day.name === block.weeks[editingWeekIdx][editingDay].name;
   };
 
   const exerciseNameOptions = Object.values(ExerciseName).map((value) => ({
@@ -70,53 +70,49 @@ export const EditDay = ({
   ) => {
     setBlock({
       ...block,
-      weeks: block.weeks.map((week, idx) => ({
-        ...week,
-        days:
-          idx === editingWeekIdx
-            ? week.days.map((day) =>
-                shouldEditDay(day)
-                  ? {
-                      ...day,
-                      exercises: day.exercises
-                        .toSpliced(exerciseIdx, 1)
-                        .toSpliced(
-                          type === "up" ? exerciseIdx - 1 : exerciseIdx + 1,
-                          0,
-                          exercise
-                        ),
-                    }
-                  : day
-              )
-            : week.days,
-      })),
+      weeks: block.weeks.map((week, idx) =>
+        idx === editingWeekIdx
+          ? week.map((day) =>
+              shouldEditDay(day)
+                ? {
+                    ...day,
+                    exercises: day.exercises
+                      .toSpliced(exerciseIdx, 1)
+                      .toSpliced(
+                        type === "up" ? exerciseIdx - 1 : exerciseIdx + 1,
+                        0,
+                        exercise
+                      ),
+                  }
+                : day
+            )
+          : week
+      ),
     });
   };
 
   const handleExerciseNameSelect = (name: string, exerciseIdx: number) => {
     setBlock({
       ...block,
-      weeks: block.weeks.map((week, idx) => ({
-        ...week,
-        days:
-          idx === editingWeekIdx
-            ? week.days.map((day) =>
-                shouldEditDay(day)
-                  ? {
-                      ...day,
-                      exercises: day.exercises.map((exercise, eIdx) =>
-                        exerciseIdx === eIdx
-                          ? {
-                              ...exercise,
-                              name,
-                            }
-                          : exercise
-                      ),
-                    }
-                  : day
-              )
-            : week.days,
-      })),
+      weeks: block.weeks.map((week, idx) =>
+        idx === editingWeekIdx
+          ? week.map((day) =>
+              shouldEditDay(day)
+                ? {
+                    ...day,
+                    exercises: day.exercises.map((exercise, eIdx) =>
+                      exerciseIdx === eIdx
+                        ? {
+                            ...exercise,
+                            name,
+                          }
+                        : exercise
+                    ),
+                  }
+                : day
+            )
+          : week
+      ),
     });
   };
 
@@ -126,54 +122,50 @@ export const EditDay = ({
   ) => {
     setBlock({
       ...block,
-      weeks: block.weeks.map((week, idx) => ({
-        ...week,
-        days:
-          idx === editingWeekIdx
-            ? week.days.map((day) =>
-                shouldEditDay(day)
-                  ? {
-                      ...day,
-                      exercises: day.exercises.map((exercise, eIdx) =>
-                        exerciseIdx === eIdx
-                          ? {
-                              ...exercise,
-                              apparatus,
-                            }
-                          : exercise
-                      ),
-                    }
-                  : day
-              )
-            : week.days,
-      })),
+      weeks: block.weeks.map((week, idx) =>
+        idx === editingWeekIdx
+          ? week.map((day) =>
+              shouldEditDay(day)
+                ? {
+                    ...day,
+                    exercises: day.exercises.map((exercise, eIdx) =>
+                      exerciseIdx === eIdx
+                        ? {
+                            ...exercise,
+                            apparatus,
+                          }
+                        : exercise
+                    ),
+                  }
+                : day
+            )
+          : week
+      ),
     });
   };
 
   const handleWeightTypeSelect = (weightType: string, exerciseIdx: number) => {
     setBlock({
       ...block,
-      weeks: block.weeks.map((week, idx) => ({
-        ...week,
-        days:
-          idx === editingWeekIdx
-            ? week.days.map((day) =>
-                shouldEditDay(day)
-                  ? {
-                      ...day,
-                      exercises: day.exercises.map((exercise, eIdx) =>
-                        exerciseIdx === eIdx
-                          ? {
-                              ...exercise,
-                              weightType,
-                            }
-                          : exercise
-                      ),
-                    }
-                  : day
-              )
-            : week.days,
-      })),
+      weeks: block.weeks.map((week, idx) =>
+        idx === editingWeekIdx
+          ? week.map((day) =>
+              shouldEditDay(day)
+                ? {
+                    ...day,
+                    exercises: day.exercises.map((exercise, eIdx) =>
+                      exerciseIdx === eIdx
+                        ? {
+                            ...exercise,
+                            weightType,
+                          }
+                        : exercise
+                    ),
+                  }
+                : day
+            )
+          : week
+      ),
     });
   };
 
@@ -184,60 +176,58 @@ export const EditDay = ({
   ) => {
     setBlock({
       ...block,
-      weeks: block.weeks.map((week, idx) => ({
-        ...week,
-        days:
-          idx === editingWeekIdx
-            ? week.days.map((day) =>
-                shouldEditDay(day)
-                  ? {
-                      ...day,
-                      exercises: day.exercises.map((exercise, eIdx) =>
-                        exerciseIdx === eIdx
-                          ? {
-                              ...exercise,
-                              sets:
-                                type === "sets"
-                                  ? parseInt(e.target.value) <
-                                    exercise.sets.length
-                                    ? exercise.sets.slice(
-                                        0,
-                                        parseInt(e.target.value)
+      weeks: block.weeks.map((week, idx) =>
+        idx === editingWeekIdx
+          ? week.map((day) =>
+              shouldEditDay(day)
+                ? {
+                    ...day,
+                    exercises: day.exercises.map((exercise, eIdx) =>
+                      exerciseIdx === eIdx
+                        ? {
+                            ...exercise,
+                            sets:
+                              type === "sets"
+                                ? parseInt(e.target.value) <
+                                  exercise.sets.length
+                                  ? exercise.sets.slice(
+                                      0,
+                                      parseInt(e.target.value)
+                                    )
+                                  : exercise.sets.concat(
+                                      Array<Set>(
+                                        parseInt(e.target.value) -
+                                          exercise.sets.length
+                                      ).fill(
+                                        exercise.sets[
+                                          exercise.sets.length - 1
+                                        ] || {
+                                          reps: 0,
+                                          weight: 0,
+                                          completed: false,
+                                          note: "",
+                                        }
                                       )
-                                    : exercise.sets.concat(
-                                        Array<Set>(
-                                          parseInt(e.target.value) -
-                                            exercise.sets.length
-                                        ).fill(
-                                          exercise.sets[
-                                            exercise.sets.length - 1
-                                          ] || {
-                                            reps: 0,
-                                            weight: 0,
-                                            completed: false,
-                                            note: "",
-                                          }
-                                        )
-                                      )
-                                  : exercise.sets.map((set: Set) => ({
-                                      ...set,
-                                      reps:
-                                        type === "reps"
-                                          ? parseInt(e.target.value) || 0
-                                          : set.reps,
-                                      weight:
-                                        type === "weight"
-                                          ? parseFloat(e.target.value) || 0
-                                          : set.weight,
-                                    })),
-                            }
-                          : exercise
-                      ),
-                    }
-                  : day
-              )
-            : week.days,
-      })),
+                                    )
+                                : exercise.sets.map((set: Set) => ({
+                                    ...set,
+                                    reps:
+                                      type === "reps"
+                                        ? parseInt(e.target.value) || 0
+                                        : set.reps,
+                                    weight:
+                                      type === "weight"
+                                        ? parseFloat(e.target.value) || 0
+                                        : set.weight,
+                                  })),
+                          }
+                        : exercise
+                    ),
+                  }
+                : day
+            )
+          : week
+      ),
     });
   };
 
@@ -258,47 +248,43 @@ export const EditDay = ({
 
     setBlock({
       ...block,
-      weeks: block.weeks.map((week, idx) => ({
-        ...week,
-        days:
-          idx === editingWeekIdx
-            ? week.days.map((day) =>
-                shouldEditDay(day)
-                  ? {
-                      ...day,
-                      exercises: [...day.exercises, newExercise],
-                    }
-                  : day
-              )
-            : week.days,
-      })),
+      weeks: block.weeks.map((week, idx) =>
+        idx === editingWeekIdx
+          ? week.map((day) =>
+              shouldEditDay(day)
+                ? {
+                    ...day,
+                    exercises: [...day.exercises, newExercise],
+                  }
+                : day
+            )
+          : week
+      ),
     });
   };
 
   const handleRemoveExercise = (exerciseIdx: number) => {
-    if (block.weeks[editingWeekIdx].days[editingDay].exercises.length > 1)
+    if (block.weeks[editingWeekIdx][editingDay].exercises.length > 1)
       setBlock({
         ...block,
-        weeks: block.weeks.map((week, idx) => ({
-          ...week,
-          days:
-            idx === editingWeekIdx
-              ? week.days.map((day) =>
-                  shouldEditDay(day)
-                    ? {
-                        ...day,
-                        exercises: day.exercises.toSpliced(exerciseIdx, 1),
-                      }
-                    : day
-                )
-              : week.days,
-        })),
+        weeks: block.weeks.map((week, idx) =>
+          idx === editingWeekIdx
+            ? week.map((day) =>
+                shouldEditDay(day)
+                  ? {
+                      ...day,
+                      exercises: day.exercises.toSpliced(exerciseIdx, 1),
+                    }
+                  : day
+              )
+            : week
+        ),
       });
   };
 
   return (
     <div className={classes.container}>
-      {block.weeks[editingWeekIdx].days[editingDay].exercises.map(
+      {block.weeks[editingWeekIdx][editingDay].exercises.map(
         (exercise, idx) => (
           <div key={idx}>
             <div className={classes.entry}>
@@ -322,9 +308,7 @@ export const EditDay = ({
                     classes.sideButtonBottomTop
                   } ${
                     idx ===
-                    block.weeks[editingWeekIdx].days[editingDay].exercises
-                      .length -
-                      1
+                    block.weeks[editingWeekIdx][editingDay].exercises.length - 1
                       ? classes.disabled
                       : classes.enabled
                   }`}
@@ -445,7 +429,7 @@ export const EditDay = ({
                 >
                   <DeleteOutline
                     className={`${
-                      block.weeks[editingWeekIdx].days[editingDay].exercises
+                      block.weeks[editingWeekIdx][editingDay].exercises
                         .length === 1
                         ? classes.disabled
                         : classes.enabled

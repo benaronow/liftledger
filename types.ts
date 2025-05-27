@@ -1,26 +1,26 @@
-enum Muscle {
-  Traps = "Traps",
-  Rhomboids = "Rhomboids",
-  FrontDelts = "Front Delts",
-  SideDelts = "Side Delts",
-  RearDelts = "Rear Delts",
-  Biceps = "Biceps",
-  Triceps = "Triceps",
-  Brachialis = "Brachialis",
-  Brachioradialis = "Brachioradialis",
-  Forearms = "Forearms",
-  Pecs = "Pecs",
-  Abs = "Abs",
-  Obliques = "Obliques",
-  Lats = "Lats",
-  ErectorSpinae = "Erector Spinae",
-  Glutes = "Glutes",
-  Adductors = "Adductors",
-  Abductors = "Abductors",
-  Quads = "Quads",
-  Hamstrings = "Hamstrings",
-  Calves = "Calves",
-}
+// enum Muscle {
+//   Traps = "Traps",
+//   Rhomboids = "Rhomboids",
+//   FrontDelts = "Front Delts",
+//   SideDelts = "Side Delts",
+//   RearDelts = "Rear Delts",
+//   Biceps = "Biceps",
+//   Triceps = "Triceps",
+//   Brachialis = "Brachialis",
+//   Brachioradialis = "Brachioradialis",
+//   Forearms = "Forearms",
+//   Pecs = "Pecs",
+//   Abs = "Abs",
+//   Obliques = "Obliques",
+//   Lats = "Lats",
+//   ErectorSpinae = "Erector Spinae",
+//   Glutes = "Glutes",
+//   Adductors = "Adductors",
+//   Abductors = "Abductors",
+//   Quads = "Quads",
+//   Hamstrings = "Hamstrings",
+//   Calves = "Calves",
+// }
 
 export enum ExerciseName {
   BenchPress = "Bench Press",
@@ -120,34 +120,15 @@ export interface Exercise {
   _id?: string;
   name: string;
   apparatus: string;
-  musclesWorked?: Muscle[];
   sets: Set[];
   weightType: string;
-}
-
-export interface TableExercise extends Exercise {
-  week: number;
-  sub?: number;
-  up: boolean;
-  down: boolean;
 }
 
 export interface Day {
   _id?: string;
   name: string;
   exercises: Exercise[];
-  completedDate?: Date | undefined;
-}
-
-// export interface TableDay extends Day {
-//   week: number;
-//   sub?: number;
-// }
-
-export interface Week {
-  _id?: string;
-  number: number;
-  days: Day[];
+  completedDate: Date | undefined;
 }
 
 export interface Block {
@@ -155,15 +136,11 @@ export interface Block {
   name: string;
   startDate: Date;
   length: number;
-  initialWeek: Week;
-  weeks: Week[];
+  initialWeek: Day[];
+  weeks: Day[][];
   curWeekIdx: number;
   curDayIdx: number;
 }
-
-// export interface ExerciseProgress {
-//   [key: string]: (number | number[] | string | Date)[][];
-// }
 
 export interface User {
   _id?: string;
@@ -183,10 +160,6 @@ export interface SizeInfo {
   innerWidth: number | undefined;
   innerHeight: number | undefined;
 }
-
-// export interface TableData {
-//   [key: string]: string | string[];
-// }
 
 export enum BlockOp {
   Create = "create",

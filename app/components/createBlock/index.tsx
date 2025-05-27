@@ -21,31 +21,29 @@ export const emptyBlock: Block = {
   name: "",
   startDate: new Date(),
   length: 0,
-  initialWeek: { number: 0, days: [] },
+  initialWeek: [],
   weeks: [
-    {
-      number: 1,
-      days: [
-        {
-          name: "Day 1",
-          exercises: [
-            {
-              name: "",
-              apparatus: "",
-              sets: [
-                {
-                  reps: 0,
-                  weight: 0,
-                  completed: false,
-                  note: "",
-                },
-              ],
-              weightType: WeightType.Pounds,
-            },
-          ],
-        },
-      ],
-    },
+    [
+      {
+        name: "Day 1",
+        exercises: [
+          {
+            name: "",
+            apparatus: "",
+            sets: [
+              {
+                reps: 0,
+                weight: 0,
+                completed: false,
+                note: "",
+              },
+            ],
+            weightType: WeightType.Pounds,
+          },
+        ],
+        completedDate: undefined,
+      },
+    ],
   ],
   curDayIdx: 0,
   curWeekIdx: 0,

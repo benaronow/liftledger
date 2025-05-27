@@ -9,26 +9,24 @@ export const getTemplateFromBlock = (block: Block, editing: boolean) => {
         length: block.length,
         initialWeek: block.initialWeek,
         weeks: [
-          {
-            number: 1,
-            days: block.weeks[block.length - 1].days.map((day) => {
-              return {
-                name: day.name,
-                exercises: day.exercises.map((exercise) => {
-                  return {
-                    name: exercise.name,
-                    apparatus: exercise.apparatus,
-                    sets: exercise.sets.map((set: Set) => ({
-                      ...set,
-                      completed: false,
-                      note: "",
-                    })),
-                    weightType: exercise.weightType,
-                  };
-                }),
-              };
-            }),
-          },
+          block.weeks[block.length - 1].map((day) => {
+            return {
+              name: day.name,
+              exercises: day.exercises.map((exercise) => {
+                return {
+                  name: exercise.name,
+                  apparatus: exercise.apparatus,
+                  sets: exercise.sets.map((set: Set) => ({
+                    ...set,
+                    completed: false,
+                    note: "",
+                  })),
+                  weightType: exercise.weightType,
+                };
+              }),
+              completedDate: undefined,
+            };
+          }),
         ],
         curDayIdx: 0,
         curWeekIdx: 0,
@@ -46,11 +44,11 @@ export const getLastExerciseOccurrence = (
       let d =
         w === curBlock.curWeekIdx
           ? curBlock.curDayIdx - 1
-          : curBlock.weeks[w].days.length - 1;
+          : curBlock.weeks[w].length - 1;
       d >= 0;
       d--
     ) {
-      for (const e of curBlock.weeks.concat(curBlock.initialWeek)[w].days[d]
+      for (const e of curBlock.weeks.concat(curBlock.initialWeek)[w][d]
         .exercises) {
         if (e.name === exercise.name && e.apparatus === exercise.apparatus)
           return e;
@@ -60,8 +58,8 @@ export const getLastExerciseOccurrence = (
 };
 
 export const checkIsCurWeekDone = (block: Block) =>
-  block.weeks[block.curWeekIdx].days.length - 1 === block.curDayIdx &&
-  block.weeks[block.curWeekIdx].days[block.curDayIdx].completedDate;
+  block.weeks[block.curWeekIdx].length - 1 === block.curDayIdx &&
+  block.weeks[block.curWeekIdx][block.curDayIdx].completedDate;
 
 export const checkIsBlockDone = (block: Block) =>
   block.curWeekIdx >= block.length - 1 && checkIsCurWeekDone(block);
