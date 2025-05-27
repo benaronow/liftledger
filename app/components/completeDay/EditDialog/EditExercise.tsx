@@ -9,7 +9,7 @@ const useStyles = makeStyles()({
   container: {
     display: "flex",
     flexDirection: "column",
-    height: "180px",
+    height: "160px",
     alignItems: "flex-start",
     justifyContent: "space-between",
   },
@@ -38,9 +38,8 @@ const useStyles = makeStyles()({
     fontSize: "14px",
     background: "transparent",
     color: "#0096FF",
-    padding: "0",
+    padding: "0px",
     border: "none",
-    marginBottom: "12px",
   },
   itemButton: {
     width: "100%",

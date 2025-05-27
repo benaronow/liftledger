@@ -58,8 +58,8 @@ export const getLastExerciseOccurrence = (
 };
 
 export const checkIsCurWeekDone = (block: Block) =>
-  block.weeks[block.curWeekIdx].length - 1 === block.curDayIdx &&
-  block.weeks[block.curWeekIdx][block.curDayIdx].completedDate;
+  !!block.weeks[block.curWeekIdx][block.weeks[block.curWeekIdx].length - 1]
+    .completedDate;
 
 export const checkIsBlockDone = (block: Block) =>
   block.curWeekIdx >= block.length - 1 && checkIsCurWeekDone(block);

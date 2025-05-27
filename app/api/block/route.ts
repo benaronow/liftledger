@@ -65,23 +65,11 @@ export const POST = async (req: NextRequest) => {
     const isCurBlockDone = checkIsBlockDone(block);
 
     const blockToSet = isCurBlockDone
-      ? {
-          ...block,
-          weeks: [
-            ...block.weeks.toSpliced(block.curWeekIdx, 1, {
-              ...block.weeks[block.curWeekIdx],
-            }),
-          ],
-        }
+      ? block
       : isCurWeekDone
       ? {
           ...block,
-          weeks: [
-            ...block.weeks.toSpliced(block.curWeekIdx, 1, {
-              ...block.weeks[block.curWeekIdx],
-            }),
-            createNextWeek(block),
-          ],
+          weeks: [...block.weeks, createNextWeek(block)],
           curDayIdx: 0,
           curWeekIdx: block.curWeekIdx + 1,
         }

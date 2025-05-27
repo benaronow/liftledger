@@ -50,7 +50,7 @@ const useStyles = makeStyles()({
   input: {
     display: "flex",
     flexDirection: "column",
-    padding: "10px 10px 0px",
+    padding: "10px",
     width: "240px",
     background: "white",
     borderRadius: "5px",

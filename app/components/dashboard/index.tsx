@@ -24,6 +24,7 @@ export const Dashboard = () => {
   const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  console.log(curBlock);
 
   useEffect(() => {
     if (session && attemptedLogin && !curUser) {

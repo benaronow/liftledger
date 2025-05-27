@@ -13,6 +13,7 @@ const useStyles = makeStyles()({
     padding: "5px",
     background: "white",
     color: "black",
+    width: "100%",
   },
   input: {
     border: "none",

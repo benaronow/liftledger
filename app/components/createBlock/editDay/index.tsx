@@ -7,10 +7,9 @@ import {
   Set,
   WeightType,
 } from "@/types";
-import { ArrowBackIosNew, DeleteOutline } from "@mui/icons-material";
-import { Input } from "@mui/material";
+import { ArrowBackIosNew } from "@mui/icons-material";
 import React, { ChangeEvent } from "react";
-import Select from "react-select";
+import Select, { CSSObjectWithLabel } from "react-select";
 import { useSelector } from "react-redux";
 import {
   selectCurBlock,
@@ -20,6 +19,7 @@ import { PushButton } from "../../pushButton";
 import { makeStyles } from "tss-react/mui";
 import { AddButton } from "../../AddButton";
 import { LabeledInput } from "../../LabeledInput";
+import { FaTrash } from "react-icons/fa";
 
 const useStyles = makeStyles()({
   container: {
@@ -61,21 +61,26 @@ const useStyles = makeStyles()({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "40px",
-    minWidth: "40px",
   },
   sideButton: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     width: "35px",
-    height: "35px",
-    minHeight: "35px",
     border: "none",
     borderRadius: "5px",
     "&:hover": {
       cursor: "pointer",
     },
+    fontSize: "20px",
+  },
+  buttonEnabled: {
+    background: "#0096FF",
+    color: "white",
+  },
+  buttonDisabled: {
+    background: "#317baf",
+    color: "#a7a7a7",
   },
   moveUpButton: {
     transform: "rotate(90deg)",
@@ -83,50 +88,12 @@ const useStyles = makeStyles()({
   moveDownButton: {
     transform: "rotate(270deg)",
   },
-  input: {
-    border: "solid",
-    borderColor: "gray",
-    borderWidth: "1px",
-    borderRadius: "5px",
-    marginLeft: "5px",
-    width: "100%",
-    background: "white",
-  },
-  enabled: {
-    color: "white",
-  },
-  disabled: {
-    color: "#adafb3",
-  },
   addExerciseButton: {
     color: "blue",
     marginBottom: "-5px",
     "&:hover": {
       cursor: "pointer",
     },
-  },
-  numberInput: {
-    marginLeft: "5px",
-    marginRight: "5px",
-    border: "solid",
-    borderColor: "gray",
-    borderWidth: "1px",
-    borderRadius: "5px",
-    width: "100%",
-    height: "38px",
-    paddingLeft: "5px",
-    background: "white",
-  },
-  weightInput: {
-    marginLeft: "5px",
-    border: "solid",
-    borderColor: "gray",
-    borderWidth: "1px",
-    borderRadius: "5px 0px 0px 5px",
-    width: "80%",
-    height: "38px",
-    paddingLeft: "5px",
-    background: "white",
   },
   weightType: {
     width: "100%",
@@ -137,6 +104,29 @@ const useStyles = makeStyles()({
     fontFamily: "League+Spartan",
     fontSize: "16px",
     fontWeight: 600,
+  },
+  inputRow: {
+    display: "flex",
+    fontSize: "14px",
+    alignItems: "center",
+    border: "solid 2px #adafb3",
+    borderRight: "none",
+    borderRadius: "5px 0px 0px 5px",
+    padding: "5px",
+    background: "white",
+    color: "black",
+    height: "38px",
+  },
+  input: {
+    border: "none",
+    outline: "none",
+    fontSize: "16px",
+    width: "100%",
+  },
+  rowName: {
+    marginRight: "5px",
+    fontWeight: "600",
+    whiteSpace: "nowrap",
   },
 });
 
@@ -156,6 +146,8 @@ export const EditDay = ({
   const { classes } = useStyles();
   const curBlock = useSelector(selectCurBlock);
   const editingBlock = useSelector(selectEditingBlock);
+  const exerciseHeight = editingBlock ? "130px" : "180px";
+  const buttonHeight = editingBlock ? "35px" : "52px";
   const editingWeekIdx = editingBlock ? curBlock?.curWeekIdx || 0 : 0;
 
   const shouldEditDay = (day: Day) => {
@@ -370,7 +362,7 @@ export const EditDay = ({
               shouldEditDay(day)
                 ? {
                     ...day,
-                    exercises: day.exercises.splice(idx, 0, newExercise),
+                    exercises: day.exercises.toSpliced(idx, 0, newExercise),
                   }
                 : day
             )
@@ -398,6 +390,16 @@ export const EditDay = ({
       });
   };
 
+  const selectStyle = {
+    control: (basestyles: CSSObjectWithLabel) => ({
+      ...basestyles,
+      height: "38px",
+      border: "solid 2px #adafb3",
+      borderLeft: "solid 1px #adafb3",
+      borderRadius: "0px 5px 5px 0px",
+    }),
+  };
+
   return (
     <div className={classes.container}>
       {block.weeks[editingWeekIdx][editingDay].exercises.map(
@@ -405,35 +407,39 @@ export const EditDay = ({
           <React.Fragment key={idx}>
             <AddButton onClick={() => handleAddExercise(idx)} />
             <div className={`${classes.exercise} ${classes.entry}`}>
-              <div className={classes.sideButtons}>
+              <div
+                className={classes.sideButtons}
+                style={{ height: exerciseHeight }}
+              >
                 <button
                   className={`${classes.sideButton} ${
-                    idx === 0 ? classes.disabled : classes.enabled
+                    idx === 0 ? classes.buttonDisabled : classes.buttonEnabled
                   }`}
+                  style={{ height: buttonHeight }}
                   onClick={() => handleMoveExercise(exercise, idx, "up")}
                 >
                   <ArrowBackIosNew className={classes.moveUpButton} />
                 </button>
                 <button
-                  className={classes.sideButton}
+                  className={`${classes.sideButton} ${
+                    block.weeks[editingWeekIdx][editingDay].exercises.length ===
+                    1
+                      ? classes.buttonDisabled
+                      : classes.buttonEnabled
+                  }`}
+                  style={{ height: buttonHeight }}
                   onClick={() => handleRemoveExercise(idx)}
                 >
-                  <DeleteOutline
-                    className={`${
-                      block.weeks[editingWeekIdx][editingDay].exercises
-                        .length === 1
-                        ? classes.disabled
-                        : classes.enabled
-                    }`}
-                  />
+                  <FaTrash />
                 </button>
                 <button
                   className={`${classes.sideButton} ${
                     idx ===
                     block.weeks[editingWeekIdx][editingDay].exercises.length - 1
-                      ? classes.disabled
-                      : classes.enabled
+                      ? classes.buttonDisabled
+                      : classes.buttonEnabled
                   }`}
+                  style={{ height: buttonHeight }}
                   onClick={() => handleMoveExercise(exercise, idx, "down")}
                 >
                   <ArrowBackIosNew className={classes.moveDownButton} />
@@ -441,10 +447,12 @@ export const EditDay = ({
               </div>
               <div
                 className={classes.entryContainer}
-                style={{ height: editingBlock ? "160px" : "180px" }}
+                style={{ height: exerciseHeight }}
               >
                 <div className={classes.entry}>
-                  <span className={classes.entryName}>Lift: </span>
+                  <div className={classes.inputRow}>
+                    <span className={classes.rowName}>Lift: </span>
+                  </div>
                   <Select
                     className={classes.input}
                     value={
@@ -458,10 +466,13 @@ export const EditDay = ({
                     onChange={(e) =>
                       handleExerciseNameSelect(e?.value || "", idx)
                     }
+                    styles={selectStyle}
                   />
                 </div>
                 <div className={classes.entry}>
-                  <span className={classes.entryName}>Use: </span>
+                  <div className={classes.inputRow}>
+                    <span className={classes.rowName}>Use: </span>
+                  </div>
                   <Select
                     className={classes.input}
                     value={
@@ -478,9 +489,10 @@ export const EditDay = ({
                     onChange={(e) =>
                       handleExerciseApparatusSelect(e?.value || "", idx)
                     }
+                    styles={selectStyle}
                   />
                 </div>
-                <div className={classes.entry}>
+                <div className={classes.entry} style={{ gap: "10px" }}>
                   <LabeledInput
                     label="Sets: "
                     textValue={exercise.sets.length}
@@ -501,14 +513,16 @@ export const EditDay = ({
                 {!editingBlock && (
                   <>
                     <div className={classes.entry}>
-                      <span className={classes.entryName}>Weight: </span>
-                      <Input
-                        className={classes.weightInput}
-                        value={exercise.sets[0]?.weight || 0}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                          handleNumberInput(e, idx, "weight");
-                        }}
-                      />
+                      <div className={classes.inputRow}>
+                        <span className={classes.rowName}>Weight: </span>
+                        <input
+                          className={classes.input}
+                          value={exercise.sets[0]?.weight || 0}
+                          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                            handleNumberInput(e, idx, "weight");
+                          }}
+                        />
+                      </div>
                       <Select
                         className={classes.weightType}
                         value={
@@ -524,14 +538,7 @@ export const EditDay = ({
                         onChange={(e) =>
                           handleWeightTypeSelect(e?.value || "", idx)
                         }
-                        styles={{
-                          control: (basestyles) => ({
-                            ...basestyles,
-                            height: "38px",
-                            borderColor: "gray",
-                            borderRadius: "0px 5px 5px 0px",
-                          }),
-                        }}
+                        styles={selectStyle}
                       />
                     </div>
                   </>

@@ -28,6 +28,7 @@ export const History = () => {
   const { innerWidth, isFetching, toggleScreenState } =
     useContext(ScreenStateContext);
   const theme = useTheme();
+  console.log(curUser?.blocks);
 
   useEffect(() => {
     if (!session) {
