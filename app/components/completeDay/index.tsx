@@ -20,7 +20,7 @@ import { BiSolidEdit } from "react-icons/bi";
 import { GrFormAdd } from "react-icons/gr";
 import { GrPowerReset } from "react-icons/gr";
 import { makeStyles } from "tss-react/mui";
-import { getPreviousSessionExercise } from "@/app/utils";
+import { getLastExerciseOccurrence } from "@/app/utils";
 
 export const useStyles = makeStyles()({
   container: {
@@ -165,7 +165,7 @@ export const CompleteDay = () => {
 
   const resetExercise = (idx: number, exercise: Exercise) => {
     if (curBlock) {
-      const previousExercise = getPreviousSessionExercise(curBlock, exercise);
+      const previousExercise = getLastExerciseOccurrence(curBlock, exercise);
 
       const newExercises = previousExercise
         ? curBlock.weeks[curBlock.curWeekIdx].days[
@@ -175,6 +175,7 @@ export const CompleteDay = () => {
             sets: previousExercise.sets.map((set: Set) => ({
               ...set,
               completed: false,
+              note: "",
             })),
           })
         : exercisesState;
@@ -217,7 +218,6 @@ export const CompleteDay = () => {
             1,
             {
               ...curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx],
-              completed: true,
               completedDate: new Date(),
             }
           ),
@@ -241,7 +241,6 @@ export const CompleteDay = () => {
     apparatus: "",
     weightType: "",
     sets: [],
-    unilateral: false,
   };
 
   if (!exercises.length || isFetching) return <Spinner />;
@@ -284,9 +283,9 @@ export const CompleteDay = () => {
                 </button>
                 <div className={classes.eName}>
                   <span className={classes.entryTitle}>{exercise.name}</span>
-                  <span className={classes.entryTitle}>{`(${
-                    exercise.apparatus
-                  }${exercise.unilateral ? ", Unilateral" : ""})`}</span>
+                  <span className={classes.entryTitle}>
+                    {exercise.apparatus}
+                  </span>
                 </div>
                 <button
                   className={classes.squareButton}

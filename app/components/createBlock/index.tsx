@@ -21,14 +21,13 @@ export const emptyBlock: Block = {
   name: "",
   startDate: new Date(),
   length: 0,
-  initialWeek: { number: 0, days: [], completed: true },
+  initialWeek: { number: 0, days: [] },
   weeks: [
     {
       number: 1,
       days: [
         {
           name: "Day 1",
-          hasGroup: false,
           exercises: [
             {
               name: "",
@@ -42,17 +41,12 @@ export const emptyBlock: Block = {
                 },
               ],
               weightType: WeightType.Pounds,
-              unilateral: false,
             },
           ],
-          completed: false,
-          completedDate: undefined,
         },
       ],
-      completed: false,
     },
   ],
-  completed: false,
   curDayIdx: 0,
   curWeekIdx: 0,
 };

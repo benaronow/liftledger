@@ -15,6 +15,7 @@ import { useDashboardStyles } from "./useDashboardStyles";
 import Link from "next/link";
 import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 import { useSelector } from "react-redux";
+import { checkIsBlockDone } from "@/app/utils";
 
 export const Dashboard = () => {
   const { classes } = useDashboardStyles();
@@ -90,7 +91,7 @@ export const Dashboard = () => {
   };
 
   const getDaysSinceLast = () => {
-    if (!curBlock?.weeks[0].days[0].completed) return 0;
+    if (!curBlock?.weeks[0].days[0].completedDate) return 0;
 
     let lastWorkoutDate = new Date(0);
     curBlock?.weeks.forEach((week) =>
@@ -115,7 +116,7 @@ export const Dashboard = () => {
   };
 
   const curDayName = curBlock
-    ? curBlock.weeks[curBlock.curWeekIdx].days.find((day) => !day.completed)
+    ? curBlock.weeks[curBlock.curWeekIdx].days.find((day) => !day.completedDate)
         ?.name || "Unavailable"
     : "Unavailable";
 
@@ -143,7 +144,7 @@ export const Dashboard = () => {
       {session ? (
         <>
           <div className={classes.titleContainer}>
-            {curUser && (!curBlock || curBlock.completed) ? (
+            {curUser && (!curBlock || checkIsBlockDone(curBlock)) ? (
               <span className={classes.titleSmall}>
                 Create a training block to get started!
               </span>
@@ -156,7 +157,7 @@ export const Dashboard = () => {
               </>
             )}
           </div>
-          {curBlock && !curBlock.completed && (
+          {curBlock && !checkIsBlockDone(curBlock) && (
             <>
               {metricValueMap.map((pair, idx) => (
                 <div key={idx} className={classes.entry}>

@@ -135,28 +135,7 @@ export const EditDialog = ({
   );
   const [editingType, setEditingType] = useState<ChangeExerciseType | "">("");
 
-  const getLaterSessionIdx = () => {
-    if (curBlock) {
-      const curDayDetail =
-        curBlock.weeks[curBlock.curWeekIdx].days[curBlock.curDayIdx];
-      for (
-        let i = curBlock.curDayIdx + 1;
-        i < curBlock.weeks[curBlock.curWeekIdx || 0].days.length;
-        i++
-      ) {
-        const laterSessionDetail = curBlock.weeks[curBlock.curWeekIdx].days[i];
-        if (
-          curDayDetail.hasGroup &&
-          laterSessionDetail.hasGroup &&
-          curDayDetail.groupName === laterSessionDetail.groupName
-        )
-          return i;
-      }
-    }
-    return 0;
-  };
-
-  const saveExercises = (complete: Exercise[], nextWeek?: Exercise[]) => {
+  const saveExercises = (complete: Exercise[]) => {
     if (curBlock) {
       const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].days.toSpliced(
         curBlock.curDayIdx,
@@ -167,19 +146,37 @@ export const EditDialog = ({
         }
       );
 
+      const updatedLaterDays: Day[] = newDays.map((day: Day, idx) =>
+        idx <= curBlock.curDayIdx
+          ? day
+          : {
+              ...day,
+              exercises: day.exercises.map((exercise: Exercise) => {
+                const completedExercise = complete.find(
+                  (e: Exercise) =>
+                    e.name === exercise.name &&
+                    e.apparatus === exercise.apparatus
+                );
+
+                return completedExercise
+                  ? {
+                      ...completedExercise,
+                      sets: completedExercise.sets.map((set: Set) => ({
+                        ...set,
+                        completed: false,
+                        note: "",
+                      })),
+                    }
+                  : exercise;
+              }),
+            }
+      );
+
       const newBlock: Block = {
         ...curBlock,
         weeks: curBlock?.weeks.toSpliced(curBlock.curWeekIdx, 1, {
           ...curBlock.weeks[curBlock.curWeekIdx],
-          days:
-            getLaterSessionIdx() && nextWeek
-              ? newDays.toSpliced(getLaterSessionIdx(), 1, {
-                  ...curBlock.weeks[curBlock.curWeekIdx].days[
-                    getLaterSessionIdx()
-                  ],
-                  exercises: nextWeek,
-                })
-              : newDays,
+          days: updatedLaterDays,
         }),
       };
 
@@ -212,19 +209,8 @@ export const EditDialog = ({
         updatedExercise
       );
 
-      const nextWeekExercises: Exercise[] = updatedExercises.map(
-        (exercise: Exercise) => ({
-          ...exercise,
-          sets: exercise.sets.map((set: Set) => ({
-            ...set,
-            completed: false,
-            note: "",
-          })),
-        })
-      );
-
       setExercisesState(updatedExercises);
-      saveExercises(updatedExercises, nextWeekExercises);
+      saveExercises(updatedExercises);
       onClose();
     }
   };

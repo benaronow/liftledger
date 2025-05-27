@@ -1,4 +1,4 @@
-import { getPreviousSessionExercise } from "@/app/utils";
+import { getLastExerciseOccurrence } from "@/app/utils";
 import { selectCurBlock } from "@/lib/features/user/userSlice";
 import { Exercise } from "@/types";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
@@ -7,7 +7,9 @@ import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
   note: {
-    fontSize: "16px",
+    fontSize: "14px",
+    whiteSpace: "wrap",
+    marginBottom: "10px",
   },
   inputRow: {
     display: "flex",
@@ -73,8 +75,8 @@ export const EditSet = ({
     setIdx: number
   ) => {
     if (curBlock && exercise) {
-      const previousExercise = getPreviousSessionExercise(curBlock, exercise);
-      if (previousExercise) return previousExercise.sets[setIdx].note;
+      const previousExercise = getLastExerciseOccurrence(curBlock, exercise);
+      if (previousExercise) return previousExercise.sets[setIdx]?.note;
     }
   };
 
@@ -118,7 +120,7 @@ export const EditSet = ({
       ) && (
         <span
           className={classes.note}
-        >{`Previous session note: ${getPreviousSessionNote(
+        >{`Previous note: ${getPreviousSessionNote(
           exercisesState.find(
             (e) =>
               e.name === exerciseState.name &&

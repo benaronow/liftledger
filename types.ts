@@ -82,6 +82,13 @@ export enum ExerciseName {
   TricepKickback = "TricepKickback",
   ForearmCurl = "Forearm Curl",
   ReverseForearmCurl = "Reverse Forearm Curl",
+  Crunch = "Crunch",
+  DeclineCrunch = "Decline Crunch",
+  CableCrunch = "Cable Crunch",
+  LyingLegRaise = "Lying Leg Raise",
+  HangingKneeRaise = "Hanging Knee Raise",
+  HangingLegRaise = "Hanging Leg Raise",
+  RussianTwist = "Russian Twist",
 }
 
 export enum ExerciseApparatus {
@@ -91,7 +98,7 @@ export enum ExerciseApparatus {
   Dumbell = "Dumbell",
   SmithMachine = "Smith Machine",
   CableMachine = "Cable Machine",
-  SpecialMachine = "Special Machine",
+  DedicatedMachine = "Dedicated Machine",
   Chain = "Chain",
   Band = "Band",
   Bodyweight = "Bodyweight",
@@ -111,12 +118,11 @@ export interface Set {
 
 export interface Exercise {
   _id?: string;
-  name: ExerciseName | "";
-  apparatus: ExerciseApparatus | "";
+  name: string;
+  apparatus: string;
   musclesWorked?: Muscle[];
   sets: Set[];
-  weightType: WeightType | "";
-  unilateral: boolean;
+  weightType: string;
 }
 
 export interface TableExercise extends Exercise {
@@ -129,40 +135,35 @@ export interface TableExercise extends Exercise {
 export interface Day {
   _id?: string;
   name: string;
-  hasGroup: boolean;
-  groupName?: string;
   exercises: Exercise[];
-  completed: boolean;
-  completedDate: Date | undefined;
+  completedDate?: Date | undefined;
 }
 
-export interface TableDay extends Day {
-  week: number;
-  sub?: number;
-}
+// export interface TableDay extends Day {
+//   week: number;
+//   sub?: number;
+// }
 
 export interface Week {
   _id?: string;
   number: number;
   days: Day[];
-  completed: boolean;
 }
 
 export interface Block {
   _id?: string;
   name: string;
-  startDate: Date | undefined;
+  startDate: Date;
   length: number;
   initialWeek: Week;
   weeks: Week[];
   curWeekIdx: number;
   curDayIdx: number;
-  completed: boolean;
 }
 
-export interface ExerciseProgress {
-  [key: string]: (number | number[] | string | Date)[][];
-}
+// export interface ExerciseProgress {
+//   [key: string]: (number | number[] | string | Date)[][];
+// }
 
 export interface User {
   _id?: string;
@@ -183,21 +184,14 @@ export interface SizeInfo {
   innerHeight: number | undefined;
 }
 
-export interface TableData {
-  [key: string]: string | string[];
-}
+// export interface TableData {
+//   [key: string]: string | string[];
+// }
 
 export enum BlockOp {
   Create = "create",
   Edit = "edit",
   NewWeek = "newWeek",
-}
-
-export enum NumberChange {
-  AddSet = "add set",
-  SubtractSet = "subtract set",
-  Reps = "reps",
-  Weight = "weight",
 }
 
 export enum RouteType {

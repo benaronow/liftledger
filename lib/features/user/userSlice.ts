@@ -7,6 +7,7 @@ import {
 import { blockOpRequest } from "./blockApi";
 import { Block, BlockOp, User } from "@/types";
 import { PayloadAction } from "@reduxjs/toolkit";
+import { checkIsBlockDone } from "@/app/utils";
 
 interface CompletingDay {
   dayIdx: number;
@@ -119,7 +120,7 @@ export const userSlice = createAppSlice({
           if (state.curUser) {
             if (
               state.curUser.curBlock === action.payload._id &&
-              action.payload.completed
+              checkIsBlockDone(action.payload)
             ) {
               state.curUser.curBlock = "";
             } else if (!state.curUser.curBlock && action.payload._id) {

@@ -12,7 +12,7 @@ import {
   ArrowBackIosNew,
   DeleteOutline,
 } from "@mui/icons-material";
-import { Checkbox, Input } from "@mui/material";
+import { Input } from "@mui/material";
 import { ChangeEvent } from "react";
 import Select from "react-select";
 import { useEditDayStyles } from "./useEditDayStyles";
@@ -40,17 +40,10 @@ export const EditDay = ({
   const { classes: createBlockClasses } = useCreateBlockStyles();
   const curBlock = useSelector(selectCurBlock);
   const editingBlock = useSelector(selectEditingBlock);
+  const editingWeekIdx = editingBlock ? curBlock?.curWeekIdx || 0 : 0;
 
-  const dayGroup =
-    block.weeks[curBlock?.curWeekIdx || 0].days[editingDay].groupName;
   const shouldEditDay = (day: Day) => {
-    return dayGroup
-      ? block.weeks[curBlock?.curWeekIdx || 0].days
-          .filter((day) => day.groupName === dayGroup)
-          .map((groupDay) => groupDay.name)
-          .includes(day.name)
-      : day.name ===
-          block.weeks[curBlock?.curWeekIdx || 0].days[editingDay].name;
+    return day.name === block.weeks[editingWeekIdx].days[editingDay].name;
   };
 
   const exerciseNameOptions = Object.values(ExerciseName).map((value) => ({
@@ -80,7 +73,7 @@ export const EditDay = ({
       weeks: block.weeks.map((week, idx) => ({
         ...week,
         days:
-          idx === curBlock?.curWeekIdx
+          idx === editingWeekIdx
             ? week.days.map((day) =>
                 shouldEditDay(day)
                   ? {
@@ -100,16 +93,13 @@ export const EditDay = ({
     });
   };
 
-  const handleExerciseNameSelect = (
-    name: ExerciseName | "",
-    exerciseIdx: number
-  ) => {
+  const handleExerciseNameSelect = (name: string, exerciseIdx: number) => {
     setBlock({
       ...block,
       weeks: block.weeks.map((week, idx) => ({
         ...week,
         days:
-          idx === curBlock?.curWeekIdx
+          idx === editingWeekIdx
             ? week.days.map((day) =>
                 shouldEditDay(day)
                   ? {
@@ -131,7 +121,7 @@ export const EditDay = ({
   };
 
   const handleExerciseApparatusSelect = (
-    apparatus: ExerciseApparatus | "",
+    apparatus: string,
     exerciseIdx: number
   ) => {
     setBlock({
@@ -139,7 +129,7 @@ export const EditDay = ({
       weeks: block.weeks.map((week, idx) => ({
         ...week,
         days:
-          idx === curBlock?.curWeekIdx
+          idx === editingWeekIdx
             ? week.days.map((day) =>
                 shouldEditDay(day)
                   ? {
@@ -160,16 +150,13 @@ export const EditDay = ({
     });
   };
 
-  const handleWeightTypeSelect = (
-    weightType: WeightType | "",
-    exerciseIdx: number
-  ) => {
+  const handleWeightTypeSelect = (weightType: string, exerciseIdx: number) => {
     setBlock({
       ...block,
       weeks: block.weeks.map((week, idx) => ({
         ...week,
         days:
-          idx === curBlock?.curWeekIdx
+          idx === editingWeekIdx
             ? week.days.map((day) =>
                 shouldEditDay(day)
                   ? {
@@ -200,7 +187,7 @@ export const EditDay = ({
       weeks: block.weeks.map((week, idx) => ({
         ...week,
         days:
-          idx === curBlock?.curWeekIdx
+          idx === editingWeekIdx
             ? week.days.map((day) =>
                 shouldEditDay(day)
                   ? {
@@ -254,33 +241,6 @@ export const EditDay = ({
     });
   };
 
-  const handleUnilateralChange = (exerciseIdx: number) => {
-    setBlock({
-      ...block,
-      weeks: block.weeks.map((week, idx) => ({
-        ...week,
-        days:
-          idx === curBlock?.curWeekIdx
-            ? week.days.map((day) =>
-                shouldEditDay(day)
-                  ? {
-                      ...day,
-                      exercises: day.exercises.map((exercise, eIdx) =>
-                        exerciseIdx === eIdx
-                          ? {
-                              ...exercise,
-                              unilateral: !exercise.unilateral,
-                            }
-                          : exercise
-                      ),
-                    }
-                  : day
-              )
-            : week.days,
-      })),
-    });
-  };
-
   const handleAddExercise = () => {
     const newExercise: Exercise = {
       name: "",
@@ -294,7 +254,6 @@ export const EditDay = ({
         },
       ],
       weightType: WeightType.Pounds,
-      unilateral: false,
     };
 
     setBlock({
@@ -302,7 +261,7 @@ export const EditDay = ({
       weeks: block.weeks.map((week, idx) => ({
         ...week,
         days:
-          idx === curBlock?.curWeekIdx
+          idx === editingWeekIdx
             ? week.days.map((day) =>
                 shouldEditDay(day)
                   ? {
@@ -317,16 +276,13 @@ export const EditDay = ({
   };
 
   const handleRemoveExercise = (exerciseIdx: number) => {
-    if (
-      block.weeks[curBlock?.curWeekIdx || 0].days[editingDay].exercises.length >
-      1
-    )
+    if (block.weeks[editingWeekIdx].days[editingDay].exercises.length > 1)
       setBlock({
         ...block,
         weeks: block.weeks.map((week, idx) => ({
           ...week,
           days:
-            idx === curBlock?.curWeekIdx
+            idx === editingWeekIdx
               ? week.days.map((day) =>
                   shouldEditDay(day)
                     ? {
@@ -342,7 +298,7 @@ export const EditDay = ({
 
   return (
     <div className={classes.container}>
-      {block.weeks[curBlock?.curWeekIdx || 0].days[editingDay].exercises.map(
+      {block.weeks[editingWeekIdx].days[editingDay].exercises.map(
         (exercise, idx) => (
           <div key={idx}>
             <div className={classes.entry}>
@@ -366,8 +322,8 @@ export const EditDay = ({
                     classes.sideButtonBottomTop
                   } ${
                     idx ===
-                    block.weeks[curBlock?.curWeekIdx || 0].days[editingDay]
-                      .exercises.length -
+                    block.weeks[editingWeekIdx].days[editingDay].exercises
+                      .length -
                       1
                       ? classes.disabled
                       : classes.enabled
@@ -476,13 +432,6 @@ export const EditDay = ({
                         }}
                       />
                     </div>
-                    <div className={`${classes.entry} ${classes.uniEntry}`}>
-                      <span className={classes.entryName}>Unilateral?</span>
-                      <Checkbox
-                        checked={exercise.unilateral}
-                        onChange={() => handleUnilateralChange(idx)}
-                      />
-                    </div>
                   </>
                 )}
               </div>
@@ -496,8 +445,8 @@ export const EditDay = ({
                 >
                   <DeleteOutline
                     className={`${
-                      block.weeks[curBlock?.curWeekIdx || 0].days[editingDay]
-                        .exercises.length === 1
+                      block.weeks[editingWeekIdx].days[editingDay].exercises
+                        .length === 1
                         ? classes.disabled
                         : classes.enabled
                     }`}

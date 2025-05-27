@@ -10,8 +10,6 @@ const blockSchema: Schema = new Schema(
       days: [
         {
           name: String,
-          hasGroup: Boolean,
-          groupName: String,
           exercises: [
             {
               name: String,
@@ -29,11 +27,9 @@ const blockSchema: Schema = new Schema(
               unilateral: Boolean,
             },
           ],
-          completed: Boolean,
           completedDate: Date,
         },
       ],
-      completed: Boolean,
     },
     weeks: [
       {
@@ -41,8 +37,6 @@ const blockSchema: Schema = new Schema(
         days: [
           {
             name: String,
-            hasGroup: Boolean,
-            groupName: String,
             exercises: [
               {
                 name: String,
@@ -60,14 +54,11 @@ const blockSchema: Schema = new Schema(
                 unilateral: Boolean,
               },
             ],
-            completed: Boolean,
             completedDate: Date,
           },
         ],
-        completed: Boolean,
       },
     ],
-    completed: { type: Boolean, required: true },
     curDayIdx: { type: Number, required: true },
     curWeekIdx: { type: Number, required: true },
   },

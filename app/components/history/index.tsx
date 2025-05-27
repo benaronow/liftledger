@@ -17,7 +17,7 @@ import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 import { useHistoryStyles } from "./useHistoryStyles";
 import { Spinner } from "../spinner";
 import { LoginContext } from "@/app/providers/loginProvider";
-import { getTemplateFromBlock } from "@/app/utils";
+import { checkIsBlockDone, getTemplateFromBlock } from "@/app/utils";
 
 export const History = () => {
   const { classes } = useHistoryStyles();
@@ -59,7 +59,7 @@ export const History = () => {
   };
 
   const completedBlocks = curUser?.blocks
-    .filter((block) => block.completed)
+    .filter((block) => checkIsBlockDone(block))
     .map((block, idx) => {
       return (
         <div
