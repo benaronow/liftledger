@@ -15,9 +15,10 @@ const useStyles = makeStyles()({
   day: {
     width: "100%",
     marginBottom: "15px",
-    background: "#131314",
-    padding: "10px",
+    background: "#58585b",
     borderRadius: "5px",
+    border: "solid 5px #58585b",
+    boxShadow: "0px 5px 10px #131314",
   },
   dayInfo: {
     display: "flex",
@@ -27,13 +28,15 @@ const useStyles = makeStyles()({
     borderRadius: "5px",
     alignItems: "center",
     background: "#131314",
-    padding: "0px 15px",
+    padding: "10px",
+    margin: "0px 5px",
+    justifyContent: "space-between",
   },
   sideButtons: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "10px",
+    gap: "5px",
   },
   sideButton: {
     display: "flex",
@@ -76,11 +79,9 @@ const useStyles = makeStyles()({
     fontSize: "14px",
     background: "transparent",
     color: "#0096FF",
-    padding: "0",
+    padding: "0px",
     border: "none",
     fontWeight: 600,
-    height: "35px",
-    marginTop: "10px",
   },
 });
 

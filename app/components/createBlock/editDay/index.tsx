@@ -31,20 +31,23 @@ const useStyles = makeStyles()({
     fontFamily: "League+Spartan",
     fontSize: "16px",
   },
+  exercise: {
+    background: "#58585b",
+    borderRadius: "5px",
+    border: "solid 5px #58585b",
+    marginBottom: "15px",
+    boxShadow: "0px 5px 10px #131314",
+  },
   entryContainer: {
+    padding: "10px",
     display: "flex",
+    background: "#131314",
     flexDirection: "column",
     width: "100%",
     flex: 1,
     borderRadius: "5px",
-    marginLeft: "15px",
+    margin: "0px 0px 0px 5px",
     justifyContent: "space-between",
-  },
-  exercise: {
-    background: "#131314",
-    padding: "10px",
-    borderRadius: "5px",
-    marginBottom: "15px",
   },
   entry: {
     display: "flex",
@@ -60,13 +63,14 @@ const useStyles = makeStyles()({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "space-between",
+    gap: "5px",
   },
   sideButton: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     width: "35px",
+    height: "35px",
     border: "none",
     borderRadius: "5px",
     "&:hover": {
@@ -146,8 +150,7 @@ export const EditDay = ({
   const { classes } = useStyles();
   const curBlock = useSelector(selectCurBlock);
   const editingBlock = useSelector(selectEditingBlock);
-  const exerciseHeight = editingBlock ? "130px" : "180px";
-  const buttonHeight = editingBlock ? "35px" : "52px";
+  const exerciseHeight = editingBlock ? "150px" : "190px";
   const editingWeekIdx = editingBlock ? curBlock?.curWeekIdx || 0 : 0;
 
   const shouldEditDay = (day: Day) => {
@@ -407,15 +410,11 @@ export const EditDay = ({
           <React.Fragment key={idx}>
             <AddButton onClick={() => handleAddExercise(idx)} />
             <div className={`${classes.exercise} ${classes.entry}`}>
-              <div
-                className={classes.sideButtons}
-                style={{ height: exerciseHeight }}
-              >
+              <div className={classes.sideButtons}>
                 <button
                   className={`${classes.sideButton} ${
                     idx === 0 ? classes.buttonDisabled : classes.buttonEnabled
                   }`}
-                  style={{ height: buttonHeight }}
                   onClick={() => handleMoveExercise(exercise, idx, "up")}
                 >
                   <ArrowBackIosNew className={classes.moveUpButton} />
@@ -427,7 +426,6 @@ export const EditDay = ({
                       ? classes.buttonDisabled
                       : classes.buttonEnabled
                   }`}
-                  style={{ height: buttonHeight }}
                   onClick={() => handleRemoveExercise(idx)}
                 >
                   <FaTrash />
@@ -439,7 +437,6 @@ export const EditDay = ({
                       ? classes.buttonDisabled
                       : classes.buttonEnabled
                   }`}
-                  style={{ height: buttonHeight }}
                   onClick={() => handleMoveExercise(exercise, idx, "down")}
                 >
                   <ArrowBackIosNew className={classes.moveDownButton} />

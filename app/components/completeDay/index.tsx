@@ -149,6 +149,7 @@ export const CompleteDay = () => {
   const [exercisesState, setExercisesState] = useState(exercises);
 
   const isExerciseComplete = (exercise: Exercise) =>
+    exercise.sets.length !== 0 &&
     exercise.sets.reduce(
       (acc: boolean, curSet: Set) => acc && curSet.completed,
       true
