@@ -5,7 +5,7 @@ export const getTemplateFromBlock = (block: Block, editing: boolean) => {
     ? block
     : {
         name: block.name,
-        startDate: block.startDate,
+        startDate: new Date(),
         length: block.length,
         initialWeek: block.initialWeek,
         weeks: [

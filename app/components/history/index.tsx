@@ -14,13 +14,74 @@ import { useAppDispatch } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
 import { ScreenStateContext } from "@/app/providers/screenStateProvider";
-import { useHistoryStyles } from "./useHistoryStyles";
 import { Spinner } from "../spinner";
 import { LoginContext } from "@/app/providers/loginProvider";
 import { checkIsBlockDone, getTemplateFromBlock } from "@/app/utils";
+import { makeStyles } from "tss-react/mui";
+
+const useStyles = makeStyles()({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "100%",
+    height: "100dvh",
+    padding: "65px 15px 85px",
+    overflow: "scroll",
+  },
+  entry: {
+    display: "flex",
+    color: "white",
+    fontFamily: "League+Spartan",
+    fontSize: "14px",
+    marginBottom: "15px",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    whiteSpace: "nowrap",
+    background: "#58585b",
+    borderRadius: "5px",
+    border: "solid 5px #58585b",
+    boxShadow: "0px 5px 10px #131314",
+  },
+  entryInfo: {
+    background: "#131314",
+    width: "100%",
+    display: "flex",
+    padding: "5px 10px",
+    borderRadius: "5px",
+    height: "35px",
+    fontSize: "14px",
+    alignItems: "center",
+  },
+  title: {
+    fontWeight: "700",
+    marginRight: "5px",
+  },
+  noBlockText: {
+    fontFamily: "League+Spartan",
+    fontSize: "16px",
+    textAlign: "center",
+  },
+  completedBlockEntry: {
+    justifyContent: "space-between",
+  },
+  duplicateButton: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: "5px",
+    background: "#0096FF",
+    color: "white",
+    border: "none",
+    height: "35px",
+    width: "35px",
+    borderRadius: "5px",
+  },
+});
 
 export const History = () => {
-  const { classes } = useHistoryStyles();
+  const { classes } = useStyles();
   const dispatch = useAppDispatch();
   const curUser = useSelector(selectCurUser);
   const router = useRouter();
@@ -66,16 +127,20 @@ export const History = () => {
           key={idx}
           className={`${classes.entry} ${classes.completedBlockEntry}`}
         >
-          <span className={classes.title}>{`${idx + 1}. ${block.name}`}</span>
-          <div className={classes.middlePad} />
-          <span>{`${dayjs(block.startDate).format("M/DD/YYYY")} -  ${
-            getCompletedDate(block)
-              ? dayjs(getCompletedDate(block)).format("M/DD/YYYY")
-              : "N/A"
-          }`}</span>
-          <div onClick={() => handleCreateFromTemplate(block)}>
-            <ControlPointDuplicate className={classes.duplicateButton} />
+          <div className={classes.entryInfo}>
+            <span className={classes.title}>{`${idx + 1}. ${block.name}`}</span>
+            <span>{`(${dayjs(block.startDate).format("M/DD/YY")} -  ${
+              getCompletedDate(block)
+                ? dayjs(getCompletedDate(block)).format("M/DD/YY")
+                : "N/A"
+            })`}</span>
           </div>
+          <button
+            className={classes.duplicateButton}
+            onClick={() => handleCreateFromTemplate(block)}
+          >
+            <ControlPointDuplicate />
+          </button>
         </div>
       );
     });
@@ -84,17 +149,15 @@ export const History = () => {
 
   return (
     <div className={`${classes.container}`}>
-      <div className={classes.box}>
-        {completedBlocks && completedBlocks[0] ? (
-          completedBlocks
-        ) : (
-          <div className={`${classes.entry} ${classes.completedBlockEntry}`}>
-            <span className={`${classes.noBlockText} ${classes.title}`}>
-              No completed blocks yet
-            </span>
-          </div>
-        )}
-      </div>
+      {completedBlocks && completedBlocks[0] ? (
+        completedBlocks
+      ) : (
+        <div className={`${classes.entry} ${classes.completedBlockEntry}`}>
+          <span className={`${classes.noBlockText} ${classes.title}`}>
+            No completed blocks yet
+          </span>
+        </div>
+      )}
     </div>
   );
 };
