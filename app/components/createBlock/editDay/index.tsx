@@ -17,6 +17,13 @@ const useStyles = makeStyles()({
     fontFamily: "League+Spartan",
     fontSize: "16px",
   },
+  title: {
+    color: "white",
+    fontFamily: "League+Spartan",
+    fontSize: "20px",
+    fontWeight: 600,
+    marginBottom: "15px",
+  },
   back: {
     color: "white",
     fontFamily: "League+Spartan",
@@ -80,6 +87,9 @@ export const EditDay = ({
 
   return (
     <div className={classes.container}>
+      <span className={classes.title}>{`${
+        editingBlock ? "Edit" : "Add"
+      } Exercises`}</span>
       {block.weeks[editingWeekIdx][editingDay].exercises.map(
         (exercise, idx) => (
           <React.Fragment key={idx}>

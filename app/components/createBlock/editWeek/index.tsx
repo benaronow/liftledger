@@ -36,6 +36,13 @@ const useStyles = makeStyles()({
     color: "white",
     marginBottom: "15px",
   },
+  title: {
+    color: "white",
+    fontFamily: "League+Spartan",
+    fontSize: "20px",
+    fontWeight: 600,
+    marginBottom: "15px",
+  },
   finish: {
     color: "white",
     fontFamily: "League+Spartan",
@@ -147,6 +154,9 @@ export const EditWeek = ({
           onChangeText={handleLengthInput}
         />
       </div>
+      <span className={classes.title}>{`${
+        editingBlock ? "Edit" : "Add"
+      } Days`}</span>
       {block.weeks[editingWeekIdx].map((day, idx) => (
         <React.Fragment key={idx}>
           {block.weeks[editingWeekIdx].length < 7 && (
