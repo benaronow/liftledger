@@ -13,9 +13,21 @@ import { EditDay } from "./editDay";
 import { EditWeek } from "./editWeek";
 import { useRouter } from "next/navigation";
 import { ScreenStateContext } from "@/app/providers/screenStateProvider";
-import { useCreateBlockStyles } from "./useCreateBlockStyles";
 import { Spinner } from "../spinner";
 import { LoginContext } from "@/app/providers/loginProvider";
+import { makeStyles } from "tss-react/mui";
+
+const useStyles = makeStyles()({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "100%",
+    height: "100dvh",
+    padding: "65px 15px 90px",
+    overflow: "scroll",
+  },
+});
 
 export const emptyBlock: Block = {
   name: "",
@@ -50,7 +62,7 @@ export const emptyBlock: Block = {
 };
 
 export const CreateBlock = () => {
-  const { classes } = useCreateBlockStyles();
+  const { classes } = useStyles();
   const curUser = useSelector(selectCurUser);
   const router = useRouter();
   const { session } = useContext(LoginContext);
