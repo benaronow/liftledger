@@ -115,7 +115,6 @@ export const EditDialog = ({
   setExercisesState,
   onClose,
 }: Props) => {
-  console.log(addIdx);
   const { classes } = useStyles();
   const dispatch = useAppDispatch();
   const curUser = useSelector(selectCurUser);
@@ -218,7 +217,6 @@ export const EditDialog = ({
   };
 
   const getExerciseToSubmit = (idx: number, submitType: SubmitExerciseType) => {
-    console.log(idx);
     switch (submitType) {
       case "change":
         return exercisesState.toSpliced(idx, 1, exerciseState);

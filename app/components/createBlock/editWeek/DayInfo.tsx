@@ -200,11 +200,7 @@ export const DayInfo = ({
             onClick={() => handleEditDay(dIdx)}
           >
             <BiSolidEdit />
-            {day.exercises[0].name
-              ? `${day.exercises.length} Exercise${
-                  day.exercises.length > 1 ? "s" : ""
-                }`
-              : "No Exercises"}
+            {`${day.exercises[0].name ? "Edit" : "Add"} Exercises`}
           </button>
         </div>
       </div>
