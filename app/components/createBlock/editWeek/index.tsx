@@ -235,6 +235,7 @@ export const EditWeek = ({
           setIsResetting(false);
           setDeletingIdx(undefined);
         }}
+        type="day"
         isResetting={isResetting}
         isDeleting={deletingIdx !== undefined}
         onReset={() => setIsResetting(false)}

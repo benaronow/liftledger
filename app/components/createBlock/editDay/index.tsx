@@ -179,6 +179,7 @@ export const EditDay = ({
           setIsResetting(false);
           setDeletingIdx(undefined);
         }}
+        type="exercise"
         isResetting={isResetting}
         isDeleting={deletingIdx !== undefined}
         onReset={() => setIsResetting(false)}

@@ -21,6 +21,7 @@ const useStyles = makeStyles()({
 
 interface Props {
   onClose: () => void;
+  type: "day" | "exercise";
   isResetting: boolean;
   isDeleting: boolean;
   onReset: () => void;
@@ -29,6 +30,7 @@ interface Props {
 
 export const DeleteResetDialog = ({
   onClose,
+  type,
   isResetting,
   isDeleting,
   onReset,
@@ -78,16 +80,18 @@ export const DeleteResetDialog = ({
     },
   ];
 
+  const titleType = type.charAt(0).toUpperCase() + type.slice(1);
+
   return (
     <ActionDialog
       open={isResetting || isDeleting}
       onClose={onClose}
-      title={isResetting ? "Reset Days" : "Delete Day"}
+      title={isResetting ? `Reset ${titleType}s` : `Delete ${titleType}`}
       actions={isResetting ? resetActions : deleteActions}
     >
       <div className={classes.deleteContainer}>
         <span className={classes.deleteQuestion}>{`Are you sure you want to ${
-          isResetting ? "reset all days" : "delete this day"
+          isResetting ? `reset all ${type}s` : `delete this ${type}`
         }?`}</span>
         <span className={classes.deleteDisclaimer}>
           This action cannot be undone.
