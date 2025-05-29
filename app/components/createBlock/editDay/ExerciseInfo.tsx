@@ -120,6 +120,7 @@ interface Props {
   block: Block;
   setBlock: (block: Block) => void;
   editingDay: number;
+  setDeletingIdx: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
 export const ExerciseInfo = ({
@@ -128,6 +129,7 @@ export const ExerciseInfo = ({
   block,
   setBlock,
   editingDay,
+  setDeletingIdx,
 }: Props) => {
   const { classes } = useStyles();
   const editingBlock = useSelector(selectEditingBlock);
@@ -314,25 +316,6 @@ export const ExerciseInfo = ({
     });
   };
 
-  const handleRemoveExercise = () => {
-    if (block.weeks[editingWeekIdx][editingDay].exercises.length > 1)
-      setBlock({
-        ...block,
-        weeks: block.weeks.map((week, idx) =>
-          idx === editingWeekIdx
-            ? week.map((day) =>
-                shouldEditDay(day)
-                  ? {
-                      ...day,
-                      exercises: day.exercises.toSpliced(eIdx, 1),
-                    }
-                  : day
-              )
-            : week
-        ),
-      });
-  };
-
   const selectStyle = {
     control: (basestyles: CSSObjectWithLabel) => ({
       ...basestyles,
@@ -360,7 +343,7 @@ export const ExerciseInfo = ({
               ? classes.buttonDisabled
               : classes.buttonEnabled
           }`}
-          onClick={() => handleRemoveExercise()}
+          onClick={() => setDeletingIdx(eIdx)}
         >
           <FaTrash />
         </button>
@@ -412,9 +395,7 @@ export const ExerciseInfo = ({
             defaultValue={exerciseApparatusOptions[0]}
             options={exerciseApparatusOptions}
             isSearchable
-            onChange={(e) =>
-              handleExerciseApparatusSelect(e?.value || "")
-            }
+            onChange={(e) => handleExerciseApparatusSelect(e?.value || "")}
             styles={selectStyle}
           />
         </div>

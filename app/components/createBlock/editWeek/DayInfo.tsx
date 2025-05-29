@@ -90,6 +90,7 @@ interface Props {
   block: Block;
   setBlock: (block: Block) => void;
   setEditingDay: (day: number) => void;
+  setDeletingIdx: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
 export const DayInfo = ({
@@ -98,6 +99,7 @@ export const DayInfo = ({
   block,
   setBlock,
   setEditingDay,
+  setDeletingIdx,
 }: Props) => {
   const { classes } = useStyles();
   const curBlock = useSelector(selectCurBlock);
@@ -137,15 +139,6 @@ export const DayInfo = ({
 
   const handleEditDay = (dayIdx: number) => {
     setEditingDay(dayIdx);
-  };
-
-  const handleRemoveDay = (dayIdx: number) => {
-    setBlock({
-      ...block,
-      weeks: block.weeks.map((week, idx) =>
-        idx === editingWeekIdx ? week.toSpliced(dayIdx, 1) : week
-      ),
-    });
   };
 
   const handleDuplicateDay = (dayIdx: number) => {
@@ -210,7 +203,7 @@ export const DayInfo = ({
               ? classes.buttonDisabled
               : classes.buttonEnabled
           }`}
-          onClick={() => handleRemoveDay(dIdx)}
+          onClick={() => setDeletingIdx(dIdx)}
         >
           <FaTrash />
         </button>

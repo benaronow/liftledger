@@ -1,5 +1,5 @@
 import { Block, Day, Exercise, WeightType } from "@/types";
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { selectEditingBlock } from "@/lib/features/user/userSlice";
 import { makeStyles } from "tss-react/mui";
@@ -7,6 +7,7 @@ import { AddButton } from "../../AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
 import { GrPowerReset } from "react-icons/gr";
 import { FaSave } from "react-icons/fa";
+import { DeleteResetDialog } from "../DeleteResetDialog";
 
 const useStyles = makeStyles()({
   container: {
@@ -71,6 +72,8 @@ export const EditDay = ({
   const { classes } = useStyles();
   const editingBlock = useSelector(selectEditingBlock);
   const editingWeekIdx = editingBlock ? block.curWeekIdx || 0 : 0;
+  const [isResetting, setIsResetting] = useState(false);
+  const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
 
   const shouldEditDay = (day: Day) => {
     return day.name === block.weeks[editingWeekIdx][editingDay].name;
@@ -108,43 +111,79 @@ export const EditDay = ({
     });
   };
 
+  const handleRemoveExercise = () => {
+    if (block.weeks[editingWeekIdx][editingDay].exercises.length > 1)
+      setBlock({
+        ...block,
+        weeks: block.weeks.map((week, idx) =>
+          idx === editingWeekIdx
+            ? week.map((day) =>
+                shouldEditDay(day) && deletingIdx !== undefined
+                  ? {
+                      ...day,
+                      exercises: day.exercises.toSpliced(deletingIdx, 1),
+                    }
+                  : day
+              )
+            : week
+        ),
+      });
+    setDeletingIdx(undefined);
+  };
+
   return (
-    <div className={classes.container}>
-      <div className={classes.titleContainer}>
-        <button className={classes.titleButton} onClick={() => {}}>
-          <GrPowerReset />
-        </button>
-        <span className={classes.title}>{`${
-          editingBlock ? "Edit" : "Add"
-        } Exercises`}</span>
-        <button
-          className={classes.titleButton}
-          onClick={() => setEditingDay(-1)}
-        >
-          <FaSave />
-        </button>
-      </div>
-      {block.weeks[editingWeekIdx][editingDay].exercises.map(
-        (exercise, idx) => (
-          <React.Fragment key={idx}>
-            <AddButton onClick={() => handleAddExercise(idx)} />
-            <ExerciseInfo
-              exercise={exercise}
-              eIdx={idx}
-              block={block}
-              setBlock={setBlock}
-              editingDay={editingDay}
-            />
-          </React.Fragment>
-        )
-      )}
-      <AddButton
-        onClick={() =>
-          handleAddExercise(
-            block.weeks[editingWeekIdx][editingDay].exercises.length
+    <>
+      <div className={classes.container}>
+        <div className={classes.titleContainer}>
+          <button
+            className={classes.titleButton}
+            onClick={() => setIsResetting(true)}
+          >
+            <GrPowerReset />
+          </button>
+          <span className={classes.title}>{`${
+            editingBlock ? "Edit" : "Add"
+          } Exercises`}</span>
+          <button
+            className={classes.titleButton}
+            onClick={() => setEditingDay(-1)}
+          >
+            <FaSave />
+          </button>
+        </div>
+        {block.weeks[editingWeekIdx][editingDay].exercises.map(
+          (exercise, idx) => (
+            <React.Fragment key={idx}>
+              <AddButton onClick={() => handleAddExercise(idx)} />
+              <ExerciseInfo
+                exercise={exercise}
+                eIdx={idx}
+                block={block}
+                setBlock={setBlock}
+                editingDay={editingDay}
+                setDeletingIdx={setDeletingIdx}
+              />
+            </React.Fragment>
           )
-        }
+        )}
+        <AddButton
+          onClick={() =>
+            handleAddExercise(
+              block.weeks[editingWeekIdx][editingDay].exercises.length
+            )
+          }
+        />
+      </div>
+      <DeleteResetDialog
+        onClose={() => {
+          setIsResetting(false);
+          setDeletingIdx(undefined);
+        }}
+        isResetting={isResetting}
+        isDeleting={deletingIdx !== undefined}
+        onReset={() => setIsResetting(false)}
+        onDelete={handleRemoveExercise}
       />
-    </div>
+    </>
   );
 };

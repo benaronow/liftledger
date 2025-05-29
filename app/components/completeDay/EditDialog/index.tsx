@@ -217,7 +217,7 @@ export const EditDialog = ({
       enabledStyle: {
         background: "white",
         color: "red",
-        fontSize: "25px",
+        fontSize: "30px",
       },
       onClick: () => setIsDeleting(false),
     },
@@ -226,7 +226,7 @@ export const EditDialog = ({
       enabledStyle: {
         background: "red",
         color: "white",
-        fontSize: "25px",
+        fontSize: "28px",
       },
       onClick: () =>
         setIdx !== undefined
@@ -237,12 +237,12 @@ export const EditDialog = ({
 
   return (
     <ActionDialog
+      open={!!exerciseState}
+      onClose={onClose}
       title={`${isDeleting ? "Delete" : "Edit"} ${
         setIdx !== undefined ? "Set" : "Exercise"
       }`}
       actions={isDeleting ? deleteActions : editActions}
-      open={!!exerciseState}
-      onClose={onClose}
     >
       {isDeleting ? (
         <div className={classes.deleteContainer}>

@@ -82,10 +82,10 @@ export interface Action {
 
 interface Props {
   readonly children: ReactNode;
-  title: string;
-  actions: Action[];
   open: boolean;
   onClose: () => void;
+  title: string;
+  actions: Action[];
 }
 
 export type ChangeExerciseType = "name" | "apparatus" | "weightType";
@@ -93,10 +93,10 @@ export type SubmitExerciseType = "change" | "add" | "delete";
 
 export const ActionDialog = ({
   children,
-  title,
-  actions,
   open,
   onClose,
+  title,
+  actions,
 }: Props) => {
   const { classes } = useStyles();
 

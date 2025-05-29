@@ -9,7 +9,7 @@ import { useAppDispatch } from "@/lib/hooks";
 import { Block, BlockOp, Day, WeightType } from "@/types";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, useContext } from "react";
+import React, { ChangeEvent, useContext, useState } from "react";
 import { useSelector } from "react-redux";
 import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 import { LabeledInput } from "../../LabeledInput";
@@ -18,6 +18,7 @@ import { AddButton } from "../../AddButton";
 import { DayInfo } from "./DayInfo";
 import { GrPowerReset } from "react-icons/gr";
 import { FaSave } from "react-icons/fa";
+import { DeleteResetDialog } from "../DeleteResetDialog";
 
 const useStyles = makeStyles()({
   container: {
@@ -95,6 +96,8 @@ export const EditWeek = ({
   const editingBlock = useSelector(selectEditingBlock);
   const editingWeekIdx = editingBlock ? curBlock?.curWeekIdx || 0 : 0;
   const { toggleScreenState } = useContext(ScreenStateContext);
+  const [isResetting, setIsResetting] = useState(false);
+  const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
 
   const handleBlockNameInput = (e: ChangeEvent<HTMLInputElement>) => {
     setBlock({ ...block, name: e.target.value });
@@ -158,57 +161,85 @@ export const EditWeek = ({
     router.push("/dashboard");
   };
 
+  const handleRemoveDay = () => {
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week, idx) =>
+        idx === editingWeekIdx && deletingIdx !== undefined
+          ? week.toSpliced(deletingIdx, 1)
+          : week
+      ),
+    });
+    setDeletingIdx(undefined);
+  };
+
   return (
-    <div className={classes.container}>
-      <div className={classes.head}>
-        <LabeledInput
-          label="Block Name: "
-          textValue={block.name}
-          onChangeText={handleBlockNameInput}
-        />
-        <LabeledInput
-          label="Start Date: "
-          dateValue={dayjs(block.startDate)}
-          onChangeDate={handleDateInput}
-        />
-        <LabeledInput
-          label="Length (weeks): "
-          textValue={block.length}
-          onChangeText={handleLengthInput}
-        />
-      </div>
-      <div className={classes.titleContainer}>
-        <button className={classes.titleButton} onClick={() => {}}>
-          <GrPowerReset />
-        </button>
-        <span className={classes.title}>{`${
-          editingBlock ? "Edit" : "Add"
-        } Days`}</span>
-        <button className={classes.titleButton} onClick={handleSubmit}>
-          <FaSave />
-        </button>
-      </div>
-      {block.weeks[editingWeekIdx].map((day, idx) => (
-        <React.Fragment key={idx}>
-          {block.weeks[editingWeekIdx].length < 7 && (
-            <AddButton
-              onClick={() => handleAddDay(block.weeks[editingWeekIdx].length)}
-            />
-          )}
-          <DayInfo
-            day={day}
-            dIdx={idx}
-            block={block}
-            setBlock={setBlock}
-            setEditingDay={setEditingDay}
+    <>
+      <div className={classes.container}>
+        <div className={classes.head}>
+          <LabeledInput
+            label="Block Name: "
+            textValue={block.name}
+            onChangeText={handleBlockNameInput}
           />
-        </React.Fragment>
-      ))}
-      {block.weeks[editingWeekIdx].length < 7 && (
-        <AddButton
-          onClick={() => handleAddDay(block.weeks[editingWeekIdx].length)}
-        />
-      )}
-    </div>
+          <LabeledInput
+            label="Start Date: "
+            dateValue={dayjs(block.startDate)}
+            onChangeDate={handleDateInput}
+          />
+          <LabeledInput
+            label="Length (weeks): "
+            textValue={block.length}
+            onChangeText={handleLengthInput}
+          />
+        </div>
+        <div className={classes.titleContainer}>
+          <button
+            className={classes.titleButton}
+            onClick={() => setIsResetting(true)}
+          >
+            <GrPowerReset />
+          </button>
+          <span className={classes.title}>{`${
+            editingBlock ? "Edit" : "Add"
+          } Days`}</span>
+          <button className={classes.titleButton} onClick={handleSubmit}>
+            <FaSave />
+          </button>
+        </div>
+        {block.weeks[editingWeekIdx].map((day, idx) => (
+          <React.Fragment key={idx}>
+            {block.weeks[editingWeekIdx].length < 7 && (
+              <AddButton
+                onClick={() => handleAddDay(block.weeks[editingWeekIdx].length)}
+              />
+            )}
+            <DayInfo
+              day={day}
+              dIdx={idx}
+              block={block}
+              setBlock={setBlock}
+              setEditingDay={setEditingDay}
+              setDeletingIdx={setDeletingIdx}
+            />
+          </React.Fragment>
+        ))}
+        {block.weeks[editingWeekIdx].length < 7 && (
+          <AddButton
+            onClick={() => handleAddDay(block.weeks[editingWeekIdx].length)}
+          />
+        )}
+      </div>
+      <DeleteResetDialog
+        onClose={() => {
+          setIsResetting(false);
+          setDeletingIdx(undefined);
+        }}
+        isResetting={isResetting}
+        isDeleting={deletingIdx !== undefined}
+        onReset={() => setIsResetting(false)}
+        onDelete={handleRemoveDay}
+      />
+    </>
   );
 };
