@@ -5,91 +5,27 @@ import {
 } from "@/lib/features/user/userSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import { Block, BlockOp, Day, Exercise, Set } from "@/types";
-import { Dialog } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
 import { FaSave, FaTrash } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { makeStyles } from "tss-react/mui";
 import { EditExercise } from "./EditExercise";
 import { EditSet } from "./EditSet";
-import { IoMdCloseCircle } from "react-icons/io";
+import { Action, ActionDialog } from "../../ActionDialog";
+import { IoArrowBack } from "react-icons/io5";
+import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: "30px",
-    width: "100%",
-    padding: "5px",
-  },
-  headerTitle: {
-    color: "white",
-    fontSize: "16px",
-    fontWeight: 600,
-  },
-  headerPad: {
-    fontSize: "18px",
-    width: "20px",
-    color: "red",
-    padding: "0px",
-  },
-  closeButton: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    border: "none",
-    background: "transparent",
-    padding: "0px",
-    fontSize: "20px",
-    color: "red",
-  },
-  inputContainer: {
-    padding: "0px 5px",
-  },
-  input: {
+  deleteContainer: {
     display: "flex",
     flexDirection: "column",
-    padding: "10px",
-    width: "240px",
-    background: "white",
-    borderRadius: "5px",
-    whiteSpace: "nowrap",
-    justifyContent: "space-between",
-    gap: "10px",
   },
-  buttonRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    color: "white",
-    padding: "6px",
-    gap: "5px",
+  deleteQuestion: {
+    whiteSpace: "wrap",
+    marginBottom: "20px",
   },
-  button: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "50px",
-    width: "100%",
-    fontSize: "30px",
-    border: "none",
-    borderRadius: "5px",
-    padding: "0px",
-  },
-  saveButton: {
-    fontSize: "28px",
-  },
-  deleteButton: {
-    fontSize: "25px",
-  },
-  buttonEnabled: {
-    background: "#0096FF",
-    color: "white",
-  },
-  buttonDisabled: {
-    background: "#317baf",
-    color: "#a7a7a7",
+  deleteDisclaimer: {
+    whiteSpace: "wrap",
+    fontWeight: 900,
   },
 });
 
@@ -134,6 +70,7 @@ export const EditDialog = ({
       : exercise
   );
   const [editingType, setEditingType] = useState<ChangeExerciseType | "">("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const saveExercises = (complete: Exercise[]) => {
     if (curBlock) {
@@ -238,75 +175,101 @@ export const EditDialog = ({
     onClose();
   };
 
+  const editActions: Action[] = [
+    {
+      text: <FaSave />,
+      enabledStyle: {
+        background: "#0096FF",
+        color: "white",
+        fontSize: "28px",
+      },
+      disabledStyle: {
+        background: "#317baf",
+        color: "#a7a7a7",
+        fontSize: "28px",
+      },
+      onClick: () =>
+        setIdx !== undefined
+          ? handleSubmitSet()
+          : handleSubmitExercise(addIdx !== undefined ? "add" : "change"),
+      disabled: !!editingType,
+    },
+    {
+      text: <FaTrash />,
+      enabledStyle: {
+        background: "#0096FF",
+        color: "white",
+        fontSize: "25px",
+      },
+      disabledStyle: {
+        background: "#317baf",
+        color: "#a7a7a7",
+        fontSize: "25px",
+      },
+      onClick: () => setIsDeleting(true),
+      disabled: !!editingType,
+    },
+  ];
+
+  const deleteActions: Action[] = [
+    {
+      text: <IoArrowBack />,
+      enabledStyle: {
+        background: "white",
+        color: "red",
+        fontSize: "25px",
+      },
+      onClick: () => setIsDeleting(false),
+    },
+    {
+      text: <FaTrash />,
+      enabledStyle: {
+        background: "red",
+        color: "white",
+        fontSize: "25px",
+      },
+      onClick: () =>
+        setIdx !== undefined
+          ? handleSubmitSet(setIdx)
+          : handleSubmitExercise("delete"),
+    },
+  ];
+
   return (
-    <Dialog
+    <ActionDialog
+      title={`${isDeleting ? "Delete" : "Edit"} ${
+        setIdx !== undefined ? "Set" : "Exercise"
+      }`}
+      actions={isDeleting ? deleteActions : editActions}
       open={!!exerciseState}
       onClose={onClose}
-      PaperProps={{
-        sx: {
-          borderRadius: "10px",
-          background: "#58585b",
-        },
-      }}
     >
-      <div className={classes.header}>
-        <div className={classes.headerPad}>
-          <button className={classes.closeButton} onClick={onClose}>
-            <IoMdCloseCircle />
-          </button>
+      {isDeleting ? (
+        <div className={classes.deleteContainer}>
+          <span
+            className={classes.deleteQuestion}
+          >{`Are you sure you want to delete this ${
+            setIdx !== undefined ? "set" : "exercise"
+          }?`}</span>
+          <span className={classes.deleteDisclaimer}>
+            This action cannot be undone.
+          </span>
         </div>
-        <span className={classes.headerTitle}>{`Edit ${
-          setIdx !== undefined ? "Set" : "Exercise"
-        }`}</span>
-        <div className={classes.headerPad} />
-      </div>
-      <div className={classes.inputContainer}>
-        <div className={classes.input}>
-          {setIdx !== undefined ? (
-            <EditSet
-              setIdx={setIdx}
-              exerciseState={exerciseState}
-              exercisesState={exercisesState}
-              setExerciseState={setExerciseState}
-            />
-          ) : (
-            <EditExercise
-              exerciseState={exerciseState}
-              setExerciseState={setExerciseState}
-              editingType={editingType}
-              setEditingType={setEditingType}
-            />
-          )}
-        </div>
-      </div>
-      <div className={classes.buttonRow}>
-        <button
-          className={`${classes.button} ${classes.saveButton} ${
-            editingType ? classes.buttonDisabled : classes.buttonEnabled
-          }`}
-          onClick={() =>
-            setIdx !== undefined
-              ? handleSubmitSet()
-              : handleSubmitExercise(addIdx !== undefined ? "add" : "change")
-          }
-          disabled={!!editingType}
-        >
-          <FaSave />
-        </button>
-        <button
-          className={`${classes.button} ${classes.deleteButton} ${
-            editingType ? classes.buttonDisabled : classes.buttonEnabled
-          }`}
-          onClick={() =>
-            setIdx !== undefined
-              ? handleSubmitSet(setIdx)
-              : handleSubmitExercise("delete")
-          }
-          disabled={!!editingType}
-        >
-          <FaTrash />
-        </button>
-      </div>
-    </Dialog>
+      ) : setIdx !== undefined ? (
+        <EditSet
+          setIdx={setIdx}
+          exerciseState={exerciseState}
+          exercisesState={exercisesState}
+          setExerciseState={setExerciseState}
+        />
+      ) : (
+        <EditExercise
+          exerciseState={exerciseState}
+          setExerciseState={setExerciseState}
+          editingType={editingType}
+          setEditingType={setEditingType}
+        />
+      )}
+    </ActionDialog>
   );
 };

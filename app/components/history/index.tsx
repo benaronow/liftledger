@@ -55,7 +55,7 @@ const useStyles = makeStyles()({
     alignItems: "center",
   },
   title: {
-    fontWeight: "700",
+    fontWeight: 700,
     marginRight: "5px",
   },
   noBlockText: {

@@ -13,10 +13,11 @@ import React, { ChangeEvent, useContext } from "react";
 import { useSelector } from "react-redux";
 import { ScreenStateContext } from "@/app/providers/screenStateProvider";
 import { LabeledInput } from "../../LabeledInput";
-import { PushButton } from "../../pushButton";
 import { makeStyles } from "tss-react/mui";
 import { AddButton } from "../../AddButton";
 import { DayInfo } from "./DayInfo";
+import { GrPowerReset } from "react-icons/gr";
+import { FaSave } from "react-icons/fa";
 
 const useStyles = makeStyles()({
   container: {
@@ -36,12 +37,34 @@ const useStyles = makeStyles()({
     color: "white",
     marginBottom: "15px",
   },
+  titleContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    background: "#58585b",
+    boxShadow: "0px 5px 10px #131314",
+    width: "100%",
+    marginBottom: "15px",
+    padding: "5px",
+    borderRadius: "5px",
+  },
   title: {
     color: "white",
     fontFamily: "League+Spartan",
     fontSize: "20px",
     fontWeight: 600,
-    marginBottom: "15px",
+  },
+  titleButton: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "35px",
+    minWidth: "35px",
+    color: "white",
+    borderRadius: "5px",
+    background: "#0096FF",
+    fontSize: "20px",
+    border: "none",
   },
   finish: {
     color: "white",
@@ -154,9 +177,17 @@ export const EditWeek = ({
           onChangeText={handleLengthInput}
         />
       </div>
-      <span className={classes.title}>{`${
-        editingBlock ? "Edit" : "Add"
-      } Days`}</span>
+      <div className={classes.titleContainer}>
+        <button className={classes.titleButton} onClick={() => {}}>
+          <GrPowerReset />
+        </button>
+        <span className={classes.title}>{`${
+          editingBlock ? "Edit" : "Add"
+        } Days`}</span>
+        <button className={classes.titleButton} onClick={handleSubmit}>
+          <FaSave />
+        </button>
+      </div>
       {block.weeks[editingWeekIdx].map((day, idx) => (
         <React.Fragment key={idx}>
           {block.weeks[editingWeekIdx].length < 7 && (
@@ -178,9 +209,6 @@ export const EditWeek = ({
           onClick={() => handleAddDay(block.weeks[editingWeekIdx].length)}
         />
       )}
-      <PushButton height={40} width={110} onClick={handleSubmit}>
-        <span className={classes.finish}>Save Block</span>
-      </PushButton>
     </div>
   );
 };

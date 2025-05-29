@@ -2,10 +2,11 @@ import { Block, Day, Exercise, WeightType } from "@/types";
 import React from "react";
 import { useSelector } from "react-redux";
 import { selectEditingBlock } from "@/lib/features/user/userSlice";
-import { PushButton } from "../../pushButton";
 import { makeStyles } from "tss-react/mui";
 import { AddButton } from "../../AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
+import { GrPowerReset } from "react-icons/gr";
+import { FaSave } from "react-icons/fa";
 
 const useStyles = makeStyles()({
   container: {
@@ -17,12 +18,34 @@ const useStyles = makeStyles()({
     fontFamily: "League+Spartan",
     fontSize: "16px",
   },
+  titleContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    background: "#58585b",
+    boxShadow: "0px 5px 10px #131314",
+    width: "100%",
+    marginBottom: "15px",
+    padding: "5px",
+    borderRadius: "5px",
+  },
   title: {
     color: "white",
     fontFamily: "League+Spartan",
     fontSize: "20px",
     fontWeight: 600,
-    marginBottom: "15px",
+  },
+  titleButton: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "35px",
+    minWidth: "35px",
+    color: "white",
+    borderRadius: "5px",
+    background: "#0096FF",
+    fontSize: "20px",
+    border: "none",
   },
   back: {
     color: "white",
@@ -87,9 +110,20 @@ export const EditDay = ({
 
   return (
     <div className={classes.container}>
-      <span className={classes.title}>{`${
-        editingBlock ? "Edit" : "Add"
-      } Exercises`}</span>
+      <div className={classes.titleContainer}>
+        <button className={classes.titleButton} onClick={() => {}}>
+          <GrPowerReset />
+        </button>
+        <span className={classes.title}>{`${
+          editingBlock ? "Edit" : "Add"
+        } Exercises`}</span>
+        <button
+          className={classes.titleButton}
+          onClick={() => setEditingDay(-1)}
+        >
+          <FaSave />
+        </button>
+      </div>
       {block.weeks[editingWeekIdx][editingDay].exercises.map(
         (exercise, idx) => (
           <React.Fragment key={idx}>
@@ -111,9 +145,6 @@ export const EditDay = ({
           )
         }
       />
-      <PushButton height={40} width={70} onClick={() => setEditingDay(-1)}>
-        <span className={classes.back}>Back</span>
-      </PushButton>
     </div>
   );
 };

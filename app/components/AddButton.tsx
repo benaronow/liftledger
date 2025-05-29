@@ -24,7 +24,7 @@ export const useStyles = makeStyles()({
     padding: "0px",
     height: "20px",
     minWidth: "20px",
-    border: "1px solid white",
+    border: "none",
     borderRadius: "20px",
     margin: "0px 10px",
   },
