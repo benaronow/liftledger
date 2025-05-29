@@ -18,7 +18,7 @@ import { AddButton } from "../../AddButton";
 import { DayInfo } from "./DayInfo";
 import { GrPowerReset } from "react-icons/gr";
 import { FaSave } from "react-icons/fa";
-import { DeleteResetDialog } from "../DeleteResetDialog";
+import { DeleteResetDialog } from "../../DeleteResetDialog";
 
 const useStyles = makeStyles()({
   container: {
@@ -170,7 +170,37 @@ export const EditWeek = ({
           : week
       ),
     });
-    setDeletingIdx(undefined);
+  };
+
+  const clearAllDays = () => {
+    setBlock({
+      ...block,
+      weeks: block.weeks.map((week, idx) =>
+        idx === editingWeekIdx
+          ? [
+              {
+                name: "Day 1",
+                exercises: [
+                  {
+                    name: "",
+                    apparatus: "",
+                    sets: [
+                      {
+                        reps: 0,
+                        weight: 0,
+                        completed: false,
+                        note: "",
+                      },
+                    ],
+                    weightType: "",
+                  },
+                ],
+                completedDate: undefined,
+              },
+            ]
+          : week
+      ),
+    });
   };
 
   return (
@@ -238,8 +268,14 @@ export const EditWeek = ({
         type="day"
         isResetting={isResetting}
         isDeleting={deletingIdx !== undefined}
-        onReset={() => setIsResetting(false)}
-        onDelete={handleRemoveDay}
+        onReset={() => {
+          clearAllDays();
+          setIsResetting(false);
+        }}
+        onDelete={() => {
+          handleRemoveDay();
+          setDeletingIdx(undefined);
+        }}
       />
     </>
   );

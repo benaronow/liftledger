@@ -21,7 +21,7 @@ import { GrPowerReset } from "react-icons/gr";
 import { makeStyles } from "tss-react/mui";
 import { getLastExerciseOccurrence } from "@/app/utils";
 import { AddButton } from "../AddButton";
-import { DeleteResetDialog } from "../createBlock/DeleteResetDialog";
+import { DeleteResetDialog } from "../DeleteResetDialog";
 
 export const useStyles = makeStyles()({
   container: {

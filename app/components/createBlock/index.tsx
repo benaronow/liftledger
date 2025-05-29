@@ -1,6 +1,6 @@
 "use client";
 
-import { Block, RouteType, WeightType } from "@/types";
+import { Block, RouteType } from "@/types";
 import { useTheme } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import {
@@ -50,7 +50,7 @@ export const emptyBlock: Block = {
                 note: "",
               },
             ],
-            weightType: WeightType.Pounds,
+            weightType: "",
           },
         ],
         completedDate: undefined,
