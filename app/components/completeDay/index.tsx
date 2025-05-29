@@ -21,6 +21,7 @@ import { GrPowerReset } from "react-icons/gr";
 import { makeStyles } from "tss-react/mui";
 import { getLastExerciseOccurrence } from "@/app/utils";
 import { AddButton } from "../AddButton";
+import { DeleteResetDialog } from "../createBlock/DeleteResetDialog";
 
 export const useStyles = makeStyles()({
   container: {
@@ -124,6 +125,10 @@ export const CompleteDay = () => {
   const [addExerciseIdx, setAddExerciseIdx] = useState<number | undefined>(
     undefined
   );
+  const [resettingExercise, setResettingExercise] = useState<{
+    exercise: Exercise;
+    idx: number;
+  }>();
 
   useEffect(() => {
     if (!session) {
@@ -202,6 +207,7 @@ export const CompleteDay = () => {
       );
 
       setExercisesState(newExercises);
+      setResettingExercise(undefined);
     }
   };
 
@@ -265,7 +271,7 @@ export const CompleteDay = () => {
               <div className={classes.exerciseTop}>
                 <button
                   className={classes.squareButton}
-                  onClick={() => resetExercise(idx, exercise)}
+                  onClick={() => setResettingExercise({ exercise, idx })}
                 >
                   <GrPowerReset />
                 </button>
@@ -313,6 +319,18 @@ export const CompleteDay = () => {
           exercisesState={exercisesState}
           setExercisesState={setExercisesState}
           onClose={() => setExerciseToEdit(undefined)}
+        />
+      )}
+      {resettingExercise && (
+        <DeleteResetDialog
+          onClose={() => setResettingExercise(undefined)}
+          type="set"
+          isResetting={!!resettingExercise}
+          isDeleting={false}
+          onReset={() =>
+            resetExercise(resettingExercise?.idx, resettingExercise?.exercise)
+          }
+          onDelete={() => {}}
         />
       )}
     </>

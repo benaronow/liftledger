@@ -39,16 +39,16 @@ export const getLastExerciseOccurrence = (
   curBlock: Block,
   exercise: Exercise
 ) => {
-  for (let w = curBlock.curWeekIdx; w >= 0; w--) {
+  for (let w = curBlock.curWeekIdx + 1; w >= 0; w--) {
     for (
       let d =
-        w === curBlock.curWeekIdx
+        w === curBlock.curWeekIdx + 1
           ? curBlock.curDayIdx - 1
           : curBlock.weeks[w].length - 1;
       d >= 0;
       d--
     ) {
-      for (const e of curBlock.weeks.concat(curBlock.initialWeek)[w][d]
+      for (const e of curBlock.weeks.concat([curBlock.initialWeek])[w][d]
         .exercises) {
         if (e.name === exercise.name && e.apparatus === exercise.apparatus)
           return e;
