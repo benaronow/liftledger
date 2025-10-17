@@ -188,6 +188,13 @@ export const EditDay = ({
               <AddButton onClick={() => handleAddExercise(idx)} />
               <ExerciseInfo
                 exercise={exercise}
+                takenExercises={block.weeks[editingWeekIdx][
+                  editingDay
+                ].exercises.filter(
+                  (e) =>
+                    !(e.name === exercise.name &&
+                    e.apparatus === exercise.apparatus)
+                )}
                 eIdx={idx}
                 block={block}
                 setBlock={setBlock}

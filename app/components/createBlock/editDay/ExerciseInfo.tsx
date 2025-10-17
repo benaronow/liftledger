@@ -116,6 +116,7 @@ const useStyles = makeStyles()({
 
 interface Props {
   exercise: Exercise;
+  takenExercises: Exercise[];
   eIdx: number;
   block: Block;
   setBlock: (block: Block) => void;
@@ -125,6 +126,7 @@ interface Props {
 
 export const ExerciseInfo = ({
   exercise,
+  takenExercises,
   eIdx,
   block,
   setBlock,
@@ -326,6 +328,8 @@ export const ExerciseInfo = ({
     }),
   };
 
+  console.log(takenExercises);
+
   return (
     <div className={`${classes.exercise} ${classes.entry}`}>
       <div className={classes.sideButtons}>
@@ -372,7 +376,13 @@ export const ExerciseInfo = ({
                 : null
             }
             defaultValue={exerciseNameOptions[0]}
-            options={exerciseNameOptions}
+            options={exerciseNameOptions.filter(
+              (o) =>
+                !takenExercises.find(
+                  (e) =>
+                    e.name === o.value && e.apparatus === exercise.apparatus
+                )
+            )}
             isSearchable
             onChange={(e) => handleExerciseNameSelect(e?.value || "")}
             styles={selectStyle}
@@ -393,7 +403,13 @@ export const ExerciseInfo = ({
                 : null
             }
             defaultValue={exerciseApparatusOptions[0]}
-            options={exerciseApparatusOptions}
+            options={exerciseApparatusOptions.filter(
+              (o) =>
+                !takenExercises.find(
+                  (e) =>
+                    e.apparatus === o.value && e.name === exercise.name
+                )
+            )}
             isSearchable
             onChange={(e) => handleExerciseApparatusSelect(e?.value || "")}
             styles={selectStyle}

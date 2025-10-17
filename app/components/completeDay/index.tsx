@@ -17,11 +17,11 @@ import { EditDialog } from "./EditDialog";
 import { useAppDispatch } from "@/lib/hooks";
 import { PushButton } from "../pushButton";
 import { BiSolidEdit } from "react-icons/bi";
-import { GrPowerReset } from "react-icons/gr";
 import { makeStyles } from "tss-react/mui";
 import { getLastExerciseOccurrence } from "@/app/utils";
 import { AddButton } from "../AddButton";
 import { DeleteResetDialog } from "../DeleteResetDialog";
+import { IoMdClose } from "react-icons/io";
 
 export const useStyles = makeStyles()({
   container: {
@@ -108,6 +108,13 @@ export const useStyles = makeStyles()({
     borderRadius: "20px",
     margin: "0px 10px",
   },
+  actionRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "start",
+    width: "100%",
+    padding: "0px 10px",
+  },
 });
 
 export const CompleteDay = () => {
@@ -129,6 +136,7 @@ export const CompleteDay = () => {
     exercise: Exercise;
     idx: number;
   }>();
+  const [editing, setEditing] = useState(false);
 
   useEffect(() => {
     if (!session) {
@@ -251,15 +259,17 @@ export const CompleteDay = () => {
       <div className={classes.container}>
         {exercises?.map((exercise, idx) => (
           <React.Fragment key={idx}>
-            <AddButton
-              onClick={() => {
-                setAddExerciseIdx(idx);
-                setExerciseToEdit({
-                  setIdx: undefined,
-                  exercise: newExercise,
-                });
-              }}
-            />
+            {editing && (
+              <AddButton
+                onClick={() => {
+                  setAddExerciseIdx(idx);
+                  setExerciseToEdit({
+                    setIdx: undefined,
+                    exercise: newExercise,
+                  });
+                }}
+              />
+            )}
             <div
               className={classes.exerciseContainer}
               style={{
@@ -269,26 +279,23 @@ export const CompleteDay = () => {
               key={idx}
             >
               <div className={classes.exerciseTop}>
-                <button
-                  className={classes.squareButton}
-                  onClick={() => setResettingExercise({ exercise, idx })}
-                >
-                  <GrPowerReset />
-                </button>
+                {editing && <div style={{ minWidth: "35px" }} />}
                 <div className={classes.eName}>
                   <span className={classes.entryTitle}>{exercise.name}</span>
                   <span className={classes.entryTitle}>
                     {exercise.apparatus}
                   </span>
                 </div>
-                <button
-                  className={classes.squareButton}
-                  onClick={() =>
-                    setExerciseToEdit({ setIdx: undefined, exercise })
-                  }
-                >
-                  <BiSolidEdit />
-                </button>
+                {editing && (
+                  <button
+                    className={classes.squareButton}
+                    onClick={() =>
+                      setExerciseToEdit({ setIdx: undefined, exercise })
+                    }
+                  >
+                    <BiSolidEdit />
+                  </button>
+                )}
               </div>
               <SetChips
                 exercise={exercisesState[idx]}
@@ -297,18 +304,29 @@ export const CompleteDay = () => {
             </div>
           </React.Fragment>
         ))}
-        <AddButton
-          onClick={() => {
-            setAddExerciseIdx(exercisesState.length);
-            setExerciseToEdit({
-              setIdx: undefined,
-              exercise: newExercise,
-            });
-          }}
-        />
-        <PushButton height={40} width={80} onClick={finishDay}>
-          <span className={classes.finish}>Finish</span>
-        </PushButton>
+        {editing && (
+          <AddButton
+            onClick={() => {
+              setAddExerciseIdx(exercisesState.length);
+              setExerciseToEdit({
+                setIdx: undefined,
+                exercise: newExercise,
+              });
+            }}
+          />
+        )}
+        <div className={classes.actionRow}>
+          <button
+            className={classes.squareButton}
+            onClick={() => setEditing((prev) => !prev)}
+          >
+            {editing ? <IoMdClose /> : <BiSolidEdit />}
+          </button>
+          <PushButton height={40} width={80} onClick={finishDay}>
+            <span className={classes.finish}>Finish</span>
+          </PushButton>
+          <div style={{ minWidth: "35px" }} />
+        </div>
       </div>
       {exerciseToEdit && (
         <EditDialog
