@@ -13,7 +13,7 @@ import {
   WeightType,
 } from "@/lib/types";
 import { useBlock } from "@/app/providers/BlockProvider";
-import { getLastExerciseOccurrence } from "@/app/utils";
+import { getNewSetsFromLast } from "@/app/utils";
 
 const useStyles = makeStyles()({
   exercise: {
@@ -202,16 +202,18 @@ export const ExerciseInfo = ({
   };
 
   const handleExerciseNameSelect = (name: string) => {
+    const newExercise = { ...exercise, name };
     updateExercise({
-      ...exercise,
-      name,
+      ...newExercise,
+      sets: getNewSetsFromLast(curBlock, newExercise),
     });
   };
 
   const handleExerciseApparatusSelect = (apparatus: string) => {
+    const newExercise = { ...exercise, apparatus };
     updateExercise({
-      ...exercise,
-      apparatus,
+      ...newExercise,
+      sets: getNewSetsFromLast(curBlock, newExercise),
     });
   };
 
@@ -222,29 +224,15 @@ export const ExerciseInfo = ({
     });
   };
 
-  const createNewSets = (value: number) => {
-    const currentSets =
-      curBlock?.weeks[editingWeekIdx][editingDay].exercises[eIdx].sets || [];
-    const lastSets = curBlock
-      ? getLastExerciseOccurrence(curBlock, exercise)?.sets || []
-      : [];
-    const sets = currentSets.length
-      ? currentSets
-      : lastSets.length
-      ? lastSets
-      : exercise.sets;
+  const createNewSets = (numSets: number) => {
+    const sets = exercise.sets.length
+      ? exercise.sets
+      : getNewSetsFromLast(curBlock, exercise);
 
-    return value < sets.length
-      ? sets.slice(0, value)
+    return numSets < sets.length
+      ? sets.slice(0, numSets)
       : sets.concat(
-          Array<Set>(value - sets.length).fill(
-            sets[sets.length - 1] || {
-              reps: 0,
-              weight: 0,
-              completed: false,
-              note: "",
-            }
-          )
+          Array<Set>(numSets - sets.length).fill(sets[sets.length - 1])
         );
   };
 

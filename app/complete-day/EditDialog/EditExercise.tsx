@@ -9,6 +9,8 @@ import { BiSolidEdit } from "react-icons/bi";
 import { IoArrowBack } from "react-icons/io5";
 import { makeStyles } from "tss-react/mui";
 import { ChangeExerciseType } from ".";
+import { getNewSetsFromLast } from "@/app/utils";
+import { useBlock } from "@/app/providers/BlockProvider";
 
 const useStyles = makeStyles()({
   container: {
@@ -85,6 +87,7 @@ export const EditExercise = ({
   setEditingType,
 }: Props) => {
   const { classes } = useStyles();
+  const { curBlock } = useBlock();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollToButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -120,8 +123,7 @@ export const EditExercise = ({
     e: ExerciseName | ExerciseApparatus | WeightType | "",
     type: ChangeExerciseType
   ) => {
-    setExerciseState({
-      ...exerciseState,
+    const newExercise = {
       name: type === "name" ? (e as ExerciseName) : exerciseState.name,
       apparatus:
         type === "apparatus"
@@ -129,6 +131,12 @@ export const EditExercise = ({
           : exerciseState.apparatus,
       weightType:
         type === "weightType" ? (e as WeightType) : exerciseState.weightType,
+      sets: [],
+    };
+
+    setExerciseState({
+      ...newExercise,
+      sets: getNewSetsFromLast(curBlock, newExercise),
     });
   };
 

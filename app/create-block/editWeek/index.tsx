@@ -97,7 +97,7 @@ export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
 
   const handleAddDay = (idx: number) => {
     const newDay: Day = {
-      name: `Day ${templateBlock.weeks[0].length + 1}`,
+      name: `Day ${templateBlock.weeks[editingWeekIdx].length + 1}`,
       exercises: [
         {
           name: "",
@@ -192,11 +192,7 @@ export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
         {templateBlock.weeks[editingWeekIdx].map((day, idx) => (
           <React.Fragment key={idx}>
             {templateBlock.weeks[editingWeekIdx].length < 7 && (
-              <AddButton
-                onClick={() =>
-                  handleAddDay(templateBlock.weeks[editingWeekIdx].length)
-                }
-              />
+              <AddButton onClick={() => handleAddDay(idx)} />
             )}
             <DayInfo
               day={day}
