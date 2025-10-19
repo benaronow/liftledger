@@ -61,8 +61,7 @@ interface EditDayProps {
 
 export const EditDay = ({ editingDay, setEditingDay }: EditDayProps) => {
   const { classes } = useStyles();
-  const { curBlock, templateBlock, setTemplateBlock } = useBlock();
-  const editingWeekIdx = curBlock?.curWeekIdx ?? 0;
+  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } = useBlock();
   const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
 
   const shouldEditDay = (day: Day) => {

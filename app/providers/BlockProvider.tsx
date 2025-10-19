@@ -13,7 +13,7 @@ import api from "@/lib/config";
 
 const BLOCK_API_URL = "/api/block";
 
-const EMPTY_BLOCK: Block = {
+export const EMPTY_BLOCK: Block = {
   name: "",
   startDate: new Date(),
   length: 0,
@@ -50,6 +50,8 @@ interface BlockContextType {
   templateBlock: Block;
   setTemplateBlock: Dispatch<SetStateAction<Block>>;
   unsetTemplateBlock: () => void;
+  editingWeekIdx: number;
+  setEditingWeekIdx: Dispatch<SetStateAction<number>>;
   createBlock: (block: Block) => Promise<void>;
   editBlock: (block: Block) => Promise<void>;
 }
@@ -58,6 +60,8 @@ const defaultBlockContext: BlockContextType = {
   templateBlock: EMPTY_BLOCK,
   setTemplateBlock: () => {},
   unsetTemplateBlock: () => {},
+  editingWeekIdx: 0,
+  setEditingWeekIdx: () => {},
   createBlock: async () => {},
   editBlock: async () => {},
 };
@@ -68,6 +72,7 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
   const { curUser } = useUser();
   const [curBlock, setCurBlock] = useState<Block>();
   const [templateBlock, setTemplateBlock] = useState<Block>(EMPTY_BLOCK);
+  const [editingWeekIdx, setEditingWeekIdx] = useState(0);
 
   const unsetTemplateBlock = () => {
     setTemplateBlock(EMPTY_BLOCK);
@@ -115,6 +120,8 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
         templateBlock,
         setTemplateBlock,
         unsetTemplateBlock,
+        editingWeekIdx,
+        setEditingWeekIdx,
         createBlock,
         editBlock,
       }}

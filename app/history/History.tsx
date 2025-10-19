@@ -107,7 +107,7 @@ export const History = () => {
   const { classes } = useStyles();
   const router = useRouter();
   const { curUser, session } = useUser();
-  const { setTemplateBlock } = useBlock();
+  const { setTemplateBlock, setEditingWeekIdx } = useBlock();
   const { innerWidth, isFetching, toggleScreenState } = useScreenState();
   const theme = useTheme();
 
@@ -136,6 +136,7 @@ export const History = () => {
 
   const handleCreateFromTemplate = (block: Block) => {
     setTemplateBlock(getTemplateFromBlock(block));
+    setEditingWeekIdx(0);
     router.push("/create-block");
   };
 

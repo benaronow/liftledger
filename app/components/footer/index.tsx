@@ -17,7 +17,7 @@ export const Footer = () => {
   const { classes } = useFooterStyles();
   const pathname = usePathname();
   const { curUser } = useUser();
-  const { curBlock, setTemplateBlock } = useBlock();
+  const { curBlock, setTemplateBlock, setEditingWeekIdx } = useBlock();
   const { innerWidth, innerHeight, toggleScreenState } = useScreenState();
   const theme = useTheme();
 
@@ -31,6 +31,7 @@ export const Footer = () => {
       toggleScreenState("fetching", true);
       if (route === RouteType.Add && curBlock) {
         setTemplateBlock(curBlock);
+        setEditingWeekIdx(curBlock.curWeekIdx);
       }
     }
   };

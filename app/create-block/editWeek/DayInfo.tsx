@@ -94,8 +94,7 @@ export const DayInfo = ({
   setDeletingIdx,
 }: Props) => {
   const { classes } = useStyles();
-  const { curBlock, templateBlock, setTemplateBlock } = useBlock();
-  const editingWeekIdx = curBlock?.curWeekIdx ?? 0;
+  const { templateBlock, setTemplateBlock, editingWeekIdx } = useBlock();
 
   const handleMoveDay = (day: Day, dayIdx: number, type: "up" | "down") => {
     if ((dayIdx !== 0 || type !== "up") && (dayIdx !== 6 || type !== "down")) {

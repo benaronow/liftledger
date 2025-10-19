@@ -89,6 +89,7 @@ export const CreateBlock = () => {
       ) : (
         <EditDay editingDay={editingDay} setEditingDay={setEditingDay} />
       )}
+      <div style={{ height: "100px" }}></div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import { Block, Day, WeightType } from "@/lib/types";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { LabeledInput } from "../../components/LabeledInput";
 import { makeStyles } from "tss-react/mui";
@@ -9,7 +9,7 @@ import { AddButton } from "../../components/AddButton";
 import { DayInfo } from "./DayInfo";
 import { FaSave } from "react-icons/fa";
 import { DeleteDialog } from "../../components/DeleteResetDialog";
-import { useBlock } from "@/app/providers/BlockProvider";
+import { EMPTY_BLOCK, useBlock } from "@/app/providers/BlockProvider";
 
 const useStyles = makeStyles()({
   container: {
@@ -81,10 +81,19 @@ export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
     templateBlock,
     setTemplateBlock,
     unsetTemplateBlock,
+    editingWeekIdx,
+    setEditingWeekIdx,
   } = useBlock();
-  const editingWeekIdx = curBlock?.curWeekIdx ?? 0;
   const { toggleScreenState } = useScreenState();
   const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
+
+  console.log("editingWeekIdx:", editingWeekIdx);
+
+  useEffect(() => {
+    if (curBlock && templateBlock === EMPTY_BLOCK) {
+      router.push("/dashboard");
+    }
+  }, [curBlock, templateBlock]);
 
   const handleBlockNameInput = (e: ChangeEvent<HTMLInputElement>) => {
     setTemplateBlock({ ...templateBlock, name: e.target.value });
@@ -146,6 +155,7 @@ export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
       createBlock(blockToSubmit);
     }
     unsetTemplateBlock();
+    setEditingWeekIdx(0);
     router.push("/dashboard");
   };
 
@@ -165,17 +175,17 @@ export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
       <div className={classes.container}>
         <div className={classes.head}>
           <LabeledInput
-            label="Block Name: "
+            label="Name: "
             textValue={templateBlock.name}
             onChangeText={handleBlockNameInput}
           />
           <LabeledInput
-            label="Start Date: "
+            label="Start: "
             dateValue={dayjs(templateBlock.startDate)}
             onChangeDate={handleDateInput}
           />
           <LabeledInput
-            label="Length (weeks): "
+            label="Weeks: "
             textValue={templateBlock.length}
             onChangeText={handleLengthInput}
           />
@@ -210,6 +220,7 @@ export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
           />
         )}
       </div>
+      <div style={{ height: "300px" }}></div>
       <DeleteDialog
         onClose={() => {
           setDeletingIdx(undefined);

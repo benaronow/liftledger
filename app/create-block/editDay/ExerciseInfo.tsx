@@ -129,8 +129,7 @@ export const ExerciseInfo = ({
   setDeletingIdx,
 }: Props) => {
   const { classes } = useStyles();
-  const { curBlock, templateBlock, setTemplateBlock } = useBlock();
-  const editingWeekIdx = curBlock?.curWeekIdx ?? 0;
+  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } = useBlock();
   const pointFive = useMemo(
     () => exercise.sets[0]?.weight % 1 === 0.5,
     [exercise.sets]
