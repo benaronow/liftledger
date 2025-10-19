@@ -1,13 +1,13 @@
 "use client";
 
-import { Block, RouteType } from "@/app/types";
+import { Block, RouteType } from "@/lib/types";
 import { useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { EditDay } from "./editDay";
 import { EditWeek } from "./editWeek";
 import { useRouter } from "next/navigation";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
-import { Spinner } from "../spinner";
+import { Spinner } from "../components/spinner";
 import { useUser } from "@/app/providers/UserProvider";
 import { makeStyles } from "tss-react/mui";
 

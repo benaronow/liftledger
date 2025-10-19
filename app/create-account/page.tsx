@@ -1,4 +1,4 @@
-import { CreateAccount } from "../components/createAccount";
+import { CreateAccount } from "./CreateAccount";
 
 const Page = () => {
   return <CreateAccount />;

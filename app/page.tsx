@@ -1,4 +1,4 @@
-import { LiftLedger } from "./components/liftLedger";
+import { LiftLedger } from "./LiftLedger";
 
 const IndexPage = () => {
   return <LiftLedger />;

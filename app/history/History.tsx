@@ -3,11 +3,11 @@
 import { useTheme } from "@mui/material";
 import dayjs from "dayjs";
 import { ControlPointDuplicate } from "@mui/icons-material";
-import { Block, RouteType, Set } from "@/app/types";
+import { Block, RouteType, Set } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
-import { Spinner } from "../spinner";
+import { Spinner } from "../components/spinner";
 import { useUser } from "@/app/providers/UserProvider";
 import { checkIsBlockDone } from "@/app/utils";
 import { makeStyles } from "tss-react/mui";

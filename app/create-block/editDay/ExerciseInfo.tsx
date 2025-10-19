@@ -1,9 +1,9 @@
 import { makeStyles } from "tss-react/mui";
 import { ArrowBackIosNew } from "@mui/icons-material";
 import Select, { CSSObjectWithLabel } from "react-select";
-import { LabeledInput } from "../../LabeledInput";
+import { LabeledInput } from "../../components/LabeledInput";
 import { FaTrash } from "react-icons/fa";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useMemo } from "react";
 import {
   Day,
   Exercise,
@@ -11,7 +11,7 @@ import {
   ExerciseName,
   Set,
   WeightType,
-} from "@/app/types";
+} from "@/lib/types";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { getLastExerciseOccurrence } from "@/app/utils";
 
@@ -131,8 +131,9 @@ export const ExerciseInfo = ({
   const { classes } = useStyles();
   const { curBlock, templateBlock, setTemplateBlock } = useBlock();
   const editingWeekIdx = curBlock?.curWeekIdx ?? 0;
-  const [pointFive, setPointFive] = useState(
-    exercise.sets[0]?.weight % 1 === 0.5
+  const pointFive = useMemo(
+    () => exercise.sets[0]?.weight % 1 === 0.5,
+    [exercise.sets]
   );
 
   const shouldEditDay = (day: Day) => {
@@ -266,18 +267,18 @@ export const ExerciseInfo = ({
           : exercise.sets.map((set: Set) => ({
               ...set,
               reps: type === "reps" ? value : set.reps,
-              weight: type === "weight" ? value : set.weight,
+              weight:
+                type === "weight" ? value + (pointFive ? 0.5 : 0) : set.weight,
             })),
     });
   };
 
   const handlePointFive = (selected: boolean) => {
-    setPointFive(selected);
     updateExercise({
       ...exercise,
       sets: exercise.sets.map((set: Set) => ({
         ...set,
-        weight: set.weight + (selected ? 0.5 : -0.5),
+        weight: Math.floor(set.weight) + (selected ? 0.5 : 0),
       })),
     });
   };

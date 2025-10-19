@@ -1,4 +1,4 @@
-import { Profile } from "../components/profile";
+import { Profile } from "./Profile";
 
 const Page = () => {
   return <Profile />;

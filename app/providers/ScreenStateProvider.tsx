@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { SizeInfo } from "@/app/types";
+import { SizeInfo } from "@/lib/types";
 
 type StateType = "overlay" | "fetching";
 

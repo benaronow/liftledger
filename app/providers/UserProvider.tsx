@@ -1,4 +1,4 @@
-import { User } from "@/app/types";
+import { User } from "@/lib/types";
 import { SessionData } from "@auth0/nextjs-auth0/types";
 import {
   createContext,
@@ -9,7 +9,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import api from "@/app/config";
+import api from "@/lib/config";
 
 const USER_API_URL = "/api/user";
 

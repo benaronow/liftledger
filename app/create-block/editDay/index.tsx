@@ -1,9 +1,9 @@
-import { Day, Exercise, WeightType } from "@/app/types";
+import { Day, Exercise, WeightType } from "@/lib/types";
 import React, { useState } from "react";
 import { makeStyles } from "tss-react/mui";
-import { AddButton } from "../../AddButton";
+import { AddButton } from "../../components/AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
-import { DeleteDialog } from "../../DeleteResetDialog";
+import { DeleteDialog } from "../../components/DeleteResetDialog";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { ArrowBackIosNew } from "@mui/icons-material";
 

@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { Person } from "@mui/icons-material";
-import { RouteType } from "@/app/types";
+import { RouteType } from "@/lib/types";
 import { useHeaderStyles } from "./useHeaderStyles";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useUser } from "@/app/providers/UserProvider";

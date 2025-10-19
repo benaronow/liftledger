@@ -1,9 +1,9 @@
-import { Block, Day, Exercise, Set } from "@/app/types";
+import { Block, Day, Exercise, Set } from "@/lib/types";
 import { Dispatch, SetStateAction, useState } from "react";
 import { FaSave, FaTrash } from "react-icons/fa";
 import { EditExercise } from "./EditExercise";
 import { EditSet } from "./EditSet";
-import { Action, ActionDialog } from "../../ActionDialog";
+import { Action, ActionDialog } from "../../components/ActionDialog";
 import { IoArrowBack } from "react-icons/io5";
 import { makeStyles } from "tss-react/mui";
 import { useBlock } from "@/app/providers/BlockProvider";

@@ -2,10 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useUser } from "../../providers/UserProvider";
+import { useUser } from "./providers/UserProvider";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useTheme } from "@mui/material";
-import { Spinner } from "../spinner";
+import { Spinner } from "./components/spinner";
 
 export const LiftLedger = () => {
   const router = useRouter();

@@ -1,4 +1,4 @@
-import { Exercise } from "@/app/types";
+import { Exercise } from "@/lib/types";
 import { makeStyles } from "tss-react/mui";
 import { BiPlusCircle } from "react-icons/bi";
 import { Dispatch, SetStateAction } from "react";

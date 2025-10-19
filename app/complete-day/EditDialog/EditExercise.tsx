@@ -3,7 +3,7 @@ import {
   ExerciseApparatus,
   ExerciseName,
   WeightType,
-} from "@/app/types";
+} from "@/lib/types";
 import React, { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { BiSolidEdit } from "react-icons/bi";
 import { IoArrowBack } from "react-icons/io5";

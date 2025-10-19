@@ -1,7 +1,7 @@
-import { connectDB } from "@/app/connectDB";
-import BlockModel from "@/app/models/block";
-import UserModel from "@/app/models/user";
-import { GetParams, User } from "@/app/types";
+import { connectDB } from "@/lib/connectDB";
+import BlockModel from "@/lib/models/block";
+import UserModel from "@/lib/models/user";
+import { GetParams, User } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest, { params }: GetParams) => {

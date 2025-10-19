@@ -1,4 +1,4 @@
-import { Progress } from "../components/progress";
+import { Progress } from "./Progress";
 
 const Page = () => {
   return <Progress />;

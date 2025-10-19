@@ -1,7 +1,7 @@
-import { connectDB } from "@/app/connectDB";
-import BlockModel from "@/app/models/block";
-import UserModel from "@/app/models/user";
-import { Block, Day, Exercise, GetParams, Set } from "@/app/types";
+import { connectDB } from "@/lib/connectDB";
+import BlockModel from "@/lib/models/block";
+import UserModel from "@/lib/models/user";
+import { Block, Day, Exercise, GetParams, Set } from "@/lib/types";
 import { checkIsBlockDone, checkIsCurWeekDone } from "@/app/utils";
 import { NextRequest, NextResponse } from "next/server";
 

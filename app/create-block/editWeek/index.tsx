@@ -1,14 +1,14 @@
-import { Block, Day, WeightType } from "@/app/types";
+import { Block, Day, WeightType } from "@/lib/types";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, useState } from "react";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
-import { LabeledInput } from "../../LabeledInput";
+import { LabeledInput } from "../../components/LabeledInput";
 import { makeStyles } from "tss-react/mui";
-import { AddButton } from "../../AddButton";
+import { AddButton } from "../../components/AddButton";
 import { DayInfo } from "./DayInfo";
 import { FaSave } from "react-icons/fa";
-import { DeleteDialog } from "../../DeleteResetDialog";
+import { DeleteDialog } from "../../components/DeleteResetDialog";
 import { useBlock } from "@/app/providers/BlockProvider";
 
 const useStyles = makeStyles()({

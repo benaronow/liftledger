@@ -1,4 +1,4 @@
-import { Block } from "@/app/types";
+import { Block } from "@/lib/types";
 import {
   createContext,
   Dispatch,
@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { useUser } from "./UserProvider";
-import api from "@/app/config";
+import api from "@/lib/config";
 
 const BLOCK_API_URL = "/api/block";
 

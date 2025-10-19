@@ -1,4 +1,4 @@
-import { Block, Exercise } from "@/app/types";
+import { Block, Exercise } from "@/lib/types";
 
 export const getLastExerciseOccurrence = (
   curBlock: Block,

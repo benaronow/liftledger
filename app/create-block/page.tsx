@@ -1,4 +1,4 @@
-import { CreateBlock } from "../components/createBlock";
+import { CreateBlock } from "./CreateBlock";
 
 const Page = () => {
   return <CreateBlock />;

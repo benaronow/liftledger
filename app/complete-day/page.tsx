@@ -1,4 +1,4 @@
-import { CompleteDay } from "../components/completeDay";
+import { CompleteDay } from "./CompleteDay";
 
 const Page = () => {
   return <CompleteDay />;

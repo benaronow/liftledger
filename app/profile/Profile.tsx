@@ -2,15 +2,15 @@
 
 import { Avatar } from "@mui/material";
 import { useEffect } from "react";
-import { useUser } from "../../providers/UserProvider";
+import { useUser } from "../providers/UserProvider";
 import { useRouter } from "next/navigation";
-import { RouteType } from "@/app/types";
+import { RouteType } from "@/lib/types";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
-import { Spinner } from "../spinner";
+import { Spinner } from "../components/spinner";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { makeStyles } from "tss-react/mui";
-import { PushButton } from "../pushButton";
+import { PushButton } from "../components/pushButton";
 
 const useStyles = makeStyles()((theme) => ({
   container: {

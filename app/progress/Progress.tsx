@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useUser } from "@/app/providers/UserProvider";
 // import { useBlock } from "@/app/providers/BlockProvider";
-import { RouteType } from "@/app/types";
+import { RouteType } from "@/lib/types";
 // import {
 //   Paper,
 //   Table,
@@ -15,7 +15,7 @@ import { RouteType } from "@/app/types";
 // } from "@mui/material";
 import { useRouter } from "next/navigation";
 // import { useProgressStyles } from "./useProgressStyles";
-import { Spinner } from "../spinner";
+import { Spinner } from "../components/spinner";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 
 export const Progress = () => {

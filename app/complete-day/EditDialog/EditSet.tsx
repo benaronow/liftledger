@@ -1,8 +1,8 @@
 import { getLastExerciseOccurrence } from "@/app/utils";
-import { Exercise } from "@/app/types";
+import { Exercise } from "@/lib/types";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { makeStyles } from "tss-react/mui";
-import { LabeledInput } from "../../LabeledInput";
+import { LabeledInput } from "../../components/LabeledInput";
 import { useBlock } from "@/app/providers/BlockProvider";
 
 const useStyles = makeStyles()({

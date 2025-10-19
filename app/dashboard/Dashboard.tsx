@@ -2,10 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useUser } from "../../providers/UserProvider";
+import { useUser } from "../providers/UserProvider";
 import dayjs from "dayjs";
-import { Day, Exercise, RouteType, Set, WeightType } from "@/app/types";
-import { Spinner } from "../spinner";
+import { Day, Exercise, RouteType, Set, WeightType } from "@/lib/types";
+import { Spinner } from "../components/spinner";
 import { useDashboardStyles } from "./useDashboardStyles";
 import Link from "next/link";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";

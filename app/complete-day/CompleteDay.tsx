@@ -1,17 +1,17 @@
 "use client";
 
-import { Block, Exercise, RouteType, Set } from "@/app/types";
+import { Block, Exercise, RouteType, Set } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { Spinner } from "../spinner";
+import { Spinner } from "../components/spinner";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useUser } from "@/app/providers/UserProvider";
 import { SetChips } from "./SetChips";
 import { EditDialog } from "./EditDialog";
-import { PushButton } from "../pushButton";
+import { PushButton } from "../components/pushButton";
 import { BiSolidEdit } from "react-icons/bi";
 import { makeStyles } from "tss-react/mui";
-import { AddButton } from "../AddButton";
+import { AddButton } from "../components/AddButton";
 import { IoMdClose } from "react-icons/io";
 import { useBlock } from "@/app/providers/BlockProvider";
 

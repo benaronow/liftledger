@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { RouteType } from "@/app/types";
+import { RouteType } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useTheme } from "@mui/material";

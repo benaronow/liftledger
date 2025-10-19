@@ -1,6 +1,6 @@
-import { Day } from "@/app/types";
+import { Day } from "@/lib/types";
 import { ArrowBackIosNew, ControlPointDuplicate } from "@mui/icons-material";
-import { LabeledInput } from "../../LabeledInput";
+import { LabeledInput } from "../../components/LabeledInput";
 import { BiSolidEdit } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
 import { makeStyles } from "tss-react/mui";
