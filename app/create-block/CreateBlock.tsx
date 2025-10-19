@@ -90,7 +90,7 @@ export const CreateBlock = () => {
       <ActionsHeader actions={headerActions} />
       <div
         className="d-flex flex-column align-items-center w-100 overflow-scroll"
-        style={{ height: "100dvh", padding: "105px 15px 90px" }}
+        style={{ height: "100dvh", padding: "100px 15px 90px" }}
       >
         {editingDay === -1 ? (
           <EditWeek setEditingDay={setEditingDay} />

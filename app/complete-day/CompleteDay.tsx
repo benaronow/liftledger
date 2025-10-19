@@ -22,7 +22,7 @@ export const useStyles = makeStyles()({
     alignItems: "center",
     width: "100%",
     height: "100dvh",
-    padding: "105px 15px 90px",
+    padding: "100px 15px 90px",
     overflow: "scroll",
   },
   exerciseContainer: {

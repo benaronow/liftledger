@@ -47,6 +47,7 @@ const useStyles = makeStyles()({
     height: "35px",
     fontSize: "14px",
     alignItems: "center",
+    overflow: "hidden",
   },
   title: {
     fontWeight: 700,
@@ -149,12 +150,16 @@ export const History = () => {
           className={`${classes.entry} ${classes.completedBlockEntry}`}
         >
           <div className={classes.entryInfo}>
-            <span className={classes.title}>{`${idx + 1}. ${block.name}`}</span>
-            <span>{`(${dayjs(block.startDate).format("M/DD/YY")} -  ${
-              getCompletedDate(block)
-                ? dayjs(getCompletedDate(block)).format("M/DD/YY")
-                : "N/A"
-            })`}</span>
+            <span className="text-nowrap text-truncate">
+              <span className={classes.title}>{`${idx + 1}. ${
+                block.name
+              }`}</span>
+              <span>{`(${dayjs(block.startDate).format("M/DD/YY")} -  ${
+                getCompletedDate(block)
+                  ? dayjs(getCompletedDate(block)).format("M/DD/YY")
+                  : "N/A"
+              })`}</span>
+            </span>
           </div>
           <button
             className={classes.duplicateButton}

@@ -1,3 +1,4 @@
+import { COLORS } from "@/lib/constants";
 import { ReactNode } from "react";
 
 export interface HeaderAction {
@@ -44,8 +45,7 @@ export const ActionsHeader = ({ actions }: Props) => {
         height: "100px",
         minHeight: "100px",
         padding: "50px 15px 0",
-        background:
-          "linear-gradient(180deg, #131314 0%, #131314 60%, transparent 100%)",
+        background: `linear-gradient(180deg, ${COLORS.background} 0%, ${COLORS.background} 50%, transparent 100%)`,
         zIndex: 2,
       }}
     >
