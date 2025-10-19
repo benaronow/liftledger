@@ -1,8 +1,8 @@
 import { Exercise } from "@/app/types";
 import { makeStyles } from "tss-react/mui";
 import { BiPlusCircle } from "react-icons/bi";
-import { Dispatch, SetStateAction, useContext } from "react";
-import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
+import { Dispatch, SetStateAction } from "react";
+import { useScreenState } from "@/app/providers/ScreenStateProvider";
 
 const useStyles = makeStyles()({
   chipsContainer: {
@@ -62,7 +62,7 @@ interface Props {
 
 export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
   const { classes } = useStyles();
-  const { innerWidth } = useContext(ScreenStateContext);
+  const { innerWidth } = useScreenState();
   const chipSideLength = innerWidth ? `${(innerWidth - 115) / 4}px` : "60px";
 
   const getNextSetIdx = () => {

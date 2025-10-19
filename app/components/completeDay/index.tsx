@@ -2,18 +2,16 @@
 
 import { Block, Exercise, RouteType, Set } from "@/app/types";
 import { useRouter } from "next/navigation";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Spinner } from "../spinner";
-import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
+import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useUser } from "@/app/providers/UserProvider";
 import { SetChips } from "./SetChips";
 import { EditDialog } from "./EditDialog";
 import { PushButton } from "../pushButton";
 import { BiSolidEdit } from "react-icons/bi";
 import { makeStyles } from "tss-react/mui";
-import { getLastExerciseOccurrence } from "@/app/utils";
 import { AddButton } from "../AddButton";
-import { DeleteResetDialog } from "../DeleteResetDialog";
 import { IoMdClose } from "react-icons/io";
 import { useBlock } from "@/app/providers/BlockProvider";
 
@@ -116,7 +114,7 @@ export const CompleteDay = () => {
   const router = useRouter();
   const { session } = useUser();
   const { curBlock, editBlock } = useBlock();
-  const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
+  const { isFetching, toggleScreenState } = useScreenState();
   const [exerciseToEdit, setExerciseToEdit] = useState<{
     setIdx: number | undefined;
     exercise: Exercise;
@@ -124,10 +122,6 @@ export const CompleteDay = () => {
   const [addExerciseIdx, setAddExerciseIdx] = useState<number | undefined>(
     undefined
   );
-  const [resettingExercise, setResettingExercise] = useState<{
-    exercise: Exercise;
-    idx: number;
-  }>();
   const [editing, setEditing] = useState(false);
 
   useEffect(() => {
@@ -168,42 +162,6 @@ export const CompleteDay = () => {
       : isExerciseComplete(exercise)
       ? "#09c104"
       : "#58585b";
-
-  const resetExercise = (idx: number, exercise: Exercise) => {
-    if (curBlock) {
-      const previousExercise = getLastExerciseOccurrence(curBlock, exercise);
-
-      const newExercises = previousExercise
-        ? curBlock.weeks[curBlock.curWeekIdx][
-            curBlock.curDayIdx
-          ].exercises.toSpliced(idx, 1, {
-            ...previousExercise,
-            sets: previousExercise.sets.map((set: Set) => ({
-              ...set,
-              completed: false,
-              note: "",
-            })),
-          })
-        : exercisesState;
-
-      const newBlock: Block = {
-        ...curBlock,
-        weeks: curBlock.weeks.toSpliced(
-          curBlock.curWeekIdx,
-          1,
-          curBlock.weeks[curBlock.curWeekIdx].toSpliced(curBlock.curDayIdx, 1, {
-            ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
-            exercises: newExercises,
-          })
-        ),
-      };
-
-      editBlock(newBlock);
-
-      setExercisesState(newExercises);
-      setResettingExercise(undefined);
-    }
-  };
 
   const finishDay = () => {
     if (curBlock) {
@@ -317,18 +275,6 @@ export const CompleteDay = () => {
           exercisesState={exercisesState}
           setExercisesState={setExercisesState}
           onClose={() => setExerciseToEdit(undefined)}
-        />
-      )}
-      {resettingExercise && (
-        <DeleteResetDialog
-          onClose={() => setResettingExercise(undefined)}
-          type="set"
-          isResetting={!!resettingExercise}
-          isDeleting={false}
-          onReset={() =>
-            resetExercise(resettingExercise?.idx, resettingExercise?.exercise)
-          }
-          onDelete={() => {}}
         />
       )}
     </>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { useUser } from "@/app/providers/UserProvider";
 // import { useBlock } from "@/app/providers/BlockProvider";
 import { RouteType } from "@/app/types";
@@ -16,13 +16,13 @@ import { RouteType } from "@/app/types";
 import { useRouter } from "next/navigation";
 // import { useProgressStyles } from "./useProgressStyles";
 import { Spinner } from "../spinner";
-import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
+import { useScreenState } from "@/app/providers/ScreenStateProvider";
 
 export const Progress = () => {
   // const { classes } = useProgressStyles();
   const { session, curUser } = useUser();
   // const { curBlock } = useBlock();
-  const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
+  const { isFetching, toggleScreenState } = useScreenState();
   const router = useRouter();
 
   useEffect(() => {

@@ -1,22 +1,22 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useContext, useEffect } from "react";
-import { UserContext } from "../../providers/UserProvider";
+import { useEffect } from "react";
+import { useUser } from "../../providers/UserProvider";
 import dayjs from "dayjs";
 import { Day, Exercise, RouteType, Set, WeightType } from "@/app/types";
 import { Spinner } from "../spinner";
 import { useDashboardStyles } from "./useDashboardStyles";
 import Link from "next/link";
-import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
+import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { checkIsBlockDone } from "@/app/utils";
 import { useBlock } from "@/app/providers/BlockProvider";
 
 export const Dashboard = () => {
   const { classes } = useDashboardStyles();
-  const { session, attemptedLogin, curUser } = useContext(UserContext);
+  const { session, attemptedLogin, curUser } = useUser();
   const { curBlock } = useBlock();
-  const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
+  const { isFetching, toggleScreenState } = useScreenState();
   const router = useRouter();
 
   useEffect(() => {

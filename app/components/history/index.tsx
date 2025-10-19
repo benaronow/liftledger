@@ -5,8 +5,8 @@ import dayjs from "dayjs";
 import { ControlPointDuplicate } from "@mui/icons-material";
 import { Block, RouteType, Set } from "@/app/types";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect } from "react";
-import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
+import { useEffect } from "react";
+import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { Spinner } from "../spinner";
 import { useUser } from "@/app/providers/UserProvider";
 import { checkIsBlockDone } from "@/app/utils";
@@ -108,8 +108,7 @@ export const History = () => {
   const router = useRouter();
   const { curUser, session } = useUser();
   const { setTemplateBlock } = useBlock();
-  const { innerWidth, isFetching, toggleScreenState } =
-    useContext(ScreenStateContext);
+  const { innerWidth, isFetching, toggleScreenState } = useScreenState();
   const theme = useTheme();
 
   useEffect(() => {

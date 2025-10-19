@@ -1,17 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useContext, useEffect } from "react";
-import { UserContext } from "../../providers/UserProvider";
-import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
+import { useEffect } from "react";
+import { useUser } from "../../providers/UserProvider";
+import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useTheme } from "@mui/material";
 import { Spinner } from "../spinner";
 
 export const LiftLedger = () => {
   const router = useRouter();
-  const { session, attemptedLogin, curUser, setIntroMessageOpen } =
-    useContext(UserContext);
-  const { innerWidth } = useContext(ScreenStateContext);
+  const { session, attemptedLogin, curUser, setIntroMessageOpen } = useUser();
+  const { innerWidth } = useScreenState();
   const theme = useTheme();
 
   useEffect(() => {

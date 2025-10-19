@@ -1,15 +1,14 @@
 import { Block, Day, WeightType } from "@/app/types";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, useContext, useState } from "react";
-import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
+import React, { ChangeEvent, useState } from "react";
+import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { LabeledInput } from "../../LabeledInput";
 import { makeStyles } from "tss-react/mui";
 import { AddButton } from "../../AddButton";
 import { DayInfo } from "./DayInfo";
-import { GrPowerReset } from "react-icons/gr";
 import { FaSave } from "react-icons/fa";
-import { DeleteResetDialog } from "../../DeleteResetDialog";
+import { DeleteDialog } from "../../DeleteResetDialog";
 import { useBlock } from "@/app/providers/BlockProvider";
 
 const useStyles = makeStyles()({
@@ -84,8 +83,7 @@ export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
     unsetTemplateBlock,
   } = useBlock();
   const editingWeekIdx = curBlock?.curWeekIdx ?? 0;
-  const { toggleScreenState } = useContext(ScreenStateContext);
-  const [isResetting, setIsResetting] = useState(false);
+  const { toggleScreenState } = useScreenState();
   const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
 
   const handleBlockNameInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -162,37 +160,6 @@ export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
     });
   };
 
-  const clearAllDays = () => {
-    setTemplateBlock({
-      ...templateBlock,
-      weeks: templateBlock.weeks.map((week, idx) =>
-        idx === editingWeekIdx
-          ? [
-              {
-                name: "Day 1",
-                exercises: [
-                  {
-                    name: "",
-                    apparatus: "",
-                    sets: [
-                      {
-                        reps: 0,
-                        weight: 0,
-                        completed: false,
-                        note: "",
-                      },
-                    ],
-                    weightType: "",
-                  },
-                ],
-                completedDate: undefined,
-              },
-            ]
-          : week
-      ),
-    });
-  };
-
   return (
     <>
       <div className={classes.container}>
@@ -214,12 +181,7 @@ export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
           />
         </div>
         <div className={classes.titleContainer}>
-          <button
-            className={classes.titleButton}
-            onClick={() => setIsResetting(true)}
-          >
-            <GrPowerReset />
-          </button>
+          <div style={{ width: "35px" }}></div>
           <span className={classes.title}>{`${
             curBlock ? "Edit" : "Add"
           } Days`}</span>
@@ -252,18 +214,12 @@ export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
           />
         )}
       </div>
-      <DeleteResetDialog
+      <DeleteDialog
         onClose={() => {
-          setIsResetting(false);
           setDeletingIdx(undefined);
         }}
         type="day"
-        isResetting={isResetting}
         isDeleting={deletingIdx !== undefined}
-        onReset={() => {
-          clearAllDays();
-          setIsResetting(false);
-        }}
         onDelete={() => {
           handleRemoveDay();
           setDeletingIdx(undefined);

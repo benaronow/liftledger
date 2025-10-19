@@ -73,4 +73,4 @@ export const ScreenStateProvider = ({ children }: ScreenStateProviderProps) => {
   );
 };
 
-export const useTheme = () => useContext(ScreenStateContext);
+export const useScreenState = () => useContext(ScreenStateContext);

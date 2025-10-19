@@ -4,8 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Person } from "@mui/icons-material";
 import { RouteType } from "@/app/types";
 import { useHeaderStyles } from "./useHeaderStyles";
-import { useContext } from "react";
-import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
+import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useUser } from "@/app/providers/UserProvider";
 import { useBlock } from "@/app/providers/BlockProvider";
 
@@ -15,7 +14,7 @@ export const Header = () => {
   const pathname = usePathname();
   const { session } = useUser();
   const { curBlock } = useBlock();
-  const { toggleScreenState } = useContext(ScreenStateContext);
+  const { toggleScreenState } = useScreenState();
 
   const getTitle = () => {
     if (pathname.includes(RouteType.Signup)) return "Create Account";

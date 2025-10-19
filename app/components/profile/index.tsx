@@ -1,11 +1,11 @@
 "use client";
 
 import { Avatar } from "@mui/material";
-import { useContext, useEffect } from "react";
-import { UserContext } from "../../providers/UserProvider";
+import { useEffect } from "react";
+import { useUser } from "../../providers/UserProvider";
 import { useRouter } from "next/navigation";
 import { RouteType } from "@/app/types";
-import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
+import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { Spinner } from "../spinner";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -73,8 +73,8 @@ const useStyles = makeStyles()((theme) => ({
 
 export const Profile = () => {
   const { classes } = useStyles();
-  const { session, curUser } = useContext(UserContext);
-  const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
+  const { session, curUser } = useUser();
+  const { isFetching, toggleScreenState } = useScreenState();
   const router = useRouter();
   dayjs.extend(utc);
 

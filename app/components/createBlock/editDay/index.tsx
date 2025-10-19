@@ -3,10 +3,9 @@ import React, { useState } from "react";
 import { makeStyles } from "tss-react/mui";
 import { AddButton } from "../../AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
-import { GrPowerReset } from "react-icons/gr";
-import { FaSave } from "react-icons/fa";
-import { DeleteResetDialog } from "../../DeleteResetDialog";
+import { DeleteDialog } from "../../DeleteResetDialog";
 import { useBlock } from "@/app/providers/BlockProvider";
+import { ArrowBackIosNew } from "@mui/icons-material";
 
 const useStyles = makeStyles()({
   container: {
@@ -60,14 +59,10 @@ interface EditDayProps {
   setEditingDay: (day: number) => void;
 }
 
-export const EditDay = ({
-  editingDay,
-  setEditingDay,
-}: EditDayProps) => {
+export const EditDay = ({ editingDay, setEditingDay }: EditDayProps) => {
   const { classes } = useStyles();
   const { curBlock, templateBlock, setTemplateBlock } = useBlock();
   const editingWeekIdx = curBlock?.curWeekIdx ?? 0;
-  const [isResetting, setIsResetting] = useState(false);
   const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
 
   const shouldEditDay = (day: Day) => {
@@ -125,57 +120,20 @@ export const EditDay = ({
       });
   };
 
-  const clearAllExercises = () => {
-    setTemplateBlock({
-      ...templateBlock,
-      weeks: templateBlock.weeks.map((week, idx) =>
-        idx === editingWeekIdx
-          ? week.map((day) =>
-              shouldEditDay(day)
-                ? {
-                    ...day,
-                    exercises: [
-                      {
-                        name: "",
-                        apparatus: "",
-                        sets: [
-                          {
-                            reps: 0,
-                            weight: 0,
-                            completed: false,
-                            note: "",
-                          },
-                        ],
-                        weightType: "",
-                      },
-                    ],
-                  }
-                : day
-            )
-          : week
-      ),
-    });
-  };
-
   return (
     <>
       <div className={classes.container}>
         <div className={classes.titleContainer}>
           <button
             className={classes.titleButton}
-            onClick={() => setIsResetting(true)}
+            onClick={() => setEditingDay(-1)}
           >
-            <GrPowerReset />
+            <ArrowBackIosNew />
           </button>
           <span className={classes.title}>{`${
             curBlock ? "Edit" : "Add"
           } Exercises`}</span>
-          <button
-            className={classes.titleButton}
-            onClick={() => setEditingDay(-1)}
-          >
-            <FaSave />
-          </button>
+          <div style={{ width: "35px" }} />
         </div>
         {templateBlock.weeks[editingWeekIdx][editingDay].exercises.map(
           (exercise, idx) => (
@@ -207,18 +165,12 @@ export const EditDay = ({
           }
         />
       </div>
-      <DeleteResetDialog
+      <DeleteDialog
         onClose={() => {
-          setIsResetting(false);
           setDeletingIdx(undefined);
         }}
         type="exercise"
-        isResetting={isResetting}
         isDeleting={deletingIdx !== undefined}
-        onReset={() => {
-          clearAllExercises();
-          setIsResetting(false);
-        }}
         onDelete={() => {
           handleRemoveExercise();
           setDeletingIdx(undefined);

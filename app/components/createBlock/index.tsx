@@ -2,11 +2,11 @@
 
 import { Block, RouteType } from "@/app/types";
 import { useTheme } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { EditDay } from "./editDay";
 import { EditWeek } from "./editWeek";
 import { useRouter } from "next/navigation";
-import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
+import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { Spinner } from "../spinner";
 import { useUser } from "@/app/providers/UserProvider";
 import { makeStyles } from "tss-react/mui";
@@ -59,8 +59,7 @@ export const CreateBlock = () => {
   const { classes } = useStyles();
   const router = useRouter();
   const { curUser, session } = useUser();
-  const { innerWidth, isFetching, toggleScreenState } =
-    useContext(ScreenStateContext);
+  const { innerWidth, isFetching, toggleScreenState } = useScreenState();
   const theme = useTheme();
   const [editingDay, setEditingDay] = useState(-1);
 

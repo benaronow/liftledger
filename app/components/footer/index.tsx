@@ -2,24 +2,23 @@
 
 import { usePathname } from "next/navigation";
 import { RouteType } from "@/app/types";
-import { useContext, useEffect, useState } from "react";
-import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
+import { useEffect, useState } from "react";
+import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useTheme } from "@mui/material";
 import Link from "next/link";
 import { useFooterStyles } from "./useFooterStyles";
 import { GiProgression } from "react-icons/gi";
 import { FaEdit, FaHistory } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
-import { UserContext } from "@/app/providers/UserProvider";
+import { useUser } from "@/app/providers/UserProvider";
 import { useBlock } from "@/app/providers/BlockProvider";
 
 export const Footer = () => {
   const { classes } = useFooterStyles();
   const pathname = usePathname();
-  const { curUser } = useContext(UserContext);
+  const { curUser } = useUser();
   const { curBlock, setTemplateBlock } = useBlock();
-  const { innerWidth, innerHeight, toggleScreenState } =
-    useContext(ScreenStateContext);
+  const { innerWidth, innerHeight, toggleScreenState } = useScreenState();
   const theme = useTheme();
 
   const [isStandalone, setIsStandalone] = useState(true);

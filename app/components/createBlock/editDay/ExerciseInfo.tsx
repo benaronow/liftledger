@@ -3,7 +3,7 @@ import { ArrowBackIosNew } from "@mui/icons-material";
 import Select, { CSSObjectWithLabel } from "react-select";
 import { LabeledInput } from "../../LabeledInput";
 import { FaTrash } from "react-icons/fa";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import {
   Day,
   Exercise,
@@ -131,6 +131,9 @@ export const ExerciseInfo = ({
   const { classes } = useStyles();
   const { curBlock, templateBlock, setTemplateBlock } = useBlock();
   const editingWeekIdx = curBlock?.curWeekIdx ?? 0;
+  const [pointFive, setPointFive] = useState(
+    exercise.sets[0]?.weight % 1 === 0.5
+  );
 
   const shouldEditDay = (day: Day) => {
     return day.name === templateBlock.weeks[editingWeekIdx][editingDay].name;
@@ -268,6 +271,17 @@ export const ExerciseInfo = ({
     });
   };
 
+  const handlePointFive = (selected: boolean) => {
+    setPointFive(selected);
+    updateExercise({
+      ...exercise,
+      sets: exercise.sets.map((set: Set) => ({
+        ...set,
+        weight: set.weight + (selected ? 0.5 : -0.5),
+      })),
+    });
+  };
+
   const selectStyle = {
     control: (basestyles: CSSObjectWithLabel) => ({
       ...basestyles,
@@ -389,13 +403,28 @@ export const ExerciseInfo = ({
                 <span className={classes.rowName}>Weight: </span>
                 <input
                   className={classes.input}
-                  value={exercise.sets[0]?.weight || 0}
+                  style={{ width: "100%" }}
+                  value={Math.floor(exercise.sets[0]?.weight) || 0}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     handleNumberInput(e, "weight");
                   }}
                   disabled={!exercise.sets.length}
                 />
               </div>
+              <button
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  color: pointFive ? "white" : "#0096FF",
+                  background: pointFive ? "#0096FF" : "white",
+                  height: "38px",
+                  border: "solid 2px #adafb3",
+                  borderRight: "solid 1px #adafb3",
+                }}
+                onClick={() => handlePointFive(!pointFive)}
+              >
+                <span>+0.5lbs</span>
+              </button>
               <Select
                 className={classes.weightType}
                 value={
@@ -404,7 +433,7 @@ export const ExerciseInfo = ({
                         value: exercise.weightType,
                         label: exercise.weightType,
                       }
-                    : null
+                    : weightTypeOptions[0]
                 }
                 defaultValue={weightTypeOptions[0]}
                 options={weightTypeOptions}
