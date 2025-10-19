@@ -2,18 +2,18 @@
 
 import { Block, Exercise, RouteType, Set } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Spinner } from "../components/spinner";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useUser } from "@/app/providers/UserProvider";
 import { SetChips } from "./SetChips";
 import { EditDialog } from "./EditDialog";
-import { PushButton } from "../components/pushButton";
 import { BiSolidEdit } from "react-icons/bi";
 import { makeStyles } from "tss-react/mui";
 import { AddButton } from "../components/AddButton";
-import { IoMdClose } from "react-icons/io";
+import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import { useBlock } from "@/app/providers/BlockProvider";
+import { ActionsHeader, HeaderAction } from "../components/ActionsHeader";
 
 export const useStyles = makeStyles()({
   container: {
@@ -22,7 +22,7 @@ export const useStyles = makeStyles()({
     alignItems: "center",
     width: "100%",
     height: "100dvh",
-    padding: "65px 15px 90px",
+    padding: "105px 15px 90px",
     overflow: "scroll",
   },
   exerciseContainer: {
@@ -190,10 +190,36 @@ export const CompleteDay = () => {
     sets: [],
   };
 
+  const isDayComplete = useMemo(() => {
+    return exercisesState.every((exercise: Exercise) =>
+      isExerciseComplete(exercise)
+    );
+  }, [exercisesState]);
+
+  const headerActions: HeaderAction[] = useMemo(
+    () => [
+      {
+        icon: editing ? <IoMdClose /> : <BiSolidEdit />,
+        label: editing ? "Stop Editing" : "Edit",
+        onClick: () => setEditing((prev) => !prev),
+        side: "left",
+      },
+      {
+        icon: <IoMdCheckmark style={{ fontSize: "20px" }} />,
+        label: "Finish",
+        onClick: finishDay,
+        side: "right",
+        disabled: !isDayComplete,
+      },
+    ],
+    [setEditing, finishDay, isDayComplete]
+  );
+
   if (!exercises.length || isFetching) return <Spinner />;
 
   return (
     <>
+      <ActionsHeader actions={headerActions} />
       <div className={classes.container}>
         {exercises?.map((exercise, idx) => (
           <React.Fragment key={idx}>
@@ -217,13 +243,6 @@ export const CompleteDay = () => {
               key={idx}
             >
               <div className={classes.exerciseTop}>
-                {editing && <div style={{ minWidth: "35px" }} />}
-                <div className={classes.eName}>
-                  <span className={classes.entryTitle}>{exercise.name}</span>
-                  <span className={classes.entryTitle}>
-                    {exercise.apparatus}
-                  </span>
-                </div>
                 {editing && (
                   <button
                     className={classes.squareButton}
@@ -234,11 +253,20 @@ export const CompleteDay = () => {
                     <BiSolidEdit />
                   </button>
                 )}
+                <div className={classes.eName}>
+                  <span className={classes.entryTitle}>{exercise.name}</span>
+                  <span className={classes.entryTitle}>
+                    {exercise.apparatus}
+                  </span>
+                </div>
+                {editing && <div style={{ minWidth: "35px" }} />}
               </div>
-              <SetChips
-                exercise={exercisesState[idx]}
-                setExerciseToEdit={setExerciseToEdit}
-              />
+              {!editing && (
+                <SetChips
+                  exercise={exercisesState[idx]}
+                  setExerciseToEdit={setExerciseToEdit}
+                />
+              )}
             </div>
           </React.Fragment>
         ))}
@@ -253,18 +281,6 @@ export const CompleteDay = () => {
             }}
           />
         )}
-        <div className={classes.actionRow}>
-          <button
-            className={classes.squareButton}
-            onClick={() => setEditing((prev) => !prev)}
-          >
-            {editing ? <IoMdClose /> : <BiSolidEdit />}
-          </button>
-          <PushButton height={40} width={80} onClick={finishDay}>
-            <span className={classes.finish}>Finish</span>
-          </PushButton>
-          <div style={{ minWidth: "35px" }} />
-        </div>
       </div>
       {exerciseToEdit && (
         <EditDialog

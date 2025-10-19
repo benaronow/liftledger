@@ -128,7 +128,11 @@ export const EditDialog = ({
       };
 
       const updatedExercises = exercisesState.toSpliced(
-        exercisesState.findIndex((e) => e.name === updatedExercise.name),
+        exercisesState.findIndex(
+          (e) =>
+            e.name === updatedExercise.name &&
+            e.apparatus === updatedExercise.apparatus
+        ),
         1,
         updatedExercise
       );

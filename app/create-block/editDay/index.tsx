@@ -5,7 +5,6 @@ import { AddButton } from "../../components/AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
 import { DeleteDialog } from "../../components/DeleteResetDialog";
 import { useBlock } from "@/app/providers/BlockProvider";
-import { ArrowBackIosNew } from "@mui/icons-material";
 
 const useStyles = makeStyles()({
   container: {
@@ -56,12 +55,11 @@ const useStyles = makeStyles()({
 
 interface EditDayProps {
   editingDay: number;
-  setEditingDay: (day: number) => void;
 }
 
-export const EditDay = ({ editingDay, setEditingDay }: EditDayProps) => {
+export const EditDay = ({ editingDay }: EditDayProps) => {
   const { classes } = useStyles();
-  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } = useBlock();
+  const { templateBlock, setTemplateBlock, editingWeekIdx } = useBlock();
   const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
 
   const shouldEditDay = (day: Day) => {
@@ -122,18 +120,6 @@ export const EditDay = ({ editingDay, setEditingDay }: EditDayProps) => {
   return (
     <>
       <div className={classes.container}>
-        <div className={classes.titleContainer}>
-          <button
-            className={classes.titleButton}
-            onClick={() => setEditingDay(-1)}
-          >
-            <ArrowBackIosNew />
-          </button>
-          <span className={classes.title}>{`${
-            curBlock ? "Edit" : "Add"
-          } Exercises`}</span>
-          <div style={{ width: "35px" }} />
-        </div>
         {templateBlock.weeks[editingWeekIdx][editingDay].exercises.map(
           (exercise, idx) => (
             <React.Fragment key={idx}>

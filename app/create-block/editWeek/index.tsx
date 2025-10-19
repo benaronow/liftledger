@@ -1,13 +1,11 @@
-import { Block, Day, WeightType } from "@/lib/types";
+import { Day, WeightType } from "@/lib/types";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { LabeledInput } from "../../components/LabeledInput";
 import { makeStyles } from "tss-react/mui";
 import { AddButton } from "../../components/AddButton";
 import { DayInfo } from "./DayInfo";
-import { FaSave } from "react-icons/fa";
 import { DeleteDialog } from "../../components/DeleteResetDialog";
 import { EMPTY_BLOCK, useBlock } from "@/app/providers/BlockProvider";
 
@@ -74,20 +72,9 @@ interface EditWeekProps {
 export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
   const { classes } = useStyles();
   const router = useRouter();
-  const {
-    curBlock,
-    createBlock,
-    editBlock,
-    templateBlock,
-    setTemplateBlock,
-    unsetTemplateBlock,
-    editingWeekIdx,
-    setEditingWeekIdx,
-  } = useBlock();
-  const { toggleScreenState } = useScreenState();
+  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
+    useBlock();
   const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
-
-  console.log("editingWeekIdx:", editingWeekIdx);
 
   useEffect(() => {
     if (curBlock && templateBlock === EMPTY_BLOCK) {
@@ -140,25 +127,6 @@ export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
     });
   };
 
-  const handleSubmit = () => {
-    const blockToSubmit: Block = curBlock
-      ? templateBlock
-      : {
-          ...templateBlock,
-          initialWeek: templateBlock.weeks[0],
-        };
-
-    toggleScreenState("fetching", true);
-    if (curBlock) {
-      editBlock(blockToSubmit);
-    } else {
-      createBlock(blockToSubmit);
-    }
-    unsetTemplateBlock();
-    setEditingWeekIdx(0);
-    router.push("/dashboard");
-  };
-
   const handleRemoveDay = () => {
     setTemplateBlock({
       ...templateBlock,
@@ -189,15 +157,6 @@ export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
             textValue={templateBlock.length}
             onChangeText={handleLengthInput}
           />
-        </div>
-        <div className={classes.titleContainer}>
-          <div style={{ width: "35px" }}></div>
-          <span className={classes.title}>{`${
-            curBlock ? "Edit" : "Add"
-          } Days`}</span>
-          <button className={classes.titleButton} onClick={handleSubmit}>
-            <FaSave />
-          </button>
         </div>
         {templateBlock.weeks[editingWeekIdx].map((day, idx) => (
           <React.Fragment key={idx}>
