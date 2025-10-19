@@ -1,14 +1,9 @@
 "use client";
 
-import {
-  selectMessageOpen,
-  setMessageOpen,
-} from "@/lib/features/user/userSlice";
-import { useAppDispatch } from "@/lib/hooks";
 import { Close, IosShare, MoreVert } from "@mui/icons-material";
 import { Box, Modal } from "@mui/material";
-import { useSelector } from "react-redux";
 import { useMessageModalStyles } from "./useMessageModalStyles";
+import { useUser } from "@/app/providers/UserProvider";
 
 const boxStyle = {
   display: "flex",
@@ -30,18 +25,15 @@ const boxStyle = {
 
 export const MessageModal = () => {
   const { classes } = useMessageModalStyles();
-  const dispatch = useAppDispatch();
-  const open = useSelector(selectMessageOpen);
-  const onClose = () => dispatch(setMessageOpen(false));
-
-  const handleClose = () => dispatch(setMessageOpen(false));
+  const { introMessageOpen, setIntroMessageOpen } = useUser();
+  const onClose = () => setIntroMessageOpen(false);
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={introMessageOpen} onClose={onClose}>
       <Box sx={boxStyle}>
         <div className={classes.banner}>
           <div className={classes.leftPad}>
-            <div onClick={handleClose}>
+            <div onClick={onClose}>
               <Close className={classes.close} />
             </div>
           </div>

@@ -1,4 +1,9 @@
-import { Exercise, ExerciseApparatus, ExerciseName, WeightType } from "@/types";
+import {
+  Exercise,
+  ExerciseApparatus,
+  ExerciseName,
+  WeightType,
+} from "@/app/types";
 import React, { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { BiSolidEdit } from "react-icons/bi";
 import { IoArrowBack } from "react-icons/io5";
@@ -94,19 +99,19 @@ export const EditExercise = ({
     {
       name: "name",
       title: "Exercise:",
-      value: exerciseState.name || 'Select',
+      value: exerciseState.name || "Select",
       options: Object.values(ExerciseName),
     },
     {
       name: "apparatus",
       title: "Apparatus:",
-      value: exerciseState.apparatus || 'Select',
+      value: exerciseState.apparatus || "Select",
       options: Object.values(ExerciseApparatus),
     },
     {
       name: "weightType",
       title: "Weight Type:",
-      value: exerciseState.weightType || 'Select',
+      value: exerciseState.weightType || "Select",
       options: Object.values(WeightType),
     },
   ];

@@ -34,6 +34,7 @@ interface Props {
   dateValue?: Dayjs | null;
   onChangeText?: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangeDate?: (value: Dayjs | null) => void;
+  disabled?: boolean;
 }
 
 export const LabeledInput = ({
@@ -42,6 +43,7 @@ export const LabeledInput = ({
   dateValue,
   onChangeText,
   onChangeDate,
+  disabled,
 }: Props) => {
   const { classes } = useStyles();
 
@@ -53,6 +55,7 @@ export const LabeledInput = ({
           className={classes.input}
           value={textValue}
           onChange={onChangeText}
+          disabled={disabled}
         />
       )}
       {onChangeDate && (

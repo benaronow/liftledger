@@ -1,31 +1,23 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { RouteType } from "@/types";
+import { RouteType } from "@/app/types";
 import { useContext, useEffect, useState } from "react";
-import { ScreenStateContext } from "@/app/providers/screenStateProvider";
+import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
 import { useTheme } from "@mui/material";
-import { useAppDispatch } from "@/lib/hooks";
-import {
-  selectCurBlock,
-  setEditingBlock,
-  setTemplate,
-} from "@/lib/features/user/userSlice";
 import Link from "next/link";
 import { useFooterStyles } from "./useFooterStyles";
 import { GiProgression } from "react-icons/gi";
 import { FaEdit, FaHistory } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
-import { LoginContext } from "@/app/providers/loginProvider";
-import { useSelector } from "react-redux";
-import { getTemplateFromBlock } from "@/app/utils";
+import { UserContext } from "@/app/providers/UserProvider";
+import { useBlock } from "@/app/providers/BlockProvider";
 
 export const Footer = () => {
   const { classes } = useFooterStyles();
-  const dispatch = useAppDispatch();
   const pathname = usePathname();
-  const { curUser } = useContext(LoginContext);
-  const curBlock = useSelector(selectCurBlock);
+  const { curUser } = useContext(UserContext);
+  const { curBlock, setTemplateBlock } = useBlock();
   const { innerWidth, innerHeight, toggleScreenState } =
     useContext(ScreenStateContext);
   const theme = useTheme();
@@ -39,11 +31,7 @@ export const Footer = () => {
     if (!pathname.includes(route)) {
       toggleScreenState("fetching", true);
       if (route === RouteType.Add && curBlock) {
-        dispatch(setTemplate(getTemplateFromBlock(curBlock, true)));
-        dispatch(setEditingBlock(true));
-      } else {
-        dispatch(setTemplate(undefined));
-        dispatch(setEditingBlock(false));
+        setTemplateBlock(curBlock);
       }
     }
   };

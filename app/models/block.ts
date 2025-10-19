@@ -1,5 +1,5 @@
 import mongoose, { Model } from "mongoose";
-import { Block } from "../../types";
+import { Block } from "../types";
 import blockSchema from "./schema/block";
 
 const BlockModel: Model<Block> =

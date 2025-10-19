@@ -1,13 +1,12 @@
-import { Block, Day, Exercise, WeightType } from "@/types";
+import { Day, Exercise, WeightType } from "@/app/types";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { selectEditingBlock } from "@/lib/features/user/userSlice";
 import { makeStyles } from "tss-react/mui";
 import { AddButton } from "../../AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
 import { GrPowerReset } from "react-icons/gr";
 import { FaSave } from "react-icons/fa";
 import { DeleteResetDialog } from "../../DeleteResetDialog";
+import { useBlock } from "@/app/providers/BlockProvider";
 
 const useStyles = makeStyles()({
   container: {
@@ -57,26 +56,22 @@ const useStyles = makeStyles()({
 });
 
 interface EditDayProps {
-  block: Block;
-  setBlock: (block: Block) => void;
   editingDay: number;
   setEditingDay: (day: number) => void;
 }
 
 export const EditDay = ({
-  block,
-  setBlock,
   editingDay,
   setEditingDay,
 }: EditDayProps) => {
   const { classes } = useStyles();
-  const editingBlock = useSelector(selectEditingBlock);
-  const editingWeekIdx = editingBlock ? block.curWeekIdx || 0 : 0;
+  const { curBlock, templateBlock, setTemplateBlock } = useBlock();
+  const editingWeekIdx = curBlock?.curWeekIdx ?? 0;
   const [isResetting, setIsResetting] = useState(false);
   const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
 
   const shouldEditDay = (day: Day) => {
-    return day.name === block.weeks[editingWeekIdx][editingDay].name;
+    return day.name === templateBlock.weeks[editingWeekIdx][editingDay].name;
   };
 
   const handleAddExercise = (idx: number) => {
@@ -94,9 +89,9 @@ export const EditDay = ({
       weightType: WeightType.Pounds,
     };
 
-    setBlock({
-      ...block,
-      weeks: block.weeks.map((week, wIdx) =>
+    setTemplateBlock({
+      ...templateBlock,
+      weeks: templateBlock.weeks.map((week, wIdx) =>
         wIdx === editingWeekIdx
           ? week.map((day) =>
               shouldEditDay(day)
@@ -112,10 +107,10 @@ export const EditDay = ({
   };
 
   const handleRemoveExercise = () => {
-    if (block.weeks[editingWeekIdx][editingDay].exercises.length > 1)
-      setBlock({
-        ...block,
-        weeks: block.weeks.map((week, idx) =>
+    if (templateBlock.weeks[editingWeekIdx][editingDay].exercises.length > 1)
+      setTemplateBlock({
+        ...templateBlock,
+        weeks: templateBlock.weeks.map((week, idx) =>
           idx === editingWeekIdx
             ? week.map((day) =>
                 shouldEditDay(day) && deletingIdx !== undefined
@@ -131,9 +126,9 @@ export const EditDay = ({
   };
 
   const clearAllExercises = () => {
-    setBlock({
-      ...block,
-      weeks: block.weeks.map((week, idx) =>
+    setTemplateBlock({
+      ...templateBlock,
+      weeks: templateBlock.weeks.map((week, idx) =>
         idx === editingWeekIdx
           ? week.map((day) =>
               shouldEditDay(day)
@@ -173,7 +168,7 @@ export const EditDay = ({
             <GrPowerReset />
           </button>
           <span className={classes.title}>{`${
-            editingBlock ? "Edit" : "Add"
+            curBlock ? "Edit" : "Add"
           } Exercises`}</span>
           <button
             className={classes.titleButton}
@@ -182,22 +177,22 @@ export const EditDay = ({
             <FaSave />
           </button>
         </div>
-        {block.weeks[editingWeekIdx][editingDay].exercises.map(
+        {templateBlock.weeks[editingWeekIdx][editingDay].exercises.map(
           (exercise, idx) => (
             <React.Fragment key={idx}>
               <AddButton onClick={() => handleAddExercise(idx)} />
               <ExerciseInfo
                 exercise={exercise}
-                takenExercises={block.weeks[editingWeekIdx][
+                takenExercises={templateBlock.weeks[editingWeekIdx][
                   editingDay
                 ].exercises.filter(
                   (e) =>
-                    !(e.name === exercise.name &&
-                    e.apparatus === exercise.apparatus)
+                    !(
+                      e.name === exercise.name &&
+                      e.apparatus === exercise.apparatus
+                    )
                 )}
                 eIdx={idx}
-                block={block}
-                setBlock={setBlock}
                 editingDay={editingDay}
                 setDeletingIdx={setDeletingIdx}
               />
@@ -207,7 +202,7 @@ export const EditDay = ({
         <AddButton
           onClick={() =>
             handleAddExercise(
-              block.weeks[editingWeekIdx][editingDay].exercises.length
+              templateBlock.weeks[editingWeekIdx][editingDay].exercises.length
             )
           }
         />

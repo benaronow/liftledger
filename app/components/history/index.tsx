@@ -2,22 +2,16 @@
 
 import { useTheme } from "@mui/material";
 import dayjs from "dayjs";
-import {
-  selectCurUser,
-  setEditingBlock,
-  setTemplate,
-} from "@/lib/features/user/userSlice";
-import { useSelector } from "react-redux";
 import { ControlPointDuplicate } from "@mui/icons-material";
-import { Block, RouteType } from "@/types";
-import { useAppDispatch } from "@/lib/hooks";
+import { Block, RouteType, Set } from "@/app/types";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
-import { ScreenStateContext } from "@/app/providers/screenStateProvider";
+import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
 import { Spinner } from "../spinner";
-import { LoginContext } from "@/app/providers/loginProvider";
-import { checkIsBlockDone, getTemplateFromBlock } from "@/app/utils";
+import { useUser } from "@/app/providers/UserProvider";
+import { checkIsBlockDone } from "@/app/utils";
 import { makeStyles } from "tss-react/mui";
+import { useBlock } from "@/app/providers/BlockProvider";
 
 const useStyles = makeStyles()({
   container: {
@@ -80,12 +74,40 @@ const useStyles = makeStyles()({
   },
 });
 
+const getTemplateFromBlock = (block: Block) => ({
+  name: block.name,
+  startDate: new Date(),
+  length: block.length,
+  initialWeek: block.initialWeek,
+  weeks: [
+    block.weeks[block.length - 1].map((day) => {
+      return {
+        name: day.name,
+        exercises: day.exercises.map((exercise) => {
+          return {
+            name: exercise.name,
+            apparatus: exercise.apparatus,
+            sets: exercise.sets.map((set: Set) => ({
+              ...set,
+              completed: false,
+              note: "",
+            })),
+            weightType: exercise.weightType,
+          };
+        }),
+        completedDate: undefined,
+      };
+    }),
+  ],
+  curDayIdx: 0,
+  curWeekIdx: 0,
+});
+
 export const History = () => {
   const { classes } = useStyles();
-  const dispatch = useAppDispatch();
-  const curUser = useSelector(selectCurUser);
   const router = useRouter();
-  const { session } = useContext(LoginContext);
+  const { curUser, session } = useUser();
+  const { setTemplateBlock } = useBlock();
   const { innerWidth, isFetching, toggleScreenState } =
     useContext(ScreenStateContext);
   const theme = useTheme();
@@ -114,8 +136,7 @@ export const History = () => {
   };
 
   const handleCreateFromTemplate = (block: Block) => {
-    dispatch(setTemplate(getTemplateFromBlock(block, false)));
-    dispatch(setEditingBlock(false));
+    setTemplateBlock(getTemplateFromBlock(block));
     router.push("/create-block");
   };
 

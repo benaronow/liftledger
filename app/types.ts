@@ -160,14 +160,8 @@ export interface GetParams {
 }
 
 export interface SizeInfo {
-  innerWidth: number | undefined;
-  innerHeight: number | undefined;
-}
-
-export enum BlockOp {
-  Create = "create",
-  Edit = "edit",
-  NewWeek = "newWeek",
+  width?: number;
+  height?: number;
 }
 
 export enum RouteType {

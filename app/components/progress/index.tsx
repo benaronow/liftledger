@@ -1,8 +1,9 @@
 "use client";
 
 import { useContext, useEffect } from "react";
-import { LoginContext } from "@/app/providers/loginProvider";
-import { RouteType } from "@/types";
+import { useUser } from "@/app/providers/UserProvider";
+// import { useBlock } from "@/app/providers/BlockProvider";
+import { RouteType } from "@/app/types";
 // import {
 //   Paper,
 //   Table,
@@ -15,14 +16,12 @@ import { RouteType } from "@/types";
 import { useRouter } from "next/navigation";
 // import { useProgressStyles } from "./useProgressStyles";
 import { Spinner } from "../spinner";
-import { ScreenStateContext } from "@/app/providers/screenStateProvider";
-// import { useSelector } from "react-redux";
-// import { selectCurBlock } from "@/lib/features/user/userSlice";
+import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
 
 export const Progress = () => {
   // const { classes } = useProgressStyles();
-  const { curUser, session } = useContext(LoginContext);
-  // const curBlock = useSelector(selectCurBlock);
+  const { session, curUser } = useUser();
+  // const { curBlock } = useBlock();
   const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
   const router = useRouter();
 

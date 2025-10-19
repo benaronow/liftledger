@@ -4,17 +4,16 @@ import Select, { CSSObjectWithLabel } from "react-select";
 import { LabeledInput } from "../../LabeledInput";
 import { FaTrash } from "react-icons/fa";
 import { ChangeEvent } from "react";
-import { useSelector } from "react-redux";
-import { selectEditingBlock } from "@/lib/features/user/userSlice";
 import {
-  Block,
   Day,
   Exercise,
   ExerciseApparatus,
   ExerciseName,
   Set,
   WeightType,
-} from "@/types";
+} from "@/app/types";
+import { useBlock } from "@/app/providers/BlockProvider";
+import { getLastExerciseOccurrence } from "@/app/utils";
 
 const useStyles = makeStyles()({
   exercise: {
@@ -118,8 +117,6 @@ interface Props {
   exercise: Exercise;
   takenExercises: Exercise[];
   eIdx: number;
-  block: Block;
-  setBlock: (block: Block) => void;
   editingDay: number;
   setDeletingIdx: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
@@ -128,17 +125,15 @@ export const ExerciseInfo = ({
   exercise,
   takenExercises,
   eIdx,
-  block,
-  setBlock,
   editingDay,
   setDeletingIdx,
 }: Props) => {
   const { classes } = useStyles();
-  const editingBlock = useSelector(selectEditingBlock);
-  const editingWeekIdx = editingBlock ? block.curWeekIdx || 0 : 0;
+  const { curBlock, templateBlock, setTemplateBlock } = useBlock();
+  const editingWeekIdx = curBlock?.curWeekIdx ?? 0;
 
   const shouldEditDay = (day: Day) => {
-    return day.name === block.weeks[editingWeekIdx][editingDay].name;
+    return day.name === templateBlock.weeks[editingWeekIdx][editingDay].name;
   };
 
   const exerciseNameOptions = Object.values(ExerciseName).map((value) => ({
@@ -159,9 +154,9 @@ export const ExerciseInfo = ({
   }));
 
   const handleMoveExercise = (type: "up" | "down") => {
-    setBlock({
-      ...block,
-      weeks: block.weeks.map((week, idx) =>
+    setTemplateBlock({
+      ...templateBlock,
+      weeks: templateBlock.weeks.map((week, idx) =>
         idx === editingWeekIdx
           ? week.map((day) =>
               shouldEditDay(day)
@@ -182,139 +177,94 @@ export const ExerciseInfo = ({
     });
   };
 
-  const handleExerciseNameSelect = (name: string) => {
-    setBlock({
-      ...block,
-      weeks: block.weeks.map((week, wIdx) =>
+  const updateExercise = (exerciseUpdate: Exercise) => {
+    setTemplateBlock({
+      ...templateBlock,
+      weeks: templateBlock.weeks.map((week, wIdx) =>
         wIdx === editingWeekIdx
           ? week.map((day) =>
               shouldEditDay(day)
                 ? {
                     ...day,
                     exercises: day.exercises.map((exercise, idx) =>
-                      eIdx === idx
-                        ? {
-                            ...exercise,
-                            name,
-                          }
-                        : exercise
+                      eIdx === idx ? exerciseUpdate : exercise
                     ),
                   }
                 : day
             )
           : week
       ),
+    });
+  };
+
+  const handleExerciseNameSelect = (name: string) => {
+    updateExercise({
+      ...exercise,
+      name,
     });
   };
 
   const handleExerciseApparatusSelect = (apparatus: string) => {
-    setBlock({
-      ...block,
-      weeks: block.weeks.map((week, wIdx) =>
-        wIdx === editingWeekIdx
-          ? week.map((day) =>
-              shouldEditDay(day)
-                ? {
-                    ...day,
-                    exercises: day.exercises.map((exercise, idx) =>
-                      eIdx === idx
-                        ? {
-                            ...exercise,
-                            apparatus,
-                          }
-                        : exercise
-                    ),
-                  }
-                : day
-            )
-          : week
-      ),
+    updateExercise({
+      ...exercise,
+      apparatus,
     });
   };
 
   const handleWeightTypeSelect = (weightType: string) => {
-    setBlock({
-      ...block,
-      weeks: block.weeks.map((week, wIdx) =>
-        wIdx === editingWeekIdx
-          ? week.map((day) =>
-              shouldEditDay(day)
-                ? {
-                    ...day,
-                    exercises: day.exercises.map((exercise, idx) =>
-                      eIdx === idx
-                        ? {
-                            ...exercise,
-                            weightType,
-                          }
-                        : exercise
-                    ),
-                  }
-                : day
-            )
-          : week
-      ),
+    updateExercise({
+      ...exercise,
+      weightType: weightType as WeightType,
     });
+  };
+
+  const createNewSets = (value: number) => {
+    const currentSets =
+      curBlock?.weeks[editingWeekIdx][editingDay].exercises[eIdx].sets || [];
+    const lastSets = curBlock
+      ? getLastExerciseOccurrence(curBlock, exercise)?.sets || []
+      : [];
+    const sets = currentSets.length
+      ? currentSets
+      : lastSets.length
+      ? lastSets
+      : exercise.sets;
+
+    return value < sets.length
+      ? sets.slice(0, value)
+      : sets.concat(
+          Array<Set>(value - sets.length).fill(
+            sets[sets.length - 1] || {
+              reps: 0,
+              weight: 0,
+              completed: false,
+              note: "",
+            }
+          )
+        );
   };
 
   const handleNumberInput = (
     e: ChangeEvent<HTMLInputElement>,
     type: "sets" | "reps" | "weight"
   ) => {
-    setBlock({
-      ...block,
-      weeks: block.weeks.map((week, wIdx) =>
-        wIdx === editingWeekIdx
-          ? week.map((day) =>
-              shouldEditDay(day)
-                ? {
-                    ...day,
-                    exercises: day.exercises.map((exercise, idx) =>
-                      eIdx === idx
-                        ? {
-                            ...exercise,
-                            sets:
-                              type === "sets"
-                                ? parseInt(e.target.value) <
-                                  exercise.sets.length
-                                  ? exercise.sets.slice(
-                                      0,
-                                      parseInt(e.target.value)
-                                    )
-                                  : exercise.sets.concat(
-                                      Array<Set>(
-                                        parseInt(e.target.value) -
-                                          exercise.sets.length
-                                      ).fill(
-                                        exercise.sets[
-                                          exercise.sets.length - 1
-                                        ] || {
-                                          reps: 0,
-                                          weight: 0,
-                                          completed: false,
-                                          note: "",
-                                        }
-                                      )
-                                    )
-                                : exercise.sets.map((set: Set) => ({
-                                    ...set,
-                                    reps:
-                                      type === "reps"
-                                        ? parseInt(e.target.value) || 0
-                                        : set.reps,
-                                    weight:
-                                      type === "weight"
-                                        ? parseFloat(e.target.value) || 0
-                                        : set.weight,
-                                  })),
-                          }
-                        : exercise
-                    ),
-                  }
-                : day
-            )
-          : week
-      ),
+    const value = parseInt(e.target.value)
+      ? Math.min(
+          parseInt(e.target.value),
+          type === "sets" ? 999 : parseInt(e.target.value)
+        )
+      : 0;
+
+    updateExercise({
+      ...exercise,
+      sets:
+        type === "sets"
+          ? createNewSets(value)
+          : exercise.sets.map((set: Set) => ({
+              ...set,
+              reps: type === "reps" ? value : set.reps,
+              weight: type === "weight" ? value : set.weight,
+            })),
     });
   };
 
@@ -327,8 +277,6 @@ export const ExerciseInfo = ({
       borderRadius: "0px 5px 5px 0px",
     }),
   };
-
-  console.log(takenExercises);
 
   return (
     <div className={`${classes.exercise} ${classes.entry}`}>
@@ -343,7 +291,8 @@ export const ExerciseInfo = ({
         </button>
         <button
           className={`${classes.sideButton} ${
-            block.weeks[editingWeekIdx][editingDay].exercises.length === 1
+            templateBlock.weeks[editingWeekIdx][editingDay].exercises.length ===
+            1
               ? classes.buttonDisabled
               : classes.buttonEnabled
           }`}
@@ -354,7 +303,7 @@ export const ExerciseInfo = ({
         <button
           className={`${classes.sideButton} ${
             eIdx ===
-            block.weeks[editingWeekIdx][editingDay].exercises.length - 1
+            templateBlock.weeks[editingWeekIdx][editingDay].exercises.length - 1
               ? classes.buttonDisabled
               : classes.buttonEnabled
           }`}
@@ -406,8 +355,7 @@ export const ExerciseInfo = ({
             options={exerciseApparatusOptions.filter(
               (o) =>
                 !takenExercises.find(
-                  (e) =>
-                    e.apparatus === o.value && e.name === exercise.name
+                  (e) => e.apparatus === o.value && e.name === exercise.name
                 )
             )}
             isSearchable
@@ -423,17 +371,18 @@ export const ExerciseInfo = ({
               handleNumberInput(e, "sets");
             }}
           />
-          {!editingBlock && (
+          {!curBlock && (
             <LabeledInput
               label="Reps: "
               textValue={exercise.sets[0]?.reps || 0}
               onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
                 handleNumberInput(e, "reps");
               }}
+              disabled={!exercise.sets.length}
             />
           )}
         </div>
-        {!editingBlock && (
+        {!curBlock && (
           <>
             <div className={classes.entry}>
               <div className={classes.inputRow}>
@@ -444,6 +393,7 @@ export const ExerciseInfo = ({
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     handleNumberInput(e, "weight");
                   }}
+                  disabled={!exercise.sets.length}
                 />
               </div>
               <Select

@@ -2,20 +2,19 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { Person } from "@mui/icons-material";
-import { selectEditingBlock } from "@/lib/features/user/userSlice";
-import { RouteType } from "@/types";
+import { RouteType } from "@/app/types";
 import { useHeaderStyles } from "./useHeaderStyles";
-import { useSelector } from "react-redux";
 import { useContext } from "react";
-import { ScreenStateContext } from "@/app/providers/screenStateProvider";
-import { LoginContext } from "@/app/providers/loginProvider";
+import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
+import { useUser } from "@/app/providers/UserProvider";
+import { useBlock } from "@/app/providers/BlockProvider";
 
 export const Header = () => {
   const { classes } = useHeaderStyles();
   const router = useRouter();
   const pathname = usePathname();
-  const editingBlock = useSelector(selectEditingBlock);
-  const { session } = useContext(LoginContext);
+  const { session } = useUser();
+  const { curBlock } = useBlock();
   const { toggleScreenState } = useContext(ScreenStateContext);
 
   const getTitle = () => {
@@ -23,7 +22,7 @@ export const Header = () => {
     if (pathname.includes(RouteType.Progress)) return "Progress";
     if (pathname.includes(RouteType.History)) return "History";
     if (pathname.includes(RouteType.Add))
-      return editingBlock ? "Edit Block" : "Create Block";
+      return curBlock ? "Edit Block" : "Create Block";
     if (pathname.includes(RouteType.Settings)) return "Settings";
     if (pathname.includes(RouteType.Profile)) return "Profile";
     if (pathname.includes(RouteType.Workout)) return "Workout";

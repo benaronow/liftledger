@@ -2,10 +2,10 @@
 
 import { Avatar } from "@mui/material";
 import { useContext, useEffect } from "react";
-import { LoginContext } from "../../providers/loginProvider";
+import { UserContext } from "../../providers/UserProvider";
 import { useRouter } from "next/navigation";
-import { RouteType } from "@/types";
-import { ScreenStateContext } from "@/app/providers/screenStateProvider";
+import { RouteType } from "@/app/types";
+import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
 import { Spinner } from "../spinner";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -73,7 +73,7 @@ const useStyles = makeStyles()((theme) => ({
 
 export const Profile = () => {
   const { classes } = useStyles();
-  const { session, curUser } = useContext(LoginContext);
+  const { session, curUser } = useContext(UserContext);
   const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
   const router = useRouter();
   dayjs.extend(utc);

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import "./styles/globals.css";
 import styles from "./styles/layout.module.css";
 import { Providers } from "./providers";
-import { auth0 } from "@/lib/auth0";
+import { auth0 } from "@/app/auth0";
 import { Header } from "./components/header";
 import { MessageModal } from "./components/messageModal";
 import { Overlay } from "./components/overlay";

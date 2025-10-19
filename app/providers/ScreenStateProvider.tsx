@@ -1,5 +1,11 @@
-import { createContext, ReactNode, useContext, useState } from "react";
-import { useInnerSize } from "./useInnerSize";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { SizeInfo } from "@/app/types";
 
 type StateType = "overlay" | "fetching";
 
@@ -26,9 +32,28 @@ interface ScreenStateProviderProps {
 }
 
 export const ScreenStateProvider = ({ children }: ScreenStateProviderProps) => {
-  const { innerWidth, innerHeight } = useInnerSize();
   const [overlayOn, setOverlayOn] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
+  const [innerSize, setInnerSize] = useState<SizeInfo>({
+    width: undefined,
+    height: undefined,
+  });
+
+  const updateSize = () => {
+    setInnerSize({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined")
+      setInnerSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    window.addEventListener("resize", updateSize);
+  }, []);
 
   const toggleScreenState = (state: "overlay" | "fetching", value: boolean) =>
     state === "overlay" ? setOverlayOn(value) : setIsFetching(value);
@@ -36,8 +61,8 @@ export const ScreenStateProvider = ({ children }: ScreenStateProviderProps) => {
   return (
     <ScreenStateContext
       value={{
-        innerWidth,
-        innerHeight,
+        innerWidth: innerSize.width,
+        innerHeight: innerSize.height,
         overlayOn,
         isFetching,
         toggleScreenState,

@@ -1,24 +1,21 @@
 "use client";
 
-import { updateUser } from "@/lib/features/user/userSlice";
-import { useAppDispatch } from "@/lib/hooks";
-import { RouteType, User } from "@/types";
+import { RouteType, User } from "@/app/types";
 import { Input } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useContext, useEffect, useState } from "react";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
-import { LoginContext } from "../../providers/loginProvider";
+import { useUser } from "../../providers/UserProvider";
 import { useCreateAccountStyles } from "./useCreateAccountStyles";
 import { Spinner } from "../spinner";
-import { ScreenStateContext } from "@/app/providers/screenStateProvider";
+import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
 
 export const CreateAccount = () => {
-  const dispatch = useAppDispatch();
   const router = useRouter();
   const { classes } = useCreateAccountStyles();
   const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
-  const { session, attemptedLogin, curUser } = useContext(LoginContext);
+  const { session, attemptedLogin, curUser, createUser } = useUser();
 
   useEffect(() => {
     router.prefetch(RouteType.Home);
@@ -47,15 +44,14 @@ export const CreateAccount = () => {
       setInput({ ...input, birthday: new Date(e.target.value) });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const user: User = {
+    const user: Partial<User> = {
       ...input,
       email: session?.user.email || "",
-      blocks: [],
-      curBlock: "",
     };
-    dispatch(updateUser(user));
+    await createUser(user);
+    if (curUser) router.push("/dashboard");
   };
 
   if (!attemptedLogin || isFetching) return <Spinner />;

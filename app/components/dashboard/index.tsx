@@ -2,27 +2,21 @@
 
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
-import { LoginContext } from "../../providers/loginProvider";
+import { UserContext } from "../../providers/UserProvider";
 import dayjs from "dayjs";
-import { useAppDispatch } from "@/lib/hooks";
-import {
-  selectCurBlock,
-  setCompletingDay,
-} from "@/lib/features/user/userSlice";
-import { Day, Exercise, RouteType, Set, WeightType } from "@/types";
+import { Day, Exercise, RouteType, Set, WeightType } from "@/app/types";
 import { Spinner } from "../spinner";
 import { useDashboardStyles } from "./useDashboardStyles";
 import Link from "next/link";
-import { ScreenStateContext } from "@/app/providers/screenStateProvider";
-import { useSelector } from "react-redux";
+import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
 import { checkIsBlockDone } from "@/app/utils";
+import { useBlock } from "@/app/providers/BlockProvider";
 
 export const Dashboard = () => {
   const { classes } = useDashboardStyles();
-  const { session, attemptedLogin, curUser } = useContext(LoginContext);
-  const curBlock = useSelector(selectCurBlock);
+  const { session, attemptedLogin, curUser } = useContext(UserContext);
+  const { curBlock } = useBlock();
   const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
-  const dispatch = useAppDispatch();
   const router = useRouter();
 
   useEffect(() => {
@@ -39,17 +33,6 @@ export const Dashboard = () => {
     router.prefetch(RouteType.Progress);
     router.prefetch(RouteType.Workout);
   }, []);
-
-  const handleStartDay = () => {
-    if (curBlock) {
-      dispatch(
-        setCompletingDay({
-          dayIdx: curBlock.curDayIdx,
-          weekIdx: curBlock.curWeekIdx,
-        })
-      );
-    }
-  };
 
   const getExerciseCompleted = (exercise: Exercise) => {
     return exercise.sets.reduce(
@@ -174,7 +157,6 @@ export const Dashboard = () => {
                   href={RouteType.Workout}
                   onClick={() => {
                     toggleScreenState("fetching", true);
-                    handleStartDay();
                   }}
                 >
                   <span>Lift!</span>

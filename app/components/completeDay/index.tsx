@@ -1,20 +1,13 @@
 "use client";
 
-import {
-  blockOp,
-  selectCurBlock,
-  selectCurUser,
-} from "@/lib/features/user/userSlice";
-import { Block, BlockOp, Exercise, RouteType, Set } from "@/types";
+import { Block, Exercise, RouteType, Set } from "@/app/types";
 import { useRouter } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { Spinner } from "../spinner";
-import { ScreenStateContext } from "@/app/providers/screenStateProvider";
-import { LoginContext } from "@/app/providers/loginProvider";
+import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
+import { useUser } from "@/app/providers/UserProvider";
 import { SetChips } from "./SetChips";
 import { EditDialog } from "./EditDialog";
-import { useAppDispatch } from "@/lib/hooks";
 import { PushButton } from "../pushButton";
 import { BiSolidEdit } from "react-icons/bi";
 import { makeStyles } from "tss-react/mui";
@@ -22,6 +15,7 @@ import { getLastExerciseOccurrence } from "@/app/utils";
 import { AddButton } from "../AddButton";
 import { DeleteResetDialog } from "../DeleteResetDialog";
 import { IoMdClose } from "react-icons/io";
+import { useBlock } from "@/app/providers/BlockProvider";
 
 export const useStyles = makeStyles()({
   container: {
@@ -119,11 +113,9 @@ export const useStyles = makeStyles()({
 
 export const CompleteDay = () => {
   const { classes } = useStyles();
-  const dispatch = useAppDispatch();
-  const curUser = useSelector(selectCurUser);
-  const curBlock = useSelector(selectCurBlock);
   const router = useRouter();
-  const { session } = useContext(LoginContext);
+  const { session } = useUser();
+  const { curBlock, editBlock } = useBlock();
   const { isFetching, toggleScreenState } = useContext(ScreenStateContext);
   const [exerciseToEdit, setExerciseToEdit] = useState<{
     setIdx: number | undefined;
@@ -206,13 +198,7 @@ export const CompleteDay = () => {
         ),
       };
 
-      dispatch(
-        blockOp({
-          uid: curUser?._id || "",
-          block: newBlock,
-          type: BlockOp.Edit,
-        })
-      );
+      editBlock(newBlock);
 
       setExercisesState(newExercises);
       setResettingExercise(undefined);
@@ -233,13 +219,7 @@ export const CompleteDay = () => {
         ),
       };
 
-      dispatch(
-        blockOp({
-          uid: curUser?._id || "",
-          block: newBlock,
-          type: BlockOp.Edit,
-        })
-      );
+      editBlock(newBlock);
 
       router.push("/dashboard");
     }

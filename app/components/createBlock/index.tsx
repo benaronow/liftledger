@@ -1,20 +1,14 @@
 "use client";
 
-import { Block, RouteType } from "@/types";
+import { Block, RouteType } from "@/app/types";
 import { useTheme } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import {
-  selectCurUser,
-  selectEditingBlock,
-  selectTemplate,
-} from "@/lib/features/user/userSlice";
-import { useSelector } from "react-redux";
 import { EditDay } from "./editDay";
 import { EditWeek } from "./editWeek";
 import { useRouter } from "next/navigation";
-import { ScreenStateContext } from "@/app/providers/screenStateProvider";
+import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
 import { Spinner } from "../spinner";
-import { LoginContext } from "@/app/providers/loginProvider";
+import { useUser } from "@/app/providers/UserProvider";
 import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles()({
@@ -63,9 +57,8 @@ export const emptyBlock: Block = {
 
 export const CreateBlock = () => {
   const { classes } = useStyles();
-  const curUser = useSelector(selectCurUser);
   const router = useRouter();
-  const { session } = useContext(LoginContext);
+  const { curUser, session } = useUser();
   const { innerWidth, isFetching, toggleScreenState } =
     useContext(ScreenStateContext);
   const theme = useTheme();
@@ -88,35 +81,14 @@ export const CreateBlock = () => {
       router.push("/dashboard");
   }, [innerWidth]);
 
-  const template = useSelector(selectTemplate);
-  const editingBlock = useSelector(selectEditingBlock);
-  const [block, setBlock] = useState<Block>(
-    template
-      ? {
-          ...template,
-          startDate: editingBlock ? template.startDate : new Date(),
-        }
-      : emptyBlock
-  );
-
   if (!curUser || isFetching) return <Spinner />;
 
   return (
     <div className={classes.container}>
       {editingDay === -1 ? (
-        <EditWeek
-          uid={curUser?._id || ""}
-          block={block}
-          setBlock={setBlock}
-          setEditingDay={setEditingDay}
-        />
+        <EditWeek setEditingDay={setEditingDay} />
       ) : (
-        <EditDay
-          block={block}
-          setBlock={setBlock}
-          editingDay={editingDay}
-          setEditingDay={setEditingDay}
-        />
+        <EditDay editingDay={editingDay} setEditingDay={setEditingDay} />
       )}
     </div>
   );

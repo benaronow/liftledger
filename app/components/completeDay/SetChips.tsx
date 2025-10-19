@@ -1,8 +1,8 @@
-import { Exercise } from "@/types";
+import { Exercise } from "@/app/types";
 import { makeStyles } from "tss-react/mui";
 import { BiPlusCircle } from "react-icons/bi";
 import { Dispatch, SetStateAction, useContext } from "react";
-import { ScreenStateContext } from "@/app/providers/screenStateProvider";
+import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
 
 const useStyles = makeStyles()({
   chipsContainer: {

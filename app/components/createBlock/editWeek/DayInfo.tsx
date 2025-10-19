@@ -1,15 +1,11 @@
-import {
-  selectCurBlock,
-  selectEditingBlock,
-} from "@/lib/features/user/userSlice";
-import { Block, Day } from "@/types";
+import { Day } from "@/app/types";
 import { ArrowBackIosNew, ControlPointDuplicate } from "@mui/icons-material";
-import { useSelector } from "react-redux";
 import { LabeledInput } from "../../LabeledInput";
 import { BiSolidEdit } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
 import { makeStyles } from "tss-react/mui";
 import { ChangeEvent } from "react";
+import { useBlock } from "@/app/providers/BlockProvider";
 
 const useStyles = makeStyles()({
   day: {
@@ -87,8 +83,6 @@ const useStyles = makeStyles()({
 interface Props {
   day: Day;
   dIdx: number;
-  block: Block;
-  setBlock: (block: Block) => void;
   setEditingDay: (day: number) => void;
   setDeletingIdx: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
@@ -96,21 +90,18 @@ interface Props {
 export const DayInfo = ({
   day,
   dIdx,
-  block,
-  setBlock,
   setEditingDay,
   setDeletingIdx,
 }: Props) => {
   const { classes } = useStyles();
-  const curBlock = useSelector(selectCurBlock);
-  const editingBlock = useSelector(selectEditingBlock);
-  const editingWeekIdx = editingBlock ? curBlock?.curWeekIdx || 0 : 0;
+  const { curBlock, templateBlock, setTemplateBlock } = useBlock();
+  const editingWeekIdx = curBlock?.curWeekIdx ?? 0;
 
   const handleMoveDay = (day: Day, dayIdx: number, type: "up" | "down") => {
     if ((dayIdx !== 0 || type !== "up") && (dayIdx !== 6 || type !== "down")) {
-      setBlock({
-        ...block,
-        weeks: block.weeks.map((week, idx) =>
+      setTemplateBlock({
+        ...templateBlock,
+        weeks: templateBlock.weeks.map((week, idx) =>
           idx === editingWeekIdx
             ? week
                 .toSpliced(dayIdx, 1)
@@ -125,9 +116,9 @@ export const DayInfo = ({
     e: ChangeEvent<HTMLInputElement>,
     dayIdx: number
   ) => {
-    setBlock({
-      ...block,
-      weeks: block.weeks.map((week, idx) =>
+    setTemplateBlock({
+      ...templateBlock,
+      weeks: templateBlock.weeks.map((week, idx) =>
         idx === editingWeekIdx
           ? week.map((day, idx) =>
               idx === dayIdx ? { ...day, name: e.target.value } : day
@@ -143,14 +134,14 @@ export const DayInfo = ({
 
   const handleDuplicateDay = (dayIdx: number) => {
     const day: Day = {
-      ...block.weeks[block.weeks.length - 1][dayIdx],
-      name: `${block.weeks[0][dayIdx].name} (copy)`,
+      ...templateBlock.weeks[templateBlock.weeks.length - 1][dayIdx],
+      name: `${templateBlock.weeks[0][dayIdx].name} (copy)`,
       completedDate: undefined,
     };
 
-    setBlock({
-      ...block,
-      weeks: block.weeks.map((week, idx) =>
+    setTemplateBlock({
+      ...templateBlock,
+      weeks: templateBlock.weeks.map((week, idx) =>
         idx === editingWeekIdx ? week.toSpliced(dayIdx + 1, 0, day) : week
       ),
     });
@@ -169,7 +160,7 @@ export const DayInfo = ({
         </button>
         <button
           className={`${classes.sideButton} ${
-            dIdx === block.weeks[editingWeekIdx].length - 1
+            dIdx === templateBlock.weeks[editingWeekIdx].length - 1
               ? classes.buttonDisabled
               : classes.buttonEnabled
           }`}
@@ -199,7 +190,7 @@ export const DayInfo = ({
       <div className={classes.sideButtons}>
         <button
           className={`${classes.sideButton} ${
-            block.weeks[editingWeekIdx].length === 1
+            templateBlock.weeks[editingWeekIdx].length === 1
               ? classes.buttonDisabled
               : classes.buttonEnabled
           }`}
@@ -209,7 +200,7 @@ export const DayInfo = ({
         </button>
         <button
           className={`${classes.sideButton} ${
-            block.weeks[editingWeekIdx].length > 6
+            templateBlock.weeks[editingWeekIdx].length > 6
               ? classes.buttonDisabled
               : classes.buttonEnabled
           }`}

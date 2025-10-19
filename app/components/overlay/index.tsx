@@ -2,7 +2,7 @@
 
 import { useContext } from "react";
 import { useOverlayStyles } from "./useOverlayStyles";
-import { ScreenStateContext } from "@/app/providers/screenStateProvider";
+import { ScreenStateContext } from "@/app/providers/ScreenStateProvider";
 
 export const Overlay = () => {
   const { classes } = useOverlayStyles();

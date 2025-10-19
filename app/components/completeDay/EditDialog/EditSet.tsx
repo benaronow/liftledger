@@ -1,10 +1,9 @@
 import { getLastExerciseOccurrence } from "@/app/utils";
-import { selectCurBlock } from "@/lib/features/user/userSlice";
-import { Exercise } from "@/types";
+import { Exercise } from "@/app/types";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
-import { useSelector } from "react-redux";
 import { makeStyles } from "tss-react/mui";
 import { LabeledInput } from "../../LabeledInput";
+import { useBlock } from "@/app/providers/BlockProvider";
 
 const useStyles = makeStyles()({
   note: {
@@ -28,7 +27,7 @@ export const EditSet = ({
   setExerciseState,
 }: Props) => {
   const { classes } = useStyles();
-  const curBlock = useSelector(selectCurBlock);
+  const { curBlock } = useBlock();
   const [tempWeight, setTempWeight] = useState(
     setIdx !== undefined ? `${exerciseState.sets[setIdx].weight || ""}` : ""
   );

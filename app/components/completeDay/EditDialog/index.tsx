@@ -1,18 +1,12 @@
-import {
-  blockOp,
-  selectCurBlock,
-  selectCurUser,
-} from "@/lib/features/user/userSlice";
-import { useAppDispatch } from "@/lib/hooks";
-import { Block, BlockOp, Day, Exercise, Set } from "@/types";
+import { Block, Day, Exercise, Set } from "@/app/types";
 import { Dispatch, SetStateAction, useState } from "react";
 import { FaSave, FaTrash } from "react-icons/fa";
-import { useSelector } from "react-redux";
 import { EditExercise } from "./EditExercise";
 import { EditSet } from "./EditSet";
 import { Action, ActionDialog } from "../../ActionDialog";
 import { IoArrowBack } from "react-icons/io5";
 import { makeStyles } from "tss-react/mui";
+import { useBlock } from "@/app/providers/BlockProvider";
 
 const useStyles = makeStyles()({
   deleteContainer: {
@@ -52,9 +46,7 @@ export const EditDialog = ({
   onClose,
 }: Props) => {
   const { classes } = useStyles();
-  const dispatch = useAppDispatch();
-  const curUser = useSelector(selectCurUser);
-  const curBlock = useSelector(selectCurBlock);
+  const { curBlock, editBlock } = useBlock();
   const exerciseIdx = exercisesState.findIndex(
     (e) => e.name === exercise.name && e.apparatus === exercise.apparatus
   );
@@ -118,13 +110,7 @@ export const EditDialog = ({
         ),
       };
 
-      dispatch(
-        blockOp({
-          uid: curUser?._id || "",
-          block: newBlock,
-          type: BlockOp.Edit,
-        })
-      );
+      editBlock(newBlock);
     }
   };
 
