@@ -1,8 +1,10 @@
 import { Exercise } from "@/lib/types";
 import { makeStyles } from "tss-react/mui";
-import { BiPlusCircle } from "react-icons/bi";
 import { Dispatch, SetStateAction } from "react";
-import { useScreenState } from "@/app/providers/ScreenStateProvider";
+import { getLastExerciseOccurrence } from "../utils";
+import { useBlock } from "../providers/BlockProvider";
+import { COLORS } from "@/lib/constants";
+import { BiPlusCircle } from "react-icons/bi";
 
 const useStyles = makeStyles()({
   chipsContainer: {
@@ -62,8 +64,7 @@ interface Props {
 
 export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
   const { classes } = useStyles();
-  const { innerWidth } = useScreenState();
-  const chipSideLength = innerWidth ? `${(innerWidth - 115) / 4}px` : "60px";
+  const { curBlock } = useBlock();
 
   const getNextSetIdx = () => {
     for (let i = 0; i <= exercise?.sets.length; i++) {
@@ -73,9 +74,98 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
     return -1;
   };
 
+  const getRepProgress = (setIdx: number) => {
+    const lastReps = getLastExerciseOccurrence(curBlock, exercise)?.sets[setIdx]
+      .reps;
+    if (!lastReps) return "--";
+    const repsDiff = exercise.sets[setIdx]?.reps - lastReps;
+    if (repsDiff === 0) return "--";
+    return repsDiff > 0 ? `+${repsDiff}` : `${repsDiff}`;
+  };
+
+  const getWeightProgress = (setIdx: number) => {
+    const lastWeight = getLastExerciseOccurrence(curBlock, exercise)?.sets[
+      setIdx
+    ].weight;
+    if (!lastWeight) return "--";
+    const weightDiff = exercise.sets[setIdx]?.weight - lastWeight;
+    if (weightDiff === 0) return "--";
+    return weightDiff > 0 ? `+${weightDiff}` : `${weightDiff}`;
+  };
+
+  const getProgressColor = (progress: string) => {
+    if (progress === "--") return "white";
+    if (progress.startsWith("+")) return COLORS.success;
+    if (progress.startsWith("-")) return COLORS.danger;
+    return "white";
+  };
+
   return (
     <div className={classes.chipsContainer}>
-      {Array.from(
+      {exercise.sets.map((set, i) => (
+        <button
+          key={i}
+          className="d-flex align-items-center justify-content-center border border-0 rounded text-nowrap"
+          style={{
+            height: "40px",
+            fontSize: "13px",
+            background: set.completed
+              ? COLORS.primary
+              : i === getNextSetIdx()
+              ? COLORS.primaryDark
+              : COLORS.container,
+          }}
+          onClick={() =>
+            i <= getNextSetIdx()
+              ? setExerciseToEdit({ setIdx: i, exercise })
+              : {}
+          }
+        >
+          <span className="text-white">
+            {set.completed ? (
+              <span className="d-flex gap-2 text-white">
+                <span
+                  className="fw-bold"
+                  style={{ color: getProgressColor(getRepProgress(i)) }}
+                >
+                  {`${set.reps} rep${
+                    set.reps !== 1 ? "s" : ""
+                  } (${getRepProgress(i)})`}
+                </span>
+                <span>with</span>
+                <span
+                  className="fw-bold"
+                  style={{ color: getProgressColor(getWeightProgress(i)) }}
+                >{`${set.weight}${exercise.weightType} (${getWeightProgress(
+                  i
+                )})`}</span>
+              </span>
+            ) : (
+              <span className="d-flex gap-2 text-white">
+                <span className="fw-bold">{`${set.reps} rep${
+                  set.reps !== 1 ? "s" : ""
+                }`}</span>
+                <span>with</span>
+                <span className="fw-bold">{`${set.weight}${exercise.weightType}`}</span>
+              </span>
+            )}
+          </span>
+        </button>
+      ))}
+      <button
+        className="d-flex align-items-center justify-content-center border border-0 rounded text-nowrap"
+        style={{
+          height: "40px",
+          fontSize: "13px",
+          background:
+            exercise.sets.length === getNextSetIdx()
+              ? COLORS.primaryDark
+              : COLORS.container,
+        }}
+      >
+        <BiPlusCircle style={{ color: "white", fontSize: "20px" }} />
+      </button>
+      {/* {Array.from(
         Array(Math.ceil(((exercise?.sets.length ?? 0) + 1) / 4)).keys()
       ).map((i: number) => (
         <div className={classes.chipsRow} key={i}>
@@ -133,7 +223,7 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
             );
           })}
         </div>
-      ))}
+      ))} */}
     </div>
   );
 };
