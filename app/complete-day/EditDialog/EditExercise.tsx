@@ -7,71 +7,9 @@ import {
 import React, { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { BiSolidEdit } from "react-icons/bi";
 import { IoArrowBack } from "react-icons/io5";
-import { makeStyles } from "tss-react/mui";
 import { ChangeExerciseType } from ".";
 import { getNewSetsFromLast } from "@/app/utils";
 import { useBlock } from "@/app/providers/BlockProvider";
-
-const useStyles = makeStyles()({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    height: "160px",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-  },
-  optionsContainer: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    gap: "5px",
-    alignItems: "center",
-    overflow: "scroll",
-    paddingBottom: "5px",
-  },
-  value: {
-    display: "flex",
-    flexDirection: "column",
-    marginBottom: "10px",
-  },
-  valueLabel: {
-    fontSize: "14px",
-    fontWeight: 600,
-  },
-  valueButton: {
-    display: "flex",
-    alignItems: "center",
-    gap: "5px",
-    fontSize: "14px",
-    background: "transparent",
-    color: "#0096FF",
-    padding: "0px",
-    border: "none",
-  },
-  itemButton: {
-    width: "100%",
-    border: "none",
-    borderRadius: "50px",
-    display: "flex",
-    alignItems: "center",
-    whiteSpace: "nowrap",
-    padding: "5px",
-    fontSize: "13px",
-  },
-  selectedItem: {
-    background: "#0096FF",
-    color: "white",
-  },
-  unselectedItem: {
-    color: "#0096FF",
-  },
-  pad: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "center",
-  },
-});
 
 interface Props {
   exerciseState: Exercise;
@@ -88,7 +26,6 @@ export const EditExercise = ({
   setEditingType,
   takenExercises,
 }: Props) => {
-  const { classes } = useStyles();
   const { curBlock } = useBlock();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollToButtonRef = useRef<HTMLButtonElement>(null);
@@ -150,14 +87,18 @@ export const EditExercise = ({
     option === exerciseState.weightType;
 
   return (
-    <div className={classes.container}>
+    <div
+      className="d-flex flex-column align-items-start justify-content-between"
+      style={{ height: "160px" }}
+    >
       {editingType === "" ? (
         <>
           {exerciseMap.map((entry) => (
-            <div className={classes.value} key={entry.name}>
-              <span className={classes.valueLabel}>{entry.title}</span>
+            <div key={entry.name} className="d-flex flex-column mb-2">
+              <span className="small fw-semibold">{entry.title}</span>
               <button
-                className={classes.valueButton}
+                className="d-flex align-items-center gap-1 bg-transparent p-0 border-0 small"
+                style={{ color: "#0096FF" }}
                 onClick={() => setEditingType(entry.name as ChangeExerciseType)}
               >
                 <BiSolidEdit />
@@ -167,7 +108,10 @@ export const EditExercise = ({
           ))}
         </>
       ) : (
-        <div className={classes.optionsContainer} ref={scrollContainerRef}>
+        <div
+          ref={scrollContainerRef}
+          className="w-100 d-flex flex-column gap-1 align-items-center overflow-auto pb-1"
+        >
           {exerciseMap.map((entry) => (
             <React.Fragment key={entry.name}>
               {editingType === entry.name && (
@@ -184,19 +128,19 @@ export const EditExercise = ({
                       if (entry.name === "apparatus") {
                         return !takenExercises.find(
                           (e) =>
-                            e.apparatus === o &&
-                            e.name === exerciseState.name
+                            e.apparatus === o && e.name === exerciseState.name
                         );
                       }
                       return true;
                     })
                     .map((option) => (
                       <button
-                        className={`${classes.itemButton} ${
-                          isCurrentlySelected(option)
-                            ? classes.selectedItem
-                            : classes.unselectedItem
-                        }`}
+                        className="w-100 border-0 rounded-pill d-flex align-items-center text-nowrap p-1 small"
+                        style={{
+                          ...(isCurrentlySelected(option)
+                            ? { background: "#0096FF", color: "white" }
+                            : { color: "#0096FF" }),
+                        }}
                         key={option}
                         onClick={() => {
                           if (editingType)
@@ -207,11 +151,11 @@ export const EditExercise = ({
                           isCurrentlySelected(option) ? scrollToButtonRef : null
                         }
                       >
-                        <div className={classes.pad}>
+                        <div className="w-100 d-flex justify-content-start align-items-center">
                           {isCurrentlySelected(option) && <IoArrowBack />}
                         </div>
                         {option}
-                        <div className={classes.pad}></div>
+                        <div className="w-100 d-flex justify-content-start align-items-center"></div>
                       </button>
                     ))}
                 </React.Fragment>

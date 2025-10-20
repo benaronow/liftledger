@@ -9,108 +9,12 @@ import { useUser } from "@/app/providers/UserProvider";
 import { SetChips } from "./SetChips";
 import { EditDialog } from "./EditDialog";
 import { BiSolidEdit } from "react-icons/bi";
-import { makeStyles } from "tss-react/mui";
 import { AddButton } from "../components/AddButton";
 import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { ActionsHeader, HeaderAction } from "../components/ActionsHeader";
 
-export const useStyles = makeStyles()({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    width: "100%",
-    height: "100dvh",
-    padding: "100px 15px 90px",
-    overflow: "scroll",
-  },
-  exerciseContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    width: "100%",
-    borderRadius: "10px",
-    marginBottom: "15px",
-    border: "solid 5px",
-    boxShadow: "0px 5px 10px #131314",
-  },
-  entryTitle: {
-    fontFamily: "League+Spartan",
-    fontSize: "16px",
-    fontWeight: 600,
-    color: "white",
-  },
-  exerciseTop: {
-    width: "95%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  squareButton: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "35px",
-    minWidth: "35px",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    background: "#0096FF",
-    fontSize: "20px",
-  },
-  eName: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    textWrap: "nowrap",
-    borderRadius: "5px 5px 0px 0px",
-    padding: "5px 0px 10px",
-  },
-  finish: {
-    color: "white",
-    fontFamily: "League+Spartan",
-    fontSize: "16px",
-    fontWeight: 600,
-  },
-  addExercise: {
-    width: "90%",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "15px",
-  },
-  addExerciseSpacing: {
-    width: "100%",
-    height: "2px",
-    background: "#0096FF",
-  },
-  addExerciseButton: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "#0096FF",
-    color: "white",
-    fontSize: "20px",
-    padding: "0px",
-    height: "20px",
-    minWidth: "20px",
-    border: "1px solid white",
-    borderRadius: "20px",
-    margin: "0px 10px",
-  },
-  actionRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "start",
-    width: "100%",
-    padding: "0px 10px",
-  },
-});
-
 export const CompleteDay = () => {
-  const { classes } = useStyles();
   const router = useRouter();
   const { session } = useUser();
   const { curBlock, editBlock } = useBlock();
@@ -220,7 +124,10 @@ export const CompleteDay = () => {
   return (
     <>
       <ActionsHeader actions={headerActions} />
-      <div className={classes.container}>
+      <div
+        className="d-flex flex-column align-items-center w-100 overflow-auto"
+        style={{ height: "100dvh", padding: "100px 15px 90px" }}
+      >
         {exercises?.map((exercise, idx) => (
           <React.Fragment key={idx}>
             {editing && (
@@ -235,17 +142,30 @@ export const CompleteDay = () => {
               />
             )}
             <div
-              className={classes.exerciseContainer}
+              className="d-flex flex-column align-items-center w-100 mb-3"
               style={{
+                border: "5px solid",
+                borderRadius: "10px",
+                boxShadow: "0px 5px 10px #131314",
                 borderColor: getAccentColor(exercise, idx),
                 background: getAccentColor(exercise, idx),
               }}
               key={idx}
             >
-              <div className={classes.exerciseTop}>
+              <div
+                className="w-100 d-flex align-items-center justify-content-between"
+                style={{ width: "95%" }}
+              >
                 {editing && (
                   <button
-                    className={classes.squareButton}
+                    className="d-flex justify-content-center align-items-center text-white border-0"
+                    style={{
+                      height: "35px",
+                      minWidth: "35px",
+                      borderRadius: "5px",
+                      background: "#0096FF",
+                      fontSize: "20px",
+                    }}
                     onClick={() => {
                       setAddExerciseIdx(undefined);
                       setExerciseToEdit({ setIdx: undefined, exercise });
@@ -254,9 +174,24 @@ export const CompleteDay = () => {
                     <BiSolidEdit />
                   </button>
                 )}
-                <div className={classes.eName}>
-                  <span className={classes.entryTitle}>{exercise.name}</span>
-                  <span className={classes.entryTitle}>
+                <div
+                  className="w-100 d-flex flex-column align-items-center"
+                  style={{
+                    textWrap: "nowrap",
+                    borderRadius: "5px 5px 0 0",
+                    padding: "5px 0 10px",
+                  }}
+                >
+                  <span
+                    className="text-white fw-semibold"
+                    style={{ fontFamily: "League+Spartan", fontSize: "16px" }}
+                  >
+                    {exercise.name}
+                  </span>
+                  <span
+                    className="text-white fw-semibold"
+                    style={{ fontFamily: "League+Spartan", fontSize: "16px" }}
+                  >
                     {exercise.apparatus}
                   </span>
                 </div>

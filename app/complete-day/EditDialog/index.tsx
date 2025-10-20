@@ -5,23 +5,7 @@ import { EditExercise } from "./EditExercise";
 import { EditSet } from "./EditSet";
 import { Action, ActionDialog } from "../../components/ActionDialog";
 import { IoArrowBack } from "react-icons/io5";
-import { makeStyles } from "tss-react/mui";
 import { useBlock } from "@/app/providers/BlockProvider";
-
-const useStyles = makeStyles()({
-  deleteContainer: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  deleteQuestion: {
-    whiteSpace: "wrap",
-    marginBottom: "20px",
-  },
-  deleteDisclaimer: {
-    whiteSpace: "wrap",
-    fontWeight: 900,
-  },
-});
 
 interface Props {
   setIdx: number | undefined;
@@ -45,7 +29,6 @@ export const EditDialog = ({
   setExercisesState,
   onClose,
 }: Props) => {
-  const { classes } = useStyles();
   const { curBlock, editBlock } = useBlock();
   const exerciseIdx = exercisesState.findIndex(
     (e) => e.name === exercise.name && e.apparatus === exercise.apparatus
@@ -240,13 +223,13 @@ export const EditDialog = ({
       actions={isDeleting ? deleteActions : editActions}
     >
       {isDeleting ? (
-        <div className={classes.deleteContainer}>
-          <span
-            className={classes.deleteQuestion}
-          >{`Are you sure you want to delete this ${
-            setIdx !== undefined ? "set" : "exercise"
-          }?`}</span>
-          <span className={classes.deleteDisclaimer}>
+        <div className="d-flex flex-column">
+          <span className="text-wrap" style={{ marginBottom: "20px" }}>
+            {`Are you sure you want to delete this ${
+              setIdx !== undefined ? "set" : "exercise"
+            }?`}
+          </span>
+          <span className="text-wrap" style={{ fontWeight: 900 }}>
             This action cannot be undone.
           </span>
         </div>

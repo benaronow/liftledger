@@ -1,17 +1,8 @@
 import { getLastExerciseOccurrence } from "@/app/utils";
 import { Exercise } from "@/lib/types";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
-import { makeStyles } from "tss-react/mui";
 import { LabeledInput } from "../../components/LabeledInput";
 import { useBlock } from "@/app/providers/BlockProvider";
-
-const useStyles = makeStyles()({
-  note: {
-    fontSize: "14px",
-    whiteSpace: "wrap",
-    marginBottom: "10px",
-  },
-});
 
 interface Props {
   setIdx: number;
@@ -26,7 +17,6 @@ export const EditSet = ({
   exercisesState,
   setExerciseState,
 }: Props) => {
-  const { classes } = useStyles();
   const { curBlock } = useBlock();
   const [tempWeight, setTempWeight] = useState(
     setIdx !== undefined ? `${exerciseState.sets[setIdx].weight || ""}` : ""
@@ -99,9 +89,7 @@ export const EditSet = ({
         ),
         setIdx || 0
       ) && (
-        <span
-          className={classes.note}
-        >{`Previous note: ${getPreviousSessionNote(
+        <span className="small mb-2 text-wrap">{`Previous note: ${getPreviousSessionNote(
           exercisesState.find(
             (e) =>
               e.name === exerciseState.name &&

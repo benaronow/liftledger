@@ -1,5 +1,4 @@
 import { Exercise } from "@/lib/types";
-import { makeStyles } from "tss-react/mui";
 import { Dispatch, SetStateAction } from "react";
 import { getLastExerciseOccurrence } from "../utils";
 import { useBlock } from "../providers/BlockProvider";
@@ -10,49 +9,6 @@ import {
   IoIosArrowDropupCircle,
 } from "react-icons/io";
 import { FaGripLines, FaTimes } from "react-icons/fa";
-
-const useStyles = makeStyles()({
-  chipsContainer: {
-    padding: "15px",
-    display: "flex",
-    flexDirection: "column",
-    color: "white",
-    width: "100%",
-    background: "#131314",
-    borderRadius: "10px",
-    gap: "15px",
-  },
-  chipsRow: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
-  chip: {
-    color: "white",
-    padding: "10px",
-    fontSize: "13px",
-    borderRadius: "10px",
-    whiteSpace: "nowrap",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "5px",
-  },
-  completeChip: {
-    background: "#0096FF",
-    border: "solid 2px white",
-  },
-  nextChip: {
-    background: "#004b7f",
-    border: "solid 1px #0096FF",
-  },
-  incompleteChip: {
-    background: "#58585b",
-  },
-  emptyChip: {
-    background: "transparent",
-  },
-});
 
 interface Props {
   exercise: Exercise;
@@ -68,7 +24,6 @@ interface Props {
 }
 
 export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
-  const { classes } = useStyles();
   const { curBlock } = useBlock();
 
   const getNextSetIdx = () => {
@@ -107,7 +62,15 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
   };
 
   return (
-    <div className={classes.chipsContainer}>
+    <div
+      className="d-flex flex-column w-100 text-white"
+      style={{
+        padding: "15px",
+        background: "#131314",
+        borderRadius: "10px",
+        gap: "15px",
+      }}
+    >
       {exercise.sets.map((set, i) => (
         <button
           key={i}
