@@ -3,67 +3,10 @@ import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { LabeledInput } from "../../components/LabeledInput";
-import { makeStyles } from "tss-react/mui";
 import { AddButton } from "../../components/AddButton";
 import { DayInfo } from "./DayInfo";
 import { DeleteDialog } from "../../components/DeleteResetDialog";
 import { EMPTY_BLOCK, useBlock } from "@/app/providers/BlockProvider";
-
-const useStyles = makeStyles()({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    fontFamily: "League+Spartan",
-    fontSize: "16px",
-  },
-  head: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-    width: "100%",
-    color: "white",
-    marginBottom: "15px",
-  },
-  titleContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    background: "#58585b",
-    boxShadow: "0px 5px 10px #131314",
-    width: "100%",
-    marginBottom: "15px",
-    padding: "5px",
-    borderRadius: "5px",
-  },
-  title: {
-    color: "white",
-    fontFamily: "League+Spartan",
-    fontSize: "20px",
-    fontWeight: 600,
-  },
-  titleButton: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "35px",
-    minWidth: "35px",
-    color: "white",
-    borderRadius: "5px",
-    background: "#0096FF",
-    fontSize: "20px",
-    border: "none",
-  },
-  finish: {
-    color: "white",
-    fontFamily: "League+Spartan",
-    fontSize: "16px",
-    fontWeight: 600,
-    whiteSpace: "nowrap",
-  },
-});
 
 interface EditWeekProps {
   setEditingDay: (day: number) => void;
@@ -71,7 +14,6 @@ interface EditWeekProps {
 }
 
 export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
-  const { classes } = useStyles();
   const router = useRouter();
   const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
     useBlock();
@@ -141,8 +83,14 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
 
   return (
     <>
-      <div className={classes.container}>
-        <div className={classes.head}>
+      <div
+        className="d-flex flex-column align-items-center w-100"
+        style={{ fontFamily: "League+Spartan", fontSize: "16px" }}
+      >
+        <div
+          className="d-flex flex-column w-100 text-white"
+          style={{ gap: "10px", marginBottom: "15px" }}
+        >
           <LabeledInput
             label="Name: "
             textValue={templateBlock.name}

@@ -1,4 +1,3 @@
-import { makeStyles } from "tss-react/mui";
 import { ArrowBackIosNew } from "@mui/icons-material";
 import Select, { CSSObjectWithLabel } from "react-select";
 import { LabeledInput } from "../../components/LabeledInput";
@@ -15,104 +14,6 @@ import {
 import { useBlock } from "@/app/providers/BlockProvider";
 import { getNewSetsFromLast } from "@/app/utils";
 
-const useStyles = makeStyles()({
-  exercise: {
-    background: "#58585b",
-    borderRadius: "5px",
-    border: "solid 5px #58585b",
-    marginBottom: "15px",
-    boxShadow: "0px 5px 10px #131314",
-  },
-  entryContainer: {
-    padding: "10px",
-    display: "flex",
-    background: "#131314",
-    flexDirection: "column",
-    width: "100%",
-    flex: 1,
-    borderRadius: "5px",
-    margin: "0px 0px 0px 5px",
-    gap: "10px",
-  },
-  entry: {
-    display: "flex",
-    alignItems: "center",
-    width: "100%",
-    justifyContent: "center",
-  },
-  entryName: {
-    fontWeight: 600,
-    color: "white",
-  },
-  sideButtons: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "5px",
-  },
-  sideButton: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "35px",
-    height: "35px",
-    border: "none",
-    borderRadius: "5px",
-    "&:hover": {
-      cursor: "pointer",
-    },
-    fontSize: "20px",
-  },
-  buttonEnabled: {
-    background: "#0096FF",
-    color: "white",
-  },
-  buttonDisabled: {
-    background: "#317baf",
-    color: "#a7a7a7",
-  },
-  moveUpButton: {
-    transform: "rotate(90deg)",
-  },
-  moveDownButton: {
-    transform: "rotate(270deg)",
-  },
-  addExerciseButton: {
-    color: "blue",
-    marginBottom: "-5px",
-    "&:hover": {
-      cursor: "pointer",
-    },
-  },
-  weightType: {
-    width: "100%",
-    fontSize: "16px",
-  },
-  inputRow: {
-    display: "flex",
-    fontSize: "14px",
-    alignItems: "center",
-    border: "solid 2px #adafb3",
-    borderRight: "none",
-    borderRadius: "5px 0px 0px 5px",
-    padding: "5px",
-    background: "white",
-    color: "black",
-    height: "38px",
-  },
-  input: {
-    border: "none",
-    outline: "none",
-    fontSize: "16px",
-    width: "100%",
-  },
-  rowName: {
-    marginRight: "5px",
-    fontWeight: "600",
-    whiteSpace: "nowrap",
-  },
-});
-
 interface Props {
   exercise: Exercise;
   takenExercises: Exercise[];
@@ -128,7 +29,6 @@ export const ExerciseInfo = ({
   editingDay,
   setDeletingIdx,
 }: Props) => {
-  const { classes } = useStyles();
   const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
     useBlock();
   const pointFive = useMemo(
@@ -282,46 +182,118 @@ export const ExerciseInfo = ({
   };
 
   return (
-    <div className={`${classes.exercise} ${classes.entry}`}>
-      <div className={classes.sideButtons}>
+    <div
+      className="d-flex align-items-center w-100 justify-content-center"
+      style={{
+        background: "#58585b",
+        borderRadius: "5px",
+        border: "solid 5px #58585b",
+        marginBottom: "15px",
+        boxShadow: "0px 5px 10px #131314",
+      }}
+    >
+      <div
+        className="d-flex flex-column align-items-center"
+        style={{ gap: "5px" }}
+      >
         <button
-          className={`${classes.sideButton} ${
-            eIdx === 0 ? classes.buttonDisabled : classes.buttonEnabled
-          }`}
+          className="d-flex justify-content-center align-items-center border-0"
+          style={{
+            width: "35px",
+            height: "35px",
+            borderRadius: "5px",
+            fontSize: "20px",
+            background: eIdx === 0 ? "#317baf" : "#0096FF",
+            color: eIdx === 0 ? "#a7a7a7" : "white",
+            cursor: "pointer",
+          }}
           onClick={() => handleMoveExercise("up")}
         >
-          <ArrowBackIosNew className={classes.moveUpButton} />
+          <ArrowBackIosNew style={{ transform: "rotate(90deg)" }} />
         </button>
         <button
-          className={`${classes.sideButton} ${
-            templateBlock.weeks[editingWeekIdx][editingDay].exercises.length ===
-            1
-              ? classes.buttonDisabled
-              : classes.buttonEnabled
-          }`}
+          className="d-flex justify-content-center align-items-center border-0"
+          style={{
+            width: "35px",
+            height: "35px",
+            borderRadius: "5px",
+            fontSize: "20px",
+            background:
+              templateBlock.weeks[editingWeekIdx][editingDay].exercises
+                .length === 1
+                ? "#317baf"
+                : "#0096FF",
+            color:
+              templateBlock.weeks[editingWeekIdx][editingDay].exercises
+                .length === 1
+                ? "#a7a7a7"
+                : "white",
+            cursor: "pointer",
+          }}
           onClick={() => setDeletingIdx(eIdx)}
         >
           <FaTrash />
         </button>
         <button
-          className={`${classes.sideButton} ${
-            eIdx ===
-            templateBlock.weeks[editingWeekIdx][editingDay].exercises.length - 1
-              ? classes.buttonDisabled
-              : classes.buttonEnabled
-          }`}
+          className="d-flex justify-content-center align-items-center border-0"
+          style={{
+            width: "35px",
+            height: "35px",
+            borderRadius: "5px",
+            fontSize: "20px",
+            background:
+              eIdx ===
+              templateBlock.weeks[editingWeekIdx][editingDay].exercises.length -
+                1
+                ? "#317baf"
+                : "#0096FF",
+            color:
+              eIdx ===
+              templateBlock.weeks[editingWeekIdx][editingDay].exercises.length -
+                1
+                ? "#a7a7a7"
+                : "white",
+            cursor: "pointer",
+          }}
           onClick={() => handleMoveExercise("down")}
         >
-          <ArrowBackIosNew className={classes.moveDownButton} />
+          <ArrowBackIosNew style={{ transform: "rotate(270deg)" }} />
         </button>
       </div>
-      <div className={classes.entryContainer}>
-        <div className={classes.entry}>
-          <div className={classes.inputRow}>
-            <span className={classes.rowName}>Lift: </span>
+      <div
+        className="d-flex flex-column w-100"
+        style={{
+          padding: "10px",
+          background: "#131314",
+          borderRadius: "5px",
+          margin: "0 0 0 5px",
+          gap: "10px",
+          flex: 1,
+        }}
+      >
+        <div className="d-flex align-items-center w-100 justify-content-center">
+          <div
+            className="d-flex align-items-center"
+            style={{
+              fontSize: "14px",
+              border: "solid 2px #adafb3",
+              borderRight: "none",
+              borderRadius: "5px 0 0 5px",
+              padding: "5px",
+              background: "white",
+              color: "black",
+              height: "38px",
+            }}
+          >
+            <span
+              className="fw-semibold text-nowrap"
+              style={{ marginRight: "5px" }}
+            >
+              Lift:
+            </span>
           </div>
           <Select
-            className={classes.input}
+            className="w-100"
             value={
               exercise.name
                 ? { value: exercise.name, label: exercise.name }
@@ -340,12 +312,29 @@ export const ExerciseInfo = ({
             styles={selectStyle}
           />
         </div>
-        <div className={classes.entry}>
-          <div className={classes.inputRow}>
-            <span className={classes.rowName}>Use: </span>
+        <div className="d-flex align-items-center w-100 justify-content-center">
+          <div
+            className="d-flex align-items-center"
+            style={{
+              fontSize: "14px",
+              border: "solid 2px #adafb3",
+              borderRight: "none",
+              borderRadius: "5px 0 0 5px",
+              padding: "5px",
+              background: "white",
+              color: "black",
+              height: "38px",
+            }}
+          >
+            <span
+              className="fw-semibold text-nowrap"
+              style={{ marginRight: "5px" }}
+            >
+              Use:
+            </span>
           </div>
           <Select
-            className={classes.input}
+            className="w-100"
             value={
               exercise.apparatus
                 ? {
@@ -366,7 +355,10 @@ export const ExerciseInfo = ({
             styles={selectStyle}
           />
         </div>
-        <div className={classes.entry} style={{ gap: "10px" }}>
+        <div
+          className="d-flex align-items-center w-100 justify-content-center"
+          style={{ gap: "10px" }}
+        >
           <LabeledInput
             label="Sets: "
             textValue={exercise.sets.length}
@@ -387,12 +379,33 @@ export const ExerciseInfo = ({
         </div>
         {!curBlock && (
           <>
-            <div className={classes.entry}>
-              <div className={classes.inputRow}>
-                <span className={classes.rowName}>Weight: </span>
+            <div className="d-flex align-items-center w-100 justify-content-center">
+              <div
+                className="d-flex align-items-center"
+                style={{
+                  fontSize: "14px",
+                  border: "solid 2px #adafb3",
+                  borderRight: "none",
+                  borderRadius: "5px 0 0 5px",
+                  padding: "5px",
+                  background: "white",
+                  color: "black",
+                  height: "38px",
+                }}
+              >
+                <span
+                  className="fw-semibold text-nowrap"
+                  style={{ marginRight: "5px" }}
+                >
+                  Weight:
+                </span>
                 <input
-                  className={classes.input}
-                  style={{ width: "100%" }}
+                  style={{
+                    border: "none",
+                    outline: "none",
+                    fontSize: "16px",
+                    width: "100%",
+                  }}
                   value={Math.floor(exercise.sets[0]?.weight) || 0}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     handleNumberInput(e, "weight");
@@ -401,9 +414,8 @@ export const ExerciseInfo = ({
                 />
               </div>
               <button
+                className="d-flex align-items-center"
                 style={{
-                  display: "flex",
-                  alignItems: "center",
                   color: pointFive ? "white" : "#0096FF",
                   background: pointFive ? "#0096FF" : "white",
                   height: "38px",
@@ -415,7 +427,7 @@ export const ExerciseInfo = ({
                 <span>+0.5lbs</span>
               </button>
               <Select
-                className={classes.weightType}
+                className="w-100"
                 value={
                   exercise.weightType
                     ? {

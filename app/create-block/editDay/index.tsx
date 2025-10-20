@@ -1,64 +1,15 @@
 import { Day, Exercise } from "@/lib/types";
 import React, { useState } from "react";
-import { makeStyles } from "tss-react/mui";
 import { AddButton } from "../../components/AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
 import { DeleteDialog } from "../../components/DeleteResetDialog";
 import { useBlock } from "@/app/providers/BlockProvider";
-
-const useStyles = makeStyles()({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    fontFamily: "League+Spartan",
-    fontSize: "16px",
-  },
-  titleContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    background: "#58585b",
-    boxShadow: "0px 5px 10px #131314",
-    width: "100%",
-    marginBottom: "15px",
-    padding: "5px",
-    borderRadius: "5px",
-  },
-  title: {
-    color: "white",
-    fontFamily: "League+Spartan",
-    fontSize: "20px",
-    fontWeight: 600,
-  },
-  titleButton: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "35px",
-    minWidth: "35px",
-    color: "white",
-    borderRadius: "5px",
-    background: "#0096FF",
-    fontSize: "20px",
-    border: "none",
-  },
-  back: {
-    color: "white",
-    fontFamily: "League+Spartan",
-    fontSize: "16px",
-    fontWeight: 600,
-  },
-});
 
 interface EditDayProps {
   editingDay: number;
 }
 
 export const EditDay = ({ editingDay }: EditDayProps) => {
-  const { classes } = useStyles();
   const { templateBlock, setTemplateBlock, editingWeekIdx } = useBlock();
   const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
 
@@ -119,7 +70,10 @@ export const EditDay = ({ editingDay }: EditDayProps) => {
 
   return (
     <>
-      <div className={classes.container}>
+      <div
+        className="d-flex flex-column align-items-center w-100"
+        style={{ fontFamily: "League+Spartan", fontSize: "16px" }}
+      >
         {templateBlock.weeks[editingWeekIdx][editingDay].exercises.map(
           (exercise, idx) => (
             <React.Fragment key={idx}>
