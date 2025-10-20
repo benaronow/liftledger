@@ -246,9 +246,10 @@ export const CompleteDay = () => {
                 {editing && (
                   <button
                     className={classes.squareButton}
-                    onClick={() =>
-                      setExerciseToEdit({ setIdx: undefined, exercise })
-                    }
+                    onClick={() => {
+                      setAddExerciseIdx(undefined);
+                      setExerciseToEdit({ setIdx: undefined, exercise });
+                    }}
                   >
                     <BiSolidEdit />
                   </button>

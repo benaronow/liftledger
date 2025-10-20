@@ -64,6 +64,8 @@ export const EditDialog = ({
   const [editingType, setEditingType] = useState<ChangeExerciseType | "">("");
   const [isDeleting, setIsDeleting] = useState(false);
 
+  console.log("addIdx", addIdx);
+
   const saveExercises = (complete: Exercise[]) => {
     if (curBlock) {
       const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].toSpliced(
@@ -200,7 +202,7 @@ export const EditDialog = ({
         fontSize: "25px",
       },
       onClick: () => setIsDeleting(true),
-      disabled: editingType === "",
+      disabled: addIdx !== undefined,
     },
   ];
 
