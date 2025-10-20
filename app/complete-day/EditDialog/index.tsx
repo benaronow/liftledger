@@ -182,7 +182,10 @@ export const EditDialog = ({
         setIdx !== undefined
           ? handleSubmitSet()
           : handleSubmitExercise(addIdx !== undefined ? "add" : "change"),
-      disabled: !!editingType,
+      disabled:
+        exerciseState.name === "" ||
+        exerciseState.apparatus === "" ||
+        exerciseState.weightType === "",
     },
     {
       text: <FaTrash />,
@@ -197,7 +200,7 @@ export const EditDialog = ({
         fontSize: "25px",
       },
       onClick: () => setIsDeleting(true),
-      disabled: !!editingType,
+      disabled: editingType === "",
     },
   ];
 
@@ -258,6 +261,10 @@ export const EditDialog = ({
           setExerciseState={setExerciseState}
           editingType={editingType}
           setEditingType={setEditingType}
+          takenExercises={exercisesState.filter(
+            (e) =>
+              !(e.name === exercise.name && e.apparatus === exercise.apparatus)
+          )}
         />
       )}
     </ActionDialog>

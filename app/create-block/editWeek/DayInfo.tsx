@@ -6,6 +6,7 @@ import { FaTrash } from "react-icons/fa";
 import { makeStyles } from "tss-react/mui";
 import { ChangeEvent } from "react";
 import { useBlock } from "@/app/providers/BlockProvider";
+import { COLORS } from "@/lib/constants";
 
 const useStyles = makeStyles()({
   day: {
@@ -85,6 +86,7 @@ interface Props {
   dIdx: number;
   setEditingDay: (day: number) => void;
   setDeletingIdx: React.Dispatch<React.SetStateAction<number | undefined>>;
+  hasErrors: boolean;
 }
 
 export const DayInfo = ({
@@ -92,6 +94,7 @@ export const DayInfo = ({
   dIdx,
   setEditingDay,
   setDeletingIdx,
+  hasErrors,
 }: Props) => {
   const { classes } = useStyles();
   const { templateBlock, setTemplateBlock, editingWeekIdx } = useBlock();
@@ -183,6 +186,7 @@ export const DayInfo = ({
           >
             <BiSolidEdit />
             {`${day.exercises[0].name ? "Edit" : "Add"} Exercises`}
+            {hasErrors && <span style={{ color: COLORS.danger }}>!</span>}
           </button>
         </div>
       </div>

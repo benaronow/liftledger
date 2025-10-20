@@ -4,7 +4,12 @@ import { Dispatch, SetStateAction } from "react";
 import { getLastExerciseOccurrence } from "../utils";
 import { useBlock } from "../providers/BlockProvider";
 import { COLORS } from "@/lib/constants";
-import { BiPlusCircle } from "react-icons/bi";
+import { BiDotsHorizontalRounded, BiPlusCircle } from "react-icons/bi";
+import {
+  IoIosArrowDropdownCircle,
+  IoIosArrowDropupCircle,
+} from "react-icons/io";
+import { FaGripLines, FaTimes } from "react-icons/fa";
 
 const useStyles = makeStyles()({
   chipsContainer: {
@@ -74,30 +79,31 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
     return -1;
   };
 
-  const getRepProgress = (setIdx: number) => {
+  const getRepDiff = (setIdx: number) => {
     const lastReps = getLastExerciseOccurrence(curBlock, exercise)?.sets[setIdx]
       .reps;
-    if (!lastReps) return "--";
-    const repsDiff = exercise.sets[setIdx]?.reps - lastReps;
-    if (repsDiff === 0) return "--";
-    return repsDiff > 0 ? `+${repsDiff}` : `${repsDiff}`;
+    if (!lastReps) return 0;
+    return exercise.sets[setIdx] ? exercise.sets[setIdx].reps - lastReps : 0;
   };
 
-  const getWeightProgress = (setIdx: number) => {
+  const getWeightDiff = (setIdx: number) => {
     const lastWeight = getLastExerciseOccurrence(curBlock, exercise)?.sets[
       setIdx
     ].weight;
-    if (!lastWeight) return "--";
-    const weightDiff = exercise.sets[setIdx]?.weight - lastWeight;
-    if (weightDiff === 0) return "--";
-    return weightDiff > 0 ? `+${weightDiff}` : `${weightDiff}`;
+    if (!lastWeight) return 0;
+    return exercise.sets[setIdx]
+      ? exercise.sets[setIdx].weight - lastWeight
+      : 0;
   };
 
-  const getProgressColor = (progress: string) => {
-    if (progress === "--") return "white";
-    if (progress.startsWith("+")) return COLORS.success;
-    if (progress.startsWith("-")) return COLORS.danger;
-    return "white";
+  const getProgressString = (diff: number) => {
+    if (diff === 0) return "--";
+    return diff > 0 ? `+${diff}` : `${diff}`;
+  };
+
+  const getProgressColor = (diff: number) => {
+    if (diff === 0) return "white";
+    return diff > 0 ? COLORS.success : COLORS.danger;
   };
 
   return (
@@ -105,8 +111,9 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
       {exercise.sets.map((set, i) => (
         <button
           key={i}
-          className="d-flex align-items-center justify-content-center border border-0 rounded text-nowrap"
+          className="d-flex align-items-center justify-content-between border border-0 rounded text-nowrap"
           style={{
+            padding: "0px 0px 0px 10px",
             height: "40px",
             fontSize: "13px",
             background: set.completed
@@ -123,33 +130,82 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
         >
           <span className="text-white">
             {set.completed ? (
-              <span className="d-flex gap-2 text-white">
-                <span
-                  className="fw-bold"
-                  style={{ color: getProgressColor(getRepProgress(i)) }}
-                >
-                  {`${set.reps} rep${
+              <span className="d-flex gap-2 text-white align-items-center">
+                <span className="fw-bold">
+                  <span className="me-1">{`${set.reps} rep${
                     set.reps !== 1 ? "s" : ""
-                  } (${getRepProgress(i)})`}
+                  }`}</span>
+                  <span>{`(${getProgressString(getRepDiff(i))})`}</span>
                 </span>
-                <span>with</span>
-                <span
-                  className="fw-bold"
-                  style={{ color: getProgressColor(getWeightProgress(i)) }}
-                >{`${set.weight}${exercise.weightType} (${getWeightProgress(
-                  i
-                )})`}</span>
+                <FaTimes />
+                <span className="fw-bold">
+                  <span className="me-1">{`${set.weight}${exercise.weightType}`}</span>
+                  <span>{`(${getProgressString(getWeightDiff(i))})`}</span>
+                </span>
               </span>
             ) : (
-              <span className="d-flex gap-2 text-white">
+              <span className="d-flex gap-2 text-white align-items-center">
                 <span className="fw-bold">{`${set.reps} rep${
                   set.reps !== 1 ? "s" : ""
                 }`}</span>
-                <span>with</span>
+                <FaTimes />
                 <span className="fw-bold">{`${set.weight}${exercise.weightType}`}</span>
               </span>
             )}
           </span>
+          <div
+            className="d-flex align-items-center justify-content-center text-white rounded-end"
+            style={{
+              minWidth: "40px",
+              height: "40px",
+            }}
+          >
+            {set.completed ? (
+              <div className="position-relative">
+                {getWeightDiff(i) === 0 && getRepDiff(i) === 0 && (
+                  <FaGripLines
+                    style={{ fontSize: "20px", color: getProgressColor(0) }}
+                  />
+                )}
+                {(getWeightDiff(i) > 0 ||
+                  (getRepDiff(i) > 0 && getWeightDiff(i) === 0)) && (
+                  <>
+                    <div
+                      className="position-absolute top-50 start-50 translate-middle bg-white"
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        borderRadius: "50%",
+                      }}
+                    />
+                    <IoIosArrowDropupCircle
+                      className="position-absolute top-50 start-50 translate-middle"
+                      style={{ fontSize: "30px", color: getProgressColor(1) }}
+                    />
+                  </>
+                )}
+                {(getWeightDiff(i) < 0 ||
+                  (getRepDiff(i) < 0 && getWeightDiff(i) === 0)) && (
+                  <>
+                    <div
+                      className="position-absolute top-50 start-50 translate-middle bg-white"
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        borderRadius: "50%",
+                      }}
+                    />
+                    <IoIosArrowDropdownCircle
+                      className="position-absolute top-50 start-50 translate-middle"
+                      style={{ fontSize: "30px", color: getProgressColor(-1) }}
+                    />
+                  </>
+                )}
+              </div>
+            ) : (
+              <BiDotsHorizontalRounded style={{ fontSize: "30px" }} />
+            )}
+          </div>
         </button>
       ))}
       <button

@@ -32,11 +32,11 @@ const useStyles = makeStyles()({
   value: {
     display: "flex",
     flexDirection: "column",
+    marginBottom: "10px",
   },
   valueLabel: {
     fontSize: "14px",
     fontWeight: 600,
-    marginBottom: "10px",
   },
   valueButton: {
     display: "flex",
@@ -78,6 +78,7 @@ interface Props {
   setExerciseState: Dispatch<SetStateAction<Exercise>>;
   editingType: ChangeExerciseType | "";
   setEditingType: Dispatch<SetStateAction<ChangeExerciseType | "">>;
+  takenExercises: Exercise[];
 }
 
 export const EditExercise = ({
@@ -85,6 +86,7 @@ export const EditExercise = ({
   setExerciseState,
   editingType,
   setEditingType,
+  takenExercises,
 }: Props) => {
   const { classes } = useStyles();
   const { curBlock } = useBlock();
@@ -170,30 +172,48 @@ export const EditExercise = ({
             <React.Fragment key={entry.name}>
               {editingType === entry.name && (
                 <React.Fragment key={`${entry.name}${editingType}`}>
-                  {entry.options.map((option) => (
-                    <button
-                      className={`${classes.itemButton} ${
-                        isCurrentlySelected(option)
-                          ? classes.selectedItem
-                          : classes.unselectedItem
-                      }`}
-                      key={option}
-                      onClick={() => {
-                        if (editingType)
-                          handleExerciseChange(option, editingType);
-                        setEditingType("");
-                      }}
-                      ref={
-                        isCurrentlySelected(option) ? scrollToButtonRef : null
+                  {entry.options
+                    .filter((o) => {
+                      if (entry.name === "name") {
+                        return !takenExercises.find(
+                          (e) =>
+                            e.name === o &&
+                            e.apparatus === exerciseState.apparatus
+                        );
                       }
-                    >
-                      <div className={classes.pad}>
-                        {isCurrentlySelected(option) && <IoArrowBack />}
-                      </div>
-                      {option}
-                      <div className={classes.pad}></div>
-                    </button>
-                  ))}
+                      if (entry.name === "apparatus") {
+                        return !takenExercises.find(
+                          (e) =>
+                            e.apparatus === o &&
+                            e.name === exerciseState.name
+                        );
+                      }
+                      return true;
+                    })
+                    .map((option) => (
+                      <button
+                        className={`${classes.itemButton} ${
+                          isCurrentlySelected(option)
+                            ? classes.selectedItem
+                            : classes.unselectedItem
+                        }`}
+                        key={option}
+                        onClick={() => {
+                          if (editingType)
+                            handleExerciseChange(option, editingType);
+                          setEditingType("");
+                        }}
+                        ref={
+                          isCurrentlySelected(option) ? scrollToButtonRef : null
+                        }
+                      >
+                        <div className={classes.pad}>
+                          {isCurrentlySelected(option) && <IoArrowBack />}
+                        </div>
+                        {option}
+                        <div className={classes.pad}></div>
+                      </button>
+                    ))}
                 </React.Fragment>
               )}
             </React.Fragment>

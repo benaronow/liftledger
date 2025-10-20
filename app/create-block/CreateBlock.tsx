@@ -21,6 +21,7 @@ export const CreateBlock = () => {
     curBlock,
     templateBlock,
     unsetTemplateBlock,
+    editingWeekIdx,
     setEditingWeekIdx,
     createBlock,
     editBlock,
@@ -65,6 +66,22 @@ export const CreateBlock = () => {
     router.push("/dashboard");
   };
 
+  const templateErrors = useMemo(() => {
+    const errors: string[] = [];
+    for (const day of templateBlock.weeks[editingWeekIdx]) {
+      for (const exercise of day.exercises) {
+        if (
+          !exercise.name ||
+          !exercise.apparatus ||
+          !exercise.weightType ||
+          exercise.sets.length === 0
+        )
+          errors.push(day.name);
+      }
+    }
+    return errors;
+  }, [templateBlock, editingWeekIdx]);
+
   const headerActions: HeaderAction[] = useMemo(
     () => [
       {
@@ -78,9 +95,10 @@ export const CreateBlock = () => {
         label: "Save",
         onClick: handleSubmit,
         side: "right",
+        disabled: templateErrors.length > 0,
       },
     ],
-    [setEditingDay, handleSubmit]
+    [setEditingDay, handleSubmit, templateErrors]
   );
 
   if (!curUser || isFetching) return <Spinner />;
@@ -93,7 +111,7 @@ export const CreateBlock = () => {
         style={{ height: "100dvh", padding: "100px 15px 90px" }}
       >
         {editingDay === -1 ? (
-          <EditWeek setEditingDay={setEditingDay} />
+          <EditWeek setEditingDay={setEditingDay} errors={templateErrors} />
         ) : (
           <EditDay editingDay={editingDay} />
         )}

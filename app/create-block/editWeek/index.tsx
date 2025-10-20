@@ -67,9 +67,10 @@ const useStyles = makeStyles()({
 
 interface EditWeekProps {
   setEditingDay: (day: number) => void;
+  errors: string[];
 }
 
-export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
+export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
   const { classes } = useStyles();
   const router = useRouter();
   const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
@@ -168,6 +169,7 @@ export const EditWeek = ({ setEditingDay }: EditWeekProps) => {
               dIdx={idx}
               setEditingDay={setEditingDay}
               setDeletingIdx={setDeletingIdx}
+              hasErrors={errors.includes(day.name)}
             />
           </React.Fragment>
         ))}
