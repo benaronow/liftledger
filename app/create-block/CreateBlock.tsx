@@ -68,6 +68,7 @@ export const CreateBlock = () => {
 
   const templateErrors = useMemo(() => {
     const errors: string[] = [];
+    if (templateBlock.length === 0) errors.push("Block length too short");
     for (const day of templateBlock.weeks[editingWeekIdx]) {
       for (const exercise of day.exercises) {
         if (

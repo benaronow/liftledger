@@ -17,6 +17,8 @@ interface UserContextType {
   session: SessionData | null;
   attemptedLogin: boolean;
   curUser?: User;
+  curUserLoading: boolean;
+  getUser: (email: string) => Promise<void>;
   createUser: (user: Partial<User>) => Promise<void>;
   updateUser: (user: User) => Promise<void>;
   deleteUser: (email: string) => Promise<void>;
@@ -27,6 +29,8 @@ interface UserContextType {
 const defaultUserContext: UserContextType = {
   session: null,
   attemptedLogin: false,
+  curUserLoading: true,
+  getUser: async () => {},
   createUser: async () => {},
   updateUser: async () => {},
   deleteUser: async () => {},
@@ -46,17 +50,20 @@ export const UserProvider = ({
 }: PropsWithChildren<UserProviderProps>) => {
   const [attemptedLogin, setAttemptedLogin] = useState(false);
   const [curUser, setCurUser] = useState<User>();
+  const [curUserLoading, setCurUserLoading] = useState(true);
   const [introMessageOpen, setIntroMessageOpen] = useState(false);
 
-  const loginUser = async (email: string) => {
+  const getUser = async (email: string) => {
+    setCurUserLoading(true);
     const res = await api.get(`${USER_API_URL}/${email}`);
     const result: User = res.data;
     setAttemptedLogin(true);
     if (result) setCurUser(result);
+    setCurUserLoading(false);
   };
 
   useEffect(() => {
-    if (session?.user.email && !curUser) loginUser(session.user.email);
+    if (session?.user.email && !curUser) getUser(session.user.email);
   }, [curUser]);
 
   const createUser = async (user: Partial<User>) => {
@@ -83,6 +90,8 @@ export const UserProvider = ({
         session,
         attemptedLogin,
         curUser,
+        curUserLoading,
+        getUser,
         createUser,
         updateUser,
         deleteUser,

@@ -47,6 +47,7 @@ export const EMPTY_BLOCK: Block = {
 
 interface BlockContextType {
   curBlock?: Block;
+  curBlockLoading: boolean;
   templateBlock: Block;
   setTemplateBlock: Dispatch<SetStateAction<Block>>;
   unsetTemplateBlock: () => void;
@@ -57,6 +58,7 @@ interface BlockContextType {
 }
 
 const defaultBlockContext: BlockContextType = {
+  curBlockLoading: true,
   templateBlock: EMPTY_BLOCK,
   setTemplateBlock: () => {},
   unsetTemplateBlock: () => {},
@@ -69,8 +71,9 @@ const defaultBlockContext: BlockContextType = {
 export const BlockContext = createContext(defaultBlockContext);
 
 export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
-  const { curUser } = useUser();
+  const { session, curUser, getUser } = useUser();
   const [curBlock, setCurBlock] = useState<Block>();
+  const [curBlockLoading, setCurBlockLoading] = useState(true);
   const [templateBlock, setTemplateBlock] = useState<Block>(EMPTY_BLOCK);
   const [editingWeekIdx, setEditingWeekIdx] = useState(0);
 
@@ -79,10 +82,15 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
   };
 
   const getCurBlock = async () => {
-    if (!curUser || !curUser.curBlock) return;
+    setCurBlockLoading(true);
+    if (!curUser || !curUser.curBlock) {
+      setCurBlockLoading(false);
+      return;
+    }
     const res = await api.get(`${BLOCK_API_URL}/${curUser.curBlock}`);
     const result: Block = res.data;
     setCurBlock(result);
+    setCurBlockLoading(false);
   };
 
   useEffect(() => {
@@ -108,6 +116,7 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
     const result: { block: Block; done: boolean } = res.data;
     if (result.done) {
       setCurBlock(undefined);
+      getUser(session?.user.email || "");
     } else {
       setCurBlock(result.block);
     }
@@ -117,6 +126,7 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
     <BlockContext.Provider
       value={{
         curBlock,
+        curBlockLoading,
         templateBlock,
         setTemplateBlock,
         unsetTemplateBlock,

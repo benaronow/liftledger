@@ -15,7 +15,7 @@ import { useBlock } from "@/app/providers/BlockProvider";
 export const Dashboard = () => {
   const { classes } = useDashboardStyles();
   const { session, attemptedLogin, curUser } = useUser();
-  const { curBlock } = useBlock();
+  const { curBlock, curBlockLoading } = useBlock();
   const { isFetching, toggleScreenState } = useScreenState();
   const router = useRouter();
 
@@ -120,7 +120,7 @@ export const Dashboard = () => {
     { metric: "Total Weight Lifted:", value: getTotalWeight("lbs") },
   ];
 
-  if ((session && !curUser) || isFetching) return <Spinner />;
+  if ((session && !curUser) || curBlockLoading || isFetching) return <Spinner />;
 
   return (
     <div className={classes.container}>
