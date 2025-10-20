@@ -121,6 +121,12 @@ export const useDashboardStyles = makeStyles()({
       cursor: "pointer",
     },
     whiteSpace: "nowrap",
+    "&:active": {
+      color: "white",
+    },
+    "&:visited": {
+      color: "white",
+    },
   },
   accountButtonTop: {
     borderRadius: "5px",

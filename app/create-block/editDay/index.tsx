@@ -1,4 +1,4 @@
-import { Day, Exercise, WeightType } from "@/lib/types";
+import { Day, Exercise } from "@/lib/types";
 import React, { useState } from "react";
 import { makeStyles } from "tss-react/mui";
 import { AddButton } from "../../components/AddButton";
@@ -78,7 +78,7 @@ export const EditDay = ({ editingDay }: EditDayProps) => {
           note: "",
         },
       ],
-      weightType: WeightType.Pounds,
+      weightType: "",
     };
 
     setTemplateBlock({

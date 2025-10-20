@@ -42,8 +42,20 @@ export const useFooterStyles = makeStyles()({
   },
   activeIcon: {
     color: "white",
+    "&:active": {
+      color: "white",
+    },
+    "&:visited": {
+      color: "white",
+    },
   },
   inactiveIcon: {
     color: "#adafb3",
+    "&:active": {
+      color: "#adafb3",
+    },
+    "&:visited": {
+      color: "#adafb3",
+    },
   },
 });
