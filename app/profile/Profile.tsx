@@ -9,70 +9,9 @@ import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { Spinner } from "../components/spinner";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { makeStyles } from "tss-react/mui";
 import { PushButton } from "../components/pushButton";
 
-const useStyles = makeStyles()((theme) => ({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    width: "100%",
-    height: "100dvh",
-    padding: "65px 15px 85px",
-    overflow: "scroll",
-    [theme.breakpoints.up("sm")]: {
-      height: "calc(100dvh - 60px)",
-    },
-  },
-  head: {
-    display: "flex",
-    flexDirection: "column",
-    color: "white",
-    fontFamily: "League+Spartan",
-    fontSize: "14px",
-    marginBottom: "10px",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: "5px",
-    whiteSpace: "nowrap",
-  },
-  info: {
-    display: "flex",
-    flexDirection: "column",
-    width: "100%",
-    justifyContent: "space-between",
-    background: "#131314",
-    margin: "15px 0px",
-    borderRadius: "5px",
-    padding: "10px",
-    gap: "10px",
-    border: "solid 5px #58585b",
-    boxShadow: "0px 5px 10px #131314",
-  },
-  entry: {
-    display: "flex",
-    fontFamily: "League+Spartan",
-    width: "100%",
-    justifyContent: "space-between",
-    fontSize: "14px",
-  },
-  title: {
-    fontFamily: "League+Spartan",
-    fontWeight: 700,
-  },
-  logOut: {
-    color: "white",
-    fontFamily: "League+Spartan",
-    fontSize: "16px",
-    fontWeight: 600,
-  },
-}));
-
 export const Profile = () => {
-  const { classes } = useStyles();
   const { session, curUser } = useUser();
   const { isFetching, toggleScreenState } = useScreenState();
   const router = useRouter();
@@ -99,27 +38,69 @@ export const Profile = () => {
   if (!curUser || isFetching) return <Spinner />;
 
   return (
-    <div className={classes.container}>
-      <div className={classes.head}>
+    <div
+      className="d-flex flex-column align-items-center w-100"
+      style={{
+        height: "100dvh",
+        padding: "65px 15px 85px",
+        overflow: "scroll",
+      }}
+    >
+      <div
+        className="d-flex flex-column align-items-center text-white text-nowrap w-100"
+        style={{
+          fontFamily: "League+Spartan",
+          fontSize: "14px",
+          marginBottom: "10px",
+          borderRadius: "5px",
+        }}
+      >
         <Avatar
           sx={{ height: "75px", width: "75px", marginRight: "20px" }}
           src={session?.user.picture}
         />
-        <div className={classes.info}>
-          <div className={classes.entry}>
-            <span className={classes.title}>Name:</span>
+        <div
+          className="d-flex flex-column w-100"
+          style={{
+            justifyContent: "space-between",
+            background: "#131314",
+            margin: "15px 0px",
+            borderRadius: "5px",
+            padding: "10px",
+            gap: "10px",
+            border: "solid 5px #58585b",
+            boxShadow: "0px 5px 10px #131314",
+          }}
+        >
+          <div
+            className="d-flex justify-content-between w-100"
+            style={{ fontFamily: "League+Spartan", fontSize: "14px" }}
+          >
+            <span className="fw-bold" style={{ fontFamily: "League+Spartan" }}>
+              Name:
+            </span>
             <span>
               {curUser
                 ? `${curUser?.firstName} ${curUser?.lastName}`
                 : "Unavailable"}
             </span>
           </div>
-          <div className={classes.entry}>
-            <span className={classes.title}>Email:</span>
+          <div
+            className="d-flex justify-content-between w-100"
+            style={{ fontFamily: "League+Spartan", fontSize: "14px" }}
+          >
+            <span className="fw-bold" style={{ fontFamily: "League+Spartan" }}>
+              Email:
+            </span>
             <span>{curUser ? curUser.email : "Unavailable"}</span>
           </div>
-          <div className={classes.entry}>
-            <span className={classes.title}>Birthday:</span>
+          <div
+            className="d-flex justify-content-between w-100"
+            style={{ fontFamily: "League+Spartan", fontSize: "14px" }}
+          >
+            <span className="fw-bold" style={{ fontFamily: "League+Spartan" }}>
+              Birthday:
+            </span>
             <span>
               {curUser
                 ? `${dayjs(curUser.birthday).utc().format("MM/DD/YYYY")}`
@@ -128,7 +109,15 @@ export const Profile = () => {
           </div>
         </div>
         <PushButton height={40} width={90}>
-          <span className={classes.logOut} onClick={handleLogout}>
+          <span
+            className="text-white"
+            style={{
+              fontFamily: "League+Spartan",
+              fontSize: "16px",
+              fontWeight: 600,
+            }}
+            onClick={handleLogout}
+          >
             Log Out
           </span>
         </PushButton>
