@@ -1,49 +1,36 @@
+import { COLORS } from "@/lib/constants";
 import { GrFormAdd } from "react-icons/gr";
-import { makeStyles } from "tss-react/mui";
-
-export const useStyles = makeStyles()({
-  addExercise: {
-    width: "90%",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "15px",
-  },
-  addExerciseSpacing: {
-    width: "100%",
-    height: "2px",
-    background: "#0096FF",
-  },
-  addExerciseButton: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "#0096FF",
-    color: "white",
-    fontSize: "20px",
-    padding: "0px",
-    height: "20px",
-    minWidth: "20px",
-    border: "none",
-    borderRadius: "20px",
-    margin: "0px 10px",
-  },
-});
 
 interface Props {
   onClick: () => void;
 }
 
 export const AddButton = ({ onClick }: Props) => {
-  const { classes } = useStyles();
-
   return (
-    <div className={classes.addExercise}>
-      <div className={classes.addExerciseSpacing} />
-      <button className={classes.addExerciseButton} onClick={onClick}>
+    <div
+      className="d-flex justify-content-between align-items-center"
+      style={{ width: "90%", marginBottom: "15px" }}
+    >
+      <div style={{ width: "100%", height: "2px", background: "#0096FF" }} />
+      <button
+        className="d-flex justify-content-center align-items-center border-0 text-white p-0"
+        style={{
+          background: COLORS.primary,
+          fontSize: "20px",
+          height: "20px",
+          minWidth: "20px",
+          borderRadius: "20px",
+          margin: "0 10px",
+          cursor: "pointer",
+        }}
+        onClick={onClick}
+      >
         <GrFormAdd />
       </button>
-      <div className={classes.addExerciseSpacing} />
+      <div
+        className="w-100"
+        style={{ height: "2px", background: COLORS.primary }}
+      />
     </div>
   );
 };

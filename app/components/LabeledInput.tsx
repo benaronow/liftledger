@@ -1,32 +1,6 @@
 import { DatePicker } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
 import { ChangeEvent } from "react";
-import { makeStyles } from "tss-react/mui";
-
-const useStyles = makeStyles()({
-  inputRow: {
-    display: "flex",
-    fontSize: "14px",
-    alignItems: "center",
-    border: "solid 2px #adafb3",
-    borderRadius: "5px",
-    padding: "5px",
-    background: "white",
-    color: "black",
-    width: "100%",
-  },
-  input: {
-    border: "none",
-    outline: "none",
-    fontSize: "16px",
-    width: "100%",
-  },
-  rowName: {
-    marginRight: "5px",
-    fontWeight: "600",
-    whiteSpace: "nowrap",
-  },
-});
 
 interface Props {
   label: string;
@@ -45,14 +19,25 @@ export const LabeledInput = ({
   onChangeDate,
   disabled,
 }: Props) => {
-  const { classes } = useStyles();
-
   return (
-    <div className={classes.inputRow}>
-      <span className={classes.rowName}>{label}</span>
+    <div
+      className="d-flex align-items-center w-100"
+      style={{
+        fontSize: "14px",
+        border: "solid 2px #adafb3",
+        borderRadius: "5px",
+        padding: "5px",
+        background: "white",
+        color: "black",
+      }}
+    >
+      <span className="fw-semibold text-nowrap" style={{ marginRight: "5px" }}>
+        {label}
+      </span>
       {onChangeText && (
         <input
-          className={classes.input}
+          className="w-100"
+          style={{ border: "none", outline: "none", fontSize: "16px" }}
           value={textValue}
           onChange={onChangeText}
           disabled={disabled}
@@ -60,9 +45,21 @@ export const LabeledInput = ({
       )}
       {onChangeDate && (
         <DatePicker
-          className={classes.input}
           value={dateValue}
           onChange={onChangeDate}
+          slotProps={{
+            textField: {
+              fullWidth: true,
+              sx: {
+                "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+                "&:hover .MuiOutlinedInput-notchedOutline": { border: "none" },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  border: "none",
+                },
+                "& .MuiInputBase-input": { fontSize: "16px", padding: "0 8px" },
+              },
+            },
+          }}
         />
       )}
     </div>
