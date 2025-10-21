@@ -4,7 +4,7 @@ import { UserProvider } from "./UserProvider";
 import { ReactNode } from "react";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { ScreenStateProvider } from "./ScreenStateProvider";
 import { SessionData } from "@auth0/nextjs-auth0/types";
@@ -19,7 +19,7 @@ export const Providers = ({ children, session }: ProvidersProps) => {
   const theme = createTheme();
 
   return (
-    <NextAppDirEmotionCacheProvider options={{ key: "css" }}>
+    <AppRouterCacheProvider options={{ key: "css" }}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <ThemeProvider theme={theme}>
           <ScreenStateProvider>
@@ -29,6 +29,6 @@ export const Providers = ({ children, session }: ProvidersProps) => {
           </ScreenStateProvider>
         </ThemeProvider>
       </LocalizationProvider>
-    </NextAppDirEmotionCacheProvider>
+    </AppRouterCacheProvider>
   );
 };

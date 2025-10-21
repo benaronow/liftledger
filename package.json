@@ -13,9 +13,9 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.3.0",
     "@mui/material": "^6.3.0",
+    "@mui/material-nextjs": "^7.3.3",
     "@mui/system": "^6.3.0",
     "@mui/x-date-pickers": "^7.23.3",
-    "@reduxjs/toolkit": "^2.2.0",
     "axios": "^1.7.9",
     "dayjs": "^1.11.13",
     "mongoose": "^8.9.1",
@@ -24,8 +24,7 @@
     "react-dom": "19.0.0",
     "react-icons": "^5.5.0",
     "react-redux": "^9.2.0",
-    "react-select": "^5.9.0",
-    "tss-react": "^4.9.14"
+    "react-select": "^5.9.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
