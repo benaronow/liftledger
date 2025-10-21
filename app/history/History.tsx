@@ -10,70 +10,7 @@ import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { Spinner } from "../components/spinner";
 import { useUser } from "@/app/providers/UserProvider";
 import { checkIsBlockDone } from "@/app/utils";
-import { makeStyles } from "tss-react/mui";
 import { useBlock } from "@/app/providers/BlockProvider";
-
-const useStyles = makeStyles()({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    width: "100%",
-    height: "100dvh",
-    padding: "65px 15px 85px",
-    overflow: "scroll",
-  },
-  entry: {
-    display: "flex",
-    color: "white",
-    fontFamily: "League+Spartan",
-    fontSize: "14px",
-    marginBottom: "15px",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    whiteSpace: "nowrap",
-    background: "#58585b",
-    borderRadius: "5px",
-    border: "solid 5px #58585b",
-    boxShadow: "0px 5px 10px #131314",
-  },
-  entryInfo: {
-    background: "#131314",
-    width: "100%",
-    display: "flex",
-    padding: "5px 10px",
-    borderRadius: "5px",
-    height: "35px",
-    fontSize: "14px",
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  title: {
-    fontWeight: 700,
-    marginRight: "5px",
-  },
-  noBlockText: {
-    fontFamily: "League+Spartan",
-    fontSize: "16px",
-    textAlign: "center",
-  },
-  completedBlockEntry: {
-    justifyContent: "space-between",
-  },
-  duplicateButton: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    marginLeft: "5px",
-    background: "#0096FF",
-    color: "white",
-    border: "none",
-    height: "35px",
-    width: "35px",
-    borderRadius: "5px",
-  },
-});
 
 const getTemplateFromBlock = (block: Block) => ({
   name: block.name,
@@ -105,7 +42,6 @@ const getTemplateFromBlock = (block: Block) => ({
 });
 
 export const History = () => {
-  const { classes } = useStyles();
   const router = useRouter();
   const { curUser, session } = useUser();
   const { setTemplateBlock, setEditingWeekIdx } = useBlock();
@@ -147,13 +83,32 @@ export const History = () => {
       return (
         <div
           key={idx}
-          className={`${classes.entry} ${classes.completedBlockEntry}`}
+          className="d-flex align-items-center w-100 text-white text-nowrap justify-content-between"
+          style={{
+            fontFamily: "League+Spartan",
+            fontSize: "14px",
+            marginBottom: "15px",
+            background: "#58585b",
+            borderRadius: "5px",
+            border: "solid 5px #58585b",
+            boxShadow: "0px 5px 10px #131314",
+          }}
         >
-          <div className={classes.entryInfo}>
+          <div
+            className="d-flex w-100 align-items-center"
+            style={{
+              background: "#131314",
+              padding: "5px 10px",
+              borderRadius: "5px",
+              height: "35px",
+              fontSize: "14px",
+              overflow: "hidden",
+            }}
+          >
             <span className="text-nowrap text-truncate">
-              <span className={classes.title}>{`${idx + 1}. ${
-                block.name
-              }`}</span>
+              <span className="fw-bold" style={{ marginRight: "5px" }}>{`${
+                idx + 1
+              }. ${block.name}`}</span>
               <span>{`(${dayjs(block.startDate).format("M/DD/YY")} -  ${
                 getCompletedDate(block)
                   ? dayjs(getCompletedDate(block)).format("M/DD/YY")
@@ -162,7 +117,16 @@ export const History = () => {
             </span>
           </div>
           <button
-            className={classes.duplicateButton}
+            className="d-flex justify-content-center align-items-center border-0"
+            style={{
+              marginLeft: "5px",
+              background: "#0096FF",
+              color: "white",
+              height: "35px",
+              width: "35px",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
             onClick={() => handleCreateFromTemplate(block)}
           >
             <ControlPointDuplicate />
@@ -174,12 +138,38 @@ export const History = () => {
   if (!curUser || isFetching) return <Spinner />;
 
   return (
-    <div className={`${classes.container}`}>
+    <div
+      className="d-flex flex-column align-items-center w-100"
+      style={{
+        height: "100dvh",
+        padding: "65px 15px 85px",
+        overflow: "scroll",
+      }}
+    >
       {completedBlocks && completedBlocks[0] ? (
         completedBlocks
       ) : (
-        <div className={`${classes.entry} ${classes.completedBlockEntry}`}>
-          <span className={`${classes.noBlockText} ${classes.title}`}>
+        <div
+          className="d-flex align-items-center w-100 text-white text-nowrap justify-content-between"
+          style={{
+            fontFamily: "League+Spartan",
+            fontSize: "14px",
+            marginBottom: "15px",
+            background: "#58585b",
+            borderRadius: "5px",
+            border: "solid 5px #58585b",
+            boxShadow: "0px 5px 10px #131314",
+          }}
+        >
+          <span
+            className="fw-bold"
+            style={{
+              fontFamily: "League+Spartan",
+              fontSize: "16px",
+              textAlign: "center",
+              marginRight: "5px",
+            }}
+          >
             No completed blocks yet
           </span>
         </div>
