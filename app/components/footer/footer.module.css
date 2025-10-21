@@ -1,0 +1,33 @@
+@keyframes footerAppear {
+  from {
+    transform: translateY(70px);
+  }
+  to {
+    transform: translateY(0px);
+  }
+}
+
+.containerAnimate {
+  transform: translateY(70px);
+  animation: footerAppear 0.5s forwards;
+}
+
+.activeIcon {
+  color: white;
+}
+.activeIcon:link,
+.activeIcon:active,
+.activeIcon:hover,
+.activeIcon:visited {
+  color: white;
+}
+
+.inactiveIcon {
+  color: #adafb3;
+}
+.inactiveIcon:link,
+.inactiveIcon:active,
+.inactiveIcon:hover,
+.inactiveIcon:visited {
+  color: #adafb3;
+}

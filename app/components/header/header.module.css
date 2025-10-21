@@ -1,0 +1,13 @@
+@keyframes headerAppear {
+  from {
+    transform: translateY(-50px);
+  }
+  to {
+    transform: translateY(0px);
+  }
+}
+
+.containerAnimate {
+  transform: translateY(-50px);
+  animation: headerAppear 0.5s forwards;
+}

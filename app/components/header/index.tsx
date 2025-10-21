@@ -3,13 +3,12 @@
 import { usePathname, useRouter } from "next/navigation";
 import { Person } from "@mui/icons-material";
 import { RouteType } from "@/lib/types";
-import { useHeaderStyles } from "./useHeaderStyles";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useUser } from "@/app/providers/UserProvider";
 import { useBlock } from "@/app/providers/BlockProvider";
+import styles from "./header.module.css";
 
 export const Header = () => {
-  const { classes } = useHeaderStyles();
   const router = useRouter();
   const pathname = usePathname();
   const { session } = useUser();
@@ -31,19 +30,55 @@ export const Header = () => {
   return (
     <>
       {pathname !== "/" && session && (
-        <div className={classes.container}>
-          <div className={classes.leftPad}>
-            <span className={classes.title}>{getTitle()}</span>
+        <div
+          className={`${styles.containerAnimate} d-flex align-items-center`}
+          style={{
+            background: "#131314",
+            height: "50px",
+            width: "100%",
+            zIndex: 10,
+            borderRadius: "0 0 20px 20px",
+          }}
+        >
+          <div
+            className="d-flex"
+            style={{ width: "50%", justifyContent: "flex-start" }}
+          >
+            <span
+              className="text-white text-nowrap"
+              style={{
+                fontSize: "25px",
+                fontFamily: "Mina",
+                fontWeight: 700,
+                marginLeft: "15px",
+                height: "35px",
+                borderRadius: "17.5px",
+              }}
+            >
+              {getTitle()}
+            </span>
           </div>
-          <div className={classes.rightPad}>
+          <div
+            className="d-flex align-items-center"
+            style={{ width: "50%", justifyContent: "flex-end" }}
+          >
             <div
-              className={classes.profileIcon}
+              className="d-flex justify-content-center align-items-center"
+              style={{
+                marginRight: "10px",
+                height: "30px",
+                width: "30px",
+                borderRadius: "17.5px",
+                background: "white",
+                color: "#6d6e71",
+                cursor: "pointer",
+              }}
               onClick={() => {
                 toggleScreenState("fetching", true);
                 router.push("/profile");
               }}
             >
-              <Person className={classes.profileIconImg} />
+              <Person style={{ fontSize: "27px" }} />
             </div>
           </div>
         </div>
