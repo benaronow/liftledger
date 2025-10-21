@@ -4,8 +4,6 @@ import styles from "./styles/layout.module.css";
 import { Providers } from "./providers";
 import { auth0 } from "@/lib/auth0";
 import { Header } from "./components/header";
-import { MessageModal } from "./components/messageModal";
-import { Overlay } from "./components/overlay";
 import { Footer } from "./components/footer";
 
 interface Props {
@@ -96,13 +94,7 @@ const RootLayout = async ({ children }: Props) => {
               <Header />
             </header>
 
-            <main className={styles.main}>
-              <>
-                <Overlay />
-                {children}
-                <MessageModal />
-              </>
-            </main>
+            <main className={styles.main}>{children}</main>
             <footer className={styles.footer}>
               <Footer />
             </footer>

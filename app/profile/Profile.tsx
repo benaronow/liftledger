@@ -9,7 +9,7 @@ import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { Spinner } from "../components/spinner";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { PushButton } from "../components/pushButton";
+import { COLORS } from "@/lib/constants";
 
 export const Profile = () => {
   const { session, curUser } = useUser();
@@ -108,7 +108,10 @@ export const Profile = () => {
             </span>
           </div>
         </div>
-        <PushButton height={40} width={90}>
+        <button
+          className="border border-0 px-3 py-2 rounded"
+          style={{ background: COLORS.primary }}
+        >
           <span
             className="text-white"
             style={{
@@ -120,7 +123,7 @@ export const Profile = () => {
           >
             Log Out
           </span>
-        </PushButton>
+        </button>
       </div>
     </div>
   );

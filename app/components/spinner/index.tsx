@@ -1,16 +1,16 @@
 "use client";
 
-import { useSpinnerStyles } from "./useSpinnerStyles";
-
+import styles from "./spinner.module.css";
 export const Spinner = () => {
-  const { classes } = useSpinnerStyles();
-
   return (
-    <div className={classes.container}>
+    <div
+      className="d-flex flex-column justify-content-center align-items-center"
+      style={{ height: "100dvh", paddingBottom: "10px" }}
+    >
       <img
-        className={classes.logo}
+        className={styles.logo}
         src="/icon.png"
-        alt="Description of image"
+        alt="Loading"
         height={50}
         width={50}
       />
