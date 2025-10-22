@@ -1,9 +1,10 @@
 import { Day, Exercise } from "@/lib/types";
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { AddButton } from "../../components/AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
 import { DeleteDialog } from "../../components/DeleteResetDialog";
 import { useBlock } from "@/app/providers/BlockProvider";
+import { LabeledInput } from "@/app/components/LabeledInput";
 
 interface EditDayProps {
   editingDay: number;
@@ -15,6 +16,22 @@ export const EditDay = ({ editingDay }: EditDayProps) => {
 
   const shouldEditDay = (day: Day) => {
     return day.name === templateBlock.weeks[editingWeekIdx][editingDay].name;
+  };
+
+  const handleDayNameInput = (
+    e: ChangeEvent<HTMLInputElement>,
+    dayIdx: number
+  ) => {
+    setTemplateBlock({
+      ...templateBlock,
+      weeks: templateBlock.weeks.map((week, idx) =>
+        idx === editingWeekIdx
+          ? week.map((day, idx) =>
+              idx === dayIdx ? { ...day, name: e.target.value } : day
+            )
+          : week
+      ),
+    });
   };
 
   const handleAddExercise = (idx: number) => {
@@ -74,6 +91,15 @@ export const EditDay = ({ editingDay }: EditDayProps) => {
         className="d-flex flex-column align-items-center w-100"
         style={{ fontFamily: "League+Spartan", fontSize: "16px" }}
       >
+        <div className="w-100" style={{ marginBottom: "20px" }}>
+          <LabeledInput
+            label="Name:"
+            textValue={templateBlock.weeks[editingWeekIdx][editingDay].name}
+            onChangeText={(e: ChangeEvent<HTMLInputElement>) =>
+              handleDayNameInput(e, editingDay)
+            }
+          />
+        </div>
         {templateBlock.weeks[editingWeekIdx][editingDay].exercises.map(
           (exercise, idx) => (
             <React.Fragment key={idx}>

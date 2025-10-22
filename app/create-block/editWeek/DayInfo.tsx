@@ -1,11 +1,10 @@
 import { Day } from "@/lib/types";
 import { ArrowBackIosNew, ControlPointDuplicate } from "@mui/icons-material";
-import { LabeledInput } from "../../components/LabeledInput";
 import { BiSolidEdit } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
-import { ChangeEvent } from "react";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { COLORS } from "@/lib/constants";
+import { ActionButton } from "@/app/components/ActionButton";
 
 interface Props {
   day: Day;
@@ -39,22 +38,6 @@ export const DayInfo = ({
     }
   };
 
-  const handleDayNameInput = (
-    e: ChangeEvent<HTMLInputElement>,
-    dayIdx: number
-  ) => {
-    setTemplateBlock({
-      ...templateBlock,
-      weeks: templateBlock.weeks.map((week, idx) =>
-        idx === editingWeekIdx
-          ? week.map((day, idx) =>
-              idx === dayIdx ? { ...day, name: e.target.value } : day
-            )
-          : week
-      ),
-    });
-  };
-
   const handleEditDay = (dayIdx: number) => {
     setEditingDay(dayIdx);
   };
@@ -76,142 +59,88 @@ export const DayInfo = ({
 
   return (
     <div
-      className="d-flex align-items-center w-100 justify-content-center"
+      className="d-flex flex-column w-100 rounded overflow-hidden"
       style={{
-        background: "#58585b",
-        borderRadius: "5px",
-        border: "solid 5px #58585b",
         boxShadow: "0px 5px 10px #131314",
         marginBottom: "15px",
       }}
     >
       <div
-        className="d-flex flex-column align-items-center"
-        style={{ gap: "5px" }}
+        className="w-100 d-flex align-items-center justify-content-center p-1"
+        style={{ background: COLORS.dark }}
       >
-        <button
-          className="d-flex justify-content-center align-items-center border-0"
-          style={{
-            width: "35px",
-            height: "35px",
-            minHeight: "35px",
-            borderRadius: "5px",
-            fontSize: "20px",
-            background: dIdx === 0 ? "#317baf" : "#0096FF",
-            color: dIdx === 0 ? "#a7a7a7" : "white",
-            cursor: "pointer",
-          }}
-          onClick={() => handleMoveDay(day, dIdx, "up")}
-        >
-          <ArrowBackIosNew style={{ transform: "rotate(90deg)" }} />
-        </button>
-        <button
-          className="d-flex justify-content-center align-items-center border-0"
-          style={{
-            width: "35px",
-            height: "35px",
-            minHeight: "35px",
-            borderRadius: "5px",
-            fontSize: "20px",
-            background:
-              dIdx === templateBlock.weeks[editingWeekIdx].length - 1
-                ? "#317baf"
-                : "#0096FF",
-            color:
-              dIdx === templateBlock.weeks[editingWeekIdx].length - 1
-                ? "#a7a7a7"
-                : "white",
-            cursor: "pointer",
-          }}
-          onClick={() => handleMoveDay(day, dIdx, "down")}
-        >
-          <ArrowBackIosNew style={{ transform: "rotate(270deg)" }} />
-        </button>
+        <strong className="text-white fs-6">{`Day ${dIdx + 1}`}</strong>
       </div>
       <div
-        className="d-flex flex-column w-100 align-items-center"
-        style={{
-          background: "#131314",
-          padding: "10px",
-          borderRadius: "5px",
-          margin: "0 5px",
-          gap: "10px",
-        }}
+        className="d-flex flex-column w-100 align-items-start p-2 gap-2"
+        style={{ background: COLORS.container }}
       >
-        <LabeledInput
-          label="Name: "
-          textValue={day.name}
-          onChangeText={(e: ChangeEvent<HTMLInputElement>) =>
-            handleDayNameInput(e, dIdx)
+        <strong className="text-white" style={{ fontSize: "14px" }}>
+          {`Name: ${day.name}`}
+        </strong>
+        {templateBlock.weeks[editingWeekIdx][dIdx].exercises.some(
+          (e) => e.name && e.apparatus && e.sets.length
+        ) &&
+          templateBlock.weeks[editingWeekIdx][dIdx].exercises.map((ex, i) => (
+            <span
+              className="text-white"
+              style={{ fontSize: "14px" }}
+              key={ex._id}
+            >{`${i + 1}. ${ex.name}`}</span>
+          ))}
+        {hasErrors && (
+          <strong className="text-danger" style={{ fontSize: "14px" }}>
+            Must add at least one exercise.
+          </strong>
+        )}
+      </div>
+      <div
+        className="w-100 d-flex align-items-center gap-2 p-2"
+        style={{ background: COLORS.dark }}
+      >
+        <ActionButton
+          className="w-100"
+          icon={
+            <ArrowBackIosNew
+              fontSize="medium"
+              style={{ transform: "rotate(90deg)" }}
+            />
           }
+          disabled={dIdx === 0}
+          onClick={() => handleMoveDay(day, dIdx, "up")}
         />
-        <div className="d-flex align-items-center w-100 justify-content-center">
-          <button
-            className="d-flex align-items-center border-0"
-            style={{
-              gap: "5px",
-              fontSize: "14px",
-              background: "transparent",
-              color: "#0096FF",
-              padding: 0,
-              fontWeight: 600,
-            }}
-            onClick={() => handleEditDay(dIdx)}
-          >
-            <BiSolidEdit />
-            {`${day.exercises[0].name ? "Edit" : "Add"} Exercises`}
-            {hasErrors && <span style={{ color: COLORS.danger }}>!</span>}
-          </button>
-        </div>
-      </div>
-      <div
-        className="d-flex flex-column align-items-center"
-        style={{ gap: "5px" }}
-      >
-        <button
-          className="d-flex justify-content-center align-items-center border-0"
-          style={{
-            width: "35px",
-            height: "35px",
-            minHeight: "35px",
-            borderRadius: "5px",
-            fontSize: "20px",
-            background:
-              templateBlock.weeks[editingWeekIdx].length === 1
-                ? "#317baf"
-                : "#0096FF",
-            color:
-              templateBlock.weeks[editingWeekIdx].length === 1
-                ? "#a7a7a7"
-                : "white",
-            cursor: "pointer",
-          }}
-          onClick={() => setDeletingIdx(dIdx)}
-        >
-          <FaTrash />
-        </button>
-        <button
-          className="d-flex justify-content-center align-items-center border-0"
-          style={{
-            width: "35px",
-            height: "35px",
-            minHeight: "35px",
-            borderRadius: "5px",
-            fontSize: "20px",
-            background:
-              templateBlock.weeks[editingWeekIdx].length > 6
-                ? "#317baf"
-                : "#0096FF",
-            color:
-              templateBlock.weeks[editingWeekIdx].length > 6
-                ? "#a7a7a7"
-                : "white",
-            cursor: "pointer",
-          }}
+        <ActionButton
+          className="w-100"
+          icon={
+            <ArrowBackIosNew
+              fontSize="medium"
+              style={{ transform: "rotate(270deg)" }}
+            />
+          }
+          disabled={dIdx === templateBlock.weeks[editingWeekIdx].length - 1}
+          onClick={() => handleMoveDay(day, dIdx, "down")}
+        />
+        <ActionButton
+          className="w-100"
+          icon={
+            <BiSolidEdit
+              style={{ transform: "rotate(90deg)", fontSize: "22px" }}
+            />
+          }
+          onClick={() => handleEditDay(dIdx)}
+        />
+        <ActionButton
+          className="w-100"
+          icon={<ControlPointDuplicate fontSize="medium" />}
+          disabled={templateBlock.weeks[editingWeekIdx].length > 6}
           onClick={() => handleDuplicateDay(dIdx)}
-        >
-          <ControlPointDuplicate />
-        </button>
+        />
+        <ActionButton
+          className="w-100"
+          icon={<FaTrash fontSize="medium" />}
+          disabled={templateBlock.weeks[editingWeekIdx].length === 1}
+          onClick={() => setDeletingIdx(dIdx)}
+        />
       </div>
     </div>
   );

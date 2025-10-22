@@ -12,7 +12,7 @@ import { BiSolidEdit } from "react-icons/bi";
 import { AddButton } from "../components/AddButton";
 import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import { useBlock } from "@/app/providers/BlockProvider";
-import { ActionsHeader, HeaderAction } from "../components/ActionsHeader";
+import { ActionsFooter, FooterAction } from "../components/ActionsFooter";
 
 export const CompleteDay = () => {
   const router = useRouter();
@@ -100,7 +100,7 @@ export const CompleteDay = () => {
     );
   }, [exercisesState]);
 
-  const headerActions: HeaderAction[] = useMemo(
+  const headerActions: FooterAction[] = useMemo(
     () => [
       {
         icon: editing ? <IoMdClose /> : <BiSolidEdit />,
@@ -123,10 +123,10 @@ export const CompleteDay = () => {
 
   return (
     <>
-      <ActionsHeader actions={headerActions} />
+      <ActionsFooter actions={headerActions} />
       <div
         className="d-flex flex-column align-items-center w-100 overflow-auto"
-        style={{ height: "100dvh", padding: "100px 15px 90px" }}
+        style={{ height: "100dvh", padding: "65px 15px 120px" }}
       >
         {exercises?.map((exercise, idx) => (
           <React.Fragment key={idx}>
@@ -153,7 +153,7 @@ export const CompleteDay = () => {
               key={idx}
             >
               <div
-                className="w-100 d-flex align-items-center justify-content-between"
+                className="w-100 d-flex align-items-center justify-content-between px-2"
                 style={{ width: "95%" }}
               >
                 {editing && (

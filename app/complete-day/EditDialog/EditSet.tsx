@@ -98,7 +98,7 @@ export const EditSet = ({
           setIdx || 0
         )}`}</span>
       )}
-      {setInfoMap.map((setInfo) => (
+      {setInfoMap.map((setInfo, i) => (
         <LabeledInput
           key={setInfo.name}
           label={setInfo.title}
@@ -106,6 +106,7 @@ export const EditSet = ({
           onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
             handleSetChange(e, setInfo.name as ChangeSetType);
           }}
+          className={ i !== setInfoMap.length - 1 ? "mb-2" : "mb-1" }
         />
       ))}
     </>

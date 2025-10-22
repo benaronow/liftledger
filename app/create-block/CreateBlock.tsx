@@ -12,7 +12,7 @@ import { useUser } from "@/app/providers/UserProvider";
 import { useBlock } from "../providers/BlockProvider";
 import { FaSave } from "react-icons/fa";
 import { ArrowBackIosNew } from "@mui/icons-material";
-import { ActionsHeader, HeaderAction } from "../components/ActionsHeader";
+import { ActionsFooter, FooterAction } from "../components/ActionsFooter";
 
 export const CreateBlock = () => {
   const router = useRouter();
@@ -84,7 +84,7 @@ export const CreateBlock = () => {
     return errors;
   }, [templateBlock, editingWeekIdx]);
 
-  const headerActions: HeaderAction[] = useMemo(
+  const headerActions: FooterAction[] = useMemo(
     () => [
       {
         icon: <ArrowBackIosNew style={{ fontSize: "20px" }} />,
@@ -93,7 +93,7 @@ export const CreateBlock = () => {
         side: editingDay !== -1 ? "left" : "",
       },
       {
-        icon: <FaSave />,
+        icon: <FaSave style={{ fontSize: "18px" }} />,
         label: "Save",
         onClick: handleSubmit,
         side: "right",
@@ -107,10 +107,10 @@ export const CreateBlock = () => {
 
   return (
     <>
-      <ActionsHeader actions={headerActions} />
+      <ActionsFooter actions={headerActions} />
       <div
         className="d-flex flex-column align-items-center w-100 overflow-scroll"
-        style={{ height: "100dvh", padding: "100px 15px 90px" }}
+        style={{ height: "100dvh", padding: "65px 15px 120px" }}
       >
         {editingDay === -1 ? (
           <EditWeek setEditingDay={setEditingDay} errors={templateErrors} />

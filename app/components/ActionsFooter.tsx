@@ -1,7 +1,6 @@
-import { COLORS } from "@/lib/constants";
 import { ReactNode } from "react";
 
-export interface HeaderAction {
+export interface FooterAction {
   icon?: ReactNode;
   label: string;
   onClick: () => void;
@@ -10,7 +9,7 @@ export interface HeaderAction {
 }
 
 interface ButtonProps {
-  action: HeaderAction;
+  action: FooterAction;
 }
 
 const Button = ({ action }: ButtonProps) => {
@@ -18,8 +17,10 @@ const Button = ({ action }: ButtonProps) => {
     <button
       className="border border-0 rounded d-flex align-items-center justify-content-center gap-2 py-1 px-2"
       style={{
+        height: "35px",
         color: action.disabled ? "#a7a7a7" : "white",
         background: action.disabled ? "#317baf" : "#0096FF",
+        boxShadow: `0px 0px 20px rgba(0, 0, 0, 0.75)`,
       }}
       onClick={action.onClick}
       disabled={action.disabled}
@@ -31,21 +32,21 @@ const Button = ({ action }: ButtonProps) => {
 };
 
 interface Props {
-  actions: HeaderAction[];
+  actions: FooterAction[];
 }
 
-export const ActionsHeader = ({ actions }: Props) => {
+export const ActionsFooter = ({ actions }: Props) => {
   const leftAction = actions.find((action) => action.side === "left");
   const rightAction = actions.find((action) => action.side === "right");
 
   return (
     <div
-      className="position-absolute w-100 d-flex align-items-center justify-content-between top-0"
+      className="position-absolute w-100 d-flex align-items-center justify-content-end gap-3"
       style={{
-        height: "100px",
-        minHeight: "100px",
-        padding: "50px 15px 0",
-        background: `linear-gradient(180deg, ${COLORS.background} 0%, ${COLORS.background} 50%, transparent 100%)`,
+        paddingRight: "15px",
+        bottom: "75px",
+        height: "55px",
+        minHeight: "55px",
         zIndex: 2,
       }}
     >

@@ -1,6 +1,6 @@
-import { Dialog } from "@mui/material";
 import { ReactNode } from "react";
-import { IoMdCloseCircle } from "react-icons/io";
+import { Modal } from "react-bootstrap";
+import { COLORS } from "@/lib/constants";
 
 interface ActionStyle {
   [key: string]: string;
@@ -33,53 +33,32 @@ export const ActionDialog = ({
   actions,
 }: Props) => {
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      PaperProps={{
-        sx: {
-          borderRadius: "10px",
-          background: "#58585b",
-        },
+    <Modal
+      show={open}
+      onHide={onClose}
+      centered
+      style={{
+        marginLeft: "15%",
+        maxWidth: "70%",
       }}
     >
-      <div
-        className="d-flex justify-content-between align-items-center w-100"
-        style={{ height: "30px", padding: "5px" }}
+      <Modal.Header
+        className="d-flex justify-content-center align-items-center p-2 border-0"
+        style={{
+          background: COLORS.dark,
+        }}
       >
-        <div style={{ width: "20px" }}>
-          <button
-            className="d-flex justify-content-center align-items-center border-0 bg-transparent p-0"
-            style={{ fontSize: "20px", color: "red" }}
-            onClick={onClose}
-          >
-            <IoMdCloseCircle />
-          </button>
-        </div>
-        <span
-          className="text-white"
-          style={{ fontSize: "16px", fontWeight: 600 }}
-        >
-          {title}
-        </span>
-        <div style={{ width: "20px" }} />
-      </div>
-      <div style={{ padding: "0 5px" }}>
-        <div
-          className="d-flex flex-column bg-white text-nowrap justify-content-between"
-          style={{
-            padding: "10px",
-            width: "240px",
-            borderRadius: "5px",
-            gap: "10px",
-          }}
-        >
-          {children}
-        </div>
-      </div>
-      <div
-        className="d-flex justify-content-between align-items-center text-white"
-        style={{ padding: "6px", gap: "5px" }}
+        <Modal.Title className="text-white">{title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body
+        className="d-flex flex-column align-items-center p-2 border-0"
+        style={{ background: COLORS.container }}
+      >
+        {children}
+      </Modal.Body>
+      <Modal.Footer
+        className="d-flex justify-content-between align-items-center border-0 flex-nowrap p-1"
+        style={{ background: COLORS.dark }}
       >
         {actions.map((action, idx) => (
           <button
@@ -95,7 +74,7 @@ export const ActionDialog = ({
             {action.text}
           </button>
         ))}
-      </div>
-    </Dialog>
+      </Modal.Footer>
+    </Modal>
   );
 };

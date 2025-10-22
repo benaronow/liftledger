@@ -89,7 +89,7 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
       >
         <div
           className="d-flex flex-column w-100 text-white"
-          style={{ gap: "10px", marginBottom: "15px" }}
+          style={{ gap: "10px", marginBottom: "20px" }}
         >
           <LabeledInput
             label="Name: "
