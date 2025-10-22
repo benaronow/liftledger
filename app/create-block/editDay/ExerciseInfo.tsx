@@ -13,7 +13,7 @@ import {
 import { useBlock } from "@/app/providers/BlockProvider";
 import { getLastExerciseOccurrence, getNewSetsFromLast } from "@/app/utils";
 import { COLORS } from "@/lib/constants";
-import { ActionButton } from "@/app/components/ActionButton";
+import { Info } from "../Info";
 
 interface Props {
   exercise: Exercise;
@@ -155,151 +155,124 @@ export const ExerciseInfo = ({
     });
   };
 
+  const buttonActions = [
+    {
+      icon: (
+        <ArrowBackIosNew
+          fontSize="medium"
+          style={{ transform: "rotate(90deg)" }}
+        />
+      ),
+      disabled: eIdx === 0,
+      onClick: () => handleMoveExercise("up"),
+    },
+    {
+      icon: (
+        <ArrowBackIosNew
+          fontSize="medium"
+          style={{ transform: "rotate(270deg)" }}
+        />
+      ),
+      disabled:
+        eIdx ===
+        templateBlock.weeks[editingWeekIdx][editingDay].exercises.length - 1,
+      onClick: () => handleMoveExercise("down"),
+    },
+    {
+      icon: <FaTrash fontSize="medium" />,
+      disabled:
+        templateBlock.weeks[editingWeekIdx][editingDay].exercises.length === 1,
+      onClick: () => setDeletingIdx(eIdx),
+    },
+  ];
+
   return (
-    <div
-      className="d-flex flex-column w-100 rounded overflow-hidden"
-      style={{
-        marginBottom: "15px",
-        boxShadow: "0px 5px 10px #131314",
-      }}
-    >
-      <div
-        className="w-100 d-flex align-items-center justify-content-center p-1"
-        style={{ background: COLORS.dark }}
-      >
-        <strong className="text-white fs-6">{`Exercise ${eIdx + 1}`}</strong>
-      </div>
-      <div
-        className="d-flex flex-column w-100 gap-2 p-2"
-        style={{ background: COLORS.container }}
-      >
+    <Info title={`Exercise ${eIdx + 1}`} actions={buttonActions}>
+      <LabeledInput
+        label="Exercise:"
+        textValue={exercise.name}
+        options={Object.values(ExerciseName).filter(
+          (o) =>
+            !takenExercises.find(
+              (e) => e.name === o && e.apparatus === exercise.apparatus
+            )
+        )}
+        onChangeSelect={(e) => handleExerciseNameSelect(e.target.value || "")}
+      />
+      <LabeledInput
+        label="Apparatus:"
+        textValue={exercise.apparatus}
+        options={Object.values(ExerciseApparatus).filter(
+          (o) =>
+            !takenExercises.find(
+              (e) => e.apparatus === o && e.name === exercise.name
+            )
+        )}
+        onChangeSelect={(e) =>
+          handleExerciseApparatusSelect(e.target.value || "")
+        }
+      />
+      <div className="d-flex w-100 gap-3">
         <LabeledInput
-          label="Exercise:"
-          textValue={exercise.name}
-          options={Object.values(ExerciseName).filter(
-            (o) =>
-              !takenExercises.find(
-                (e) => e.name === o && e.apparatus === exercise.apparatus
-              )
-          )}
-          onChangeSelect={(e) => handleExerciseNameSelect(e.target.value || "")}
+          label="Sets: "
+          textValue={exercise.sets.length}
+          onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
+            handleNumberInput(e, "sets");
+          }}
         />
         <LabeledInput
-          label="Apparatus:"
-          textValue={exercise.apparatus}
-          options={Object.values(ExerciseApparatus).filter(
-            (o) =>
-              !takenExercises.find(
-                (e) => e.apparatus === o && e.name === exercise.name
-              )
-          )}
-          onChangeSelect={(e) =>
-            handleExerciseApparatusSelect(e.target.value || "")
-          }
-        />
-        <div className="d-flex w-100 gap-3">
-          <LabeledInput
-            label="Sets: "
-            textValue={exercise.sets.length}
-            onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
-              handleNumberInput(e, "sets");
-            }}
-          />
-          <LabeledInput
-            label="Reps: "
-            textValue={exercise.sets[0]?.reps || 0}
-            onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
-              handleNumberInput(e, "reps");
-            }}
-            disabled={
-              !exercise.sets.length ||
-              !!getLastExerciseOccurrence(curBlock, exercise)
-            }
-          />
-        </div>
-        <div className="d-flex w-100 align-items-end">
-          <LabeledInput
-            label="Weight:"
-            textValue={Math.floor(exercise.sets[0]?.weight) || 0}
-            onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
-              handleNumberInput(e, "weight");
-            }}
-            disabled={
-              !exercise.sets.length ||
-              !!getLastExerciseOccurrence(curBlock, exercise)
-            }
-          />
-          <button
-            className="d-flex align-items-center p-1 rounded border-0 ms-1 me-3"
-            style={
-              !exercise.sets.length ||
-              !!getLastExerciseOccurrence(curBlock, exercise)
-                ? {
-                    color: pointFive
-                      ? COLORS.textDisabled
-                      : COLORS.primaryDisabled,
-                    background: pointFive
-                      ? COLORS.primaryDisabled
-                      : COLORS.textDisabled,
-                  }
-                : {
-                    color: pointFive ? "white" : COLORS.primary,
-                    background: pointFive ? COLORS.primary : "white",
-                  }
-            }
-            onClick={() => handlePointFive(!pointFive)}
-          >
-            <span>+0.5lbs</span>
-          </button>
-          <LabeledInput
-            label="Weight type:"
-            textValue={exercise.weightType}
-            options={Object.values(WeightType)}
-            onChangeSelect={(e) =>
-              handleWeightTypeSelect(e?.target.value || "")
-            }
-          />
-        </div>
-      </div>
-      <div
-        className="d-flex w-100 align-items-center gap-2 p-2"
-        style={{ background: COLORS.dark }}
-      >
-        <ActionButton
-          className="w-100"
-          icon={
-            <ArrowBackIosNew
-              fontSize="medium"
-              style={{ transform: "rotate(90deg)" }}
-            />
-          }
-          disabled={eIdx === 0}
-          onClick={() => handleMoveExercise("up")}
-        />
-        <ActionButton
-          className="w-100"
-          icon={
-            <ArrowBackIosNew
-              fontSize="medium"
-              style={{ transform: "rotate(270deg)" }}
-            />
-          }
+          label="Reps: "
+          textValue={exercise.sets[0]?.reps || 0}
+          onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
+            handleNumberInput(e, "reps");
+          }}
           disabled={
-            eIdx ===
-            templateBlock.weeks[editingWeekIdx][editingDay].exercises.length - 1
+            !exercise.sets.length ||
+            !!getLastExerciseOccurrence(curBlock, exercise)
           }
-          onClick={() => handleMoveExercise("down")}
-        />
-        <ActionButton
-          className="w-100"
-          icon={<FaTrash fontSize="medium" />}
-          disabled={
-            templateBlock.weeks[editingWeekIdx][editingDay].exercises.length ===
-            1
-          }
-          onClick={() => setDeletingIdx(eIdx)}
         />
       </div>
-    </div>
+      <div className="d-flex w-100 align-items-end">
+        <LabeledInput
+          label="Weight:"
+          textValue={Math.floor(exercise.sets[0]?.weight) || 0}
+          onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
+            handleNumberInput(e, "weight");
+          }}
+          disabled={
+            !exercise.sets.length ||
+            !!getLastExerciseOccurrence(curBlock, exercise)
+          }
+        />
+        <button
+          className="d-flex align-items-center p-1 rounded border-0 ms-1 me-3"
+          style={
+            !exercise.sets.length ||
+            !!getLastExerciseOccurrence(curBlock, exercise)
+              ? {
+                  color: pointFive
+                    ? COLORS.textDisabled
+                    : COLORS.primaryDisabled,
+                  background: pointFive
+                    ? COLORS.primaryDisabled
+                    : COLORS.textDisabled,
+                }
+              : {
+                  color: pointFive ? "white" : COLORS.primary,
+                  background: pointFive ? COLORS.primary : "white",
+                }
+          }
+          onClick={() => handlePointFive(!pointFive)}
+        >
+          <span>+0.5lbs</span>
+        </button>
+        <LabeledInput
+          label="Weight type:"
+          textValue={exercise.weightType}
+          options={Object.values(WeightType)}
+          onChangeSelect={(e) => handleWeightTypeSelect(e?.target.value || "")}
+        />
+      </div>
+    </Info>
   );
 };

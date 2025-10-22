@@ -159,8 +159,8 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
                       }}
                     />
                     <IoIosArrowDropdownCircle
-                      className="position-absolute top-50 start-50 translate-middle"
-                      style={{ fontSize: "30px", color: getProgressColor(-1) }}
+                      className="position-absolute top-50 start-50 translate-middle text-danger"
+                      style={{ fontSize: "30px" }}
                     />
                   </>
                 )}

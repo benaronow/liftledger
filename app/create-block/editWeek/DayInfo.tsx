@@ -3,8 +3,7 @@ import { ArrowBackIosNew, ControlPointDuplicate } from "@mui/icons-material";
 import { BiSolidEdit } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
 import { useBlock } from "@/app/providers/BlockProvider";
-import { COLORS } from "@/lib/constants";
-import { ActionButton } from "@/app/components/ActionButton";
+import { Info } from "../Info";
 
 interface Props {
   day: Day;
@@ -57,91 +56,65 @@ export const DayInfo = ({
     });
   };
 
+  const buttonActions = [
+    {
+      icon: (
+        <ArrowBackIosNew
+          fontSize="medium"
+          style={{ transform: "rotate(90deg)" }}
+        />
+      ),
+      disabled: dIdx === 0,
+      onClick: () => handleMoveDay(day, dIdx, "up"),
+    },
+    {
+      icon: (
+        <ArrowBackIosNew
+          fontSize="medium"
+          style={{ transform: "rotate(270deg)" }}
+        />
+      ),
+      disabled: dIdx === templateBlock.weeks[editingWeekIdx].length - 1,
+      onClick: () => handleMoveDay(day, dIdx, "down"),
+    },
+    {
+      icon: (
+        <BiSolidEdit style={{ transform: "rotate(90deg)", fontSize: "22px" }} />
+      ),
+      onClick: () => handleEditDay(dIdx),
+    },
+    {
+      icon: <ControlPointDuplicate fontSize="medium" />,
+      disabled: templateBlock.weeks[editingWeekIdx].length > 6,
+      onClick: () => handleDuplicateDay(dIdx),
+    },
+    {
+      icon: <FaTrash fontSize="medium" />,
+      disabled: templateBlock.weeks[editingWeekIdx].length === 1,
+      onClick: () => setDeletingIdx(dIdx),
+    },
+  ];
+
   return (
-    <div
-      className="d-flex flex-column w-100 rounded overflow-hidden"
-      style={{
-        boxShadow: "0px 5px 10px #131314",
-        marginBottom: "15px",
-      }}
-    >
-      <div
-        className="w-100 d-flex align-items-center justify-content-center p-1"
-        style={{ background: COLORS.dark }}
-      >
-        <strong className="text-white fs-6">{`Day ${dIdx + 1}`}</strong>
-      </div>
-      <div
-        className="d-flex flex-column w-100 align-items-start p-2 gap-2"
-        style={{ background: COLORS.container }}
-      >
-        <strong className="text-white" style={{ fontSize: "14px" }}>
-          {`Name: ${day.name}`}
+    <Info title={`Day ${dIdx + 1}`} actions={buttonActions}>
+      <strong className="text-white" style={{ fontSize: "14px" }}>
+        {`Name: ${day.name}`}
+      </strong>
+      {templateBlock.weeks[editingWeekIdx][dIdx].exercises.some(
+        (e) => e.name && e.apparatus && e.sets.length
+      ) &&
+        templateBlock.weeks[editingWeekIdx][dIdx].exercises.map((ex, i) => (
+          <span
+            className="text-white"
+            style={{ fontSize: "14px" }}
+            key={ex._id}
+          >{`${i + 1}. ${ex.name}`}</span>
+        ))}
+      {hasErrors && (
+        <strong className="text-danger" style={{ fontSize: "14px" }}>
+          Must add at least one exercise.
         </strong>
-        {templateBlock.weeks[editingWeekIdx][dIdx].exercises.some(
-          (e) => e.name && e.apparatus && e.sets.length
-        ) &&
-          templateBlock.weeks[editingWeekIdx][dIdx].exercises.map((ex, i) => (
-            <span
-              className="text-white"
-              style={{ fontSize: "14px" }}
-              key={ex._id}
-            >{`${i + 1}. ${ex.name}`}</span>
-          ))}
-        {hasErrors && (
-          <strong className="text-danger" style={{ fontSize: "14px" }}>
-            Must add at least one exercise.
-          </strong>
-        )}
-      </div>
-      <div
-        className="w-100 d-flex align-items-center gap-2 p-2"
-        style={{ background: COLORS.dark }}
-      >
-        <ActionButton
-          className="w-100"
-          icon={
-            <ArrowBackIosNew
-              fontSize="medium"
-              style={{ transform: "rotate(90deg)" }}
-            />
-          }
-          disabled={dIdx === 0}
-          onClick={() => handleMoveDay(day, dIdx, "up")}
-        />
-        <ActionButton
-          className="w-100"
-          icon={
-            <ArrowBackIosNew
-              fontSize="medium"
-              style={{ transform: "rotate(270deg)" }}
-            />
-          }
-          disabled={dIdx === templateBlock.weeks[editingWeekIdx].length - 1}
-          onClick={() => handleMoveDay(day, dIdx, "down")}
-        />
-        <ActionButton
-          className="w-100"
-          icon={
-            <BiSolidEdit
-              style={{ transform: "rotate(90deg)", fontSize: "22px" }}
-            />
-          }
-          onClick={() => handleEditDay(dIdx)}
-        />
-        <ActionButton
-          className="w-100"
-          icon={<ControlPointDuplicate fontSize="medium" />}
-          disabled={templateBlock.weeks[editingWeekIdx].length > 6}
-          onClick={() => handleDuplicateDay(dIdx)}
-        />
-        <ActionButton
-          className="w-100"
-          icon={<FaTrash fontSize="medium" />}
-          disabled={templateBlock.weeks[editingWeekIdx].length === 1}
-          onClick={() => setDeletingIdx(dIdx)}
-        />
-      </div>
-    </div>
+      )}
+    </Info>
   );
 };
