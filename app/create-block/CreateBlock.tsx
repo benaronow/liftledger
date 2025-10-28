@@ -107,7 +107,6 @@ export const CreateBlock = () => {
 
   return (
     <>
-      <ActionsFooter actions={headerActions} />
       <div
         className="d-flex flex-column align-items-center w-100 overflow-scroll"
         style={{ height: "100dvh", padding: "65px 15px 120px" }}
@@ -118,6 +117,7 @@ export const CreateBlock = () => {
           <EditDay editingDay={editingDay} />
         )}
       </div>
+      <ActionsFooter actions={headerActions} />
     </>
   );
 };

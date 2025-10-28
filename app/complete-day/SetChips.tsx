@@ -9,6 +9,7 @@ import {
   IoIosArrowDropupCircle,
 } from "react-icons/io";
 import { FaGripLines, FaTimes } from "react-icons/fa";
+import { ActionButton } from "../components/ActionButton";
 
 interface Props {
   exercise: Exercise;
@@ -36,7 +37,7 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
 
   const getRepDiff = (setIdx: number) => {
     const lastReps = getLastExerciseOccurrence(curBlock, exercise)?.sets[setIdx]
-      .reps;
+      ?.reps;
     if (!lastReps) return 0;
     return exercise.sets[setIdx] ? exercise.sets[setIdx].reps - lastReps : 0;
   };
@@ -44,7 +45,7 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
   const getWeightDiff = (setIdx: number) => {
     const lastWeight = getLastExerciseOccurrence(curBlock, exercise)?.sets[
       setIdx
-    ].weight;
+    ]?.weight;
     if (!lastWeight) return 0;
     return exercise.sets[setIdx]
       ? exercise.sets[setIdx].weight - lastWeight
@@ -63,27 +64,23 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
 
   return (
     <div
-      className="d-flex flex-column w-100 text-white"
+      className="d-flex flex-column w-100 text-white p-2 gap-2"
       style={{
-        padding: "15px",
-        background: "#131314",
-        borderRadius: "10px",
-        gap: "15px",
+        background: COLORS.container,
       }}
     >
       {exercise.sets.map((set, i) => (
         <button
           key={i}
-          className="d-flex align-items-center justify-content-between border border-0 rounded text-nowrap"
+          className="d-flex align-items-center justify-content-between border-0 rounded text-nowrap"
           style={{
-            padding: "0px 0px 0px 10px",
             height: "40px",
             fontSize: "13px",
             background: set.completed
               ? COLORS.primary
               : i === getNextSetIdx()
               ? COLORS.primaryDark
-              : COLORS.container,
+              : COLORS.primaryDisabled,
           }}
           onClick={() =>
             i <= getNextSetIdx()
@@ -171,16 +168,11 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
           </div>
         </button>
       ))}
-      <button
-        className="d-flex align-items-center justify-content-center border border-0 rounded text-nowrap"
-        style={{
-          height: "40px",
-          fontSize: "13px",
-          background:
-            getNextSetIdx() === exercise.sets.length
-              ? COLORS.primaryDark
-              : COLORS.container,
-        }}
+      <ActionButton
+        className="w-100"
+        label="Add set"
+        height={40}
+        icon={<BiPlusCircle style={{ fontSize: "20px" }} />}
         onClick={() =>
           getNextSetIdx() === exercise.sets.length
             ? setExerciseToEdit({
@@ -189,9 +181,8 @@ export const SetChips = ({ exercise, setExerciseToEdit }: Props) => {
               })
             : {}
         }
-      >
-        <BiPlusCircle style={{ color: "white", fontSize: "20px" }} />
-      </button>
+        disabled={getNextSetIdx() !== exercise.sets.length}
+      />
     </div>
   );
 };

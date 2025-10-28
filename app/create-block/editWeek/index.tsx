@@ -129,7 +129,6 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
           />
         )}
       </div>
-      <div style={{ height: "300px" }}></div>
       <DeleteDialog
         onClose={() => {
           setDeletingIdx(undefined);

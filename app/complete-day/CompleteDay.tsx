@@ -13,6 +13,8 @@ import { AddButton } from "../components/AddButton";
 import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { ActionsFooter, FooterAction } from "../components/ActionsFooter";
+import { ActionButton } from "../components/ActionButton";
+import { COLORS } from "@/lib/constants";
 
 export const CompleteDay = () => {
   const router = useRouter();
@@ -62,10 +64,10 @@ export const CompleteDay = () => {
   );
   const getAccentColor = (exercise: Exercise, idx: number) =>
     idx === currentExIdx
-      ? "#a3258c"
+      ? COLORS.secondary
       : isExerciseComplete(exercise)
-      ? "#09c104"
-      : "#58585b";
+      ? COLORS.success
+      : COLORS.dark;
 
   const finishDay = () => {
     if (curBlock) {
@@ -100,7 +102,7 @@ export const CompleteDay = () => {
     );
   }, [exercisesState]);
 
-  const headerActions: FooterAction[] = useMemo(
+  const footerActions: FooterAction[] = useMemo(
     () => [
       {
         icon: editing ? <IoMdClose /> : <BiSolidEdit />,
@@ -123,100 +125,71 @@ export const CompleteDay = () => {
 
   return (
     <>
-      <ActionsFooter actions={headerActions} />
       <div
-        className="d-flex flex-column align-items-center w-100 overflow-auto"
+        className="d-flex flex-column align-items-center w-100 overflow-scroll"
         style={{ height: "100dvh", padding: "65px 15px 120px" }}
       >
-        {exercises?.map((exercise, idx) => (
-          <React.Fragment key={idx}>
-            {editing && (
-              <AddButton
-                onClick={() => {
-                  setAddExerciseIdx(idx);
-                  setExerciseToEdit({
-                    setIdx: undefined,
-                    exercise: newExercise,
-                  });
-                }}
-              />
-            )}
-            <div
-              className="d-flex flex-column align-items-center w-100 mb-3"
-              style={{
-                border: "5px solid",
-                borderRadius: "10px",
-                boxShadow: "0px 5px 10px #131314",
-                borderColor: getAccentColor(exercise, idx),
-                background: getAccentColor(exercise, idx),
-              }}
-              key={idx}
-            >
-              <div
-                className="w-100 d-flex align-items-center justify-content-between px-2"
-                style={{ width: "95%" }}
-              >
-                {editing && (
-                  <button
-                    className="d-flex justify-content-center align-items-center text-white border-0"
-                    style={{
-                      height: "35px",
-                      minWidth: "35px",
-                      borderRadius: "5px",
-                      background: "#0096FF",
-                      fontSize: "20px",
-                    }}
-                    onClick={() => {
-                      setAddExerciseIdx(undefined);
-                      setExerciseToEdit({ setIdx: undefined, exercise });
-                    }}
-                  >
-                    <BiSolidEdit />
-                  </button>
-                )}
-                <div
-                  className="w-100 d-flex flex-column align-items-center"
-                  style={{
-                    textWrap: "nowrap",
-                    borderRadius: "5px 5px 0 0",
-                    padding: "5px 0 10px",
+        <div className="d-flex flex-column align-items-center w-100">
+          {exercises?.map((exercise, idx) => (
+            <React.Fragment key={idx}>
+              {editing && (
+                <AddButton
+                  onClick={() => {
+                    setAddExerciseIdx(idx);
+                    setExerciseToEdit({
+                      setIdx: undefined,
+                      exercise: newExercise,
+                    });
                   }}
-                >
-                  <span
-                    className="text-white fw-semibold"
-                    style={{ fontFamily: "League+Spartan", fontSize: "16px" }}
-                  >
-                    {exercise.name}
-                  </span>
-                  <span
-                    className="text-white fw-semibold"
-                    style={{ fontFamily: "League+Spartan", fontSize: "16px" }}
-                  >
-                    {exercise.apparatus}
-                  </span>
-                </div>
-                {editing && <div style={{ minWidth: "35px" }} />}
-              </div>
-              {!editing && (
-                <SetChips
-                  exercise={exercisesState[idx]}
-                  setExerciseToEdit={setExerciseToEdit}
                 />
               )}
-            </div>
-          </React.Fragment>
-        ))}
-        {editing && (
-          <AddButton
-            onClick={() => {
-              setAddExerciseIdx(exercisesState.length);
-              setExerciseToEdit({
-                setIdx: undefined,
-                exercise: newExercise,
-              });
-            }}
-          />
-        )}
+              <div
+                className="d-flex flex-column align-items-center w-100 mb-3 rounded overflow-hidden"
+                style={{ boxShadow: "0px 5px 10px #131314" }}
+              >
+                <div
+                  className="w-100 d-flex align-items-center justify-content-between px-2"
+                  style={{ background: getAccentColor(exercise, idx) }}
+                >
+                  {editing && (
+                    <ActionButton
+                      icon={<BiSolidEdit style={{ fontSize: "20px" }} />}
+                      onClick={() => {
+                        setAddExerciseIdx(undefined);
+                        setExerciseToEdit({ setIdx: undefined, exercise });
+                      }}
+                    />
+                  )}
+                  <div
+                    className="w-100 d-flex flex-column align-items-center p-2 text-nowrap text-white fw-semibold"
+                    style={{ fontFamily: "League+Spartan", fontSize: "16px" }}
+                  >
+                    <span>{exercise.name}</span>
+                    <span>{exercise.apparatus}</span>
+                  </div>
+                  {editing && <div style={{ minWidth: "35px" }} />}
+                </div>
+                {!editing && (
+                  <SetChips
+                    exercise={exercisesState[idx]}
+                    setExerciseToEdit={setExerciseToEdit}
+                  />
+                )}
+              </div>
+            </React.Fragment>
+          ))}
+          {editing && (
+            <AddButton
+              onClick={() => {
+                setAddExerciseIdx(exercisesState.length);
+                setExerciseToEdit({
+                  setIdx: undefined,
+                  exercise: newExercise,
+                });
+              }}
+            />
+          )}
+        </div>
       </div>
       {exerciseToEdit && (
         <EditDialog
@@ -229,6 +202,7 @@ export const CompleteDay = () => {
           onClose={() => setExerciseToEdit(undefined)}
         />
       )}
+      <ActionsFooter actions={footerActions} />
     </>
   );
 };
