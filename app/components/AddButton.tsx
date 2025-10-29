@@ -1,4 +1,4 @@
-import { COLORS } from "@/lib/constants";
+import { COLORS } from "@/lib/colors";
 import { GrFormAdd } from "react-icons/gr";
 
 interface Props {

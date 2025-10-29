@@ -9,7 +9,7 @@ import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { Spinner } from "../components/spinner";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { COLORS } from "@/lib/constants";
+import { COLORS } from "@/lib/colors";
 
 export const Profile = () => {
   const { session, curUser } = useUser();

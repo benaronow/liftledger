@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Modal } from "react-bootstrap";
-import { COLORS } from "@/lib/constants";
+import { COLORS } from "@/lib/colors";
 
 interface ActionStyle {
   [key: string]: string;

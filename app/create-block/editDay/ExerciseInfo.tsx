@@ -12,7 +12,7 @@ import {
 } from "@/lib/types";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { getLastExerciseOccurrence, getNewSetsFromLast } from "@/app/utils";
-import { COLORS } from "@/lib/constants";
+import { COLORS } from "@/lib/colors";
 import { Info } from "../Info";
 
 interface Props {

@@ -98,7 +98,10 @@ export const DayInfo = ({
   return (
     <Info title={`Day ${dIdx + 1}`} actions={buttonActions}>
       <strong className="text-white" style={{ fontSize: "14px" }}>
-        {`Name: ${day.name}`}
+        {`Name: ${day.name} [${day.exercises.reduce(
+          (acc, cur) => acc + cur.sets.length,
+          0
+        )}]`}
       </strong>
       {templateBlock.weeks[editingWeekIdx][dIdx].exercises.some(
         (e) => e.name && e.apparatus && e.sets.length
@@ -108,7 +111,7 @@ export const DayInfo = ({
             className="text-white"
             style={{ fontSize: "14px" }}
             key={ex._id}
-          >{`${i + 1}. ${ex.name}`}</span>
+          >{`${i + 1}. ${ex.name} [${ex.sets.length}]`}</span>
         ))}
       {hasErrors && (
         <strong className="text-danger" style={{ fontSize: "14px" }}>

@@ -1,4 +1,4 @@
-import { COLORS } from "@/lib/constants";
+import { COLORS } from "@/lib/colors";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
 import { ChangeEvent } from "react";

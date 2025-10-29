@@ -86,19 +86,25 @@ export const CreateBlock = () => {
 
   const headerActions: FooterAction[] = useMemo(
     () => [
-      {
-        icon: <ArrowBackIosNew style={{ fontSize: "20px" }} />,
-        label: "Return to week",
-        onClick: () => setEditingDay(-1),
-        side: editingDay !== -1 ? "left" : "",
-      },
-      {
-        icon: <FaSave style={{ fontSize: "18px" }} />,
-        label: "Save",
-        onClick: handleSubmit,
-        side: "right",
-        disabled: templateErrors.length > 0,
-      },
+      ...(editingDay !== -1
+        ? [
+            {
+              icon: <ArrowBackIosNew style={{ fontSize: "20px" }} />,
+              label: "Return to week",
+              onClick: () => setEditingDay(-1),
+              side: editingDay !== -1 ? "left" : "",
+            },
+          ]
+        : []),
+      ...[
+        {
+          icon: <FaSave style={{ fontSize: "18px" }} />,
+          label: "Save",
+          onClick: handleSubmit,
+          side: "right",
+          disabled: templateErrors.length > 0,
+        },
+      ],
     ],
     [setEditingDay, handleSubmit, templateErrors]
   );
@@ -109,7 +115,7 @@ export const CreateBlock = () => {
     <>
       <div
         className="d-flex flex-column align-items-center w-100 overflow-scroll"
-        style={{ height: "100dvh", padding: "65px 15px 120px" }}
+        style={{ height: "100dvh", padding: "65px 15px 140px" }}
       >
         {editingDay === -1 ? (
           <EditWeek setEditingDay={setEditingDay} errors={templateErrors} />

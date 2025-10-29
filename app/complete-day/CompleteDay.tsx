@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Spinner } from "../components/spinner";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useUser } from "@/app/providers/UserProvider";
-import { SetChips } from "./SetChips";
+import { SetChips } from "./setChips/SetChips";
 import { EditDialog } from "./EditDialog";
 import { BiSolidEdit } from "react-icons/bi";
 import { AddButton } from "../components/AddButton";
@@ -14,7 +14,7 @@ import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { ActionsFooter, FooterAction } from "../components/ActionsFooter";
 import { ActionButton } from "../components/ActionButton";
-import { COLORS } from "@/lib/constants";
+import { COLORS } from "@/lib/colors";
 
 export const CompleteDay = () => {
   const router = useRouter();
@@ -59,15 +59,10 @@ export const CompleteDay = () => {
       (acc: boolean, curSet: Set) => acc && curSet.completed,
       true
     );
+  
   const currentExIdx = exercisesState.findIndex(
     (exercise: Exercise) => !isExerciseComplete(exercise)
   );
-  const getAccentColor = (exercise: Exercise, idx: number) =>
-    idx === currentExIdx
-      ? COLORS.secondary
-      : isExerciseComplete(exercise)
-      ? COLORS.success
-      : COLORS.dark;
 
   const finishDay = () => {
     if (curBlock) {
@@ -127,7 +122,7 @@ export const CompleteDay = () => {
     <>
       <div
         className="d-flex flex-column align-items-center w-100 overflow-scroll"
-        style={{ height: "100dvh", padding: "65px 15px 120px" }}
+        style={{ height: "100dvh", padding: "65px 15px 140px" }}
       >
         <div className="d-flex flex-column align-items-center w-100">
           {exercises?.map((exercise, idx) => (
@@ -144,12 +139,18 @@ export const CompleteDay = () => {
                 />
               )}
               <div
-                className="d-flex flex-column align-items-center w-100 mb-3 rounded overflow-hidden"
+                className={`d-flex flex-column align-items-center w-100 rounded overflow-hidden mb-${
+                  idx === exercisesState.length - 1 ? "3" : "4"
+                }`}
                 style={{ boxShadow: "0px 5px 10px #131314" }}
               >
                 <div
                   className="w-100 d-flex align-items-center justify-content-between px-2"
-                  style={{ background: getAccentColor(exercise, idx) }}
+                  style={{
+                    background: isExerciseComplete(exercise)
+                      ? COLORS.success
+                      : COLORS.dark,
+                  }}
                 >
                   {editing && (
                     <ActionButton
@@ -172,6 +173,7 @@ export const CompleteDay = () => {
                 {!editing && (
                   <SetChips
                     exercise={exercisesState[idx]}
+                    isCurrentExercise={idx === currentExIdx}
                     setExerciseToEdit={setExerciseToEdit}
                   />
                 )}

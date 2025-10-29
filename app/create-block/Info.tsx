@@ -1,4 +1,4 @@
-import { COLORS } from "@/lib/constants";
+import { COLORS } from "@/lib/colors";
 import { PropsWithChildren } from "react";
 import { ActionButton } from "../components/ActionButton";
 

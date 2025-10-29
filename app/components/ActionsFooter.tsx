@@ -1,10 +1,10 @@
+import { COLORS } from "@/lib/colors";
 import { ReactNode } from "react";
 
 export interface FooterAction {
   icon?: ReactNode;
   label: string;
   onClick: () => void;
-  side: "left" | "right" | "";
   disabled?: boolean;
 }
 
@@ -20,7 +20,6 @@ const Button = ({ action }: ButtonProps) => {
         height: "35px",
         color: action.disabled ? "#a7a7a7" : "white",
         background: action.disabled ? "#317baf" : "#0096FF",
-        boxShadow: `0px 0px 20px rgba(0, 0, 0, 0.75)`,
       }}
       onClick={action.onClick}
       disabled={action.disabled}
@@ -36,22 +35,29 @@ interface Props {
 }
 
 export const ActionsFooter = ({ actions }: Props) => {
-  const leftAction = actions.find((action) => action.side === "left");
-  const rightAction = actions.find((action) => action.side === "right");
-
   return (
     <div
       className="position-absolute w-100 d-flex align-items-center justify-content-end gap-3"
       style={{
-        paddingRight: "15px",
         bottom: "75px",
-        height: "55px",
-        minHeight: "55px",
+        height: "75px",
+        minHeight: "75px",
         zIndex: 2,
+        paddingRight: "15px",
       }}
     >
-      {leftAction ? <Button action={leftAction} /> : <div />}
-      {rightAction ? <Button action={rightAction} /> : <div />}
+      <div
+        className="d-flex align-items-center gap-2 p-2 rounded"
+        style={{
+          height: "55px",
+          background: COLORS.container,
+          boxShadow: "0px 0px 15px #131314",
+        }}
+      >
+        {actions.map((action) => (
+          <Button key={action.label} action={action} />
+        ))}
+      </div>
     </div>
   );
 };

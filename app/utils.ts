@@ -2,21 +2,26 @@ import { Block, Exercise } from "@/lib/types";
 
 export const getLastExerciseOccurrence = (
   curBlock: Block | undefined,
-  exercise: Exercise
+  exercise: Exercise,
+  includeInitial: boolean = true
 ) => {
   if (!curBlock) return undefined;
-  for (let w = curBlock.curWeekIdx + 1; w >= 0; w--) {
+
+  const weeks = includeInitial
+    ? [curBlock.initialWeek, ...curBlock.weeks]
+    : curBlock.weeks;
+  const curWeekIdx = includeInitial
+    ? curBlock.curWeekIdx + 1
+    : curBlock.curWeekIdx;
+
+  for (let w = curWeekIdx; w >= 0; w--) {
     for (
-      let d =
-        w === curBlock.curWeekIdx + 1
-          ? curBlock.curDayIdx - 1
-          : curBlock.weeks[w].length - 1;
+      let d = w === curWeekIdx ? curBlock.curDayIdx - 1 : weeks[w].length - 1;
       d >= 0;
       d--
     ) {
-      if ([curBlock.initialWeek, ...curBlock.weeks][w][d]) {
-        for (const e of [curBlock.initialWeek, ...curBlock.weeks][w][d]
-          .exercises) {
+      if (weeks[w][d]) {
+        for (const e of weeks[w][d].exercises) {
           if (e.name === exercise.name && e.apparatus === exercise.apparatus)
             return e;
         }

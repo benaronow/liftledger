@@ -7,6 +7,7 @@ export const COLORS = {
   dark: "#131314",
   container: "#58585b",
   textDisabled: "#a7a7a7",
-  danger: "red",
+  danger: "#dc3545",
+  warning: "#ffc107",
   success: "#09c104",
 };

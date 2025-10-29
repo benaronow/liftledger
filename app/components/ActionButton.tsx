@@ -1,4 +1,4 @@
-import { COLORS } from "@/lib/constants";
+import { COLORS } from "@/lib/colors";
 import { ReactNode } from "react";
 
 interface Props {
