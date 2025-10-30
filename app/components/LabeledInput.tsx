@@ -71,6 +71,7 @@ export const LabeledInput = ({
           value={textValue}
           onChange={onChangeSelect}
         >
+          <option value="">-- Select --</option>
           {options.map((o) => (
             <option key={o} value={o}>
               {o}

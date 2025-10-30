@@ -21,20 +21,25 @@ const createNextWeek = (curBlock: Block): Day[] => {
 
   return thisWeek.map((day) => ({
     name: day.name,
-    exercises: day.exercises.map((exercise) => {
-      const latestEx = getLatestExerciseOccurrence(curBlock, exercise);
+    exercises: day.exercises
+      .filter((exercise) => !exercise.addOn)
+      .map((exercise) => {
+        const latestEx = getLatestExerciseOccurrence(curBlock, exercise);
 
-      return latestEx
-        ? {
-            ...exercise,
-            sets: latestEx?.sets.map((set: Set) => ({
-              ...set,
-              completed: false,
-              note: "",
-            })),
-          }
-        : exercise;
-    }),
+        return latestEx
+          ? {
+              ...exercise,
+              sets: latestEx?.sets
+                .filter((set) => !set.addOn)
+                .map((set: Set) => ({
+                  ...set,
+                  completed: false,
+                  skipped: undefined,
+                  note: "",
+                })),
+            }
+          : exercise;
+      }),
     completedDate: undefined,
   }));
 };

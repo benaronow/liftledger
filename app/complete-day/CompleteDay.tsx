@@ -7,14 +7,15 @@ import { Spinner } from "../components/spinner";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useUser } from "@/app/providers/UserProvider";
 import { SetChips } from "./setChips/SetChips";
-import { EditDialog } from "./EditDialog";
 import { BiSolidEdit } from "react-icons/bi";
-import { AddButton } from "../components/AddButton";
+// import { AddButton } from "../components/AddButton";
 import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { ActionsFooter, FooterAction } from "../components/ActionsFooter";
-import { ActionButton } from "../components/ActionButton";
 import { COLORS } from "@/lib/colors";
+import { SubmitSetDialog } from "./submitSetDialog";
+import { AddButton } from "../components/AddButton";
+import { SubmitExerciseDialog } from "./submitExerciseDialog";
 
 export const CompleteDay = () => {
   const router = useRouter();
@@ -56,10 +57,11 @@ export const CompleteDay = () => {
   const isExerciseComplete = (exercise: Exercise) =>
     exercise.sets.length !== 0 &&
     exercise.sets.reduce(
-      (acc: boolean, curSet: Set) => acc && curSet.completed,
+      (acc: boolean, curSet: Set) =>
+        acc && (curSet.completed || (curSet.skipped ?? false)),
       true
     );
-  
+
   const currentExIdx = exercisesState.findIndex(
     (exercise: Exercise) => !isExerciseComplete(exercise)
   );
@@ -103,13 +105,11 @@ export const CompleteDay = () => {
         icon: editing ? <IoMdClose /> : <BiSolidEdit />,
         label: editing ? "Stop Editing" : "Edit",
         onClick: () => setEditing((prev) => !prev),
-        side: "left",
       },
       {
         icon: <IoMdCheckmark style={{ fontSize: "20px" }} />,
         label: "Finish",
         onClick: finishDay,
-        side: "right",
         disabled: !isDayComplete,
       },
     ],
@@ -145,22 +145,13 @@ export const CompleteDay = () => {
                 style={{ boxShadow: "0px 5px 10px #131314" }}
               >
                 <div
-                  className="w-100 d-flex align-items-center justify-content-between px-2"
+                  className="w-100 d-flex align-items-center justify-content-center px-2"
                   style={{
                     background: isExerciseComplete(exercise)
                       ? COLORS.success
                       : COLORS.dark,
                   }}
                 >
-                  {editing && (
-                    <ActionButton
-                      icon={<BiSolidEdit style={{ fontSize: "20px" }} />}
-                      onClick={() => {
-                        setAddExerciseIdx(undefined);
-                        setExerciseToEdit({ setIdx: undefined, exercise });
-                      }}
-                    />
-                  )}
                   <div
                     className="w-100 d-flex flex-column align-items-center p-2 text-nowrap text-white fw-semibold"
                     style={{ fontFamily: "League+Spartan", fontSize: "16px" }}
@@ -168,11 +159,11 @@ export const CompleteDay = () => {
                     <span>{exercise.name}</span>
                     <span>{exercise.apparatus}</span>
                   </div>
-                  {editing && <div style={{ minWidth: "35px" }} />}
                 </div>
                 {!editing && (
                   <SetChips
                     exercise={exercisesState[idx]}
+                    isExerciseComplete={isExerciseComplete(exercisesState[idx])}
                     isCurrentExercise={idx === currentExIdx}
                     setExerciseToEdit={setExerciseToEdit}
                   />
@@ -193,15 +184,24 @@ export const CompleteDay = () => {
           )}
         </div>
       </div>
-      {exerciseToEdit && (
-        <EditDialog
+      {exerciseToEdit && exerciseToEdit.setIdx !== undefined && (
+        <SubmitSetDialog
           setIdx={exerciseToEdit.setIdx}
           exercise={exerciseToEdit.exercise}
-          addIdx={addExerciseIdx}
-          setAddIdx={setAddExerciseIdx}
           exercisesState={exercisesState}
           setExercisesState={setExercisesState}
           onClose={() => setExerciseToEdit(undefined)}
+        />
+      )}
+      {exerciseToEdit && addExerciseIdx !== undefined && (
+        <SubmitExerciseDialog
+          addIdx={addExerciseIdx}
+          exercisesState={exercisesState}
+          setExercisesState={setExercisesState}
+          onClose={() => {
+            setAddExerciseIdx(undefined);
+            setExerciseToEdit(undefined);
+          }}
         />
       )}
       <ActionsFooter actions={footerActions} />

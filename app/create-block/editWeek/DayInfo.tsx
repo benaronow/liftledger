@@ -99,20 +99,25 @@ export const DayInfo = ({
     <Info title={`Day ${dIdx + 1}`} actions={buttonActions}>
       <strong className="text-white" style={{ fontSize: "14px" }}>
         {`Name: ${day.name} [${day.exercises.reduce(
-          (acc, cur) => acc + cur.sets.length,
+          (acc, cur) =>
+            acc + (cur.addOn ? 0 : cur.sets.filter((s) => !s.addOn).length),
           0
         )}]`}
       </strong>
       {templateBlock.weeks[editingWeekIdx][dIdx].exercises.some(
         (e) => e.name && e.apparatus && e.sets.length
       ) &&
-        templateBlock.weeks[editingWeekIdx][dIdx].exercises.map((ex, i) => (
-          <span
-            className="text-white"
-            style={{ fontSize: "14px" }}
-            key={ex._id}
-          >{`${i + 1}. ${ex.name} [${ex.sets.length}]`}</span>
-        ))}
+        templateBlock.weeks[editingWeekIdx][dIdx].exercises
+          .filter((ex) => !ex.addOn)
+          .map((ex, i) => (
+            <span
+              className="text-white"
+              style={{ fontSize: "14px" }}
+              key={ex._id}
+            >{`${i + 1}. ${ex.name} [${
+              ex.sets.filter((s) => !s.addOn).length
+            }]`}</span>
+          ))}
       {hasErrors && (
         <strong className="text-danger" style={{ fontSize: "14px" }}>
           Must add at least one exercise.

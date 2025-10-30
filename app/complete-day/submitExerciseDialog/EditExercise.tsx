@@ -13,8 +13,6 @@ import { LabeledInput } from "@/app/components/LabeledInput";
 interface Props {
   exerciseState: Exercise;
   setExerciseState: Dispatch<SetStateAction<Exercise>>;
-  editingType: ChangeExerciseType | "";
-  setEditingType: Dispatch<SetStateAction<ChangeExerciseType | "">>;
   takenExercises: Exercise[];
 }
 
@@ -29,7 +27,7 @@ export const EditExercise = ({
     {
       name: "name",
       title: "Exercise:",
-      value: exerciseState.name || "Select",
+      value: exerciseState.name,
       options: Object.values(ExerciseName).filter(
         (o) =>
           !takenExercises.find(
@@ -40,7 +38,7 @@ export const EditExercise = ({
     {
       name: "apparatus",
       title: "Apparatus:",
-      value: exerciseState.apparatus || "Select",
+      value: exerciseState.apparatus,
       options: Object.values(ExerciseApparatus).filter(
         (o) =>
           !takenExercises.find(
@@ -51,7 +49,7 @@ export const EditExercise = ({
     {
       name: "weightType",
       title: "Weight Type:",
-      value: exerciseState.weightType || "Select",
+      value: exerciseState.weightType,
       options: Object.values(WeightType),
     },
   ];
@@ -61,6 +59,7 @@ export const EditExercise = ({
     type: ChangeExerciseType
   ) => {
     const newExercise = {
+      ...exerciseState,
       name: type === "name" ? (e as ExerciseName) : exerciseState.name,
       apparatus:
         type === "apparatus"
@@ -68,7 +67,6 @@ export const EditExercise = ({
           : exerciseState.apparatus,
       weightType:
         type === "weightType" ? (e as WeightType) : exerciseState.weightType,
-      sets: [],
     };
 
     setExerciseState({
@@ -79,15 +77,34 @@ export const EditExercise = ({
 
   return (
     <>
-      {exerciseInfoMap.map((exerciseInfo) => (
+      {exerciseInfoMap.map((exerciseInfo, i) => (
         <LabeledInput
           key={exerciseInfo.name}
           label={exerciseInfo.title}
           textValue={exerciseInfo.value}
           options={exerciseInfo.options}
-          onChangeSelect={(e) =>
-            handleExerciseChange(e.target.value as ExerciseName, "name")
-          }
+          onChangeSelect={(e) => {
+            switch (exerciseInfo.name) {
+              case "name":
+                return handleExerciseChange(
+                  e.target.value as ExerciseName,
+                  "name"
+                );
+              case "apparatus":
+                return handleExerciseChange(
+                  e.target.value as ExerciseApparatus,
+                  "apparatus"
+                );
+              case "weightType":
+                return handleExerciseChange(
+                  e.target.value as WeightType,
+                  "weightType"
+                );
+              default:
+                return undefined;
+            }
+          }}
+          className={i !== exerciseInfoMap.length - 1 ? "mb-2" : "mb-1"}
         />
       ))}
     </>

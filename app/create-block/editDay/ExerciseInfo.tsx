@@ -215,7 +215,7 @@ export const ExerciseInfo = ({
       <div className="d-flex w-100 gap-3">
         <LabeledInput
           label="Sets: "
-          textValue={exercise.sets.length}
+          textValue={exercise.sets.filter((set) => !set.addOn).length}
           onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
             handleNumberInput(e, "sets");
           }}
@@ -228,7 +228,7 @@ export const ExerciseInfo = ({
           }}
           disabled={
             !exercise.sets.length ||
-            !!getLastExerciseOccurrence(curBlock, exercise)
+            !!getLastExerciseOccurrence(curBlock, exercise, true)
           }
         />
       </div>
@@ -241,14 +241,14 @@ export const ExerciseInfo = ({
           }}
           disabled={
             !exercise.sets.length ||
-            !!getLastExerciseOccurrence(curBlock, exercise)
+            !!getLastExerciseOccurrence(curBlock, exercise, true)
           }
         />
         <button
           className="d-flex align-items-center p-1 rounded border-0 ms-1 me-3"
           style={
             !exercise.sets.length ||
-            !!getLastExerciseOccurrence(curBlock, exercise)
+            !!getLastExerciseOccurrence(curBlock, exercise, true)
               ? {
                   color: pointFive
                     ? COLORS.textDisabled

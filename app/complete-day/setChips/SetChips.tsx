@@ -1,6 +1,6 @@
-import { Exercise } from "@/lib/types";
-import { Dispatch, SetStateAction } from "react";
-import { getLastExerciseOccurrence } from "../../utils";
+import { Exercise, Set } from "@/lib/types";
+import { Dispatch, SetStateAction, useCallback, useMemo } from "react";
+import { getLastSetOccurrence } from "../../utils";
 import { useBlock } from "../../providers/BlockProvider";
 import { COLORS } from "@/lib/colors";
 import { BiPlusCircle } from "react-icons/bi";
@@ -10,6 +10,7 @@ import { ProgressIcon } from "./ProgressIcon";
 
 interface Props {
   exercise: Exercise;
+  isExerciseComplete: boolean;
   isCurrentExercise: boolean;
   setExerciseToEdit: Dispatch<
     SetStateAction<
@@ -24,35 +25,46 @@ interface Props {
 
 export const SetChips = ({
   exercise,
+  isExerciseComplete,
   isCurrentExercise,
   setExerciseToEdit,
 }: Props) => {
   const { curBlock } = useBlock();
 
-  const getNextSetIdx = () => {
+  const nextSetIdx = useMemo(() => {
     if (!isCurrentExercise) return -1;
     for (let i = 0; i <= exercise?.sets.length; i++) {
-      if (!exercise?.sets[i]?.completed || i === exercise?.sets.length)
+      if (!exercise?.sets[i]?.completed && !exercise?.sets[i]?.skipped)
         return i;
     }
     return -1;
-  };
+  }, [exercise, isCurrentExercise]);
 
-  const getRepDiff = (setIdx: number) => {
-    const lastReps = getLastExerciseOccurrence(curBlock, exercise, false)?.sets[
-      setIdx
-    ]?.reps;
-    if (lastReps)
-      return exercise.sets[setIdx] ? exercise.sets[setIdx].reps - lastReps : 0;
-  };
+  const getBackground = useCallback(
+    (set: Set, nextSet: boolean) =>
+      set.completed
+        ? COLORS.primary
+        : set.skipped
+        ? COLORS.primaryDark
+        : nextSet
+        ? COLORS.secondary
+        : COLORS.primaryDisabled,
+    [nextSetIdx]
+  );
 
-  const getWeightDiff = (setIdx: number) => {
-    const lastWeight = getLastExerciseOccurrence(curBlock, exercise, false)
-      ?.sets[setIdx]?.weight;
-    if (lastWeight)
-      return exercise.sets[setIdx]
-        ? exercise.sets[setIdx].weight - lastWeight
+  const getDiffs = (setIdx: number) => {
+    const lastSet = getLastSetOccurrence(curBlock, exercise, setIdx, true);
+
+    if (lastSet) {
+      const repDiff = exercise.sets[setIdx]
+        ? exercise.sets[setIdx].reps - lastSet.reps
         : 0;
+      const weightDiff = exercise.sets[setIdx]
+        ? exercise.sets[setIdx].weight - lastSet.weight
+        : 0;
+      return { repDiff, weightDiff };
+    }
+    return { repDiff: undefined, weightDiff: undefined };
   };
 
   const getProgressString = (diff: number | undefined) => {
@@ -60,15 +72,19 @@ export const SetChips = ({
     return diff > 0 ? `+${diff}` : `${diff}`;
   };
 
-  const getProgressSign = (i: number) => {
-    const weightDiff = getWeightDiff(i);
-    const repDiff = getRepDiff(i);
+  const getProgressSign = (setIdx: number) => {
+    const { repDiff, weightDiff } = getDiffs(setIdx);
 
-    if (!weightDiff || !repDiff) return undefined;
+    if (weightDiff === undefined || repDiff === undefined) return undefined;
     if (weightDiff > 0 || (repDiff > 0 && weightDiff === 0)) return 1;
     if (weightDiff < 0 || (repDiff < 0 && weightDiff === 0)) return -1;
     return 0;
   };
+
+  const exerciseHasSkippedSets = useMemo(
+    () => exercise.sets.some((set) => set.skipped),
+    [exercise.sets]
+  );
 
   return (
     <div
@@ -84,14 +100,10 @@ export const SetChips = ({
           style={{
             height: "40px",
             fontSize: "13px",
-            background: set.completed
-              ? COLORS.primary
-              : i === getNextSetIdx()
-              ? COLORS.secondary
-              : COLORS.primaryDisabled,
+            background: getBackground(set, i === nextSetIdx),
           }}
           onClick={() =>
-            i <= getNextSetIdx()
+            set.completed || set.skipped || i <= nextSetIdx
               ? setExerciseToEdit({ setIdx: i, exercise })
               : {}
           }
@@ -103,12 +115,14 @@ export const SetChips = ({
                   <span className="me-1">{`${set.reps} rep${
                     set.reps !== 1 ? "s" : ""
                   }`}</span>
-                  <span>{`(${getProgressString(getRepDiff(i))})`}</span>
+                  <span>{`(${getProgressString(getDiffs(i).repDiff)})`}</span>
                 </span>
                 <FaTimes />
                 <span className="fw-bold">
                   <span className="me-1">{`${set.weight}${exercise.weightType}`}</span>
-                  <span>{`(${getProgressString(getWeightDiff(i))})`}</span>
+                  <span>{`(${getProgressString(
+                    getDiffs(i).weightDiff
+                  )})`}</span>
                 </span>
               </span>
             ) : (
@@ -135,6 +149,7 @@ export const SetChips = ({
             <ProgressIcon
               sign={getProgressSign(i)}
               isSetComplete={set.completed}
+              isSetSkipped={set.skipped}
             />
           </div>
         </button>
@@ -145,14 +160,12 @@ export const SetChips = ({
         height={40}
         icon={<BiPlusCircle style={{ fontSize: "20px" }} />}
         onClick={() =>
-          getNextSetIdx() === exercise.sets.length
-            ? setExerciseToEdit({
-                setIdx: exercise.sets.length,
-                exercise,
-              })
-            : {}
+          setExerciseToEdit({
+            setIdx: exercise.sets.length,
+            exercise,
+          })
         }
-        disabled={getNextSetIdx() !== exercise.sets.length}
+        disabled={!isExerciseComplete || exerciseHasSkippedSets}
       />
     </div>
   );

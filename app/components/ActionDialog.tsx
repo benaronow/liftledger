@@ -2,15 +2,9 @@ import { ReactNode } from "react";
 import { Modal } from "react-bootstrap";
 import { COLORS } from "@/lib/colors";
 
-interface ActionStyle {
-  [key: string]: string;
-}
-
 export interface Action {
   text: ReactNode;
-  enabledStyle: ActionStyle;
   disabled?: boolean;
-  disabledStyle?: ActionStyle;
   onClick: () => void;
 }
 
@@ -57,19 +51,23 @@ export const ActionDialog = ({
         {children}
       </Modal.Body>
       <Modal.Footer
-        className="d-flex justify-content-between align-items-center border-0 flex-nowrap p-1"
+        className="d-flex justify-content-between align-items-center border-0 flex-nowrap p-2 gap-2"
         style={{ background: COLORS.dark }}
       >
         {actions.map((action, idx) => (
           <button
             key={idx}
-            className="d-flex justify-content-center align-items-center w-100 border-0 rounded"
+            className="d-flex justify-content-center align-items-center w-100 border-0 rounded m-0"
             style={{
-              ...(action.disabled ? action.disabledStyle : action.enabledStyle),
+              background: action.disabled
+                ? COLORS.primaryDisabled
+                : COLORS.primary,
+              color: action.disabled ? COLORS.textDisabled : "white",
+              fontSize: "28px",
               height: "50px",
             }}
             disabled={action.disabled}
-            onClick={action.onClick}
+            onClick={action.disabled ? undefined : action.onClick}
           >
             {action.text}
           </button>

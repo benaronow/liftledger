@@ -117,6 +117,8 @@ export interface Set {
   weight: number;
   note: string;
   completed: boolean;
+  skipped?: boolean;
+  addOn?: boolean;
 }
 
 export interface Exercise {
@@ -125,6 +127,7 @@ export interface Exercise {
   apparatus: string;
   sets: Set[];
   weightType: string;
+  addOn?: boolean;
 }
 
 export interface Day {

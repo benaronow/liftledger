@@ -29,7 +29,7 @@ export const ActionButton = ({
         width: width ?? 35,
       }}
       className={`d-flex align-items-center justify-content-center border-0 gap-1 rounded ${className}`}
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
       disabled={disabled}
     >
       {icon}

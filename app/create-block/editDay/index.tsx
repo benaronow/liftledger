@@ -1,5 +1,5 @@
 import { Day, Exercise } from "@/lib/types";
-import React, { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { AddButton } from "../../components/AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
 import { DeleteDialog } from "../../components/DeleteResetDialog";
@@ -102,7 +102,7 @@ export const EditDay = ({ editingDay }: EditDayProps) => {
         </div>
         {templateBlock.weeks[editingWeekIdx][editingDay].exercises.map(
           (exercise, idx) => (
-            <React.Fragment key={idx}>
+            <div key={idx} className={exercise.addOn ? "d-none" : ""}>
               <AddButton onClick={() => handleAddExercise(idx)} />
               <ExerciseInfo
                 exercise={exercise}
@@ -119,7 +119,7 @@ export const EditDay = ({ editingDay }: EditDayProps) => {
                 editingDay={editingDay}
                 setDeletingIdx={setDeletingIdx}
               />
-            </React.Fragment>
+            </div>
           )
         )}
         <AddButton
