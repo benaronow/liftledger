@@ -18,20 +18,10 @@ export const DeleteDialog = ({
   const deleteActions: Action[] = [
     {
       text: <IoArrowBack />,
-      enabledStyle: {
-        background: "white",
-        color: "red",
-        fontSize: "30px",
-      },
       onClick: onClose,
     },
     {
       text: <FaTrash />,
-      enabledStyle: {
-        background: "red",
-        color: "white",
-        fontSize: "28px",
-      },
       onClick: onDelete,
     },
   ];
