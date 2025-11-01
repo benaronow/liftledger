@@ -1,9 +1,4 @@
-import {
-  Exercise,
-  ExerciseApparatus,
-  ExerciseName,
-  WeightType,
-} from "@/lib/types";
+import { Exercise, WeightType } from "@/lib/types";
 import { Dispatch, SetStateAction } from "react";
 import { getAvailableOptions, switchExercise } from "@/lib/blockUtils";
 import { useBlock } from "@/app/providers/BlockProvider";
@@ -27,23 +22,13 @@ export const EditExercise = ({
       name: "name",
       title: "Exercise:",
       value: exerciseState.name,
-      options: getAvailableOptions(
-        curBlock,
-        exerciseState,
-        exercisesState,
-        ExerciseName
-      ),
+      options: getAvailableOptions(exerciseState, exercisesState, "name"),
     },
     {
       name: "apparatus",
       title: "Apparatus:",
       value: exerciseState.apparatus,
-      options: getAvailableOptions(
-        curBlock,
-        exerciseState,
-        exercisesState,
-        ExerciseApparatus
-      ),
+      options: getAvailableOptions(exerciseState, exercisesState, "apparatus"),
     },
     {
       name: "weightType",

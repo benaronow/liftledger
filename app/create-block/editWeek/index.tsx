@@ -1,4 +1,4 @@
-import { Day, WeightType } from "@/lib/types";
+import { Day } from "@/lib/types";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, useEffect, useState } from "react";
@@ -51,7 +51,7 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
               note: "",
             },
           ],
-          weightType: WeightType.Pounds,
+          weightType: '',
         },
       ],
       completedDate: undefined,

@@ -116,7 +116,14 @@ export const EditDay = ({ editingDayIdx }: EditDayProps) => {
         </div>
         {templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises.map(
           (exercise, idx) => (
-            <div key={idx} className={exercise.addedOn ? "d-none" : ""}>
+            <div
+              key={idx}
+              className={
+                exercise.addedOn
+                  ? "d-none"
+                  : "d-flex flex-column w-100 align-items-center gap-2"
+              }
+            >
               <AddButton onClick={() => handleAddExercise(idx)} />
               <ExerciseInfo
                 exercise={exercise}

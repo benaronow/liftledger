@@ -37,13 +37,11 @@ export const getNewSetsFromLatest = (
   exercise: Exercise,
   numSets?: number
 ) => {
-  if (!curBlock) return [];
-
-  const curSets = curBlock.weeks[curBlock.curWeekIdx][
-    curBlock.curDayIdx
-  ].exercises.find(
-    (ex) => ex.name === exercise.name && ex.apparatus === exercise.apparatus
-  )?.sets;
+  const curSets = curBlock
+    ? curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].exercises.find(
+        (ex) => ex.name === exercise.name && ex.apparatus === exercise.apparatus
+      )?.sets
+    : undefined;
 
   const prevSets = findLatestPreviousOccurrence(curBlock, (e: Exercise) => {
     if (e.name === exercise.name && e.apparatus === exercise.apparatus)
@@ -90,29 +88,31 @@ export const switchExercise = (
 
   updateFunc({
     ...newExercise,
-    sets: getNewSetsFromLatest(curBlock, newExercise),
+    sets:
+      type === "weightType"
+        ? newExercise.sets
+        : getNewSetsFromLatest(curBlock, newExercise),
   });
 };
 
 export const getAvailableOptions = (
-  curBlock: Block | undefined,
   curExercise: Exercise,
   exercises: Exercise[],
-  type: typeof ExerciseName | typeof ExerciseApparatus
+  type: "name" | "apparatus"
 ) => {
-  if (!curBlock) return [];
-
   const takenExercises = exercises.filter(
     (e) =>
       !(e.name === curExercise.name && e.apparatus === curExercise.apparatus)
   );
 
-  return Object.values(type).filter(
+  return Object.values(
+    type === "name" ? ExerciseName : ExerciseApparatus
+  ).filter(
     (o) =>
       !takenExercises.find((e) => {
-        if (type === ExerciseName)
+        if (type === "name")
           return e.name === o && e.apparatus === curExercise.apparatus;
-        if (type === ExerciseApparatus)
+        if (type === "apparatus")
           return e.apparatus === o && e.name === curExercise.name;
         return false;
       })

@@ -16,11 +16,7 @@ interface Props {
   setExerciseState: Dispatch<SetStateAction<Exercise>>;
 }
 
-export const EditSet = ({
-  setIdx,
-  exerciseState,
-  setExerciseState,
-}: Props) => {
+export const EditSet = ({ setIdx, exerciseState, setExerciseState }: Props) => {
   const { curBlock } = useBlock();
   const [tempWeight, setTempWeight] = useState(
     setIdx !== undefined ? `${exerciseState.sets[setIdx].weight || ""}` : ""
@@ -89,7 +85,7 @@ export const EditSet = ({
   return (
     <>
       {latestPreviousSetNote && (
-        <span className="small mb-2 text-wrap">{`Previous note: ${latestPreviousSetNote}`}</span>
+        <span className="small mb-2 text-wrap text-white">{`Previous note: ${latestPreviousSetNote}`}</span>
       )}
       {setInfoMap.map((setInfo, i) => (
         <LabeledInput

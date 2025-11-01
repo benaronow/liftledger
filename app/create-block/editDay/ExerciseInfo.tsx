@@ -2,13 +2,7 @@ import { ArrowBackIosNew } from "@mui/icons-material";
 import { LabeledInput } from "../../components/LabeledInput";
 import { FaTrash } from "react-icons/fa";
 import { ChangeEvent, useMemo } from "react";
-import {
-  Exercise,
-  ExerciseApparatus,
-  ExerciseName,
-  Set,
-  WeightType,
-} from "@/lib/types";
+import { Exercise, Set, WeightType } from "@/lib/types";
 import { useBlock } from "@/app/providers/BlockProvider";
 import {
   findLatestPreviousOccurrence,
@@ -169,10 +163,9 @@ export const ExerciseInfo = ({
         label="Exercise:"
         textValue={exercise.name}
         options={getAvailableOptions(
-          curBlock,
           exercise,
           templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
-          ExerciseName
+          "name"
         )}
         onChangeSelect={(e) =>
           switchExercise(e, "name", curBlock, exercise, updateExercise)
@@ -182,10 +175,9 @@ export const ExerciseInfo = ({
         label="Apparatus:"
         textValue={exercise.apparatus}
         options={getAvailableOptions(
-          curBlock,
           exercise,
           templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
-          ExerciseApparatus
+          "apparatus"
         )}
         onChangeSelect={(e) =>
           switchExercise(e, "apparatus", curBlock, exercise, updateExercise)
@@ -193,14 +185,14 @@ export const ExerciseInfo = ({
       />
       <div className="d-flex w-100 gap-3">
         <LabeledInput
-          label="Sets: "
+          label="Sets:"
           textValue={exercise.sets.filter((set) => !set.addedOn).length}
           onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
             handleNumberInput(e, "sets");
           }}
         />
         <LabeledInput
-          label="Reps: "
+          label="Reps:"
           textValue={exercise.sets[0]?.reps || 0}
           onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
             handleNumberInput(e, "reps");

@@ -178,7 +178,7 @@ export const CompleteDay = () => {
                 setAddExerciseIdx(exercisesState.length);
                 setExerciseToEdit({
                   setIdx: undefined,
-                  exercise: newExercise,
+                  exercise: { ...newExercise, addedOn: true },
                 });
               }}
             />
