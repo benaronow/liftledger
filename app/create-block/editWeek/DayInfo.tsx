@@ -20,7 +20,8 @@ export const DayInfo = ({
   setDeletingIdx,
   hasErrors,
 }: Props) => {
-  const { templateBlock, setTemplateBlock, editingWeekIdx } = useBlock();
+  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
+    useBlock();
 
   const handleMoveDay = (day: Day, dayIdx: number, type: "up" | "down") => {
     if ((dayIdx !== 0 || type !== "up") && (dayIdx !== 6 || type !== "down")) {
@@ -85,6 +86,7 @@ export const DayInfo = ({
       ),
       onClick: () => handleEditDay(dIdx),
       variant: "primary",
+      disabled: curBlock ? curBlock?.curDayIdx > dIdx : false,
     },
     {
       icon: <ControlPointDuplicate fontSize="medium" />,
