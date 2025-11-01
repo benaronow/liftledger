@@ -1,11 +1,13 @@
 import { ReactNode } from "react";
 import { Modal } from "react-bootstrap";
 import { COLORS } from "@/lib/colors";
+import { ActionButton, Variant } from "./ActionButton";
 
-export interface Action {
-  text: ReactNode;
-  disabled?: boolean;
+export interface DialogAction {
+  icon: ReactNode;
   onClick: () => void;
+  disabled?: boolean;
+  variant?: Variant;
 }
 
 interface Props {
@@ -13,11 +15,8 @@ interface Props {
   open: boolean;
   onClose: () => void;
   title: string;
-  actions: Action[];
+  actions: DialogAction[];
 }
-
-export type ChangeExerciseType = "name" | "apparatus" | "weightType";
-export type SubmitExerciseType = "change" | "add" | "delete";
 
 export const ActionDialog = ({
   children,
@@ -55,22 +54,14 @@ export const ActionDialog = ({
         style={{ background: COLORS.dark }}
       >
         {actions.map((action, idx) => (
-          <button
+          <ActionButton
             key={idx}
-            className="d-flex justify-content-center align-items-center w-100 border-0 rounded m-0"
-            style={{
-              background: action.disabled
-                ? COLORS.primaryDisabled
-                : COLORS.primary,
-              color: action.disabled ? COLORS.textDisabled : "white",
-              fontSize: "28px",
-              height: "50px",
-            }}
+            icon={action.icon}
+            onClick={action.onClick}
             disabled={action.disabled}
-            onClick={action.disabled ? undefined : action.onClick}
-          >
-            {action.text}
-          </button>
+            variant={action.variant}
+            height={55}
+          />
         ))}
       </Modal.Footer>
     </Modal>

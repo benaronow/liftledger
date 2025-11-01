@@ -8,6 +8,7 @@ export const COLORS = {
   container: "#58585b",
   textDisabled: "#a7a7a7",
   danger: "#dc3545",
+  dangerDisabled: "#C94F5A",
   warning: "#ffc107",
   success: "#09c104",
 };

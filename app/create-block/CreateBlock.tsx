@@ -92,7 +92,7 @@ export const CreateBlock = () => {
               icon: <ArrowBackIosNew style={{ fontSize: "20px" }} />,
               label: "Return to week",
               onClick: () => setEditingDay(-1),
-              side: editingDay !== -1 ? "left" : "",
+              variant: "primary",
             },
           ]
         : []),
@@ -101,8 +101,8 @@ export const CreateBlock = () => {
           icon: <FaSave style={{ fontSize: "18px" }} />,
           label: "Save",
           onClick: handleSubmit,
-          side: "right",
           disabled: templateErrors.length > 0,
+          variant: "primary",
         },
       ],
     ],

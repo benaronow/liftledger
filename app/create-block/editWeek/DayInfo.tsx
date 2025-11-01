@@ -3,7 +3,7 @@ import { ArrowBackIosNew, ControlPointDuplicate } from "@mui/icons-material";
 import { BiSolidEdit } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
 import { useBlock } from "@/app/providers/BlockProvider";
-import { Info } from "../Info";
+import { Info, InfoAction } from "../Info";
 
 interface Props {
   day: Day;
@@ -56,7 +56,7 @@ export const DayInfo = ({
     });
   };
 
-  const buttonActions = [
+  const infoActions: InfoAction[] = [
     {
       icon: (
         <ArrowBackIosNew
@@ -66,6 +66,7 @@ export const DayInfo = ({
       ),
       disabled: dIdx === 0,
       onClick: () => handleMoveDay(day, dIdx, "up"),
+      variant: "primary",
     },
     {
       icon: (
@@ -76,27 +77,31 @@ export const DayInfo = ({
       ),
       disabled: dIdx === templateBlock.weeks[editingWeekIdx].length - 1,
       onClick: () => handleMoveDay(day, dIdx, "down"),
+      variant: "primary",
     },
     {
       icon: (
         <BiSolidEdit style={{ transform: "rotate(90deg)", fontSize: "22px" }} />
       ),
       onClick: () => handleEditDay(dIdx),
+      variant: "primary",
     },
     {
       icon: <ControlPointDuplicate fontSize="medium" />,
       disabled: templateBlock.weeks[editingWeekIdx].length > 6,
       onClick: () => handleDuplicateDay(dIdx),
+      variant: "primary",
     },
     {
       icon: <FaTrash fontSize="medium" />,
       disabled: templateBlock.weeks[editingWeekIdx].length === 1,
       onClick: () => setDeletingIdx(dIdx),
+      variant: "danger",
     },
   ];
 
   return (
-    <Info title={`Day ${dIdx + 1}`} actions={buttonActions}>
+    <Info title={`Day ${dIdx + 1}`} actions={infoActions}>
       <strong className="text-white" style={{ fontSize: "14px" }}>
         {`Name: ${day.name} [${day.exercises.reduce(
           (acc, cur) =>

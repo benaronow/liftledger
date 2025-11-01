@@ -1,4 +1,4 @@
-import { Action, ActionDialog } from "@/app/components/ActionDialog";
+import { DialogAction, ActionDialog } from "@/app/components/ActionDialog";
 import { EditExercise } from "./EditExercise";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { Block, Day, Exercise } from "@/lib/types";
@@ -69,14 +69,15 @@ export const SubmitExerciseDialog = ({
     onClose();
   };
 
-  const editActions: Action[] = [
+  const editActions: DialogAction[] = [
     {
-      text: <FaSave />,
+      icon: <FaSave fontSize={28} />,
       onClick: () => handleSubmitExercise(),
       disabled:
         exerciseState.name === "" ||
         exerciseState.apparatus === "" ||
         exerciseState.weightType === "",
+      variant: "primary",
     },
   ];
 

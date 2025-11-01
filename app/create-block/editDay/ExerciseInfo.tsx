@@ -13,7 +13,7 @@ import {
 import { useBlock } from "@/app/providers/BlockProvider";
 import { getLastExerciseOccurrence, getNewSetsFromLast } from "@/app/utils";
 import { COLORS } from "@/lib/colors";
-import { Info } from "../Info";
+import { Info, InfoAction } from "../Info";
 
 interface Props {
   exercise: Exercise;
@@ -155,7 +155,7 @@ export const ExerciseInfo = ({
     });
   };
 
-  const buttonActions = [
+  const infoActions: InfoAction[] = [
     {
       icon: (
         <ArrowBackIosNew
@@ -165,6 +165,7 @@ export const ExerciseInfo = ({
       ),
       disabled: eIdx === 0,
       onClick: () => handleMoveExercise("up"),
+      variant: "primary",
     },
     {
       icon: (
@@ -177,17 +178,19 @@ export const ExerciseInfo = ({
         eIdx ===
         templateBlock.weeks[editingWeekIdx][editingDay].exercises.length - 1,
       onClick: () => handleMoveExercise("down"),
+      variant: "primary",
     },
     {
       icon: <FaTrash fontSize="medium" />,
       disabled:
         templateBlock.weeks[editingWeekIdx][editingDay].exercises.length === 1,
       onClick: () => setDeletingIdx(eIdx),
+      variant: "danger",
     },
   ];
 
   return (
-    <Info title={`Exercise ${eIdx + 1}`} actions={buttonActions}>
+    <Info title={`Exercise ${eIdx + 1}`} actions={infoActions}>
       <LabeledInput
         label="Exercise:"
         textValue={exercise.name}

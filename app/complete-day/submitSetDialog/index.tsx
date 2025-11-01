@@ -2,7 +2,7 @@ import { Block, Day, Exercise, Set } from "@/lib/types";
 import { Dispatch, SetStateAction, useState } from "react";
 import { FaSave } from "react-icons/fa";
 import { EditSet } from "./EditSet";
-import { Action, ActionDialog } from "../../components/ActionDialog";
+import { DialogAction, ActionDialog } from "../../components/ActionDialog";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { IoIosSkipForward } from "react-icons/io";
 import { getLastSetOccurrence } from "@/app/utils";
@@ -126,16 +126,18 @@ export const SubmitSetDialog = ({
     onClose();
   };
 
-  const editActions: Action[] = [
+  const editActions: DialogAction[] = [
     {
-      text: <FaSave />,
+      icon: <FaSave fontSize={28} />,
       onClick: () => handleSubmitSet(false),
+      variant: "primary",
     },
     {
-      text: <IoIosSkipForward />,
+      icon: <IoIosSkipForward fontSize={28} />,
       onClick: () => handleSubmitSet(true),
       disabled:
         exerciseState.sets[setIdx].skipped || setIdx === exercise.sets.length,
+      variant: "primaryInverted",
     },
   ];
 

@@ -2,9 +2,11 @@ import { Day, Exercise } from "@/lib/types";
 import { ChangeEvent, useState } from "react";
 import { AddButton } from "../../components/AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
-import { DeleteDialog } from "../../components/DeleteResetDialog";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { LabeledInput } from "@/app/components/LabeledInput";
+import { DialogAction, ActionDialog } from "@/app/components/ActionDialog";
+import { IoArrowBack } from "react-icons/io5";
+import { FaTrash } from "react-icons/fa";
 
 interface EditDayProps {
   editingDay: number;
@@ -85,6 +87,22 @@ export const EditDay = ({ editingDay }: EditDayProps) => {
       });
   };
 
+  const deleteActions: DialogAction[] = [
+    {
+      icon: <IoArrowBack fontSize={28} />,
+      onClick: () => setDeletingIdx(undefined),
+      variant: "dangerInverted",
+    },
+    {
+      icon: <FaTrash fontSize={26} />,
+      onClick: () => {
+        handleRemoveExercise();
+        setDeletingIdx(undefined);
+      },
+      variant: "danger",
+    },
+  ];
+
   return (
     <>
       <div
@@ -130,17 +148,21 @@ export const EditDay = ({ editingDay }: EditDayProps) => {
           }
         />
       </div>
-      <DeleteDialog
-        onClose={() => {
-          setDeletingIdx(undefined);
-        }}
-        type="exercise"
-        isDeleting={deletingIdx !== undefined}
-        onDelete={() => {
-          handleRemoveExercise();
-          setDeletingIdx(undefined);
-        }}
-      />
+      <ActionDialog
+        open={deletingIdx !== undefined}
+        onClose={() => setDeletingIdx(undefined)}
+        title={"Delete Exercise"}
+        actions={deleteActions}
+      >
+        <div className="d-flex flex-column">
+          <span className="text-white text-wrap mb-4">
+            Are you sure you want to delete this exercise?
+          </span>
+          <strong className="text-white text-wrap">
+            This action cannot be undone.
+          </strong>
+        </div>
+      </ActionDialog>
     </>
   );
 };

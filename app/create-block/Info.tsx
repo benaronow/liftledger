@@ -1,17 +1,18 @@
 import { COLORS } from "@/lib/colors";
 import { PropsWithChildren } from "react";
-import { ActionButton } from "../components/ActionButton";
+import { ActionButton, Variant } from "../components/ActionButton";
 
-interface ButtonAction {
-  className?: string;
+export interface InfoAction {
   icon: React.ReactNode;
-  disabled?: boolean;
   onClick: () => void;
+  disabled?: boolean;
+  variant?: Variant;
+  className?: string;
 }
 
 interface Props {
   title: string;
-  actions?: ButtonAction[];
+  actions?: InfoAction[];
 }
 
 export const Info = ({
@@ -46,10 +47,11 @@ export const Info = ({
         {actions?.map((action, idx) => (
           <ActionButton
             key={idx}
-            className={`w-100 ${action.className}`}
             icon={action.icon}
-            disabled={action.disabled}
             onClick={action.onClick}
+            disabled={action.disabled}
+            variant={action.variant}
+            className={action.className}
           />
         ))}
       </div>

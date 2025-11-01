@@ -105,12 +105,14 @@ export const CompleteDay = () => {
         icon: editing ? <IoMdClose /> : <BiSolidEdit />,
         label: editing ? "Stop Editing" : "Edit",
         onClick: () => setEditing((prev) => !prev),
+        variant: "primary",
       },
       {
         icon: <IoMdCheckmark style={{ fontSize: "20px" }} />,
         label: "Finish",
         onClick: finishDay,
         disabled: !isDayComplete,
+        variant: "primary",
       },
     ],
     [setEditing, finishDay, isDayComplete]
