@@ -3,7 +3,6 @@ import { LabeledInput } from "../../components/LabeledInput";
 import { FaTrash } from "react-icons/fa";
 import { ChangeEvent, useMemo } from "react";
 import {
-  Day,
   Exercise,
   ExerciseApparatus,
   ExerciseName,
@@ -13,24 +12,24 @@ import {
 import { useBlock } from "@/app/providers/BlockProvider";
 import {
   findLatestPreviousOccurrence,
+  getAvailableOptions,
   getNewSetsFromLatest,
+  switchExercise,
 } from "@/lib/blockUtils";
 import { COLORS } from "@/lib/colors";
 import { Info, InfoAction } from "../Info";
 
 interface Props {
   exercise: Exercise;
-  takenExercises: Exercise[];
   eIdx: number;
-  editingDay: number;
+  editingDayIdx: number;
   setDeletingIdx: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
 export const ExerciseInfo = ({
   exercise,
-  takenExercises,
   eIdx,
-  editingDay,
+  editingDayIdx,
   setDeletingIdx,
 }: Props) => {
   const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
@@ -40,17 +39,13 @@ export const ExerciseInfo = ({
     [exercise.sets]
   );
 
-  const shouldEditDay = (day: Day) => {
-    return day.name === templateBlock.weeks[editingWeekIdx][editingDay].name;
-  };
-
   const handleMoveExercise = (type: "up" | "down") => {
     setTemplateBlock({
       ...templateBlock,
-      weeks: templateBlock.weeks.map((week, idx) =>
-        idx === editingWeekIdx
-          ? week.map((day) =>
-              shouldEditDay(day)
+      weeks: templateBlock.weeks.map((week, wIdx) =>
+        wIdx === editingWeekIdx
+          ? week.map((day, dIdx) =>
+              dIdx === editingDayIdx
                 ? {
                     ...day,
                     exercises: day.exercises
@@ -73,8 +68,8 @@ export const ExerciseInfo = ({
       ...templateBlock,
       weeks: templateBlock.weeks.map((week, wIdx) =>
         wIdx === editingWeekIdx
-          ? week.map((day) =>
-              shouldEditDay(day)
+          ? week.map((day, dIdx) =>
+              dIdx === editingDayIdx
                 ? {
                     ...day,
                     exercises: day.exercises.map((exercise, idx) =>
@@ -86,41 +81,6 @@ export const ExerciseInfo = ({
           : week
       ),
     });
-  };
-
-  const handleExerciseNameSelect = (name: string) => {
-    const newExercise = { ...exercise, name };
-    updateExercise({
-      ...newExercise,
-      sets: getNewSetsFromLatest(curBlock, newExercise),
-    });
-  };
-
-  const handleExerciseApparatusSelect = (apparatus: string) => {
-    const newExercise = { ...exercise, apparatus };
-    updateExercise({
-      ...newExercise,
-      sets: getNewSetsFromLatest(curBlock, newExercise),
-    });
-  };
-
-  const handleWeightTypeSelect = (weightType: string) => {
-    updateExercise({
-      ...exercise,
-      weightType: weightType as WeightType,
-    });
-  };
-
-  const createNewSets = (numSets: number) => {
-    const sets = exercise.sets.length
-      ? exercise.sets
-      : getNewSetsFromLatest(curBlock, exercise);
-
-    return numSets < sets.length
-      ? sets.slice(0, numSets)
-      : sets.concat(
-          Array<Set>(numSets - sets.length).fill(sets[sets.length - 1])
-        );
   };
 
   const handleNumberInput = (
@@ -138,7 +98,7 @@ export const ExerciseInfo = ({
       ...exercise,
       sets:
         type === "sets"
-          ? createNewSets(value)
+          ? getNewSetsFromLatest(curBlock, exercise, value)
           : exercise.sets.map((set: Set) => ({
               ...set,
               reps: type === "reps" ? value : set.reps,
@@ -179,14 +139,15 @@ export const ExerciseInfo = ({
       ),
       disabled:
         eIdx ===
-        templateBlock.weeks[editingWeekIdx][editingDay].exercises.length - 1,
+        templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises.length - 1,
       onClick: () => handleMoveExercise("down"),
       variant: "primary",
     },
     {
       icon: <FaTrash fontSize="medium" />,
       disabled:
-        templateBlock.weeks[editingWeekIdx][editingDay].exercises.length === 1,
+        templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises.length ===
+        1,
       onClick: () => setDeletingIdx(eIdx),
       variant: "danger",
     },
@@ -207,25 +168,27 @@ export const ExerciseInfo = ({
       <LabeledInput
         label="Exercise:"
         textValue={exercise.name}
-        options={Object.values(ExerciseName).filter(
-          (o) =>
-            !takenExercises.find(
-              (e) => e.name === o && e.apparatus === exercise.apparatus
-            )
+        options={getAvailableOptions(
+          curBlock,
+          exercise,
+          templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
+          ExerciseName
         )}
-        onChangeSelect={(e) => handleExerciseNameSelect(e.target.value || "")}
+        onChangeSelect={(e) =>
+          switchExercise(e, "name", curBlock, exercise, updateExercise)
+        }
       />
       <LabeledInput
         label="Apparatus:"
         textValue={exercise.apparatus}
-        options={Object.values(ExerciseApparatus).filter(
-          (o) =>
-            !takenExercises.find(
-              (e) => e.apparatus === o && e.name === exercise.name
-            )
+        options={getAvailableOptions(
+          curBlock,
+          exercise,
+          templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
+          ExerciseApparatus
         )}
         onChangeSelect={(e) =>
-          handleExerciseApparatusSelect(e.target.value || "")
+          switchExercise(e, "apparatus", curBlock, exercise, updateExercise)
         }
       />
       <div className="d-flex w-100 gap-3">
@@ -279,7 +242,9 @@ export const ExerciseInfo = ({
           label="Weight type:"
           textValue={exercise.weightType}
           options={Object.values(WeightType)}
-          onChangeSelect={(e) => handleWeightTypeSelect(e?.target.value || "")}
+          onChangeSelect={(e) =>
+            switchExercise(e, "weightType", curBlock, exercise, updateExercise)
+          }
         />
       </div>
     </Info>

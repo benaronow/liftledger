@@ -1,4 +1,4 @@
-import { Day, Exercise } from "@/lib/types";
+import { Exercise } from "@/lib/types";
 import { ChangeEvent, useState } from "react";
 import { AddButton } from "../../components/AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
@@ -9,16 +9,12 @@ import { IoArrowBack } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 
 interface EditDayProps {
-  editingDay: number;
+  editingDayIdx: number;
 }
 
-export const EditDay = ({ editingDay }: EditDayProps) => {
+export const EditDay = ({ editingDayIdx }: EditDayProps) => {
   const { templateBlock, setTemplateBlock, editingWeekIdx } = useBlock();
   const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
-
-  const shouldEditDay = (day: Day) => {
-    return day.name === templateBlock.weeks[editingWeekIdx][editingDay].name;
-  };
 
   const handleDayNameInput = (
     e: ChangeEvent<HTMLInputElement>,
@@ -55,8 +51,8 @@ export const EditDay = ({ editingDay }: EditDayProps) => {
       ...templateBlock,
       weeks: templateBlock.weeks.map((week, wIdx) =>
         wIdx === editingWeekIdx
-          ? week.map((day) =>
-              shouldEditDay(day)
+          ? week.map((day, dIdx) =>
+              dIdx === editingDayIdx
                 ? {
                     ...day,
                     exercises: day.exercises.toSpliced(idx, 0, newExercise),
@@ -69,13 +65,13 @@ export const EditDay = ({ editingDay }: EditDayProps) => {
   };
 
   const handleRemoveExercise = () => {
-    if (templateBlock.weeks[editingWeekIdx][editingDay].exercises.length > 1)
+    if (templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises.length > 1)
       setTemplateBlock({
         ...templateBlock,
-        weeks: templateBlock.weeks.map((week, idx) =>
-          idx === editingWeekIdx
-            ? week.map((day) =>
-                shouldEditDay(day) && deletingIdx !== undefined
+        weeks: templateBlock.weeks.map((week, wIdx) =>
+          wIdx === editingWeekIdx
+            ? week.map((day, dIdx) =>
+                dIdx === editingDayIdx && deletingIdx !== undefined
                   ? {
                       ...day,
                       exercises: day.exercises.toSpliced(deletingIdx, 1),
@@ -112,29 +108,20 @@ export const EditDay = ({ editingDay }: EditDayProps) => {
         <div className="w-100" style={{ marginBottom: "20px" }}>
           <LabeledInput
             label="Name:"
-            textValue={templateBlock.weeks[editingWeekIdx][editingDay].name}
+            textValue={templateBlock.weeks[editingWeekIdx][editingDayIdx].name}
             onChangeText={(e: ChangeEvent<HTMLInputElement>) =>
-              handleDayNameInput(e, editingDay)
+              handleDayNameInput(e, editingDayIdx)
             }
           />
         </div>
-        {templateBlock.weeks[editingWeekIdx][editingDay].exercises.map(
+        {templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises.map(
           (exercise, idx) => (
             <div key={idx} className={exercise.addedOn ? "d-none" : ""}>
               <AddButton onClick={() => handleAddExercise(idx)} />
               <ExerciseInfo
                 exercise={exercise}
-                takenExercises={templateBlock.weeks[editingWeekIdx][
-                  editingDay
-                ].exercises.filter(
-                  (e) =>
-                    !(
-                      e.name === exercise.name &&
-                      e.apparatus === exercise.apparatus
-                    )
-                )}
                 eIdx={idx}
-                editingDay={editingDay}
+                editingDayIdx={editingDayIdx}
                 setDeletingIdx={setDeletingIdx}
               />
             </div>
@@ -143,7 +130,8 @@ export const EditDay = ({ editingDay }: EditDayProps) => {
         <AddButton
           onClick={() =>
             handleAddExercise(
-              templateBlock.weeks[editingWeekIdx][editingDay].exercises.length
+              templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises
+                .length
             )
           }
         />

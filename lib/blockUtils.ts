@@ -1,8 +1,16 @@
-import { Block, Exercise } from "@/lib/types";
+import {
+  Block,
+  Exercise,
+  ExerciseApparatus,
+  ExerciseName,
+  Set,
+  WeightType,
+} from "@/lib/types";
+import { ChangeEvent } from "react";
 
 export const findLatestPreviousOccurrence = <T>(
   curBlock: Block | undefined,
-  checker: (e: Exercise) => T | undefined
+  checkerFunc: (e: Exercise) => T | undefined
 ) => {
   if (!curBlock) return undefined;
 
@@ -17,7 +25,7 @@ export const findLatestPreviousOccurrence = <T>(
     ) {
       if (curBlock.weeks[w][d]) {
         for (const e of curBlock.weeks[w][d].exercises) {
-          return checker(e);
+          if (checkerFunc(e)) return checkerFunc(e);
         }
       }
     }
@@ -26,7 +34,8 @@ export const findLatestPreviousOccurrence = <T>(
 
 export const getNewSetsFromLatest = (
   curBlock: Block | undefined,
-  exercise: Exercise
+  exercise: Exercise,
+  numSets?: number
 ) => {
   if (!curBlock) return [];
 
@@ -46,8 +55,67 @@ export const getNewSetsFromLatest = (
     note: "",
   }));
 
-  return (
-    curSets ?? prevSets ?? [{ reps: 0, weight: 0, note: "", completed: false }]
+  const sets = curSets ??
+    prevSets ?? [{ reps: 0, weight: 0, note: "", completed: false }];
+
+  if (numSets !== undefined)
+    return numSets < sets.length
+      ? sets.slice(0, numSets)
+      : sets.concat(
+          Array<Set>(numSets - sets.length).fill(sets[sets.length - 1])
+        );
+
+  return sets;
+};
+
+export const switchExercise = (
+  e: ChangeEvent<HTMLSelectElement>,
+  type: "name" | "apparatus" | "weightType",
+  curBlock: Block | undefined,
+  exercise: Exercise,
+  updateFunc: (newExercise: Exercise) => void
+) => {
+  const newExercise = {
+    ...exercise,
+    name: type === "name" ? (e.target.value as ExerciseName) : exercise.name,
+    apparatus:
+      type === "apparatus"
+        ? (e.target.value as ExerciseApparatus)
+        : exercise.apparatus,
+    weightType:
+      type === "weightType"
+        ? (e.target.value as WeightType)
+        : exercise.weightType,
+  };
+
+  updateFunc({
+    ...newExercise,
+    sets: getNewSetsFromLatest(curBlock, newExercise),
+  });
+};
+
+export const getAvailableOptions = (
+  curBlock: Block | undefined,
+  curExercise: Exercise,
+  exercises: Exercise[],
+  type: typeof ExerciseName | typeof ExerciseApparatus
+) => {
+  if (!curBlock) return [];
+
+  const takenExercises = exercises.filter(
+    (e) =>
+      !(e.name === curExercise.name && e.apparatus === curExercise.apparatus)
+  );
+
+  return Object.values(type).filter(
+    (o) =>
+      !takenExercises.find((e) => {
+        if (type === ExerciseName)
+          return e.name === o && e.apparatus === curExercise.apparatus;
+        if (type === ExerciseApparatus)
+          return e.apparatus === o && e.name === curExercise.name;
+        return false;
+      })
   );
 };
 

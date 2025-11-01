@@ -4,8 +4,8 @@ import {
   ExerciseName,
   WeightType,
 } from "@/lib/types";
-import { ChangeEvent, Dispatch, SetStateAction, useMemo } from "react";
-import { getNewSetsFromLatest } from "@/lib/blockUtils";
+import { Dispatch, SetStateAction } from "react";
+import { getAvailableOptions, switchExercise } from "@/lib/blockUtils";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { LabeledInput } from "@/app/components/LabeledInput";
 
@@ -22,37 +22,27 @@ export const EditExercise = ({
 }: Props) => {
   const { curBlock } = useBlock();
 
-  const takenExercises = useMemo(() => {
-      return exercisesState.filter(
-        (e) =>
-          !(
-            e.name === exerciseState.name &&
-            e.apparatus === exerciseState.apparatus
-          )
-      );
-    }, [exercisesState, exerciseState]);
-
   const exerciseInfoMap = [
     {
       name: "name",
       title: "Exercise:",
       value: exerciseState.name,
-      options: Object.values(ExerciseName).filter(
-        (o) =>
-          !takenExercises.find(
-            (e) => e.name === o && e.apparatus === exerciseState.apparatus
-          )
+      options: getAvailableOptions(
+        curBlock,
+        exerciseState,
+        exercisesState,
+        ExerciseName
       ),
     },
     {
       name: "apparatus",
       title: "Apparatus:",
       value: exerciseState.apparatus,
-      options: Object.values(ExerciseApparatus).filter(
-        (o) =>
-          !takenExercises.find(
-            (e) => e.apparatus === o && e.name === exerciseState.name
-          )
+      options: getAvailableOptions(
+        curBlock,
+        exerciseState,
+        exercisesState,
+        ExerciseApparatus
       ),
     },
     {
@@ -63,30 +53,6 @@ export const EditExercise = ({
     },
   ];
 
-  const handleExerciseChange = (
-    e: ChangeEvent<HTMLSelectElement>,
-    type: "name" | "apparatus" | "weightType"
-  ) => {
-    const newExercise = {
-      ...exerciseState,
-      name:
-        type === "name" ? (e.target.value as ExerciseName) : exerciseState.name,
-      apparatus:
-        type === "apparatus"
-          ? (e.target.value as ExerciseApparatus)
-          : exerciseState.apparatus,
-      weightType:
-        type === "weightType"
-          ? (e.target.value as WeightType)
-          : exerciseState.weightType,
-    };
-
-    setExerciseState({
-      ...newExercise,
-      sets: getNewSetsFromLatest(curBlock, newExercise),
-    });
-  };
-
   return (
     <>
       {exerciseInfoMap.map((exerciseInfo, i) => (
@@ -95,18 +61,15 @@ export const EditExercise = ({
           label={exerciseInfo.title}
           textValue={exerciseInfo.value}
           options={exerciseInfo.options}
-          onChangeSelect={(e) => {
-            switch (exerciseInfo.name) {
-              case "name":
-                return handleExerciseChange(e, "name");
-              case "apparatus":
-                return handleExerciseChange(e, "apparatus");
-              case "weightType":
-                return handleExerciseChange(e, "weightType");
-              default:
-                return undefined;
-            }
-          }}
+          onChangeSelect={(e) =>
+            switchExercise(
+              e,
+              exerciseInfo.name as "name" | "apparatus" | "weightType",
+              curBlock,
+              exerciseState,
+              setExerciseState
+            )
+          }
           className={i !== exerciseInfoMap.length - 1 ? "mb-2" : "mb-1"}
         />
       ))}

@@ -1,12 +1,12 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { Person } from "@mui/icons-material";
 import { RouteType } from "@/lib/types";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useUser } from "@/app/providers/UserProvider";
 import { useBlock } from "@/app/providers/BlockProvider";
 import styles from "./header.module.css";
+import { Avatar } from "@mui/material";
 
 export const Header = () => {
   const router = useRouter();
@@ -66,9 +66,9 @@ export const Header = () => {
               className="d-flex justify-content-center align-items-center"
               style={{
                 marginRight: "10px",
-                height: "30px",
-                width: "30px",
-                borderRadius: "17.5px",
+                height: "32px",
+                width: "32px",
+                borderRadius: "16px",
                 background: "white",
                 color: "#6d6e71",
                 cursor: "pointer",
@@ -78,7 +78,10 @@ export const Header = () => {
                 router.push("/profile");
               }}
             >
-              <Person style={{ fontSize: "27px" }} />
+              <Avatar
+                sx={{ height: "32px", width: "32px" }}
+                src={session?.user.picture}
+              />
             </div>
           </div>
         </div>

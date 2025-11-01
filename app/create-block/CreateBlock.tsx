@@ -28,7 +28,7 @@ export const CreateBlock = () => {
   } = useBlock();
   const { innerWidth, isFetching, toggleScreenState } = useScreenState();
   const theme = useTheme();
-  const [editingDay, setEditingDay] = useState(-1);
+  const [editingDayIdx, setEditingDayIdx] = useState(-1);
 
   useEffect(() => {
     if (!session) {
@@ -78,12 +78,12 @@ export const CreateBlock = () => {
   }, [templateBlock, editingWeekIdx]);
 
   const headerActions: FooterAction[] = [
-    ...(editingDay !== -1
+    ...(editingDayIdx !== -1
       ? [
           {
             icon: <ArrowBackIosNew style={{ fontSize: "20px" }} />,
             label: "Return to week",
-            onClick: () => setEditingDay(-1),
+            onClick: () => setEditingDayIdx(-1),
             variant: "primary",
           } as FooterAction,
         ]
@@ -107,10 +107,10 @@ export const CreateBlock = () => {
         className="d-flex flex-column align-items-center w-100 overflow-scroll"
         style={{ height: "100dvh", padding: "65px 15px 140px" }}
       >
-        {editingDay === -1 ? (
-          <EditWeek setEditingDay={setEditingDay} errors={templateErrors} />
+        {editingDayIdx === -1 ? (
+          <EditWeek setEditingDay={setEditingDayIdx} errors={templateErrors} />
         ) : (
-          <EditDay editingDay={editingDay} />
+          <EditDay editingDayIdx={editingDayIdx} />
         )}
       </div>
       <ActionsFooter actions={headerActions} />
