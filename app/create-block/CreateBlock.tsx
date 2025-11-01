@@ -24,7 +24,7 @@ export const CreateBlock = () => {
     editingWeekIdx,
     setEditingWeekIdx,
     createBlock,
-    editBlock,
+    updateBlock,
   } = useBlock();
   const { innerWidth, isFetching, toggleScreenState } = useScreenState();
   const theme = useTheme();
@@ -50,7 +50,7 @@ export const CreateBlock = () => {
   const handleSubmit = () => {
     toggleScreenState("fetching", true);
     if (curBlock) {
-      editBlock(templateBlock);
+      updateBlock(templateBlock);
     } else {
       createBlock(templateBlock);
     }

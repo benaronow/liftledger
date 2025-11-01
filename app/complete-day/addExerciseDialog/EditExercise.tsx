@@ -4,8 +4,7 @@ import {
   ExerciseName,
   WeightType,
 } from "@/lib/types";
-import { Dispatch, SetStateAction } from "react";
-import { ChangeExerciseType } from ".";
+import { ChangeEvent, Dispatch, SetStateAction, useMemo } from "react";
 import { getNewSetsFromLatest } from "@/lib/blockUtils";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { LabeledInput } from "@/app/components/LabeledInput";
@@ -13,15 +12,25 @@ import { LabeledInput } from "@/app/components/LabeledInput";
 interface Props {
   exerciseState: Exercise;
   setExerciseState: Dispatch<SetStateAction<Exercise>>;
-  takenExercises: Exercise[];
+  exercisesState: Exercise[];
 }
 
 export const EditExercise = ({
   exerciseState,
   setExerciseState,
-  takenExercises,
+  exercisesState,
 }: Props) => {
   const { curBlock } = useBlock();
+
+  const takenExercises = useMemo(() => {
+      return exercisesState.filter(
+        (e) =>
+          !(
+            e.name === exerciseState.name &&
+            e.apparatus === exerciseState.apparatus
+          )
+      );
+    }, [exercisesState, exerciseState]);
 
   const exerciseInfoMap = [
     {
@@ -55,18 +64,21 @@ export const EditExercise = ({
   ];
 
   const handleExerciseChange = (
-    e: ExerciseName | ExerciseApparatus | WeightType | "",
-    type: ChangeExerciseType
+    e: ChangeEvent<HTMLSelectElement>,
+    type: "name" | "apparatus" | "weightType"
   ) => {
     const newExercise = {
       ...exerciseState,
-      name: type === "name" ? (e as ExerciseName) : exerciseState.name,
+      name:
+        type === "name" ? (e.target.value as ExerciseName) : exerciseState.name,
       apparatus:
         type === "apparatus"
-          ? (e as ExerciseApparatus)
+          ? (e.target.value as ExerciseApparatus)
           : exerciseState.apparatus,
       weightType:
-        type === "weightType" ? (e as WeightType) : exerciseState.weightType,
+        type === "weightType"
+          ? (e.target.value as WeightType)
+          : exerciseState.weightType,
     };
 
     setExerciseState({
@@ -86,20 +98,11 @@ export const EditExercise = ({
           onChangeSelect={(e) => {
             switch (exerciseInfo.name) {
               case "name":
-                return handleExerciseChange(
-                  e.target.value as ExerciseName,
-                  "name"
-                );
+                return handleExerciseChange(e, "name");
               case "apparatus":
-                return handleExerciseChange(
-                  e.target.value as ExerciseApparatus,
-                  "apparatus"
-                );
+                return handleExerciseChange(e, "apparatus");
               case "weightType":
-                return handleExerciseChange(
-                  e.target.value as WeightType,
-                  "weightType"
-                );
+                return handleExerciseChange(e, "weightType");
               default:
                 return undefined;
             }

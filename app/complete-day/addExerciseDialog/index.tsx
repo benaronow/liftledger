@@ -1,11 +1,9 @@
 import { DialogAction, ActionDialog } from "@/app/components/ActionDialog";
 import { EditExercise } from "./EditExercise";
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Block, Day, Exercise } from "@/lib/types";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { FaSave } from "react-icons/fa";
-
-export type ChangeExerciseType = "name" | "apparatus" | "weightType";
 
 interface Props {
   addIdx: number;
@@ -14,42 +12,29 @@ interface Props {
   onClose: () => void;
 }
 
-export const SubmitExerciseDialog = ({
+export const AddExerciseDialog = ({
   addIdx,
   exercisesState,
   setExercisesState,
   onClose,
 }: Props) => {
-  const { curBlock, editBlock } = useBlock();
-
-  const newExercise: Exercise = {
+  const { curBlock, updateBlock } = useBlock();
+  const [exerciseState, setExerciseState] = useState<Exercise>({
     name: "",
     apparatus: "",
     weightType: "",
     sets: [],
     addedOn: true,
-  };
+  });
 
-  const [exerciseState, setExerciseState] = useState<Exercise>(newExercise);
-
-  const takenExercises = useMemo(() => {
-    return exercisesState.filter(
-      (e) =>
-        !(
-          e.name === exerciseState.name &&
-          e.apparatus === exerciseState.apparatus
-        )
-    );
-  }, [exercisesState, exerciseState]);
-
-  const saveExercises = (complete: Exercise[]) => {
+  const saveExercises = (exercises: Exercise[]) => {
     if (curBlock) {
       const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].toSpliced(
         curBlock.curDayIdx,
         1,
         {
           ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
-          exercises: complete,
+          exercises,
         }
       );
 
@@ -58,7 +43,7 @@ export const SubmitExerciseDialog = ({
         weeks: curBlock?.weeks.toSpliced(curBlock.curWeekIdx, 1, newDays),
       };
 
-      editBlock(newBlock);
+      updateBlock(newBlock);
     }
   };
 
@@ -72,7 +57,7 @@ export const SubmitExerciseDialog = ({
   const editActions: DialogAction[] = [
     {
       icon: <FaSave fontSize={28} />,
-      onClick: () => handleSubmitExercise(),
+      onClick: handleSubmitExercise,
       disabled:
         exerciseState.name === "" ||
         exerciseState.apparatus === "" ||
@@ -83,7 +68,7 @@ export const SubmitExerciseDialog = ({
 
   return (
     <ActionDialog
-      open={!!exerciseState}
+      open={true}
       onClose={onClose}
       title="Submit Set"
       actions={editActions}
@@ -91,7 +76,7 @@ export const SubmitExerciseDialog = ({
       <EditExercise
         exerciseState={exerciseState}
         setExerciseState={setExerciseState}
-        takenExercises={takenExercises}
+        exercisesState={exercisesState}
       />
     </ActionDialog>
   );

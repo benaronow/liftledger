@@ -1,20 +1,24 @@
 import { findLatestPreviousOccurrence } from "@/lib/blockUtils";
 import { Exercise } from "@/lib/types";
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useMemo,
+  useState,
+} from "react";
 import { LabeledInput } from "../../components/LabeledInput";
 import { useBlock } from "@/app/providers/BlockProvider";
 
 interface Props {
   setIdx: number;
   exerciseState: Exercise;
-  exercisesState: Exercise[];
   setExerciseState: Dispatch<SetStateAction<Exercise>>;
 }
 
 export const EditSet = ({
   setIdx,
   exerciseState,
-  exercisesState,
   setExerciseState,
 }: Props) => {
   const { curBlock } = useBlock();
@@ -41,21 +45,18 @@ export const EditSet = ({
     },
   ];
 
-  const getPreviousSessionNote = (
-    exercise: Exercise | undefined,
-    setIdx: number
-  ) => {
-    if (curBlock && exercise) {
-      const previousExercise = findLatestPreviousOccurrence(
-        curBlock,
-        (e: Exercise) => {
-          if (e.name === exercise.name && e.apparatus === exercise.apparatus)
-            return e;
-        }
-      );
-      if (previousExercise) return previousExercise.sets[setIdx]?.note;
+  const latestPreviousSetNote = useMemo(() => {
+    if (curBlock) {
+      return findLatestPreviousOccurrence(curBlock, (e: Exercise) => {
+        if (
+          e.name === exerciseState.name &&
+          e.apparatus === exerciseState.apparatus &&
+          e.sets[setIdx]
+        )
+          return e.sets[setIdx].note;
+      });
     }
-  };
+  }, [curBlock, exerciseState, setIdx]);
 
   const handleSetChange = (
     e: ChangeEvent<HTMLInputElement>,
@@ -87,22 +88,8 @@ export const EditSet = ({
 
   return (
     <>
-      {getPreviousSessionNote(
-        exercisesState.find(
-          (e) =>
-            e.name === exerciseState.name &&
-            e.apparatus === exerciseState.apparatus
-        ),
-        setIdx || 0
-      ) && (
-        <span className="small mb-2 text-wrap">{`Previous note: ${getPreviousSessionNote(
-          exercisesState.find(
-            (e) =>
-              e.name === exerciseState.name &&
-              e.apparatus === exerciseState.apparatus
-          ),
-          setIdx || 0
-        )}`}</span>
+      {latestPreviousSetNote && (
+        <span className="small mb-2 text-wrap">{`Previous note: ${latestPreviousSetNote}`}</span>
       )}
       {setInfoMap.map((setInfo, i) => (
         <LabeledInput

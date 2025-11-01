@@ -22,7 +22,7 @@ export const SubmitSetDialog = ({
   setExercisesState,
   onClose,
 }: Props) => {
-  const { curBlock, editBlock } = useBlock();
+  const { curBlock, updateBlock } = useBlock();
   const [exerciseState, setExerciseState] = useState<Exercise>(
     setIdx === exercise.sets.length
       ? {
@@ -84,7 +84,7 @@ export const SubmitSetDialog = ({
         ),
       };
 
-      editBlock(newBlock);
+      updateBlock(newBlock);
     }
   };
 
@@ -107,7 +107,7 @@ export const SubmitSetDialog = ({
 
     const updatedExercise: Exercise = {
       ...exerciseState,
-      sets: exerciseState?.sets.toSpliced(setIdx, 1, {
+      sets: exerciseState.sets.toSpliced(setIdx, 1, {
         ...updatedSets,
         completed: !skip,
         skipped: skip,
@@ -147,7 +147,7 @@ export const SubmitSetDialog = ({
 
   return (
     <ActionDialog
-      open={!!exerciseState}
+      open={true}
       onClose={onClose}
       title="Submit Set"
       actions={editActions}
@@ -155,7 +155,6 @@ export const SubmitSetDialog = ({
       <EditSet
         setIdx={setIdx}
         exerciseState={exerciseState}
-        exercisesState={exercisesState}
         setExerciseState={setExerciseState}
       />
     </ActionDialog>

@@ -8,19 +8,18 @@ import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useUser } from "@/app/providers/UserProvider";
 import { SetChips } from "./setChips/SetChips";
 import { BiSolidEdit } from "react-icons/bi";
-// import { AddButton } from "../components/AddButton";
 import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { ActionsFooter, FooterAction } from "../components/ActionsFooter";
 import { COLORS } from "@/lib/colors";
 import { SubmitSetDialog } from "./submitSetDialog";
 import { AddButton } from "../components/AddButton";
-import { SubmitExerciseDialog } from "./submitExerciseDialog";
+import { AddExerciseDialog } from "./addExerciseDialog";
 
 export const CompleteDay = () => {
   const router = useRouter();
   const { session } = useUser();
-  const { curBlock, editBlock } = useBlock();
+  const { curBlock, updateBlock } = useBlock();
   const { isFetching, toggleScreenState } = useScreenState();
   const [exerciseToEdit, setExerciseToEdit] = useState<{
     setIdx: number | undefined;
@@ -80,7 +79,7 @@ export const CompleteDay = () => {
         ),
       };
 
-      editBlock(newBlock);
+      updateBlock(newBlock);
 
       router.push("/dashboard");
     }
@@ -94,10 +93,10 @@ export const CompleteDay = () => {
   };
 
   const isDayComplete = useMemo(() => {
-    return exercisesState.every((exercise: Exercise) =>
+    return exercises.every((exercise: Exercise) =>
       isExerciseComplete(exercise)
     );
-  }, [exercisesState]);
+  }, [exercises]);
 
   const footerActions: FooterAction[] = useMemo(
     () => [
@@ -196,7 +195,7 @@ export const CompleteDay = () => {
         />
       )}
       {exerciseToEdit && addExerciseIdx !== undefined && (
-        <SubmitExerciseDialog
+        <AddExerciseDialog
           addIdx={addExerciseIdx}
           exercisesState={exercisesState}
           setExercisesState={setExercisesState}
