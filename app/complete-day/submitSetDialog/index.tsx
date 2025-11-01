@@ -5,7 +5,7 @@ import { EditSet } from "./EditSet";
 import { DialogAction, ActionDialog } from "../../components/ActionDialog";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { IoIosSkipForward } from "react-icons/io";
-import { getLastSetOccurrence } from "@/app/utils";
+import { findLatestPreviousOccurrence } from "@/lib/blockUtils";
 
 interface Props {
   setIdx: number;
@@ -62,7 +62,7 @@ export const SubmitSetDialog = ({
                   ? {
                       ...completedExercise,
                       sets: completedExercise.sets
-                        .filter((set) => !set.addOn)
+                        .filter((set) => !set.addedOn)
                         .map((set: Set) => ({
                           ...set,
                           completed: false,
@@ -89,26 +89,30 @@ export const SubmitSetDialog = ({
   };
 
   const handleSubmitSet = (skip: boolean) => {
+    const latestPreviousSet = findLatestPreviousOccurrence(
+      curBlock,
+      (e: Exercise) => {
+        if (
+          e.name === exercise.name &&
+          e.apparatus === exercise.apparatus &&
+          e.sets[setIdx]
+        )
+          return e.sets[setIdx];
+      }
+    );
+
+    const updatedSets = skip
+      ? latestPreviousSet ?? exerciseState.sets[setIdx]
+      : exerciseState.sets[setIdx];
+
     const updatedExercise: Exercise = {
       ...exerciseState,
-      sets: exerciseState?.sets.toSpliced(
-        setIdx,
-        1,
-        skip
-          ? {
-              ...(getLastSetOccurrence(curBlock, exercise, setIdx) ??
-                exerciseState.sets[setIdx]),
-              completed: false,
-              skipped: true,
-              addOn: setIdx === exercise.sets.length,
-            }
-          : {
-              ...exerciseState.sets[setIdx],
-              completed: true,
-              skipped: undefined,
-              addOn: setIdx === exercise.sets.length,
-            }
-      ),
+      sets: exerciseState?.sets.toSpliced(setIdx, 1, {
+        ...updatedSets,
+        completed: !skip,
+        skipped: skip,
+        addedOn: setIdx === exercise.sets.length,
+      }),
     };
 
     const updatedExercises = exercisesState.toSpliced(

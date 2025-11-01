@@ -105,7 +105,7 @@ export const DayInfo = ({
       <strong className="text-white" style={{ fontSize: "14px" }}>
         {`Name: ${day.name} [${day.exercises.reduce(
           (acc, cur) =>
-            acc + (cur.addOn ? 0 : cur.sets.filter((s) => !s.addOn).length),
+            acc + (cur.addedOn ? 0 : cur.sets.filter((s) => !s.addedOn).length),
           0
         )}]`}
       </strong>
@@ -113,14 +113,14 @@ export const DayInfo = ({
         (e) => e.name && e.apparatus && e.sets.length
       ) &&
         templateBlock.weeks[editingWeekIdx][dIdx].exercises
-          .filter((ex) => !ex.addOn)
+          .filter((ex) => !ex.addedOn)
           .map((ex, i) => (
             <span
               className="text-white"
               style={{ fontSize: "14px" }}
               key={ex._id}
             >{`${i + 1}. ${ex.name} [${
-              ex.sets.filter((s) => !s.addOn).length
+              ex.sets.filter((s) => !s.addedOn).length
             }]`}</span>
           ))}
       {hasErrors && (

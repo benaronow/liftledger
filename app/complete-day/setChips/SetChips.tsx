@@ -1,6 +1,6 @@
 import { Exercise, Set } from "@/lib/types";
 import { Dispatch, SetStateAction, useCallback, useMemo } from "react";
-import { getLastSetOccurrence } from "../../utils";
+import { findLatestPreviousOccurrence } from "../../../lib/blockUtils";
 import { useBlock } from "../../providers/BlockProvider";
 import { COLORS } from "@/lib/colors";
 import { BiPlusCircle } from "react-icons/bi";
@@ -53,14 +53,25 @@ export const SetChips = ({
   );
 
   const getDiffs = (setIdx: number) => {
-    const lastSet = getLastSetOccurrence(curBlock, exercise, setIdx, true);
+    const lastCompletedSet = findLatestPreviousOccurrence(
+      curBlock,
+      (e: Exercise) => {
+        if (
+          e.name === exercise.name &&
+          e.apparatus === exercise.apparatus &&
+          e.sets[setIdx] &&
+          e.sets[setIdx].completed
+        )
+          return e.sets[setIdx];
+      }
+    );
 
-    if (lastSet) {
+    if (lastCompletedSet) {
       const repDiff = exercise.sets[setIdx]
-        ? exercise.sets[setIdx].reps - lastSet.reps
+        ? exercise.sets[setIdx].reps - lastCompletedSet.reps
         : 0;
       const weightDiff = exercise.sets[setIdx]
-        ? exercise.sets[setIdx].weight - lastSet.weight
+        ? exercise.sets[setIdx].weight - lastCompletedSet.weight
         : 0;
       return { repDiff, weightDiff };
     }

@@ -11,7 +11,10 @@ import {
   WeightType,
 } from "@/lib/types";
 import { useBlock } from "@/app/providers/BlockProvider";
-import { getLastExerciseOccurrence, getNewSetsFromLast } from "@/app/utils";
+import {
+  findLatestPreviousOccurrence,
+  getNewSetsFromLatest,
+} from "@/lib/blockUtils";
 import { COLORS } from "@/lib/colors";
 import { Info, InfoAction } from "../Info";
 
@@ -89,7 +92,7 @@ export const ExerciseInfo = ({
     const newExercise = { ...exercise, name };
     updateExercise({
       ...newExercise,
-      sets: getNewSetsFromLast(curBlock, newExercise),
+      sets: getNewSetsFromLatest(curBlock, newExercise),
     });
   };
 
@@ -97,7 +100,7 @@ export const ExerciseInfo = ({
     const newExercise = { ...exercise, apparatus };
     updateExercise({
       ...newExercise,
-      sets: getNewSetsFromLast(curBlock, newExercise),
+      sets: getNewSetsFromLatest(curBlock, newExercise),
     });
   };
 
@@ -111,7 +114,7 @@ export const ExerciseInfo = ({
   const createNewSets = (numSets: number) => {
     const sets = exercise.sets.length
       ? exercise.sets
-      : getNewSetsFromLast(curBlock, exercise);
+      : getNewSetsFromLatest(curBlock, exercise);
 
     return numSets < sets.length
       ? sets.slice(0, numSets)
@@ -189,6 +192,16 @@ export const ExerciseInfo = ({
     },
   ];
 
+  const editDisabled = useMemo(() => {
+    return (
+      !exercise.sets.length ||
+      !!findLatestPreviousOccurrence(curBlock, (e: Exercise) => {
+        if (e.name === exercise.name && e.apparatus === exercise.apparatus)
+          return e;
+      })
+    );
+  }, [curBlock, exercise]);
+
   return (
     <Info title={`Exercise ${eIdx + 1}`} actions={infoActions}>
       <LabeledInput
@@ -218,7 +231,7 @@ export const ExerciseInfo = ({
       <div className="d-flex w-100 gap-3">
         <LabeledInput
           label="Sets: "
-          textValue={exercise.sets.filter((set) => !set.addOn).length}
+          textValue={exercise.sets.filter((set) => !set.addedOn).length}
           onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
             handleNumberInput(e, "sets");
           }}
@@ -229,10 +242,7 @@ export const ExerciseInfo = ({
           onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
             handleNumberInput(e, "reps");
           }}
-          disabled={
-            !exercise.sets.length ||
-            !!getLastExerciseOccurrence(curBlock, exercise, true)
-          }
+          disabled={editDisabled}
         />
       </div>
       <div className="d-flex w-100 align-items-end">
@@ -242,16 +252,12 @@ export const ExerciseInfo = ({
           onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
             handleNumberInput(e, "weight");
           }}
-          disabled={
-            !exercise.sets.length ||
-            !!getLastExerciseOccurrence(curBlock, exercise, true)
-          }
+          disabled={editDisabled}
         />
         <button
           className="d-flex align-items-center p-1 rounded border-0 ms-1 me-3"
           style={
-            !exercise.sets.length ||
-            !!getLastExerciseOccurrence(curBlock, exercise, true)
+            editDisabled
               ? {
                   color: pointFive
                     ? COLORS.textDisabled

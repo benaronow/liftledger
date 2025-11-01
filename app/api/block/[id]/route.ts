@@ -2,35 +2,34 @@ import { connectDB } from "@/lib/connectDB";
 import BlockModel from "@/lib/models/block";
 import UserModel from "@/lib/models/user";
 import { Block, Day, Exercise, GetParams, Set } from "@/lib/types";
-import { checkIsBlockDone, checkIsCurWeekDone } from "@/app/utils";
+import {
+  checkIsBlockDone,
+  checkIsCurWeekDone,
+  findLatestPreviousOccurrence,
+} from "@/lib/blockUtils";
 import { NextRequest, NextResponse } from "next/server";
 
 const createNextWeek = (curBlock: Block): Day[] => {
   const thisWeek = curBlock.weeks[curBlock.curWeekIdx];
 
-  const getLatestExerciseOccurrence = (curBlock: Block, exercise: Exercise) => {
-    for (const w of curBlock.weeks.toReversed().concat(curBlock.initialWeek)) {
-      for (const d of w.toReversed()) {
-        for (const e of d.exercises) {
-          if (e.name === exercise.name && e.apparatus === exercise.apparatus)
-            return e;
-        }
-      }
-    }
-  };
-
   return thisWeek.map((day) => ({
     name: day.name,
     exercises: day.exercises
-      .filter((exercise) => !exercise.addOn)
+      .filter((exercise) => !exercise.addedOn)
       .map((exercise) => {
-        const latestEx = getLatestExerciseOccurrence(curBlock, exercise);
+        const latestEx = findLatestPreviousOccurrence(
+          curBlock,
+          (e: Exercise) => {
+            if (e.name === exercise.name && e.apparatus === exercise.apparatus)
+              return e;
+          }
+        );
 
         return latestEx
           ? {
               ...exercise,
               sets: latestEx?.sets
-                .filter((set) => !set.addOn)
+                .filter((set) => !set.addedOn)
                 .map((set: Set) => ({
                   ...set,
                   completed: false,

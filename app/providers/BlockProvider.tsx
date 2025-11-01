@@ -17,7 +17,6 @@ export const EMPTY_BLOCK: Block = {
   name: "",
   startDate: new Date(),
   length: 0,
-  initialWeek: [],
   weeks: [
     [
       {

@@ -1,4 +1,4 @@
-import { getLastExerciseOccurrence } from "@/app/utils";
+import { findLatestPreviousOccurrence } from "@/lib/blockUtils";
 import { Exercise } from "@/lib/types";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { LabeledInput } from "../../components/LabeledInput";
@@ -46,7 +46,13 @@ export const EditSet = ({
     setIdx: number
   ) => {
     if (curBlock && exercise) {
-      const previousExercise = getLastExerciseOccurrence(curBlock, exercise);
+      const previousExercise = findLatestPreviousOccurrence(
+        curBlock,
+        (e: Exercise) => {
+          if (e.name === exercise.name && e.apparatus === exercise.apparatus)
+            return e;
+        }
+      );
       if (previousExercise) return previousExercise.sets[setIdx]?.note;
     }
   };
@@ -106,7 +112,7 @@ export const EditSet = ({
           onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
             handleSetChange(e, setInfo.name as ChangeSetType);
           }}
-          className={ i !== setInfoMap.length - 1 ? "mb-2" : "mb-1" }
+          className={i !== setInfoMap.length - 1 ? "mb-2" : "mb-1"}
         />
       ))}
     </>

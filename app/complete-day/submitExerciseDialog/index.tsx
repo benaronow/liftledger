@@ -27,7 +27,7 @@ export const SubmitExerciseDialog = ({
     apparatus: "",
     weightType: "",
     sets: [],
-    addOn: true,
+    addedOn: true,
   };
 
   const [exerciseState, setExerciseState] = useState<Exercise>(newExercise);

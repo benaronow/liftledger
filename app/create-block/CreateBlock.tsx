@@ -1,6 +1,6 @@
 "use client";
 
-import { Block, RouteType } from "@/lib/types";
+import { RouteType } from "@/lib/types";
 import { useTheme } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { EditDay } from "./editDay";
@@ -48,18 +48,11 @@ export const CreateBlock = () => {
   }, [innerWidth]);
 
   const handleSubmit = () => {
-    const blockToSubmit: Block = curBlock
-      ? templateBlock
-      : {
-          ...templateBlock,
-          initialWeek: templateBlock.weeks[0],
-        };
-
     toggleScreenState("fetching", true);
     if (curBlock) {
-      editBlock(blockToSubmit);
+      editBlock(templateBlock);
     } else {
-      createBlock(blockToSubmit);
+      createBlock(templateBlock);
     }
     unsetTemplateBlock();
     setEditingWeekIdx(0);
@@ -84,30 +77,27 @@ export const CreateBlock = () => {
     return errors;
   }, [templateBlock, editingWeekIdx]);
 
-  const headerActions: FooterAction[] = useMemo(
-    () => [
-      ...(editingDay !== -1
-        ? [
-            {
-              icon: <ArrowBackIosNew style={{ fontSize: "20px" }} />,
-              label: "Return to week",
-              onClick: () => setEditingDay(-1),
-              variant: "primary",
-            },
-          ]
-        : []),
-      ...[
-        {
-          icon: <FaSave style={{ fontSize: "18px" }} />,
-          label: "Save",
-          onClick: handleSubmit,
-          disabled: templateErrors.length > 0,
-          variant: "primary",
-        },
-      ],
+  const headerActions: FooterAction[] = [
+    ...(editingDay !== -1
+      ? [
+          {
+            icon: <ArrowBackIosNew style={{ fontSize: "20px" }} />,
+            label: "Return to week",
+            onClick: () => setEditingDay(-1),
+            variant: "primary",
+          } as FooterAction,
+        ]
+      : []),
+    ...[
+      {
+        icon: <FaSave style={{ fontSize: "18px" }} />,
+        label: "Save",
+        onClick: handleSubmit,
+        disabled: templateErrors.length > 0,
+        variant: "primary",
+      } as FooterAction,
     ],
-    [setEditingDay, handleSubmit, templateErrors]
-  );
+  ];
 
   if (!curUser || isFetching) return <Spinner />;
 

@@ -120,7 +120,7 @@ export const EditDay = ({ editingDay }: EditDayProps) => {
         </div>
         {templateBlock.weeks[editingWeekIdx][editingDay].exercises.map(
           (exercise, idx) => (
-            <div key={idx} className={exercise.addOn ? "d-none" : ""}>
+            <div key={idx} className={exercise.addedOn ? "d-none" : ""}>
               <AddButton onClick={() => handleAddExercise(idx)} />
               <ExerciseInfo
                 exercise={exercise}

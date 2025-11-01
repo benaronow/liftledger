@@ -6,7 +6,7 @@ import {
 } from "@/lib/types";
 import { Dispatch, SetStateAction } from "react";
 import { ChangeExerciseType } from ".";
-import { getNewSetsFromLast } from "@/app/utils";
+import { getNewSetsFromLatest } from "@/lib/blockUtils";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { LabeledInput } from "@/app/components/LabeledInput";
 
@@ -71,7 +71,7 @@ export const EditExercise = ({
 
     setExerciseState({
       ...newExercise,
-      sets: getNewSetsFromLast(curBlock, newExercise),
+      sets: getNewSetsFromLatest(curBlock, newExercise),
     });
   };
 

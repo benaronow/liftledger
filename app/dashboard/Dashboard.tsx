@@ -8,7 +8,7 @@ import { Day, Exercise, RouteType, Set, WeightType } from "@/lib/types";
 import { Spinner } from "../components/spinner";
 import Link from "next/link";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
-import { checkIsBlockDone } from "@/app/utils";
+import { checkIsBlockDone } from "@/lib/blockUtils";
 import { useBlock } from "@/app/providers/BlockProvider";
 
 export const Dashboard = () => {

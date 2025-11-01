@@ -9,14 +9,13 @@ import { useEffect } from "react";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { Spinner } from "../components/spinner";
 import { useUser } from "@/app/providers/UserProvider";
-import { checkIsBlockDone } from "@/app/utils";
+import { checkIsBlockDone } from "@/lib/blockUtils";
 import { useBlock } from "@/app/providers/BlockProvider";
 
 const getTemplateFromBlock = (block: Block) => ({
   name: block.name,
   startDate: new Date(),
   length: block.length,
-  initialWeek: block.initialWeek,
   weeks: [
     block.weeks[block.length - 1].map((day) => {
       return {

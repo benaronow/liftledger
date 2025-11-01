@@ -124,7 +124,7 @@ export interface Set {
   note: string;
   completed: boolean;
   skipped?: boolean;
-  addOn?: boolean;
+  addedOn?: boolean;
 }
 
 export interface Exercise {
@@ -133,7 +133,7 @@ export interface Exercise {
   apparatus: string;
   sets: Set[];
   weightType: string;
-  addOn?: boolean;
+  addedOn?: boolean;
 }
 
 export interface Day {
@@ -148,7 +148,6 @@ export interface Block {
   name: string;
   startDate: Date;
   length: number;
-  initialWeek: Day[];
   weeks: Day[][];
   curWeekIdx: number;
   curDayIdx: number;
