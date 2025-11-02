@@ -5,6 +5,7 @@ import { Providers } from "./providers";
 import { auth0 } from "@/lib/auth0";
 import { Header } from "./components/header";
 import { Footer } from "./components/footer";
+import { Timer } from "./components/Timer";
 
 interface Props {
   readonly children: ReactNode;
@@ -93,8 +94,10 @@ const RootLayout = async ({ children }: Props) => {
             <header className={styles.header}>
               <Header />
             </header>
-
-            <main className={styles.main}>{children}</main>
+            <main className={styles.main}>
+              <Timer />
+              {children}
+            </main>
             <footer className={styles.footer}>
               <Footer />
             </footer>

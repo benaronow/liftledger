@@ -51,7 +51,7 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
               note: "",
             },
           ],
-          weightType: '',
+          weightType: "",
         },
       ],
       completedDate: undefined,
@@ -125,20 +125,22 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
             onChangeText={handleLengthInput}
           />
         </div>
-        {templateBlock.weeks[editingWeekIdx].map((day, idx) => (
-          <React.Fragment key={idx}>
-            {templateBlock.weeks[editingWeekIdx].length < 7 && (
-              <AddButton onClick={() => handleAddDay(idx)} />
-            )}
-            <DayInfo
-              day={day}
-              dIdx={idx}
-              setEditingDay={setEditingDay}
-              setDeletingIdx={setDeletingIdx}
-              hasErrors={errors.includes(day.name)}
-            />
-          </React.Fragment>
-        ))}
+        <div className="d-flex flex-column align-items-center gap-2 w-100">
+          {templateBlock.weeks[editingWeekIdx].map((day, idx) => (
+            <React.Fragment key={idx}>
+              {templateBlock.weeks[editingWeekIdx].length < 7 && (
+                <AddButton onClick={() => handleAddDay(idx)} />
+              )}
+              <DayInfo
+                day={day}
+                dIdx={idx}
+                setEditingDay={setEditingDay}
+                setDeletingIdx={setDeletingIdx}
+                hasErrors={errors.includes(day.name)}
+              />
+            </React.Fragment>
+          ))}
+        </div>
         {templateBlock.weeks[editingWeekIdx].length < 7 && (
           <AddButton
             onClick={() =>

@@ -161,6 +161,7 @@ export interface User {
   birthday: Date;
   blocks: Block[];
   curBlock: string;
+  timerEnd?: Date;
 }
 
 export interface GetParams {

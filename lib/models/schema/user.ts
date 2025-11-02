@@ -8,6 +8,7 @@ const userSchema: Schema = new Schema(
     birthday: { type: Date, required: true },
     blocks: { type: [{ type: Schema.Types.ObjectId, ref: "Block" }] },
     curBlock: { type: Schema.Types.ObjectId, ref: "Block" },
+    timerEnd: { type: Date },
   },
   { collection: "User" }
 );

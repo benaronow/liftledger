@@ -4,6 +4,7 @@ import { BiSolidEdit } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { Info, InfoAction } from "../Info";
+import { useMemo } from "react";
 
 interface Props {
   day: Day;
@@ -65,7 +66,7 @@ export const DayInfo = ({
           style={{ transform: "rotate(90deg)" }}
         />
       ),
-      disabled: dIdx === 0,
+      disabled: dIdx === curBlock?.curDayIdx,
       onClick: () => handleMoveDay(day, dIdx, "up"),
       variant: "primary",
     },
@@ -86,7 +87,6 @@ export const DayInfo = ({
       ),
       onClick: () => handleEditDay(dIdx),
       variant: "primary",
-      disabled: curBlock ? curBlock?.curDayIdx > dIdx : false,
     },
     {
       icon: <ControlPointDuplicate fontSize="medium" />,
@@ -102,8 +102,19 @@ export const DayInfo = ({
     },
   ];
 
+  const disabledMessage = useMemo(() => {
+    const isDisabled = curBlock ? curBlock?.curDayIdx > dIdx : false;
+    return isDisabled
+      ? "Day complete, cannot be edited or moved until next week."
+      : "";
+  }, [curBlock, dIdx]);
+
   return (
-    <Info title={`Day ${dIdx + 1}`} actions={infoActions}>
+    <Info
+      title={`Day ${dIdx + 1}`}
+      actions={infoActions}
+      disabledMessage={disabledMessage}
+    >
       <strong className="text-white" style={{ fontSize: "14px" }}>
         {`Name: ${day.name} [${day.exercises.reduce(
           (acc, cur) =>

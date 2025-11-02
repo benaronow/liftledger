@@ -59,7 +59,7 @@ export const ScreenStateProvider = ({ children }: ScreenStateProviderProps) => {
     state === "overlay" ? setOverlayOn(value) : setIsFetching(value);
 
   return (
-    <ScreenStateContext
+    <ScreenStateContext.Provider
       value={{
         innerWidth: innerSize.width,
         innerHeight: innerSize.height,
@@ -69,7 +69,7 @@ export const ScreenStateProvider = ({ children }: ScreenStateProviderProps) => {
       }}
     >
       {children}
-    </ScreenStateContext>
+    </ScreenStateContext.Provider>
   );
 };
 

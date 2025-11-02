@@ -85,7 +85,7 @@ export const UserProvider = ({
   };
 
   return (
-    <UserContext
+    <UserContext.Provider
       value={{
         session,
         attemptedLogin,
@@ -100,7 +100,7 @@ export const UserProvider = ({
       }}
     >
       {children}
-    </UserContext>
+    </UserContext.Provider>
   );
 };
 

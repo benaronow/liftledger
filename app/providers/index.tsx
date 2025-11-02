@@ -9,6 +9,7 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import { ScreenStateProvider } from "./ScreenStateProvider";
 import { SessionData } from "@auth0/nextjs-auth0/types";
 import { BlockProvider } from "./BlockProvider";
+import { TimerProvider } from "./TimerProvider";
 
 interface ProvidersProps {
   readonly children: ReactNode;
@@ -24,7 +25,9 @@ export const Providers = ({ children, session }: ProvidersProps) => {
         <ThemeProvider theme={theme}>
           <ScreenStateProvider>
             <UserProvider session={session}>
-              <BlockProvider>{children}</BlockProvider>
+              <BlockProvider>
+                <TimerProvider>{children}</TimerProvider>
+              </BlockProvider>
             </UserProvider>
           </ScreenStateProvider>
         </ThemeProvider>

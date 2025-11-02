@@ -15,10 +15,13 @@ import { COLORS } from "@/lib/colors";
 import { SubmitSetDialog } from "./submitSetDialog";
 import { AddButton } from "../components/AddButton";
 import { AddExerciseDialog } from "./addExerciseDialog";
+import { RiTimerLine } from "react-icons/ri";
+import { useTimer } from "../providers/TimerProvider";
 
 export const CompleteDay = () => {
   const router = useRouter();
   const { session } = useUser();
+  const { timerEnd, setTimerDialogOpen } = useTimer();
   const { curBlock, updateBlock } = useBlock();
   const { isFetching, toggleScreenState } = useScreenState();
   const [exerciseToEdit, setExerciseToEdit] = useState<{
@@ -100,6 +103,13 @@ export const CompleteDay = () => {
 
   const footerActions: FooterAction[] = useMemo(
     () => [
+      {
+        icon: <RiTimerLine fontSize={20} />,
+        label: "Timer",
+        onClick: () => setTimerDialogOpen(true),
+        disabled: !!timerEnd,
+        variant: "primary",
+      },
       {
         icon: editing ? <IoMdClose /> : <BiSolidEdit />,
         label: editing ? "Stop Editing" : "Edit",

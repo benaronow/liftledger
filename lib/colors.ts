@@ -3,7 +3,7 @@ export const COLORS = {
   primary: "#0096FF",
   primaryDark: "#004b7f",
   primaryDisabled: "#317baf",
-  secondary: "#a3258c",
+  secondary: "#BA209E",
   dark: "#131314",
   container: "#58585b",
   textDisabled: "#a7a7a7",
