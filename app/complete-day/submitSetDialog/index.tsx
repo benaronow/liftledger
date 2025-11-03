@@ -6,6 +6,7 @@ import { DialogAction, ActionDialog } from "../../components/ActionDialog";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { IoIosSkipForward } from "react-icons/io";
 import { findLatestPreviousOccurrence } from "@/lib/blockUtils";
+import { useTimer } from "@/app/providers/TimerProvider";
 
 interface Props {
   setIdx: number;
@@ -23,6 +24,7 @@ export const SubmitSetDialog = ({
   onClose,
 }: Props) => {
   const { curBlock, updateBlock } = useBlock();
+  const { setTimerDialogOpen } = useTimer();
   const [exerciseState, setExerciseState] = useState<Exercise>(
     setIdx === exercise.sets.length
       ? {
@@ -128,6 +130,7 @@ export const SubmitSetDialog = ({
     setExercisesState(updatedExercises);
     saveExercises(updatedExercises);
     onClose();
+    setTimerDialogOpen(true);
   };
 
   const editActions: DialogAction[] = [
