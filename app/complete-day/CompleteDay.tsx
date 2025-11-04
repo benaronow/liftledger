@@ -2,7 +2,7 @@
 
 import { Block, Exercise, RouteType, Set } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Spinner } from "../components/spinner";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useUser } from "@/app/providers/UserProvider";
@@ -137,7 +137,10 @@ export const CompleteDay = () => {
       >
         <div className="d-flex flex-column align-items-center w-100">
           {exercises?.map((exercise, idx) => (
-            <React.Fragment key={idx}>
+            <div
+              className="d-flex flex-column align-items-center w-100 gap-2"
+              key={idx}
+            >
               {editing && (
                 <AddButton
                   onClick={() => {
@@ -180,7 +183,7 @@ export const CompleteDay = () => {
                   />
                 )}
               </div>
-            </React.Fragment>
+            </div>
           ))}
           {editing && (
             <AddButton

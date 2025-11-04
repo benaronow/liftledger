@@ -153,6 +153,14 @@ export interface Block {
   curDayIdx: number;
 }
 
+export interface TimerPresets {
+  0: number;
+  1: number;
+  2: number;
+  3: number;
+  4: number;
+}
+
 export interface User {
   _id?: string;
   email: string;
@@ -160,8 +168,9 @@ export interface User {
   lastName: string;
   birthday: Date;
   blocks: Block[];
-  curBlock: string;
+  curBlock?: string;
   timerEnd?: Date;
+  timerPresets: TimerPresets;
 }
 
 export interface GetParams {

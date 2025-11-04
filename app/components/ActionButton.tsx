@@ -11,10 +11,11 @@ interface Props {
   label?: string;
   icon: ReactNode;
   onClick: () => void;
-  height?: number;
-  width?: number;
+  height?: string | number;
+  width?: string | number;
   variant?: Variant;
   disabled?: boolean;
+  roundedSide?: "start" | "end" | "top" | "bottom";
   className?: string;
 }
 
@@ -26,6 +27,7 @@ export const ActionButton = ({
   width,
   variant,
   disabled,
+  roundedSide,
   className,
 }: Props) => {
   const getButtonStyle = (
@@ -65,12 +67,14 @@ export const ActionButton = ({
         height: height ?? 35,
         width: width ?? "100%",
       }}
-      className={`d-flex align-items-center justify-content-center border-0 gap-2 rounded text-nowrap px-2 py-1 ${className}`}
+      className={`d-flex align-items-center justify-content-center border-0 gap-2 rounded${
+        roundedSide ? `-${roundedSide}` : ""
+      } text-nowrap px-2 py-1 ${className}`}
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
     >
+      {label && <strong>{label}</strong>}
       {icon}
-      {label && <span>{label}</span>}
     </button>
   );
 };

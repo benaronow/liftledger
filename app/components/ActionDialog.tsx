@@ -44,26 +44,30 @@ export const ActionDialog = ({
         <Modal.Title className="text-white">{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body
-        className="d-flex flex-column align-items-center p-2 border-0"
+        className={`d-flex flex-column align-items-center p-2 border-0 ${
+          actions.length === 0 ? "rounded-bottom" : ""
+        }`}
         style={{ background: COLORS.container }}
       >
         {children}
       </Modal.Body>
-      <Modal.Footer
-        className="d-flex justify-content-between align-items-center border-0 flex-nowrap p-2 gap-2"
-        style={{ background: COLORS.dark }}
-      >
-        {actions.map((action, idx) => (
-          <ActionButton
-            key={idx}
-            icon={action.icon}
-            onClick={action.onClick}
-            disabled={action.disabled}
-            variant={action.variant}
-            height={55}
-          />
-        ))}
-      </Modal.Footer>
+      {actions.length !== 0 && (
+        <Modal.Footer
+          className="d-flex justify-content-between align-items-center border-0 flex-nowrap p-2 gap-2"
+          style={{ background: COLORS.dark }}
+        >
+          {actions.map((action, idx) => (
+            <ActionButton
+              key={idx}
+              icon={action.icon}
+              onClick={action.onClick}
+              disabled={action.disabled}
+              variant={action.variant}
+              height={55}
+            />
+          ))}
+        </Modal.Footer>
+      )}
     </Modal>
   );
 };

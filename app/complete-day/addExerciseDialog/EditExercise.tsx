@@ -46,6 +46,7 @@ export const EditExercise = ({
           label={exerciseInfo.title}
           textValue={exerciseInfo.value}
           options={exerciseInfo.options}
+          includeEmptyOption
           onChangeSelect={(e) =>
             switchExercise(
               e,

@@ -9,6 +9,11 @@ const userSchema: Schema = new Schema(
     blocks: { type: [{ type: Schema.Types.ObjectId, ref: "Block" }] },
     curBlock: { type: Schema.Types.ObjectId, ref: "Block" },
     timerEnd: { type: Date },
+    timerPresets: {
+      type: Map,
+      of: Number,
+      required: true,
+    },
   },
   { collection: "User" }
 );

@@ -10,6 +10,8 @@ import Link from "next/link";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { checkIsBlockDone } from "@/lib/blockUtils";
 import { useBlock } from "@/app/providers/BlockProvider";
+import { ActionButton } from "../components/ActionButton";
+import { BiLogIn } from "react-icons/bi";
 
 export const Dashboard = () => {
   const { session, attemptedLogin, curUser } = useUser();
@@ -232,42 +234,15 @@ export const Dashboard = () => {
           >
             Welcome to LiftLedger!
           </span>
-          <div style={{ width: "80px", height: "35px" }}>
-            <div
-              className="w-100 border border-0 text-white"
-              style={{
-                height: "30px",
-                fontFamily: "League+Spartan",
-                fontSize: "16px",
-                fontWeight: 600,
-                whiteSpace: "nowrap",
-                borderRadius: "5px",
-                background: "#004c81",
-                transform: "translateY(5px)",
-              }}
-            />
-            <button
-              className="w-100 border border-0 text-white"
-              style={{
-                height: "30px",
-                fontFamily: "League+Spartan",
-                fontSize: "16px",
-                fontWeight: 600,
-                whiteSpace: "nowrap",
-                borderRadius: "5px",
-                background: "#0096FF",
-                transform: "translateY(-30px)",
-                transition: "transform 0.1s",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                toggleScreenState("fetching", true);
-                router.push("/auth/login");
-              }}
-            >
-              Log in
-            </button>
-          </div>
+          <ActionButton
+            label="Log in"
+            icon={<BiLogIn fontSize={24} />}
+            onClick={() => {
+              toggleScreenState("fetching", true);
+              router.push("/auth/login");
+            }}
+            width="auto"
+          />
         </div>
       )}
     </div>

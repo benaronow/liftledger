@@ -10,12 +10,17 @@ import {
 import api from "@/lib/config";
 import { useUser } from "./UserProvider";
 
-const TIMER_API_URL = "/api/timerStart";
+const TIMER_END_API_URL = "/api/timerEnd";
+const TIMER_PRESETS_API_URL = "/api/timerPresets";
 
 interface TimerContextType {
   timerEnd?: Date;
   setTimer: (timerEnd: Date | undefined) => Promise<void>;
   unsetTimer: () => Promise<void>;
+  timerPresets: { [key: number]: number };
+  updateTimerPresets: (timerPresets: {
+    [key: number]: number;
+  }) => Promise<void>;
   timerOpen: boolean;
   setTimerOpen: Dispatch<SetStateAction<boolean>>;
   timerDialogOpen: boolean;
@@ -25,6 +30,8 @@ interface TimerContextType {
 const defaultTimerContext: TimerContextType = {
   setTimer: async () => {},
   unsetTimer: async () => {},
+  timerPresets: {},
+  updateTimerPresets: async () => {},
   timerOpen: true,
   setTimerOpen: () => {},
   timerDialogOpen: false,
@@ -36,29 +43,48 @@ export const TimerContext = createContext(defaultTimerContext);
 export const TimerProvider = ({ children }: PropsWithChildren<object>) => {
   const { curUser } = useUser();
   const [timerEnd, setTimerEnd] = useState<Date>();
+  const [timerPresets, setTimerPresets] = useState<{ [key: number]: number }>(
+    {}
+  );
   const [timerOpen, setTimerOpen] = useState(true);
   const [timerDialogOpen, setTimerDialogOpen] = useState(false);
 
   useEffect(() => {
     if (curUser?._id) {
       getTimerEnd();
+      getTimerPresets();
     }
   }, [curUser]);
 
+  console.log(timerPresets);
+
   const getTimerEnd = async () => {
-    const res = await api.get(`${TIMER_API_URL}/${curUser?._id}`);
+    const res = await api.get(`${TIMER_END_API_URL}/${curUser?._id}`);
     const result: { timerEnd: Date } = res.data;
     if (result) setTimerEnd(result.timerEnd);
   };
 
   const setTimer = async (timerEnd: Date | undefined) => {
-    await api.put(`${TIMER_API_URL}/${curUser?._id}`, timerEnd);
+    await api.put(`${TIMER_END_API_URL}/${curUser?._id}`, timerEnd);
     setTimerEnd(timerEnd);
   };
 
   const unsetTimer = async () => {
-    await api.delete(`${TIMER_API_URL}/${curUser?._id}`);
+    await api.delete(`${TIMER_END_API_URL}/${curUser?._id}`);
     setTimerEnd(undefined);
+  };
+
+  const getTimerPresets = async () => {
+    const res = await api.get(`${TIMER_PRESETS_API_URL}/${curUser?._id}`);
+    const result: { timerPresets: { [key: number]: number } } = res.data;
+    if (result) setTimerPresets(result.timerPresets);
+  };
+
+  const updateTimerPresets = async (timerPresets: {
+    [key: number]: number;
+  }) => {
+    await api.put(`${TIMER_PRESETS_API_URL}/${curUser?._id}`, timerPresets);
+    setTimerPresets(timerPresets);
   };
 
   return (
@@ -67,6 +93,8 @@ export const TimerProvider = ({ children }: PropsWithChildren<object>) => {
         timerEnd,
         setTimer,
         unsetTimer,
+        timerPresets,
+        updateTimerPresets,
         timerOpen,
         setTimerOpen,
         timerDialogOpen,

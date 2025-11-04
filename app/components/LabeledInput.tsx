@@ -5,14 +5,17 @@ import { ChangeEvent } from "react";
 import { FormSelect } from "react-bootstrap";
 
 interface Props {
-  label: string;
+  label?: string;
   textValue?: string | number;
   dateValue?: Dayjs | null;
   options?: string[];
+  includeEmptyOption?: boolean;
   onChangeText?: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangeDate?: (value: Dayjs | null) => void;
   onChangeSelect?: (e: ChangeEvent<HTMLSelectElement>) => void;
   disabled?: boolean;
+  height?: string | number;
+  width?: string | number;
   className?: string;
 }
 
@@ -21,20 +24,25 @@ export const LabeledInput = ({
   textValue,
   dateValue,
   options,
+  includeEmptyOption,
   onChangeText,
   onChangeDate,
   onChangeSelect,
   disabled,
+  height,
+  width,
   className,
 }: Props) => {
   return (
     <div className={`d-flex flex-column align-items-start w-100 ${className}`}>
-      <span
-        className="fw-semibold text-nowrap text-white mb-1"
-        style={{ fontSize: "14px" }}
-      >
-        {label}
-      </span>
+      {label && (
+        <span
+          className="fw-semibold text-nowrap text-white mb-1"
+          style={{ fontSize: "14px" }}
+        >
+          {label}
+        </span>
+      )}
       {onChangeText && (
         <input
           className="w-100 rounded px-2 py-1 border-0"
@@ -42,6 +50,8 @@ export const LabeledInput = ({
             fontSize: "16px",
             outlineColor: COLORS.primary,
             background: disabled ? COLORS.textDisabled : "white",
+            height: height ?? 35,
+            width: width ?? "100%",
           }}
           value={textValue}
           onChange={onChangeText}
@@ -60,6 +70,8 @@ export const LabeledInput = ({
                 "& .MuiOutlinedInput-notchedOutline": { border: "none" },
                 "&:hover .MuiOutlinedInput-notchedOutline": { border: "none" },
                 "& .MuiInputBase-input": { fontSize: "16px", padding: 0 },
+                height: height ?? 35,
+                width: width ?? "100%",
               },
             },
           }}
@@ -70,8 +82,12 @@ export const LabeledInput = ({
           className="w-100 p-1 border-0"
           value={textValue}
           onChange={onChangeSelect}
+          style={{
+            height: height ?? 35,
+            width: width ?? "100%",
+          }}
         >
-          <option value="">-- Select --</option>
+          {includeEmptyOption && <option value="">-- Select --</option>}
           {options.map((o) => (
             <option key={o} value={o}>
               {o}

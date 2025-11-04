@@ -1,13 +1,16 @@
 "use client";
 
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
-import { ActionDialog, DialogAction } from "./ActionDialog";
+import { useEffect, useMemo, useState } from "react";
+import { ActionDialog } from "./ActionDialog";
 import { LabeledInput } from "./LabeledInput";
-import { FaPlay } from "react-icons/fa";
+import { FaSave } from "react-icons/fa";
 import { useTimer } from "../providers/TimerProvider";
 import { COLORS } from "@/lib/colors";
 import { IoIosArrowForward, IoMdClose } from "react-icons/io";
 import { RiTimerLine } from "react-icons/ri";
+import { useUser } from "../providers/UserProvider";
+import { ActionButton } from "./ActionButton";
+import { BiSolidEdit } from "react-icons/bi";
 
 const TIME_OPTIONS = [
   "00",
@@ -71,21 +74,31 @@ const TIME_OPTIONS = [
   "58",
   "59",
 ];
-type TimeOption = (typeof TIME_OPTIONS)[number];
 
 export const Timer = () => {
+  const { curUser } = useUser();
   const {
     timerEnd,
     setTimer,
     unsetTimer,
+    timerPresets,
+    updateTimerPresets,
     timerOpen,
     setTimerOpen,
     timerDialogOpen,
     setTimerDialogOpen,
   } = useTimer();
-  const [seconds, setSeconds] = useState<TimeOption>("00");
-  const [minutes, setMinutes] = useState<TimeOption>("00");
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [presetsState, setPresetsState] = useState<{ [key: number]: number }>();
+  const [presetEditIdx, setPresetEditIdx] = useState<number>();
+
+  useEffect(() => {
+    setPresetsState(timerPresets);
+  }, [timerPresets]);
+
+  useEffect(() => {
+    setPresetEditIdx(undefined);
+  }, [timerDialogOpen]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -95,13 +108,7 @@ export const Timer = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  useEffect(() => {
-    setMinutes("00");
-    setSeconds("00");
-  }, [timerDialogOpen]);
-
-  const setTimerEnd = () => {
-    const totalSeconds = parseInt(minutes) * 60 + parseInt(seconds);
+  const setTimerEnd = (totalSeconds: number) => {
     const endTime = new Date(new Date().getTime() + totalSeconds * 1000);
     setTimer(endTime);
   };
@@ -120,23 +127,9 @@ export const Timer = () => {
     return `${mins} : ${secs}`;
   }, [timerEnd, currentTime]);
 
-  const timerActions: DialogAction[] = [
-    {
-      icon: <FaPlay fontSize={24} />,
-      onClick: () => {
-        setTimerEnd();
-        setTimerDialogOpen(false);
-      },
-      variant: "primary",
-    },
-  ];
-
-  const changeTime = (
-    e: ChangeEvent<HTMLSelectElement>,
-    type: "minutes" | "seconds"
-  ) => {
-    if (type === "minutes") setMinutes(e.target.value as TimeOption);
-    if (type === "seconds") setSeconds(e.target.value as TimeOption);
+  const updatePresetsState = (idx: number, totalSeconds: number) => {
+    const newPresets = { ...presetsState, [idx]: totalSeconds };
+    setPresetsState(newPresets);
   };
 
   return (
@@ -201,22 +194,75 @@ export const Timer = () => {
           open={timerDialogOpen}
           onClose={() => setTimerDialogOpen(false)}
           title="Start Timer"
-          actions={timerActions}
+          actions={[]}
         >
-          <div className="d-flex gap-1 align-items-end py-2 px-4">
-            <LabeledInput
-              label="Minutes"
-              textValue={minutes}
-              options={TIME_OPTIONS}
-              onChangeSelect={(e) => changeTime(e, "minutes")}
-            />
-            <strong className="text-white fs-3">:</strong>
-            <LabeledInput
-              label="Seconds"
-              textValue={seconds}
-              options={TIME_OPTIONS}
-              onChangeSelect={(e) => changeTime(e, "seconds")}
-            />
+          <div className="w-100 d-flex flex-column gap-3 align-items-center py-2 px-4">
+            {curUser &&
+              presetsState &&
+              Object.values(presetsState ?? {}).map((preset, idx) => {
+                const presetMins = Math.floor(preset / 60)
+                  .toString()
+                  .padStart(2, "0");
+                const presetSecs = (preset % 60).toString().padStart(2, "0");
+                return (
+                  <div className="d-flex w-100" key={idx}>
+                    {presetEditIdx === idx ? (
+                      <div className="w-100 d-flex gap-1 align-items-center bg-white rounded-start justify-content-center">
+                        <LabeledInput
+                          textValue={presetMins}
+                          options={TIME_OPTIONS}
+                          onChangeSelect={(e) =>
+                            updatePresetsState(
+                              idx,
+                              parseInt(e.target.value) * 60 + (preset % 60)
+                            )
+                          }
+                          height={35}
+                        />
+                        <span>:</span>
+                        <LabeledInput
+                          textValue={presetSecs}
+                          options={TIME_OPTIONS}
+                          onChangeSelect={(e) =>
+                            updatePresetsState(
+                              idx,
+                              Math.floor(preset / 60) * 60 +
+                                parseInt(e.target.value)
+                            )
+                          }
+                          height={35}
+                        />
+                      </div>
+                    ) : (
+                      <ActionButton
+                        label={`${presetMins} : ${presetSecs}`}
+                        icon={null}
+                        onClick={() => {
+                          setTimerEnd(preset);
+                          setTimerDialogOpen(false);
+                        }}
+                        variant="primaryInverted"
+                        roundedSide="start"
+                      />
+                    )}
+                    <ActionButton
+                      icon={
+                        presetEditIdx === idx ? <FaSave /> : <BiSolidEdit />
+                      }
+                      onClick={() => {
+                        if (presetEditIdx === idx) {
+                          updateTimerPresets(presetsState);
+                          setPresetEditIdx(undefined);
+                        } else {
+                          setPresetEditIdx(idx);
+                        }
+                      }}
+                      width={35}
+                      roundedSide="end"
+                    />
+                  </div>
+                );
+              })}
           </div>
         </ActionDialog>
       )}

@@ -167,6 +167,7 @@ export const ExerciseInfo = ({
           templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
           "name"
         )}
+        includeEmptyOption
         onChangeSelect={(e) =>
           switchExercise(e, "name", curBlock, exercise, updateExercise)
         }
@@ -179,6 +180,7 @@ export const ExerciseInfo = ({
           templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
           "apparatus"
         )}
+        includeEmptyOption
         onChangeSelect={(e) =>
           switchExercise(e, "apparatus", curBlock, exercise, updateExercise)
         }
@@ -234,6 +236,7 @@ export const ExerciseInfo = ({
           label="Weight type:"
           textValue={exercise.weightType}
           options={Object.values(WeightType)}
+          includeEmptyOption
           onChangeSelect={(e) =>
             switchExercise(e, "weightType", curBlock, exercise, updateExercise)
           }
