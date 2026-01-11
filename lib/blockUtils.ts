@@ -119,16 +119,6 @@ export const getAvailableOptions = (
   );
 };
 
-export const getBlockNoAddOns = (block: Block) => ({
-  ...block,
-  weeks: block.weeks.map((week) =>
-    week.map((day) => ({
-      ...day,
-      exercises: day.exercises.filter((ex) => !ex.addedOn),
-    }))
-  ),
-});
-
 export const checkIsCurWeekDone = (block: Block) =>
   !!block.weeks[block.curWeekIdx][block.weeks[block.curWeekIdx].length - 1]
     .completedDate;

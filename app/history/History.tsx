@@ -20,18 +20,21 @@ const getTemplateFromBlock = (block: Block) => ({
     block.weeks[block.length - 1].map((day) => {
       return {
         name: day.name,
-        exercises: day.exercises.map((exercise) => {
-          return {
-            name: exercise.name,
-            apparatus: exercise.apparatus,
-            sets: exercise.sets.map((set: Set) => ({
-              ...set,
-              completed: false,
-              note: "",
-            })),
-            weightType: exercise.weightType,
-          };
-        }),
+        exercises: day.exercises
+          .filter((ex) => !ex.addedOn)
+          .map((exercise) => {
+            return {
+              name: exercise.name,
+              apparatus: exercise.apparatus,
+              sets: exercise.sets.map((set: Set) => ({
+                ...set,
+                completed: false,
+                skipped: false,
+                note: "",
+              })),
+              weightType: exercise.weightType,
+            };
+          }),
         completedDate: undefined,
       };
     }),

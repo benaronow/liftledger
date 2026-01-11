@@ -25,19 +25,17 @@ const createNextWeek = (curBlock: Block): Day[] => {
           }
         );
 
-        return latestEx
-          ? {
+        return ({
               ...exercise,
-              sets: latestEx?.sets
+              sets: (latestEx ?? exercise).sets
                 .filter((set) => !set.addedOn)
                 .map((set: Set) => ({
                   ...set,
                   completed: false,
-                  skipped: undefined,
+                  skipped: false,
                   note: "",
                 })),
-            }
-          : exercise;
+            });
       }),
     completedDate: undefined,
   }));
