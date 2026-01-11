@@ -5,7 +5,7 @@ import { ChangeEvent, useMemo } from "react";
 import { Exercise, Set, WeightType } from "@/lib/types";
 import { useBlock } from "@/app/providers/BlockProvider";
 import {
-  findLatestPreviousOccurrence,
+  findLatestOccurrence,
   getAvailableOptions,
   getNewSetsFromLatest,
   switchExercise,
@@ -150,10 +150,14 @@ export const ExerciseInfo = ({
   const editDisabled = useMemo(() => {
     return (
       !exercise.sets.length ||
-      !!findLatestPreviousOccurrence(curBlock, (e: Exercise) => {
-        if (e.name === exercise.name && e.apparatus === exercise.apparatus)
-          return e;
-      })
+      !!findLatestOccurrence(
+        curBlock,
+        (e: Exercise) => {
+          if (e.name === exercise.name && e.apparatus === exercise.apparatus)
+            return e;
+        },
+        true
+      )
     );
   }, [curBlock, exercise]);
 

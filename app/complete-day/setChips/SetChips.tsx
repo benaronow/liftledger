@@ -1,6 +1,6 @@
 import { Exercise, Set } from "@/lib/types";
 import { Dispatch, SetStateAction, useCallback, useMemo } from "react";
-import { findLatestPreviousOccurrence } from "../../../lib/blockUtils";
+import { findLatestOccurrence } from "../../../lib/blockUtils";
 import { useBlock } from "../../providers/BlockProvider";
 import { COLORS } from "@/lib/colors";
 import { BiPlusCircle } from "react-icons/bi";
@@ -53,7 +53,7 @@ export const SetChips = ({
   );
 
   const getDiffs = (setIdx: number) => {
-    const lastCompletedSet = findLatestPreviousOccurrence(
+    const lastCompletedSet = findLatestOccurrence(
       curBlock,
       (e: Exercise) => {
         if (
@@ -63,7 +63,8 @@ export const SetChips = ({
           e.sets[setIdx].completed
         )
           return e.sets[setIdx];
-      }
+      },
+      true
     );
 
     if (lastCompletedSet) {

@@ -5,7 +5,7 @@ import { EditSet } from "./EditSet";
 import { DialogAction, ActionDialog } from "../../components/ActionDialog";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { IoIosSkipForward } from "react-icons/io";
-import { findLatestPreviousOccurrence } from "@/lib/blockUtils";
+import { findLatestOccurrence } from "@/lib/blockUtils";
 import { useTimer } from "@/app/providers/TimerProvider";
 
 interface Props {
@@ -91,7 +91,7 @@ export const SubmitSetDialog = ({
   };
 
   const handleSubmitSet = (skip: boolean) => {
-    const latestPreviousSet = findLatestPreviousOccurrence(
+    const latestPreviousSet = findLatestOccurrence(
       curBlock,
       (e: Exercise) => {
         if (
@@ -100,7 +100,8 @@ export const SubmitSetDialog = ({
           e.sets[setIdx]
         )
           return e.sets[setIdx];
-      }
+      },
+      true
     );
 
     const updatedSets = skip

@@ -8,9 +8,10 @@ import {
 } from "@/lib/types";
 import { ChangeEvent } from "react";
 
-export const findLatestPreviousOccurrence = <T>(
+export const findLatestOccurrence = <T>(
   curBlock: Block | undefined,
-  checkerFunc: (e: Exercise) => T | undefined
+  checkerFunc: (e: Exercise) => T | undefined,
+  previous: boolean = false
 ) => {
   if (!curBlock) return undefined;
 
@@ -18,7 +19,7 @@ export const findLatestPreviousOccurrence = <T>(
     for (
       let d =
         w === curBlock.curWeekIdx
-          ? curBlock.curDayIdx - 1
+          ? curBlock.curDayIdx - (previous ? 1 : 0)
           : curBlock.weeks[w].length - 1;
       d >= 0;
       d--
@@ -43,15 +44,18 @@ export const getNewSetsFromLatest = (
       )?.sets
     : undefined;
 
-  const prevSets = findLatestPreviousOccurrence(curBlock, (e: Exercise) => {
+  const prevSets = findLatestOccurrence(curBlock, (e: Exercise) => {
     if (e.name === exercise.name && e.apparatus === exercise.apparatus)
       return e;
-  })?.sets.map((set) => ({
-    ...set,
-    completed: false,
-    skipped: undefined,
-    note: "",
-  }));
+  })?.sets.map(
+    (set) => ({
+      ...set,
+      completed: false,
+      skipped: undefined,
+      note: "",
+    }),
+    true
+  );
 
   const sets = curSets ??
     prevSets ?? [{ reps: 0, weight: 0, note: "", completed: false }];

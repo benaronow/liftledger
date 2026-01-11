@@ -1,4 +1,4 @@
-import { findLatestPreviousOccurrence } from "@/lib/blockUtils";
+import { findLatestOccurrence } from "@/lib/blockUtils";
 import { Exercise } from "@/lib/types";
 import {
   ChangeEvent,
@@ -43,14 +43,18 @@ export const EditSet = ({ setIdx, exerciseState, setExerciseState }: Props) => {
 
   const latestPreviousSetNote = useMemo(() => {
     if (curBlock) {
-      return findLatestPreviousOccurrence(curBlock, (e: Exercise) => {
-        if (
-          e.name === exerciseState.name &&
-          e.apparatus === exerciseState.apparatus &&
-          e.sets[setIdx]
-        )
-          return e.sets[setIdx].note;
-      });
+      return findLatestOccurrence(
+        curBlock,
+        (e: Exercise) => {
+          if (
+            e.name === exerciseState.name &&
+            e.apparatus === exerciseState.apparatus &&
+            e.sets[setIdx]
+          )
+            return e.sets[setIdx].note;
+        },
+        true
+      );
     }
   }, [curBlock, exerciseState, setIdx]);
 
