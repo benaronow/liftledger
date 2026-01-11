@@ -51,7 +51,7 @@ export const EditSet = ({ setIdx, exerciseState, setExerciseState }: Props) => {
             e.apparatus === exerciseState.apparatus &&
             e.sets[setIdx]
           )
-            return e.sets[setIdx].note;
+            return e.sets[setIdx].note !== "" ? e.sets[setIdx].note : "no note";
         },
         true
       );
@@ -88,7 +88,7 @@ export const EditSet = ({ setIdx, exerciseState, setExerciseState }: Props) => {
 
   return (
     <>
-      {latestPreviousSetNote && (
+      {latestPreviousSetNote && latestPreviousSetNote !== "no note" && (
         <span className="small mb-2 text-wrap text-white">{`Previous note: ${latestPreviousSetNote}`}</span>
       )}
       {setInfoMap.map((setInfo, i) => (
