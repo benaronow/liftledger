@@ -217,8 +217,8 @@ export const ExerciseInfo = ({
         />
         <button
           className="d-flex align-items-center p-1 rounded border-0 ms-1 me-3"
-          style={
-            editDisabled
+          style={{
+            ...(editDisabled
               ? {
                   color: pointFive
                     ? COLORS.textDisabled
@@ -230,8 +230,9 @@ export const ExerciseInfo = ({
               : {
                   color: pointFive ? "white" : COLORS.primary,
                   background: pointFive ? COLORS.primary : "white",
-                }
-          }
+                }),
+            height: 35,
+          }}
           onClick={() => handlePointFive(!pointFive)}
         >
           <span>+0.5lbs</span>

@@ -62,16 +62,16 @@ export const LabeledInput = ({
         <DatePicker
           value={dateValue}
           onChange={onChangeDate}
-          className="w-100 rounded px-2 py-1 bg-white"
+          className="w-100 rounded bg-white"
           slotProps={{
             textField: {
               fullWidth: true,
               sx: {
-                "& .MuiOutlinedInput-notchedOutline": { border: "none" },
-                "&:hover .MuiOutlinedInput-notchedOutline": { border: "none" },
-                "& .MuiInputBase-input": { fontSize: "16px", padding: 0 },
-                height: height ?? 35,
-                width: width ?? "100%",
+                "& .MuiPickersInputBase-root": {
+                  fontSize: "16px",
+                  padding: "4px 8px",
+                  height: height ?? 35,
+                },
               },
             },
           }}
