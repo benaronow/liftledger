@@ -17,6 +17,8 @@ import { AddButton } from "../components/AddButton";
 import { AddExerciseDialog } from "./addExerciseDialog";
 import { RiTimerLine } from "react-icons/ri";
 import { useTimer } from "../providers/TimerProvider";
+import { LuWarehouse } from "react-icons/lu";
+import { EditGymDialog } from "./EditGymDialog";
 
 export const CompleteDay = () => {
   const router = useRouter();
@@ -32,6 +34,7 @@ export const CompleteDay = () => {
     undefined
   );
   const [editing, setEditing] = useState(false);
+  const [editGymDialogOpen, setEditGymDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!session) {
@@ -46,15 +49,23 @@ export const CompleteDay = () => {
     }
   }, []);
 
-  const exercises = curBlock
-    ? curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].exercises
-    : [];
+  const exercises = useMemo(
+    () =>
+      curBlock
+        ? curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].exercises
+        : [],
+    [curBlock]
+  );
 
   useEffect(() => {
     if (!exercises.length) router.push("/dashboard");
   }, [exercises]);
 
   const [exercisesState, setExercisesState] = useState(exercises);
+
+  useEffect(() => {
+    setExercisesState(exercises);
+  }, [curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym]);
 
   const isExerciseComplete = (exercise: Exercise) =>
     exercise.sets.length !== 0 &&
@@ -92,6 +103,7 @@ export const CompleteDay = () => {
     name: "",
     apparatus: "",
     weightType: "",
+    gym: curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym || "",
     sets: [],
   };
 
@@ -103,6 +115,13 @@ export const CompleteDay = () => {
 
   const footerActions: FooterAction[] = useMemo(
     () => [
+      {
+        icon: <LuWarehouse fontSize={20} />,
+        label: "Gym",
+        onClick: () => setEditGymDialogOpen(true),
+        disabled: false,
+        variant: "primary",
+      },
       {
         icon: <RiTimerLine fontSize={20} />,
         label: "Timer",
@@ -218,6 +237,11 @@ export const CompleteDay = () => {
           }}
         />
       )}
+      <EditGymDialog
+        open={editGymDialogOpen}
+        onClose={() => setEditGymDialogOpen(false)}
+        setExercisesState={setExercisesState}
+      />
       <ActionsFooter actions={footerActions} />
     </>
   );

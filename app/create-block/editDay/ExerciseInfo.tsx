@@ -5,7 +5,6 @@ import { ChangeEvent, useMemo } from "react";
 import { Exercise, Set, WeightType } from "@/lib/types";
 import { useBlock } from "@/app/providers/BlockProvider";
 import {
-  findLatestOccurrence,
   getAvailableOptions,
   getNewSetsFromLatest,
   switchExercise,
@@ -148,18 +147,8 @@ export const ExerciseInfo = ({
   ];
 
   const editDisabled = useMemo(() => {
-    return (
-      !exercise.sets.length ||
-      !!findLatestOccurrence(
-        curBlock,
-        (e: Exercise) => {
-          if (e.name === exercise.name && e.apparatus === exercise.apparatus)
-            return e;
-        },
-        true
-      )
-    );
-  }, [curBlock, exercise]);
+    return !exercise.sets.length;
+  }, [exercise]);
 
   return (
     <Info title={`Exercise ${eIdx + 1}`} actions={infoActions}>
@@ -197,56 +186,66 @@ export const ExerciseInfo = ({
             handleNumberInput(e, "sets");
           }}
         />
-        <LabeledInput
-          label="Reps:"
-          textValue={exercise.sets[0]?.reps || 0}
-          onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
-            handleNumberInput(e, "reps");
-          }}
-          disabled={editDisabled}
-        />
+        {!curBlock && (
+          <LabeledInput
+            label="Reps:"
+            textValue={exercise.sets[0]?.reps || 0}
+            onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
+              handleNumberInput(e, "reps");
+            }}
+            disabled={editDisabled}
+          />
+        )}
       </div>
-      <div className="d-flex w-100 align-items-end">
-        <LabeledInput
-          label="Weight:"
-          textValue={Math.floor(exercise.sets[0]?.weight) || 0}
-          onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
-            handleNumberInput(e, "weight");
-          }}
-          disabled={editDisabled}
-        />
-        <button
-          className="d-flex align-items-center p-1 rounded border-0 ms-1 me-3"
-          style={{
-            ...(editDisabled
-              ? {
-                  color: pointFive
-                    ? COLORS.textDisabled
-                    : COLORS.primaryDisabled,
-                  background: pointFive
-                    ? COLORS.primaryDisabled
-                    : COLORS.textDisabled,
-                }
-              : {
-                  color: pointFive ? "white" : COLORS.primary,
-                  background: pointFive ? COLORS.primary : "white",
-                }),
-            height: 35,
-          }}
-          onClick={() => handlePointFive(!pointFive)}
-        >
-          <span>+0.5lbs</span>
-        </button>
-        <LabeledInput
-          label="Weight type:"
-          textValue={exercise.weightType}
-          options={Object.values(WeightType)}
-          includeEmptyOption
-          onChangeSelect={(e) =>
-            switchExercise(e, "weightType", curBlock, exercise, updateExercise)
-          }
-        />
-      </div>
+      {!curBlock && (
+        <div className="d-flex w-100 align-items-end">
+          <LabeledInput
+            label="Weight:"
+            textValue={Math.floor(exercise.sets[0]?.weight) || 0}
+            onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
+              handleNumberInput(e, "weight");
+            }}
+            disabled={editDisabled}
+          />
+          <button
+            className="d-flex align-items-center p-1 rounded border-0 ms-1 me-3"
+            style={{
+              ...(editDisabled
+                ? {
+                    color: pointFive
+                      ? COLORS.textDisabled
+                      : COLORS.primaryDisabled,
+                    background: pointFive
+                      ? COLORS.primaryDisabled
+                      : COLORS.textDisabled,
+                  }
+                : {
+                    color: pointFive ? "white" : COLORS.primary,
+                    background: pointFive ? COLORS.primary : "white",
+                  }),
+              height: 35,
+            }}
+            onClick={() => handlePointFive(!pointFive)}
+          >
+            <span>+0.5lbs</span>
+          </button>
+          <LabeledInput
+            label="Weight type:"
+            textValue={exercise.weightType}
+            options={Object.values(WeightType)}
+            includeEmptyOption
+            onChangeSelect={(e) =>
+              switchExercise(
+                e,
+                "weightType",
+                curBlock,
+                exercise,
+                updateExercise
+              )
+            }
+          />
+        </div>
+      )}
     </Info>
   );
 };

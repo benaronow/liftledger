@@ -1,7 +1,7 @@
 import { COLORS } from "@/lib/colors";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
-import { ChangeEvent } from "react";
+import { ChangeEvent, JSX } from "react";
 import { FormSelect } from "react-bootstrap";
 
 interface Props {
@@ -17,6 +17,7 @@ interface Props {
   height?: string | number;
   width?: string | number;
   className?: string;
+  trailing?: JSX.Element;
 }
 
 export const LabeledInput = ({
@@ -32,6 +33,7 @@ export const LabeledInput = ({
   height,
   width,
   className,
+  trailing,
 }: Props) => {
   return (
     <div className={`d-flex flex-column align-items-start w-100 ${className}`}>
@@ -43,58 +45,63 @@ export const LabeledInput = ({
           {label}
         </span>
       )}
-      {onChangeText && (
-        <input
-          className="w-100 rounded px-2 py-1 border-0"
-          style={{
-            fontSize: "16px",
-            outlineColor: COLORS.primary,
-            background: disabled ? COLORS.textDisabled : "white",
-            height: height ?? 35,
-            width: width ?? "100%",
-          }}
-          value={textValue}
-          onChange={onChangeText}
-          disabled={disabled}
-        />
-      )}
-      {onChangeDate && (
-        <DatePicker
-          value={dateValue}
-          onChange={onChangeDate}
-          className="w-100 rounded bg-white"
-          slotProps={{
-            textField: {
-              fullWidth: true,
-              sx: {
-                "& .MuiPickersInputBase-root": {
-                  fontSize: "16px",
-                  padding: "4px 8px",
-                  height: height ?? 35,
+      <div className="d-flex w-100">
+        {onChangeText && (
+          <input
+            className="w-100 rounded px-2 py-1 border-0"
+            style={{
+              fontSize: "16px",
+              outlineColor: COLORS.primary,
+              background: disabled ? COLORS.textDisabled : "white",
+              height: height ?? 35,
+              width: width ?? "100%",
+            }}
+            value={textValue}
+            onChange={onChangeText}
+            disabled={disabled}
+          />
+        )}
+        {onChangeDate && (
+          <DatePicker
+            value={dateValue}
+            onChange={onChangeDate}
+            className="w-100 rounded bg-white"
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                sx: {
+                  "& .MuiPickersInputBase-root": {
+                    fontSize: "16px",
+                    padding: "4px 8px",
+                    height: height ?? 35,
+                  },
                 },
               },
-            },
-          }}
-        />
-      )}
-      {options && onChangeSelect && (
-        <FormSelect
-          className="w-100 p-1 border-0"
-          value={textValue}
-          onChange={onChangeSelect}
-          style={{
-            height: height ?? 35,
-            width: width ?? "100%",
-          }}
-        >
-          {includeEmptyOption && <option value="">-- Select --</option>}
-          {options.map((o) => (
-            <option key={o} value={o}>
-              {o}
-            </option>
-          ))}
-        </FormSelect>
-      )}
+            }}
+          />
+        )}
+        {options && onChangeSelect && (
+          <FormSelect
+            className="w-100 p-1 border-0"
+            value={textValue}
+            onChange={onChangeSelect}
+            style={{
+              height: height ?? 35,
+              width: width ?? "100%",
+              background: disabled ? COLORS.textDisabled : "",
+            }}
+            disabled={disabled}
+          >
+            {includeEmptyOption && <option value="">-- Select --</option>}
+            {options.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </FormSelect>
+        )}
+        {trailing}
+      </div>
     </div>
   );
 };

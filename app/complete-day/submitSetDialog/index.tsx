@@ -25,6 +25,7 @@ export const SubmitSetDialog = ({
 }: Props) => {
   const { curBlock, updateBlock } = useBlock();
   const { setTimerDialogOpen } = useTimer();
+
   const [exerciseState, setExerciseState] = useState<Exercise>(
     setIdx === exercise.sets.length
       ? {
@@ -36,6 +37,8 @@ export const SubmitSetDialog = ({
         }
       : exercise
   );
+
+  console.log("exercise in dialog:", exerciseState);
 
   const saveExercises = (updatedExercises: Exercise[]) => {
     if (curBlock) {
@@ -57,7 +60,8 @@ export const SubmitSetDialog = ({
                 const completedExercise = updatedExercises.find(
                   (e: Exercise) =>
                     e.name === exercise.name &&
-                    e.apparatus === exercise.apparatus
+                    e.apparatus === exercise.apparatus &&
+                    e.gym === exercise.gym
                 );
 
                 return completedExercise
@@ -97,6 +101,7 @@ export const SubmitSetDialog = ({
         if (
           e.name === exercise.name &&
           e.apparatus === exercise.apparatus &&
+          e.gym === exercise.gym &&
           e.sets[setIdx]
         )
           return e.sets[setIdx];
@@ -122,7 +127,8 @@ export const SubmitSetDialog = ({
       exercisesState.findIndex(
         (e) =>
           e.name === updatedExercise.name &&
-          e.apparatus === updatedExercise.apparatus
+          e.apparatus === updatedExercise.apparatus &&
+          e.gym === updatedExercise.gym
       ),
       1,
       updatedExercise

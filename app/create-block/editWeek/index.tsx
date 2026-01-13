@@ -9,6 +9,10 @@ import { EMPTY_BLOCK, useBlock } from "@/app/providers/BlockProvider";
 import { IoArrowBack } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 import { DialogAction, ActionDialog } from "@/app/components/ActionDialog";
+import { useUser } from "@/app/providers/UserProvider";
+import { ActionButton } from "@/app/components/ActionButton";
+import { AddGymDialog } from "@/app/create-block/editWeek/AddGymDialog";
+import { GrFormAdd } from "react-icons/gr";
 
 interface EditWeekProps {
   setEditingDay: (day: number) => void;
@@ -17,9 +21,34 @@ interface EditWeekProps {
 
 export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
   const router = useRouter();
+  const { curUser } = useUser();
   const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
     useBlock();
   const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
+
+  const [gymDialogOpen, setGymDialogOpen] = useState<boolean>(false);
+  const noGyms = !curUser?.gyms || curUser?.gyms?.length === 0;
+
+  useEffect(() => {
+    if (templateBlock.primaryGym === undefined && curUser?.gyms?.length) {
+      setTemplateBlock({
+        ...templateBlock,
+        primaryGym: curUser.gyms[0],
+        weeks: templateBlock.weeks.map((week, wIdx) =>
+          wIdx === editingWeekIdx
+            ? week.map((day) => ({
+                ...day,
+                gym: curUser.gyms[0],
+                exercises: day.exercises.map((exercise) => ({
+                  ...exercise,
+                  gym: curUser.gyms[0],
+                })),
+              }))
+            : week
+        ),
+      });
+    }
+  }, [templateBlock]);
 
   useEffect(() => {
     if (curBlock && templateBlock === EMPTY_BLOCK) {
@@ -36,13 +65,43 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
       setTemplateBlock({ ...templateBlock, startDate: value.toDate() });
   };
 
+  const setPrimaryGym = (gym: string) => {
+    setTemplateBlock({
+      ...templateBlock,
+      primaryGym: gym,
+      weeks: templateBlock.weeks.map((week, wIdx) =>
+        wIdx === editingWeekIdx
+          ? week.map((day, idx) =>
+              idx >= (curBlock?.curDayIdx ?? 0)
+                ? {
+                    ...day,
+                    gym,
+                    exercises: day.exercises.map((exercise) =>
+                      exercise.sets.some((s) => s.completed)
+                        ? exercise
+                        : { ...exercise, gym }
+                    ),
+                  }
+                : day
+            )
+          : week
+      ),
+    });
+  };
+
+  const handleChangePrimaryGym = (e: ChangeEvent<HTMLSelectElement>) => {
+    setPrimaryGym(e.target.value);
+  };
+
   const handleAddDay = (idx: number) => {
     const newDay: Day = {
       name: `Day ${templateBlock.weeks[editingWeekIdx].length + 1}`,
+      gym: templateBlock.primaryGym || "",
       exercises: [
         {
           name: "",
           apparatus: "",
+          gym: templateBlock.primaryGym || "",
           sets: [
             {
               reps: 0,
@@ -51,7 +110,7 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
               note: "",
             },
           ],
-          weightType: "",
+          weightType: curBlock ? "lbs" : "",
         },
       ],
       completedDate: undefined,
@@ -124,6 +183,24 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
             textValue={templateBlock.length}
             onChangeText={handleLengthInput}
           />
+          <LabeledInput
+            label="Primary Gym: "
+            textValue={templateBlock.primaryGym ?? "Please add a gym"}
+            options={[
+              ...(noGyms ? ["Please add a gym"] : []),
+              ...(curUser?.gyms || []),
+            ]}
+            disabled={noGyms}
+            onChangeSelect={handleChangePrimaryGym}
+            trailing={
+              <ActionButton
+                icon={<GrFormAdd style={{ fontSize: "50px" }} />}
+                onClick={() => setGymDialogOpen(true)}
+                width={35}
+                className="ms-2"
+              ></ActionButton>
+            }
+          />
         </div>
         <div className="d-flex flex-column align-items-center gap-2 w-100">
           {templateBlock.weeks[editingWeekIdx].map((day, idx) => (
@@ -164,6 +241,11 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
           </strong>
         </div>
       </ActionDialog>
+      <AddGymDialog
+        open={gymDialogOpen}
+        onClose={() => setGymDialogOpen(false)}
+        onAdd={(gym: string) => setPrimaryGym(gym)}
+      />
     </>
   );
 };

@@ -13,7 +13,8 @@ interface EditDayProps {
 }
 
 export const EditDay = ({ editingDayIdx }: EditDayProps) => {
-  const { templateBlock, setTemplateBlock, editingWeekIdx } = useBlock();
+  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
+    useBlock();
   const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
 
   const handleDayNameInput = (
@@ -36,6 +37,7 @@ export const EditDay = ({ editingDayIdx }: EditDayProps) => {
     const newExercise: Exercise = {
       name: "",
       apparatus: "",
+      gym: templateBlock.primaryGym || "",
       sets: [
         {
           reps: 0,
@@ -44,7 +46,7 @@ export const EditDay = ({ editingDayIdx }: EditDayProps) => {
           note: "",
         },
       ],
-      weightType: "",
+      weightType: curBlock ? "lbs" : "",
     };
 
     setTemplateBlock({

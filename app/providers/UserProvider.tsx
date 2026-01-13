@@ -73,7 +73,7 @@ export const UserProvider = ({
   };
 
   const updateUser = async (user: User) => {
-    const res = await api.post(`${USER_API_URL}/${user._id}`, user);
+    const res = await api.put(`${USER_API_URL}/${user._id}`, user);
     const result: User = res.data;
     if (result) setCurUser(result);
   };

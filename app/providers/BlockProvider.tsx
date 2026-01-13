@@ -94,7 +94,7 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
 
   useEffect(() => {
     getCurBlock();
-  }, [curUser]);
+  }, [curUser?._id]);
 
   const createBlock = async (block: Block) => {
     if (!curUser || !curUser._id) return;

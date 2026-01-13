@@ -22,6 +22,7 @@ export const AddExerciseDialog = ({
   const [exerciseState, setExerciseState] = useState<Exercise>({
     name: "",
     apparatus: "",
+    gym: curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym || "",
     weightType: "",
     sets: [],
     addedOn: true,
@@ -70,7 +71,7 @@ export const AddExerciseDialog = ({
     <ActionDialog
       open={true}
       onClose={onClose}
-      title="Submit Set"
+      title="Add Exercise"
       actions={editActions}
     >
       <EditExercise

@@ -16,16 +16,19 @@ const getTemplateFromBlock = (block: Block) => ({
   name: block.name,
   startDate: new Date(),
   length: block.length,
+  primaryGym: block.primaryGym,
   weeks: [
     block.weeks[block.length - 1].map((day) => {
       return {
         name: day.name,
+        gym: day.gym,
         exercises: day.exercises
           .filter((ex) => !ex.addedOn)
           .map((exercise) => {
             return {
               name: exercise.name,
               apparatus: exercise.apparatus,
+              gym: exercise.gym,
               sets: exercise.sets.map((set: Set) => ({
                 ...set,
                 completed: false,
@@ -78,6 +81,8 @@ export const History = () => {
     setEditingWeekIdx(0);
     router.push("/create-block");
   };
+
+  console.log(curUser?.blocks);
 
   const completedBlocks = curUser?.blocks
     .filter((block) => checkIsBlockDone(block))

@@ -40,12 +40,19 @@ export const getNewSetsFromLatest = (
 ) => {
   const curSets = curBlock
     ? curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].exercises.find(
-        (ex) => ex.name === exercise.name && ex.apparatus === exercise.apparatus
+        (ex) =>
+          ex.name === exercise.name &&
+          ex.apparatus === exercise.apparatus &&
+          ex.gym === exercise.gym
       )?.sets
     : undefined;
 
   const prevSets = findLatestOccurrence(curBlock, (e: Exercise) => {
-    if (e.name === exercise.name && e.apparatus === exercise.apparatus)
+    if (
+      e.name === exercise.name &&
+      e.apparatus === exercise.apparatus &&
+      e.gym === exercise.gym
+    )
       return e;
   })?.sets.map(
     (set) => ({

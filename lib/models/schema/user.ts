@@ -14,6 +14,7 @@ const userSchema: Schema = new Schema(
       of: Number,
       required: true,
     },
+    gyms: { type: [String] },
   },
   { collection: "User" }
 );

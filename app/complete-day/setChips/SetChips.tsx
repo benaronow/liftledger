@@ -59,6 +59,7 @@ export const SetChips = ({
         if (
           e.name === exercise.name &&
           e.apparatus === exercise.apparatus &&
+          e.gym === exercise.gym &&
           e.sets[setIdx] &&
           e.sets[setIdx].completed
         )

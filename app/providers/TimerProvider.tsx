@@ -56,8 +56,6 @@ export const TimerProvider = ({ children }: PropsWithChildren<object>) => {
     }
   }, [curUser]);
 
-  console.log(timerPresets);
-
   const getTimerEnd = async () => {
     const res = await api.get(`${TIMER_END_API_URL}/${curUser?._id}`);
     const result: { timerEnd: Date } = res.data;

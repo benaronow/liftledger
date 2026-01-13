@@ -5,14 +5,17 @@ const blockSchema: Schema = new Schema(
     name: { type: String, required: true },
     startDate: { type: Date, required: true },
     length: { type: Number, required: true },
+    primaryGym: { type: String },
     weeks: [
       [
         {
           name: String,
+          gym: String,
           exercises: [
             {
               name: String,
               apparatus: String,
+              gym: String,
               sets: [
                 {
                   reps: Number,

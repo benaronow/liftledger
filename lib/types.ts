@@ -131,6 +131,7 @@ export interface Exercise {
   _id?: string;
   name: string;
   apparatus: string;
+  gym?: string;
   sets: Set[];
   weightType: string;
   addedOn?: boolean;
@@ -139,6 +140,7 @@ export interface Exercise {
 export interface Day {
   _id?: string;
   name: string;
+  gym?: string;
   exercises: Exercise[];
   completedDate: Date | undefined;
 }
@@ -148,6 +150,7 @@ export interface Block {
   name: string;
   startDate: Date;
   length: number;
+  primaryGym?: string;
   weeks: Day[][];
   curWeekIdx: number;
   curDayIdx: number;
@@ -171,6 +174,7 @@ export interface User {
   curBlock?: string;
   timerEnd?: Date;
   timerPresets: TimerPresets;
+  gyms: string[];
 }
 
 export interface GetParams {

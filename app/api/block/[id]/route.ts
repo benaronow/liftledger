@@ -12,12 +12,18 @@ import { NextRequest, NextResponse } from "next/server";
 const createNextWeek = (curBlock: Block): Day[] => {
   const thisWeek = curBlock.weeks[curBlock.curWeekIdx];
 
-  const getLatestSet = (exercise: Exercise, set: Set, idx: number) => {
+  const getLatestSet = (
+    exercise: Exercise,
+    gym: string,
+    set: Set,
+    idx: number
+  ) => {
     return (
       findLatestOccurrence(curBlock, (e: Exercise) => {
         if (
           e.name === exercise.name &&
           e.apparatus === exercise.apparatus &&
+          e.gym === gym &&
           !e.sets[idx].skipped
         )
           return e.sets[idx];
@@ -27,15 +33,22 @@ const createNextWeek = (curBlock: Block): Day[] => {
 
   return thisWeek.map((day) => ({
     name: day.name,
+    gym: curBlock.primaryGym,
     exercises: day.exercises
       .filter((exercise) => !exercise.addedOn)
       .map((exercise) => {
         return {
           ...exercise,
+          gym: curBlock.primaryGym,
           sets: exercise.sets
             .filter((set) => !set.addedOn)
             .map((set: Set, idx: number) => {
-              const latestSet = getLatestSet(exercise, set, idx);
+              const latestSet = getLatestSet(
+                exercise,
+                curBlock.primaryGym ?? "",
+                set,
+                idx
+              );
               return {
                 ...latestSet,
                 completed: false,
