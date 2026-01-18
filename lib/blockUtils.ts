@@ -54,18 +54,35 @@ export const getNewSetsFromLatest = (
       e.gym === exercise.gym
     )
       return e;
-  })?.sets.map(
-    (set) => ({
-      ...set,
-      completed: false,
-      skipped: undefined,
-      note: "",
-    }),
-    true
-  );
+  })
+    ?.sets.filter((set) => !set.addedOn)
+    .map(
+      (set) => ({
+        ...set,
+        completed: false,
+        skipped: undefined,
+        note: "",
+      }),
+      true
+    );
 
-  const sets = curSets ??
-    prevSets ?? [{ reps: 0, weight: 0, note: "", completed: false }];
+  const prevSetNumDifferentGym = findLatestOccurrence(
+    curBlock,
+    (e: Exercise) => {
+      if (e.name === exercise.name && e.apparatus === exercise.apparatus)
+        return e;
+    }
+  )?.sets.filter((set) => !set.addedOn).length;
+
+  const sets =
+    curSets ??
+    prevSets ??
+    Array(prevSetNumDifferentGym).fill({
+      reps: 0,
+      weight: 0,
+      note: "",
+      completed: false,
+    });
 
   if (numSets !== undefined)
     return numSets < sets.length
