@@ -119,7 +119,7 @@ export const SubmitSetDialog = ({
         ...updatedSets,
         completed: !skip,
         skipped: skip,
-        addedOn: setIdx === exercise.sets.length,
+        addedOn: setIdx === exercise.sets.length && !exercise.addedOn,
       }),
     };
 
