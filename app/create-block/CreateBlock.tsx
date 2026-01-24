@@ -77,26 +77,21 @@ export const CreateBlock = () => {
     return errors;
   }, [templateBlock, editingWeekIdx]);
 
-  const headerActions: FooterAction[] = [
-    ...(editingDayIdx !== -1
-      ? [
-          {
-            icon: <ArrowBackIosNew style={{ fontSize: "20px" }} />,
-            label: "Return to week",
-            onClick: () => setEditingDayIdx(-1),
-            variant: "primary",
-          } as FooterAction,
-        ]
-      : []),
-    ...[
-      {
-        icon: <FaSave style={{ fontSize: "18px" }} />,
-        label: "Save",
-        onClick: handleSubmit,
-        disabled: templateErrors.length > 0,
-        variant: "primary",
-      } as FooterAction,
-    ],
+  const footerActions: FooterAction[] = [
+    (editingDayIdx !== -1
+      ? {
+          icon: <ArrowBackIosNew style={{ fontSize: "20px" }} />,
+          label: "Return to week",
+          onClick: () => setEditingDayIdx(-1),
+          variant: "primary",
+        }
+      : {
+          icon: <FaSave style={{ fontSize: "18px" }} />,
+          label: "Save",
+          onClick: handleSubmit,
+          disabled: templateErrors.length > 0,
+          variant: "primary",
+        }) as FooterAction,
   ];
 
   if (!curUser || isFetching) return <Spinner />;
@@ -113,7 +108,7 @@ export const CreateBlock = () => {
           <EditDay editingDayIdx={editingDayIdx} />
         )}
       </div>
-      <ActionsFooter actions={headerActions} />
+      <ActionsFooter actions={footerActions} />
     </>
   );
 };

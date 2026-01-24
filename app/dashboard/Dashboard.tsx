@@ -8,7 +8,6 @@ import { Day, Exercise, RouteType, Set, WeightType } from "@/lib/types";
 import { Spinner } from "../components/spinner";
 import Link from "next/link";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
-import { checkIsBlockDone } from "@/lib/blockUtils";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { ActionButton } from "../components/ActionButton";
 import { BiLogIn } from "react-icons/bi";
@@ -37,7 +36,7 @@ export const Dashboard = () => {
   const getExerciseCompleted = (exercise: Exercise) => {
     return exercise.sets.reduce(
       (accSet: boolean, curSet: Set) => accSet && curSet.completed,
-      true
+      true,
     );
   };
 
@@ -60,10 +59,10 @@ export const Dashboard = () => {
                         (curEx.weightType === type
                           ? 1
                           : curEx.weightType === WeightType.Kilograms
-                          ? 2.205
-                          : 0.454)
+                            ? 2.205
+                            : 0.454)
                       : 0),
-                  0
+                  0,
                 )
               );
             }, 0)
@@ -89,8 +88,8 @@ export const Dashboard = () => {
           ) {
             lastWorkoutDate = completionDate;
           }
-        })
-      )
+        }),
+      ),
     );
     const timeDifference =
       new Date().getTime() - new Date(lastWorkoutDate).getTime();
@@ -138,7 +137,7 @@ export const Dashboard = () => {
             className="d-flex flex-column align-items-center text-white"
             style={{ fontFamily: "League+Spartan", fontWeight: 900 }}
           >
-            {curUser && (!curBlock || checkIsBlockDone(curBlock)) ? (
+            {curUser && !curBlock ? (
               <span
                 className="text-nowrap"
                 style={{ fontSize: "16px", marginBottom: "5px" }}
@@ -157,7 +156,7 @@ export const Dashboard = () => {
               </>
             )}
           </div>
-          {curBlock && !checkIsBlockDone(curBlock) && (
+          {curBlock && (
             <>
               {metricValueMap.map((pair, idx) => (
                 <div

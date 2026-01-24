@@ -1,16 +1,19 @@
 import { ArrowBackIosNew } from "@mui/icons-material";
 import { LabeledInput } from "../../components/LabeledInput";
 import { FaTrash } from "react-icons/fa";
-import { ChangeEvent, useMemo } from "react";
-import { Exercise, Set, WeightType } from "@/lib/types";
-import { useBlock } from "@/app/providers/BlockProvider";
+import { ChangeEvent, useCallback, useMemo } from "react";
 import {
-  getAvailableOptions,
-  getNewSetsFromLatest,
-  switchExercise,
-} from "@/lib/blockUtils";
+  Exercise,
+  ExerciseApparatus,
+  ExerciseName,
+  Set,
+  WeightType,
+} from "@/lib/types";
+import { useBlock } from "@/app/providers/BlockProvider";
+import { getAvailableOptions } from "@/lib/blockUtils";
 import { COLORS } from "@/lib/colors";
 import { Info, InfoAction } from "../Info";
+import { ExerciseInfoName } from "@/app/complete-day/addExerciseDialog/EditExercise";
 
 interface Props {
   exercise: Exercise;
@@ -25,11 +28,17 @@ export const ExerciseInfo = ({
   editingDayIdx,
   setDeletingIdx,
 }: Props) => {
-  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
-    useBlock();
+  const {
+    curBlock,
+    templateBlock,
+    setTemplateBlock,
+    editingWeekIdx,
+    getNewSetsFromLatest,
+    getUpdatedExercise,
+  } = useBlock();
   const pointFive = useMemo(
     () => exercise.sets[0]?.weight % 1 === 0.5,
-    [exercise.sets]
+    [exercise.sets],
   );
 
   const handleMoveExercise = (type: "up" | "down") => {
@@ -46,12 +55,12 @@ export const ExerciseInfo = ({
                       .toSpliced(
                         type === "up" ? eIdx - 1 : eIdx + 1,
                         0,
-                        exercise
+                        exercise,
                       ),
                   }
-                : day
+                : day,
             )
-          : week
+          : week,
       ),
     });
   };
@@ -66,24 +75,24 @@ export const ExerciseInfo = ({
                 ? {
                     ...day,
                     exercises: day.exercises.map((exercise, idx) =>
-                      eIdx === idx ? exerciseUpdate : exercise
+                      eIdx === idx ? exerciseUpdate : exercise,
                     ),
                   }
-                : day
+                : day,
             )
-          : week
+          : week,
       ),
     });
   };
 
   const handleNumberInput = (
     e: ChangeEvent<HTMLInputElement>,
-    type: "sets" | "reps" | "weight"
+    type: "sets" | "reps" | "weight",
   ) => {
     const value = parseInt(e.target.value)
       ? Math.min(
           parseInt(e.target.value),
-          type === "sets" ? 999 : parseInt(e.target.value)
+          type === "sets" ? 999 : parseInt(e.target.value),
         )
       : 0;
 
@@ -91,12 +100,14 @@ export const ExerciseInfo = ({
       ...exercise,
       sets:
         type === "sets"
-          ? getNewSetsFromLatest(curBlock, exercise, value)
+          ? getNewSetsFromLatest(exercise, value)
           : exercise.sets.map((set: Set) => ({
               ...set,
-              reps: type === "reps" ? value : set.reps,
+              reps: type === "reps" ? value : exercise.sets[0].reps,
               weight:
-                type === "weight" ? value + (pointFive ? 0.5 : 0) : set.weight,
+                type === "weight"
+                  ? value + (pointFive ? 0.5 : 0)
+                  : exercise.sets[0].weight,
             })),
     });
   };
@@ -150,6 +161,19 @@ export const ExerciseInfo = ({
     return !exercise.sets.length;
   }, [exercise]);
 
+  const switchExercise = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>, type: ExerciseInfoName) => {
+      const updatedExercise = getUpdatedExercise(
+        e.target.value as ExerciseName | ExerciseApparatus | WeightType,
+        type,
+        exercise,
+      );
+
+      updateExercise(updatedExercise);
+    },
+    [getUpdatedExercise, exercise, updateExercise],
+  );
+
   return (
     <Info title={`Exercise ${eIdx + 1}`} actions={infoActions}>
       <LabeledInput
@@ -158,12 +182,10 @@ export const ExerciseInfo = ({
         options={getAvailableOptions(
           exercise,
           templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
-          "name"
+          "name",
         )}
         includeEmptyOption
-        onChangeSelect={(e) =>
-          switchExercise(e, "name", curBlock, exercise, updateExercise)
-        }
+        onChangeSelect={(e) => switchExercise(e, "name")}
       />
       <LabeledInput
         label="Apparatus:"
@@ -171,12 +193,10 @@ export const ExerciseInfo = ({
         options={getAvailableOptions(
           exercise,
           templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
-          "apparatus"
+          "apparatus",
         )}
         includeEmptyOption
-        onChangeSelect={(e) =>
-          switchExercise(e, "apparatus", curBlock, exercise, updateExercise)
-        }
+        onChangeSelect={(e) => switchExercise(e, "apparatus")}
       />
       <div className="d-flex w-100 gap-3">
         <LabeledInput
@@ -234,15 +254,7 @@ export const ExerciseInfo = ({
             textValue={exercise.weightType}
             options={Object.values(WeightType)}
             includeEmptyOption
-            onChangeSelect={(e) =>
-              switchExercise(
-                e,
-                "weightType",
-                curBlock,
-                exercise,
-                updateExercise
-              )
-            }
+            onChangeSelect={(e) => switchExercise(e, "weightType")}
           />
         </div>
       )}

@@ -7,7 +7,6 @@ import { GrFormAdd } from "react-icons/gr";
 import { ActionDialog, DialogAction } from "../components/ActionDialog";
 import { LabeledInput } from "../components/LabeledInput";
 import { Exercise } from "@/lib/types";
-import { getNewSetsFromLatest } from "@/lib/blockUtils";
 
 interface Props {
   open: boolean;
@@ -17,9 +16,9 @@ interface Props {
 
 export const EditGymDialog = ({ open, onClose, setExercisesState }: Props) => {
   const { curUser, updateUser } = useUser();
-  const { curBlock, updateBlock } = useBlock();
+  const { curBlock, updateBlock, getNewSetsFromLatest } = useBlock();
   const [gymName, setGymName] = useState<string>(
-    curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym ?? ""
+    curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym ?? "",
   );
 
   const [adding, setAdding] = useState<boolean>(false);
@@ -27,13 +26,13 @@ export const EditGymDialog = ({ open, onClose, setExercisesState }: Props) => {
 
   useEffect(() => {
     setGymName(
-      curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym ?? ""
+      curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym ?? "",
     );
   }, [curBlock]);
 
   useEffect(() => {
     setGymName(
-      curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym ?? ""
+      curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym ?? "",
     );
     setAdding(false);
     setAddingGymName("");
@@ -55,17 +54,17 @@ export const EditGymDialog = ({ open, onClose, setExercisesState }: Props) => {
                           ? exercise
                           : {
                               ...exercise,
-                              sets: getNewSetsFromLatest(curBlock, {
+                              gym: gymName,
+                              sets: getNewSetsFromLatest({
                                 ...exercise,
                                 gym: gymName,
                               }),
-                              gym: gymName,
-                            }
+                            },
                       ),
                     }
-                  : day
+                  : day,
               )
-            : week
+            : week,
         ),
       });
     }
@@ -74,8 +73,8 @@ export const EditGymDialog = ({ open, onClose, setExercisesState }: Props) => {
       prev.map((exercise) =>
         exercise.sets.some((s) => s.completed)
           ? exercise
-          : { ...exercise, gym: gymName }
-      )
+          : { ...exercise, gym: gymName },
+      ),
     );
     onClose();
   };

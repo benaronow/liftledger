@@ -3,52 +3,18 @@
 import { useTheme } from "@mui/material";
 import dayjs from "dayjs";
 import { ControlPointDuplicate } from "@mui/icons-material";
-import { Block, RouteType, Set } from "@/lib/types";
+import { Block, RouteType } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { Spinner } from "../components/spinner";
 import { useUser } from "@/app/providers/UserProvider";
-import { checkIsBlockDone } from "@/lib/blockUtils";
 import { useBlock } from "@/app/providers/BlockProvider";
-
-const getTemplateFromBlock = (block: Block) => ({
-  name: block.name,
-  startDate: new Date(),
-  length: block.length,
-  primaryGym: block.primaryGym,
-  weeks: [
-    block.weeks[block.length - 1].map((day) => {
-      return {
-        name: day.name,
-        gym: day.gym,
-        exercises: day.exercises
-          .filter((ex) => !ex.addedOn)
-          .map((exercise) => {
-            return {
-              name: exercise.name,
-              apparatus: exercise.apparatus,
-              gym: exercise.gym,
-              sets: exercise.sets.map((set: Set) => ({
-                ...set,
-                completed: false,
-                skipped: false,
-                note: "",
-              })),
-              weightType: exercise.weightType,
-            };
-          }),
-        completedDate: undefined,
-      };
-    }),
-  ],
-  curDayIdx: 0,
-  curWeekIdx: 0,
-});
 
 export const History = () => {
   const router = useRouter();
   const { curUser, session } = useUser();
+  const { curBlock, getNewSetsFromLatest } = useBlock();
   const { setTemplateBlock, setEditingWeekIdx } = useBlock();
   const { innerWidth, isFetching, toggleScreenState } = useScreenState();
   const theme = useTheme();
@@ -76,16 +42,46 @@ export const History = () => {
     ].completedDate;
   };
 
+  const getTemplateFromBlock = (block: Block) => ({
+    name: block.name,
+    startDate: new Date(),
+    length: block.length,
+    primaryGym: block.primaryGym,
+    weeks: [
+      block.weeks[block.length - 1].map((day) => {
+        return {
+          name: day.name,
+          gym: block.primaryGym,
+          exercises: day.exercises
+            .filter((ex) => !ex.addedOn)
+            .map((exercise) => {
+              return {
+                name: exercise.name,
+                apparatus: exercise.apparatus,
+                gym: block.primaryGym,
+                sets: getNewSetsFromLatest({
+                  ...exercise,
+                  gym: block.primaryGym,
+                }),
+                weightType: exercise.weightType,
+              };
+            }),
+          completedDate: undefined,
+        };
+      }),
+    ],
+    curDayIdx: 0,
+    curWeekIdx: 0,
+  });
+
   const handleCreateFromTemplate = (block: Block) => {
     setTemplateBlock(getTemplateFromBlock(block));
     setEditingWeekIdx(0);
     router.push("/create-block");
   };
 
-  console.log(curUser?.blocks);
-
   const completedBlocks = curUser?.blocks
-    .filter((block) => checkIsBlockDone(block))
+    .filter((block) => block._id !== curBlock?._id)
     .map((block, idx) => {
       return (
         <div

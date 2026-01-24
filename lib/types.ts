@@ -137,6 +137,10 @@ export interface Exercise {
   addedOn?: boolean;
 }
 
+export interface ExerciseWithDate extends Exercise {
+  completedDate?: Date;
+}
+
 export interface Day {
   _id?: string;
   name: string;

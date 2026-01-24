@@ -1,6 +1,5 @@
 import { Exercise, Set } from "@/lib/types";
 import { Dispatch, SetStateAction, useCallback, useMemo } from "react";
-import { findLatestOccurrence } from "../../../lib/blockUtils";
 import { useBlock } from "../../providers/BlockProvider";
 import { COLORS } from "@/lib/colors";
 import { BiPlusCircle } from "react-icons/bi";
@@ -29,7 +28,7 @@ export const SetChips = ({
   isCurrentExercise,
   setExerciseToEdit,
 }: Props) => {
-  const { curBlock } = useBlock();
+  const { findLatestOccurrence } = useBlock();
 
   const nextSetIdx = useMemo(() => {
     if (!isCurrentExercise) return -1;
@@ -45,58 +44,64 @@ export const SetChips = ({
       set.completed
         ? COLORS.primary
         : set.skipped
-        ? COLORS.primaryDark
-        : nextSet
-        ? COLORS.secondary
-        : COLORS.primaryDisabled,
-    [nextSetIdx]
+          ? COLORS.primaryDark
+          : nextSet
+            ? COLORS.secondary
+            : COLORS.primaryDisabled,
+    [nextSetIdx],
   );
 
-  const getDiffs = (setIdx: number) => {
-    const lastCompletedSet = findLatestOccurrence(
-      curBlock,
-      (e: Exercise) => {
-        if (
-          e.name === exercise.name &&
-          e.apparatus === exercise.apparatus &&
-          e.gym === exercise.gym &&
-          e.sets[setIdx] &&
-          e.sets[setIdx].completed
-        )
-          return e.sets[setIdx];
-      },
-      true
-    );
+  const getDiffs = useCallback(
+    (setIdx: number) => {
+      const lastCompletedSet = findLatestOccurrence(
+        (e: Exercise) => {
+          if (
+            e.name === exercise.name &&
+            e.apparatus === exercise.apparatus &&
+            e.gym === exercise.gym &&
+            e.sets[setIdx] &&
+            e.sets[setIdx].completed
+          )
+            return e.sets[setIdx];
+        },
+        { includeCurrentDay: false },
+      );
 
-    if (lastCompletedSet) {
-      const repDiff = exercise.sets[setIdx]
-        ? exercise.sets[setIdx].reps - lastCompletedSet.reps
-        : 0;
-      const weightDiff = exercise.sets[setIdx]
-        ? exercise.sets[setIdx].weight - lastCompletedSet.weight
-        : 0;
-      return { repDiff, weightDiff };
-    }
-    return { repDiff: undefined, weightDiff: undefined };
-  };
+      if (lastCompletedSet) {
+        const repDiff = exercise.sets[setIdx]
+          ? exercise.sets[setIdx].reps - lastCompletedSet.reps
+          : 0;
+        const weightDiff = exercise.sets[setIdx]
+          ? exercise.sets[setIdx].weight - lastCompletedSet.weight
+          : 0;
+        return { repDiff, weightDiff };
+      }
+
+      return { repDiff: undefined, weightDiff: undefined };
+    },
+    [exercise, findLatestOccurrence],
+  );
 
   const getProgressString = (diff: number | undefined) => {
     if (!diff) return "--";
     return diff > 0 ? `+${diff}` : `${diff}`;
   };
 
-  const getProgressSign = (setIdx: number) => {
-    const { repDiff, weightDiff } = getDiffs(setIdx);
+  const getProgressSign = useCallback(
+    (setIdx: number) => {
+      const { repDiff, weightDiff } = getDiffs(setIdx);
 
-    if (weightDiff === undefined || repDiff === undefined) return undefined;
-    if (weightDiff > 0 || (repDiff > 0 && weightDiff === 0)) return 1;
-    if (weightDiff < 0 || (repDiff < 0 && weightDiff === 0)) return -1;
-    return 0;
-  };
+      if (weightDiff === undefined || repDiff === undefined) return undefined;
+      if (weightDiff > 0 || (repDiff > 0 && weightDiff === 0)) return 1;
+      if (weightDiff < 0 || (repDiff < 0 && weightDiff === 0)) return -1;
+      return 0;
+    },
+    [getDiffs],
+  );
 
   const exerciseHasSkippedSets = useMemo(
     () => exercise.sets.some((set) => set.skipped),
-    [exercise.sets]
+    [exercise.sets],
   );
 
   return (
@@ -134,7 +139,7 @@ export const SetChips = ({
                 <span className="fw-bold">
                   <span className="me-1">{`${set.weight}${exercise.weightType}`}</span>
                   <span>{`(${getProgressString(
-                    getDiffs(i).weightDiff
+                    getDiffs(i).weightDiff,
                   )})`}</span>
                 </span>
               </span>

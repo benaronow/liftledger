@@ -22,7 +22,7 @@ interface EditWeekProps {
 export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
   const router = useRouter();
   const { curUser } = useUser();
-  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
+  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx, getNewSetsFromLatest } =
     useBlock();
   const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
 
@@ -79,12 +79,18 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
                     exercises: day.exercises.map((exercise) =>
                       exercise.sets.some((s) => s.completed)
                         ? exercise
-                        : { ...exercise, gym }
+                        : {
+                            ...exercise,
+                            sets: getNewSetsFromLatest({
+                              ...exercise,
+                              gym,
+                            }),
+                          },
                     ),
                   }
-                : day
+                : day,
             )
-          : week
+          : week,
       ),
     });
   };

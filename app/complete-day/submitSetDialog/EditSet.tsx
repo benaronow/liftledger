@@ -1,4 +1,3 @@
-import { findLatestOccurrence } from "@/lib/blockUtils";
 import { Exercise } from "@/lib/types";
 import {
   ChangeEvent,
@@ -17,9 +16,9 @@ interface Props {
 }
 
 export const EditSet = ({ setIdx, exerciseState, setExerciseState }: Props) => {
-  const { curBlock } = useBlock();
+  const { findLatestOccurrence } = useBlock();
   const [tempWeight, setTempWeight] = useState(
-    setIdx !== undefined ? `${exerciseState.sets[setIdx].weight || ""}` : ""
+    setIdx !== undefined ? `${exerciseState.sets[setIdx].weight || ""}` : "",
   );
   type ChangeSetType = "reps" | "weight" | "note";
 
@@ -42,25 +41,22 @@ export const EditSet = ({ setIdx, exerciseState, setExerciseState }: Props) => {
   ];
 
   const latestPreviousSetNote = useMemo(() => {
-    if (curBlock) {
-      return findLatestOccurrence(
-        curBlock,
-        (e: Exercise) => {
-          if (
-            e.name === exerciseState.name &&
-            e.apparatus === exerciseState.apparatus &&
-            e.sets[setIdx]
-          )
-            return e.sets[setIdx].note !== "" ? e.sets[setIdx].note : "no note";
-        },
-        true
-      );
-    }
-  }, [curBlock, exerciseState, setIdx]);
+    return findLatestOccurrence(
+      (e: Exercise) => {
+        if (
+          e.name === exerciseState.name &&
+          e.apparatus === exerciseState.apparatus &&
+          e.sets[setIdx]
+        )
+          return e.sets[setIdx].note !== "" ? e.sets[setIdx].note : "no note";
+      },
+      { includeCurrentDay: false },
+    );
+  }, [exerciseState, setIdx, findLatestOccurrence]);
 
   const handleSetChange = (
     e: ChangeEvent<HTMLInputElement>,
-    type: ChangeSetType
+    type: ChangeSetType,
   ) => {
     setExerciseState({
       ...exerciseState,

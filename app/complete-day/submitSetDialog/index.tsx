@@ -5,7 +5,6 @@ import { EditSet } from "./EditSet";
 import { DialogAction, ActionDialog } from "../../components/ActionDialog";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { IoIosSkipForward } from "react-icons/io";
-import { findLatestOccurrence } from "@/lib/blockUtils";
 import { useTimer } from "@/app/providers/TimerProvider";
 
 interface Props {
@@ -23,7 +22,7 @@ export const SubmitSetDialog = ({
   setExercisesState,
   onClose,
 }: Props) => {
-  const { curBlock, updateBlock } = useBlock();
+  const { curBlock, updateBlock, findLatestOccurrence } = useBlock();
   const { setTimerDialogOpen } = useTimer();
 
   const [exerciseState, setExerciseState] = useState<Exercise>(
@@ -35,10 +34,8 @@ export const SubmitSetDialog = ({
             { ...exercise.sets[setIdx - 1], completed: false, note: "" },
           ],
         }
-      : exercise
+      : exercise,
   );
-
-  console.log("exercise in dialog:", exerciseState);
 
   const saveExercises = (updatedExercises: Exercise[]) => {
     if (curBlock) {
@@ -48,7 +45,7 @@ export const SubmitSetDialog = ({
         {
           ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
           exercises: updatedExercises,
-        }
+        },
       );
 
       const updatedLaterDays: Day[] = newDays.map((day: Day, idx) =>
@@ -61,7 +58,7 @@ export const SubmitSetDialog = ({
                   (e: Exercise) =>
                     e.name === exercise.name &&
                     e.apparatus === exercise.apparatus &&
-                    e.gym === exercise.gym
+                    e.gym === exercise.gym,
                 );
 
                 return completedExercise
@@ -78,7 +75,7 @@ export const SubmitSetDialog = ({
                     }
                   : exercise;
               }),
-            }
+            },
       );
 
       const newBlock: Block = {
@@ -86,7 +83,7 @@ export const SubmitSetDialog = ({
         weeks: curBlock?.weeks.toSpliced(
           curBlock.curWeekIdx,
           1,
-          updatedLaterDays
+          updatedLaterDays,
         ),
       };
 
@@ -96,7 +93,6 @@ export const SubmitSetDialog = ({
 
   const handleSubmitSet = (skip: boolean) => {
     const latestPreviousSet = findLatestOccurrence(
-      curBlock,
       (e: Exercise) => {
         if (
           e.name === exercise.name &&
@@ -106,17 +102,17 @@ export const SubmitSetDialog = ({
         )
           return e.sets[setIdx];
       },
-      true
+      { includeCurrentDay: false },
     );
 
-    const updatedSets = skip
-      ? latestPreviousSet ?? exerciseState.sets[setIdx]
+    const updatedSet = skip
+      ? (latestPreviousSet ?? exerciseState.sets[setIdx])
       : exerciseState.sets[setIdx];
 
     const updatedExercise: Exercise = {
       ...exerciseState,
       sets: exerciseState.sets.toSpliced(setIdx, 1, {
-        ...updatedSets,
+        ...updatedSet,
         completed: !skip,
         skipped: skip,
         addedOn:
@@ -130,10 +126,10 @@ export const SubmitSetDialog = ({
         (e) =>
           e.name === updatedExercise.name &&
           e.apparatus === updatedExercise.apparatus &&
-          e.gym === updatedExercise.gym
+          e.gym === updatedExercise.gym,
       ),
       1,
-      updatedExercise
+      updatedExercise,
     );
 
     setExercisesState(updatedExercises);

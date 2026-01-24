@@ -50,7 +50,7 @@ export const UserProvider = ({
 }: PropsWithChildren<UserProviderProps>) => {
   const [attemptedLogin, setAttemptedLogin] = useState(false);
   const [curUser, setCurUser] = useState<User>();
-  const [curUserLoading, setCurUserLoading] = useState(true);
+  const [curUserLoading, setCurUserLoading] = useState(false);
   const [introMessageOpen, setIntroMessageOpen] = useState(false);
 
   const getUser = async (email: string) => {

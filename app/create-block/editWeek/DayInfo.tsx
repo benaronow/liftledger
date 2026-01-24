@@ -66,7 +66,7 @@ export const DayInfo = ({
           style={{ transform: "rotate(90deg)" }}
         />
       ),
-      disabled: dIdx === curBlock?.curDayIdx,
+      disabled: dIdx === curBlock?.curDayIdx || dIdx === 0,
       onClick: () => handleMoveDay(day, dIdx, "up"),
       variant: "primary",
     },
