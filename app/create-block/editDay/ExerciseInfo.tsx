@@ -14,6 +14,7 @@ import { getAvailableOptions } from "@/lib/blockUtils";
 import { COLORS } from "@/lib/colors";
 import { Info, InfoAction } from "../Info";
 import { ExerciseInfoName } from "@/app/complete-day/addExerciseDialog/EditExercise";
+import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
 
 interface Props {
   exercise: Exercise;
@@ -28,14 +29,9 @@ export const ExerciseInfo = ({
   editingDayIdx,
   setDeletingIdx,
 }: Props) => {
-  const {
-    curBlock,
-    templateBlock,
-    setTemplateBlock,
-    editingWeekIdx,
-    getNewSetsFromLatest,
-    getUpdatedExercise,
-  } = useBlock();
+  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
+    useBlock();
+  const { getNewSetsFromLatest, getUpdatedExercise } = useCompletedExercises();
   const pointFive = useMemo(
     () => exercise.sets[0]?.weight % 1 === 0.5,
     [exercise.sets],

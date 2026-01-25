@@ -6,8 +6,8 @@ import {
 } from "@/lib/types";
 import { Dispatch, SetStateAction, useCallback } from "react";
 import { getAvailableOptions } from "@/lib/blockUtils";
-import { useBlock } from "@/app/providers/BlockProvider";
 import { LabeledInput } from "@/app/components/LabeledInput";
+import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
 
 interface Props {
   exerciseState: Exercise;
@@ -28,7 +28,7 @@ export const EditExercise = ({
   setExerciseState,
   exercisesState,
 }: Props) => {
-  const { getUpdatedExercise } = useBlock();
+  const { getUpdatedExercise } = useCompletedExercises();
 
   const exerciseInfoMap: ExerciseInfo[] = [
     {

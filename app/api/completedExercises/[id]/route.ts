@@ -48,9 +48,9 @@ export const GET = async (req: NextRequest, { params }: GetParams) => {
     .reverse();
 
   const currentCompletedExercises: Exercise[] = curBlock
-    ? curBlock?.weeks[curBlock.curWeekIdx][
-        curBlock.curDayIdx
-      ].exercises.reverse()
+    ? curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].exercises
+        .slice()
+        .reverse()
     : [];
 
   const completedExercises = {

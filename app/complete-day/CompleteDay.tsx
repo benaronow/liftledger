@@ -2,7 +2,7 @@
 
 import { Block, Exercise, RouteType, Set } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Spinner } from "../components/spinner";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useUser } from "@/app/providers/UserProvider";
@@ -19,19 +19,21 @@ import { RiTimerLine } from "react-icons/ri";
 import { useTimer } from "../providers/TimerProvider";
 import { LuWarehouse } from "react-icons/lu";
 import { EditGymDialog } from "./EditGymDialog";
+import { useCompletedExercises } from "../providers/CompletedExercisesProvider";
 
 export const CompleteDay = () => {
   const router = useRouter();
-  const { session } = useUser();
+  const { session, curUser } = useUser();
   const { timerEnd, setTimerDialogOpen } = useTimer();
   const { curBlock, updateBlock } = useBlock();
+  const { getCompletedExercises } = useCompletedExercises();
   const { isFetching, toggleScreenState } = useScreenState();
   const [exerciseToEdit, setExerciseToEdit] = useState<{
     setIdx: number | undefined;
     exercise: Exercise;
   }>();
   const [addExerciseIdx, setAddExerciseIdx] = useState<number | undefined>(
-    undefined
+    undefined,
   );
   const [editing, setEditing] = useState(false);
   const [editGymDialogOpen, setEditGymDialogOpen] = useState<boolean>(false);
@@ -54,7 +56,7 @@ export const CompleteDay = () => {
       curBlock
         ? curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].exercises
         : [],
-    [curBlock]
+    [curBlock],
   );
 
   useEffect(() => {
@@ -72,14 +74,14 @@ export const CompleteDay = () => {
     exercise.sets.reduce(
       (acc: boolean, curSet: Set) =>
         acc && (curSet.completed || (curSet.skipped ?? false)),
-      true
+      true,
     );
 
   const currentExIdx = exercisesState.findIndex(
-    (exercise: Exercise) => !isExerciseComplete(exercise)
+    (exercise: Exercise) => !isExerciseComplete(exercise),
   );
 
-  const finishDay = () => {
+  const finishDay = useCallback(async () => {
     if (curBlock) {
       const newBlock: Block = {
         ...curBlock,
@@ -89,15 +91,16 @@ export const CompleteDay = () => {
           curBlock.weeks[curBlock.curWeekIdx].toSpliced(curBlock.curDayIdx, 1, {
             ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
             completedDate: new Date(),
-          })
+          }),
         ),
       };
 
-      updateBlock(newBlock);
+      await updateBlock(newBlock);
+      getCompletedExercises(curUser?._id || "");
 
       router.push("/dashboard");
     }
-  };
+  }, [curBlock, updateBlock, router, curUser, getCompletedExercises]);
 
   const newExercise: Exercise = {
     name: "",
@@ -109,7 +112,7 @@ export const CompleteDay = () => {
 
   const isDayComplete = useMemo(() => {
     return exercises.every((exercise: Exercise) =>
-      isExerciseComplete(exercise)
+      isExerciseComplete(exercise),
     );
   }, [exercises]);
 
@@ -143,7 +146,7 @@ export const CompleteDay = () => {
         variant: "primary",
       },
     ],
-    [setEditing, finishDay, isDayComplete]
+    [setEditing, finishDay, isDayComplete],
   );
 
   if (!exercises.length || isFetching) return <Spinner />;

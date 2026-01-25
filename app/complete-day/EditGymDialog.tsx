@@ -7,6 +7,7 @@ import { GrFormAdd } from "react-icons/gr";
 import { ActionDialog, DialogAction } from "../components/ActionDialog";
 import { LabeledInput } from "../components/LabeledInput";
 import { Exercise } from "@/lib/types";
+import { useCompletedExercises } from "../providers/CompletedExercisesProvider";
 
 interface Props {
   open: boolean;
@@ -16,7 +17,8 @@ interface Props {
 
 export const EditGymDialog = ({ open, onClose, setExercisesState }: Props) => {
   const { curUser, updateUser } = useUser();
-  const { curBlock, updateBlock, getNewSetsFromLatest } = useBlock();
+  const { curBlock, updateBlock } = useBlock();
+  const { getNewSetsFromLatest } = useCompletedExercises();
   const [gymName, setGymName] = useState<string>(
     curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym ?? "",
   );

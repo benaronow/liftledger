@@ -6,6 +6,7 @@ import { DialogAction, ActionDialog } from "../../components/ActionDialog";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { IoIosSkipForward } from "react-icons/io";
 import { useTimer } from "@/app/providers/TimerProvider";
+import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
 
 interface Props {
   setIdx: number;
@@ -22,7 +23,8 @@ export const SubmitSetDialog = ({
   setExercisesState,
   onClose,
 }: Props) => {
-  const { curBlock, updateBlock, findLatestOccurrence } = useBlock();
+  const { curBlock, updateBlock } = useBlock();
+  const { findLatestOccurrence } = useCompletedExercises();
   const { setTimerDialogOpen } = useTimer();
 
   const [exerciseState, setExerciseState] = useState<Exercise>(

@@ -18,7 +18,6 @@ export const PUT = async (req: NextRequest, { params }: GetParams) => {
   const {
     uid,
     block,
-    completedExercises,
   }: { uid: string; block: Block; completedExercises: Exercise[] } =
     await req.json();
 
@@ -30,26 +29,25 @@ export const PUT = async (req: NextRequest, { params }: GetParams) => {
 
   const isCurBlockDone = block.curWeekIdx >= block.length - 1 && isCurWeekDone;
 
-  const getCurrentLatestSet = (exercise: Exercise, idx: number) => {
-    return block.weeks[block.curWeekIdx][block.curDayIdx].exercises.find(
-      (e: Exercise) =>
-        e.name === exercise.name &&
-        e.apparatus === exercise.apparatus &&
-        e.gym === block.primaryGym &&
-        e.sets[idx] &&
-        !e.sets[idx].skipped,
-    )?.sets[idx];
-  };
+  const getLatestSet = (exercise: Exercise, idx: number): Set | null => {
+    for (let w = block.weeks.length - 1; w >= 0; w--) {
+      const week = block.weeks[w];
+      for (let d = week.length - 1; d >= 0; d--) {
+        const day = week[d];
+        for (const e of day.exercises) {
+          if (
+            e.name === exercise.name &&
+            e.apparatus === exercise.apparatus &&
+            e.gym === block.primaryGym &&
+            idx < e.sets.length
+          ) {
+            return e.sets[idx];
+          }
+        }
+      }
+    }
 
-  const getLatestSet = (exercise: Exercise, idx: number) => {
-    return completedExercises.find(
-      (e: Exercise) =>
-        e.name === exercise.name &&
-        e.apparatus === exercise.apparatus &&
-        e.gym === block.primaryGym &&
-        e.sets[idx] &&
-        !e.sets[idx].skipped,
-    )?.sets[idx];
+    return null;
   };
 
   const createNextWeek = (): Day[] => {
@@ -65,10 +63,7 @@ export const PUT = async (req: NextRequest, { params }: GetParams) => {
             sets: exercise.sets
               .filter((set) => !set.addedOn)
               .map((set: Set, idx: number) => {
-                const latestSet =
-                  getCurrentLatestSet(exercise, idx) ??
-                  getLatestSet(exercise, idx) ??
-                  set;
+                const latestSet = getLatestSet(exercise, idx) ?? set;
                 return {
                   ...latestSet,
                   completed: false,

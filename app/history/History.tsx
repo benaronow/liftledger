@@ -10,12 +10,13 @@ import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { Spinner } from "../components/spinner";
 import { useUser } from "@/app/providers/UserProvider";
 import { useBlock } from "@/app/providers/BlockProvider";
+import { useCompletedExercises } from "../providers/CompletedExercisesProvider";
 
 export const History = () => {
   const router = useRouter();
   const { curUser, session } = useUser();
-  const { curBlock, getNewSetsFromLatest } = useBlock();
-  const { setTemplateBlock, setEditingWeekIdx } = useBlock();
+  const { curBlock, setTemplateBlock, setEditingWeekIdx } = useBlock();
+  const { getNewSetsFromLatest } = useCompletedExercises();
   const { innerWidth, isFetching, toggleScreenState } = useScreenState();
   const theme = useTheme();
 

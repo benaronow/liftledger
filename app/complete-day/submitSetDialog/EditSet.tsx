@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { LabeledInput } from "../../components/LabeledInput";
-import { useBlock } from "@/app/providers/BlockProvider";
+import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
 
 interface Props {
   setIdx: number;
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export const EditSet = ({ setIdx, exerciseState, setExerciseState }: Props) => {
-  const { findLatestOccurrence } = useBlock();
+  const { findLatestOccurrence } = useCompletedExercises();
   const [tempWeight, setTempWeight] = useState(
     setIdx !== undefined ? `${exerciseState.sets[setIdx].weight || ""}` : "",
   );

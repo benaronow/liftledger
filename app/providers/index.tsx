@@ -10,6 +10,7 @@ import { ScreenStateProvider } from "./ScreenStateProvider";
 import { SessionData } from "@auth0/nextjs-auth0/types";
 import { BlockProvider } from "./BlockProvider";
 import { TimerProvider } from "./TimerProvider";
+import { CompletedExercisesProvider } from "./CompletedExercisesProvider";
 
 interface ProvidersProps {
   readonly children: ReactNode;
@@ -26,7 +27,9 @@ export const Providers = ({ children, session }: ProvidersProps) => {
           <ScreenStateProvider>
             <UserProvider session={session}>
               <BlockProvider>
-                <TimerProvider>{children}</TimerProvider>
+                <CompletedExercisesProvider>
+                  <TimerProvider>{children}</TimerProvider>
+                </CompletedExercisesProvider>
               </BlockProvider>
             </UserProvider>
           </ScreenStateProvider>

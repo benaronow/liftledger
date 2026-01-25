@@ -13,6 +13,7 @@ import { useUser } from "@/app/providers/UserProvider";
 import { ActionButton } from "@/app/components/ActionButton";
 import { AddGymDialog } from "@/app/create-block/editWeek/AddGymDialog";
 import { GrFormAdd } from "react-icons/gr";
+import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
 
 interface EditWeekProps {
   setEditingDay: (day: number) => void;
@@ -22,8 +23,9 @@ interface EditWeekProps {
 export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
   const router = useRouter();
   const { curUser } = useUser();
-  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx, getNewSetsFromLatest } =
+  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
     useBlock();
+  const { getNewSetsFromLatest } = useCompletedExercises();
   const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
 
   const [gymDialogOpen, setGymDialogOpen] = useState<boolean>(false);
@@ -44,7 +46,7 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
                   gym: curUser.gyms[0],
                 })),
               }))
-            : week
+            : week,
         ),
       });
     }
@@ -81,6 +83,7 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
                         ? exercise
                         : {
                             ...exercise,
+                            gym,
                             sets: getNewSetsFromLatest({
                               ...exercise,
                               gym,
@@ -125,7 +128,7 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
     setTemplateBlock({
       ...templateBlock,
       weeks: templateBlock.weeks.map((week, wIdx) =>
-        wIdx === editingWeekIdx ? week.toSpliced(idx, 0, newDay) : week
+        wIdx === editingWeekIdx ? week.toSpliced(idx, 0, newDay) : week,
       ),
     });
   };
@@ -143,7 +146,7 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
       weeks: templateBlock.weeks.map((week, idx) =>
         idx === editingWeekIdx && deletingIdx !== undefined
           ? week.toSpliced(deletingIdx, 1)
-          : week
+          : week,
       ),
     });
   };

@@ -53,6 +53,8 @@ export const ScreenStateProvider = ({ children }: ScreenStateProviderProps) => {
         height: window.innerHeight,
       });
     window.addEventListener("resize", updateSize);
+
+    return () => window.removeEventListener("resize", updateSize);
   }, []);
 
   const toggleScreenState = (state: "overlay" | "fetching", value: boolean) =>

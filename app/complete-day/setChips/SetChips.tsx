@@ -1,11 +1,11 @@
 import { Exercise, Set } from "@/lib/types";
 import { Dispatch, SetStateAction, useCallback, useMemo } from "react";
-import { useBlock } from "../../providers/BlockProvider";
 import { COLORS } from "@/lib/colors";
 import { BiPlusCircle } from "react-icons/bi";
 import { FaTimes } from "react-icons/fa";
 import { ActionButton } from "../../components/ActionButton";
 import { ProgressIcon } from "./ProgressIcon";
+import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
 
 interface Props {
   exercise: Exercise;
@@ -28,7 +28,7 @@ export const SetChips = ({
   isCurrentExercise,
   setExerciseToEdit,
 }: Props) => {
-  const { findLatestOccurrence } = useBlock();
+  const { findLatestOccurrence } = useCompletedExercises();
 
   const nextSetIdx = useMemo(() => {
     if (!isCurrentExercise) return -1;
