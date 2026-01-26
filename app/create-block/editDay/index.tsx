@@ -19,16 +19,16 @@ export const EditDay = ({ editingDayIdx }: EditDayProps) => {
 
   const handleDayNameInput = (
     e: ChangeEvent<HTMLInputElement>,
-    dayIdx: number
+    dayIdx: number,
   ) => {
     setTemplateBlock({
       ...templateBlock,
       weeks: templateBlock.weeks.map((week, idx) =>
         idx === editingWeekIdx
           ? week.map((day, idx) =>
-              idx === dayIdx ? { ...day, name: e.target.value } : day
+              idx === dayIdx ? { ...day, name: e.target.value } : day,
             )
-          : week
+          : week,
       ),
     });
   };
@@ -59,9 +59,9 @@ export const EditDay = ({ editingDayIdx }: EditDayProps) => {
                     ...day,
                     exercises: day.exercises.toSpliced(idx, 0, newExercise),
                   }
-                : day
+                : day,
             )
-          : week
+          : week,
       ),
     });
   };
@@ -78,9 +78,9 @@ export const EditDay = ({ editingDayIdx }: EditDayProps) => {
                       ...day,
                       exercises: day.exercises.toSpliced(deletingIdx, 1),
                     }
-                  : day
+                  : day,
               )
-            : week
+            : week,
         ),
       });
   };
@@ -134,13 +134,13 @@ export const EditDay = ({ editingDayIdx }: EditDayProps) => {
                 setDeletingIdx={setDeletingIdx}
               />
             </div>
-          )
+          ),
         )}
         <AddButton
           onClick={() =>
             handleAddExercise(
               templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises
-                .length
+                .length,
             )
           }
         />

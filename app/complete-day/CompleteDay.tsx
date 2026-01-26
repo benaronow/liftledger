@@ -2,7 +2,7 @@
 
 import { Block, Exercise, RouteType, Set } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Spinner } from "../components/spinner";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { useUser } from "@/app/providers/UserProvider";
@@ -37,6 +37,7 @@ export const CompleteDay = () => {
   );
   const [editing, setEditing] = useState(false);
   const [editGymDialogOpen, setEditGymDialogOpen] = useState<boolean>(false);
+  const pageContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!session) {
@@ -77,8 +78,12 @@ export const CompleteDay = () => {
       true,
     );
 
-  const currentExIdx = exercisesState.findIndex(
-    (exercise: Exercise) => !isExerciseComplete(exercise),
+  const currentExIdx = useMemo(
+    () =>
+      exercisesState.findIndex(
+        (exercise: Exercise) => !isExerciseComplete(exercise),
+      ),
+    [exercisesState],
   );
 
   const finishDay = useCallback(async () => {
@@ -110,11 +115,18 @@ export const CompleteDay = () => {
     sets: [],
   };
 
-  const isDayComplete = useMemo(() => {
-    return exercises.every((exercise: Exercise) =>
-      isExerciseComplete(exercise),
-    );
-  }, [exercises]);
+  const isDayStarted = useMemo(
+    () =>
+      exercisesState.some((exercise) =>
+        exercise.sets.some((set) => set.completed || set.skipped),
+      ),
+    [exercisesState],
+  );
+
+  const isDayComplete = useMemo(
+    () => exercises.every((exercise: Exercise) => isExerciseComplete(exercise)),
+    [exercises],
+  );
 
   const footerActions: FooterAction[] = useMemo(
     () => [
@@ -122,7 +134,7 @@ export const CompleteDay = () => {
         icon: <LuWarehouse fontSize={20} />,
         label: "Gym",
         onClick: () => setEditGymDialogOpen(true),
-        disabled: false,
+        disabled: isDayStarted,
         variant: "primary",
       },
       {
@@ -156,6 +168,7 @@ export const CompleteDay = () => {
       <div
         className="d-flex flex-column align-items-center w-100 overflow-scroll"
         style={{ height: "100dvh", padding: "65px 15px 140px" }}
+        ref={pageContainerRef}
       >
         <div className="d-flex flex-column align-items-center w-100">
           {exercises?.map((exercise, idx) => (
@@ -175,6 +188,7 @@ export const CompleteDay = () => {
                 />
               )}
               <div
+                id={exercise.name + exercise.apparatus}
                 className={`d-flex flex-column align-items-center w-100 rounded overflow-hidden mb-${
                   idx === exercisesState.length - 1 ? "3" : "4"
                 }`}
@@ -202,6 +216,7 @@ export const CompleteDay = () => {
                     isExerciseComplete={isExerciseComplete(exercisesState[idx])}
                     isCurrentExercise={idx === currentExIdx}
                     setExerciseToEdit={setExerciseToEdit}
+                    containerRef={pageContainerRef}
                   />
                 )}
               </div>

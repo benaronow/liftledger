@@ -2,7 +2,7 @@
 
 import { RouteType } from "@/lib/types";
 import { useTheme } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { EditDay } from "./editDay";
 import { EditWeek } from "./editWeek";
 import { useRouter } from "next/navigation";
@@ -29,6 +29,7 @@ export const CreateBlock = () => {
   const { innerWidth, isFetching, toggleScreenState } = useScreenState();
   const theme = useTheme();
   const [editingDayIdx, setEditingDayIdx] = useState(-1);
+  const pageContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!session) {
@@ -46,6 +47,10 @@ export const CreateBlock = () => {
     if (innerWidth && innerWidth > theme.breakpoints.values["sm"])
       router.push("/dashboard");
   }, [innerWidth]);
+
+  useEffect(() => {
+    pageContainerRef.current?.scrollTo({ top: 0 });
+  }, [editingDayIdx]);
 
   const handleSubmit = () => {
     toggleScreenState("fetching", true);
@@ -101,6 +106,7 @@ export const CreateBlock = () => {
       <div
         className="d-flex flex-column align-items-center w-100 overflow-scroll"
         style={{ height: "100dvh", padding: "65px 15px 140px" }}
+        ref={pageContainerRef}
       >
         {editingDayIdx === -1 ? (
           <EditWeek setEditingDay={setEditingDayIdx} errors={templateErrors} />

@@ -1,5 +1,12 @@
 import { Exercise, Set } from "@/lib/types";
-import { Dispatch, SetStateAction, useCallback, useMemo } from "react";
+import {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
 import { COLORS } from "@/lib/colors";
 import { BiPlusCircle } from "react-icons/bi";
 import { FaTimes } from "react-icons/fa";
@@ -20,6 +27,7 @@ interface Props {
       | undefined
     >
   >;
+  containerRef: RefObject<HTMLDivElement | null>;
 }
 
 export const SetChips = ({
@@ -27,8 +35,19 @@ export const SetChips = ({
   isExerciseComplete,
   isCurrentExercise,
   setExerciseToEdit,
+  containerRef,
 }: Props) => {
   const { findLatestOccurrence } = useCompletedExercises();
+
+  useEffect(() => {
+    const el = document.getElementById(exercise.name + exercise.apparatus);
+
+    if (el && isCurrentExercise)
+      containerRef.current?.scrollTo({
+        top: el.offsetTop - 65,
+        behavior: "smooth",
+      });
+  }, [exercise, isCurrentExercise]);
 
   const nextSetIdx = useMemo(() => {
     if (!isCurrentExercise) return -1;

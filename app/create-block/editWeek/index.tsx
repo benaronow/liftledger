@@ -1,7 +1,7 @@
 import { Day } from "@/lib/types";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { LabeledInput } from "../../components/LabeledInput";
 import { AddButton } from "../../components/AddButton";
 import { DayInfo } from "./DayInfo";
@@ -27,6 +27,18 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
     useBlock();
   const { getNewSetsFromLatest } = useCompletedExercises();
   const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
+
+  const blockStarted = useMemo(
+    () =>
+      curBlock?.weeks.some((week) =>
+        week.some((day) =>
+          day.exercises.some((exercise) =>
+            exercise.sets.some((set) => set.completed || set.skipped),
+          ),
+        ),
+      ),
+    [curBlock],
+  );
 
   const [gymDialogOpen, setGymDialogOpen] = useState<boolean>(false);
   const noGyms = !curUser?.gyms || curUser?.gyms?.length === 0;
@@ -199,7 +211,7 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
               ...(noGyms ? ["Please add a gym"] : []),
               ...(curUser?.gyms || []),
             ]}
-            disabled={noGyms}
+            disabled={noGyms || blockStarted}
             onChangeSelect={handleChangePrimaryGym}
             trailing={
               <ActionButton
