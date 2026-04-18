@@ -12,12 +12,14 @@ import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { ActionsFooter, FooterAction } from "../components/ActionsFooter";
 import { COLORS } from "@/lib/colors";
+import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
 import { SubmitSetDialog } from "./submitSetDialog";
 import { AddButton } from "../components/AddButton";
 import { AddExerciseDialog } from "./addExerciseDialog";
 import { RiTimerLine } from "react-icons/ri";
 import { useTimer } from "../providers/TimerProvider";
 import { LuWarehouse } from "react-icons/lu";
+import { FaTrash } from "react-icons/fa";
 import { EditGymDialog } from "./EditGymDialog";
 import { useCompletedExercises } from "../providers/CompletedExercisesProvider";
 
@@ -37,6 +39,7 @@ export const CompleteDay = () => {
   );
   const [editing, setEditing] = useState(false);
   const [editGymDialogOpen, setEditGymDialogOpen] = useState<boolean>(false);
+  const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
   const pageContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -158,7 +161,7 @@ export const CompleteDay = () => {
         variant: "primary",
       },
     ],
-    [setEditing, finishDay, isDayComplete],
+    [editing, setEditing, finishDay, isDayComplete],
   );
 
   if (!exercises.length || isFetching) return <Spinner />;
@@ -195,13 +198,41 @@ export const CompleteDay = () => {
                 style={{ boxShadow: "0px 5px 10px #131314" }}
               >
                 <div
-                  className="w-100 d-flex align-items-center justify-content-center px-2"
+                  className="w-100 d-flex align-items-center justify-content-center px-2 position-relative"
                   style={{
                     background: isExerciseComplete(exercise)
                       ? COLORS.success
                       : COLORS.dark,
                   }}
                 >
+                  {exercise.addedOn && (
+                    <span
+                      className="position-absolute top-0 end-0 px-2 py-1 fw-semibold"
+                      style={{
+                        fontSize: "10px",
+                        background: COLORS.container,
+                        color: "white",
+                        borderBottomLeftRadius: 6,
+                        letterSpacing: "0.05em",
+                      }}
+                    >
+                      ADD-ON
+                    </span>
+                  )}
+                  {editing && exercise.addedOn && (
+                    <button
+                      className="border-0 rounded d-flex align-items-center justify-content-center position-absolute start-0 ms-2"
+                      style={{
+                        background: COLORS.danger,
+                        color: "white",
+                        width: 28,
+                        height: 28,
+                      }}
+                      onClick={() => setDeletingIdx(idx)}
+                    >
+                      <FaTrash fontSize={12} />
+                    </button>
+                  )}
                   <div
                     className="w-100 d-flex flex-column align-items-center p-2 text-nowrap text-white fw-semibold"
                     style={{ fontFamily: "League+Spartan", fontSize: "16px" }}
@@ -258,6 +289,12 @@ export const CompleteDay = () => {
       <EditGymDialog
         open={editGymDialogOpen}
         onClose={() => setEditGymDialogOpen(false)}
+        setExercisesState={setExercisesState}
+      />
+      <DeleteExerciseDialog
+        deletingIdx={deletingIdx}
+        setDeletingIdx={setDeletingIdx}
+        exercisesState={exercisesState}
         setExercisesState={setExercisesState}
       />
       <ActionsFooter actions={footerActions} />
