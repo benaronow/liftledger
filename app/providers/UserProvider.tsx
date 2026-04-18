@@ -22,6 +22,8 @@ interface UserContextType {
   createUser: (user: Partial<User>) => Promise<void>;
   updateUser: (user: User) => Promise<void>;
   deleteUser: (email: string) => Promise<void>;
+  addCustomExercise: (value: string) => Promise<void>;
+  addCustomApparatus: (value: string) => Promise<void>;
   introMessageOpen: boolean;
   setIntroMessageOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -34,6 +36,8 @@ const defaultUserContext: UserContextType = {
   createUser: async () => {},
   updateUser: async () => {},
   deleteUser: async () => {},
+  addCustomExercise: async () => {},
+  addCustomApparatus: async () => {},
   introMessageOpen: false,
   setIntroMessageOpen: () => {},
 };
@@ -78,6 +82,22 @@ export const UserProvider = ({
     if (result) setCurUser(result);
   };
 
+  const addCustomExercise = async (value: string) => {
+    if (!curUser || curUser.customExercises?.includes(value)) return;
+    await updateUser({
+      ...curUser,
+      customExercises: [...(curUser.customExercises ?? []), value],
+    });
+  };
+
+  const addCustomApparatus = async (value: string) => {
+    if (!curUser || curUser.customApparatuses?.includes(value)) return;
+    await updateUser({
+      ...curUser,
+      customApparatuses: [...(curUser.customApparatuses ?? []), value],
+    });
+  };
+
   const deleteUser = async (uid: string) => {
     const res = await api.delete(`${USER_API_URL}/${uid}`);
     const result: { acknowledged: boolean; deletedCount: number } = res.data;
@@ -95,6 +115,8 @@ export const UserProvider = ({
         createUser,
         updateUser,
         deleteUser,
+        addCustomExercise,
+        addCustomApparatus,
         introMessageOpen,
         setIntroMessageOpen,
       }}

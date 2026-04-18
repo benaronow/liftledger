@@ -188,6 +188,8 @@ export interface User {
   timerEnd?: Date;
   timerPresets: TimerPresets;
   gyms: string[];
+  customExercises: string[];
+  customApparatuses: string[];
 }
 
 export interface GetParams {

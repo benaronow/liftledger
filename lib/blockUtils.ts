@@ -4,15 +4,23 @@ export const getAvailableOptions = (
   curExercise: Exercise,
   exercises: Exercise[],
   type: "name" | "apparatus",
+  customOptions: string[] = [],
 ) => {
   const takenExercises = exercises.filter(
     (e) =>
       !(e.name === curExercise.name && e.apparatus === curExercise.apparatus),
   );
 
-  return Object.values(
+  const baseOptions = Object.values(
     type === "name" ? ExerciseName : ExerciseApparatus,
-  ).filter(
+  );
+
+  const allOptions = [
+    ...baseOptions,
+    ...customOptions.filter((c) => !baseOptions.some((b) => b.toLowerCase() === c.toLowerCase())),
+  ];
+
+  return allOptions.filter(
     (o) =>
       !takenExercises.find((e) => {
         if (type === "name")

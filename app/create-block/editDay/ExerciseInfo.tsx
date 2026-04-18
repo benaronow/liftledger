@@ -1,5 +1,6 @@
 import { ArrowBackIosNew } from "@mui/icons-material";
 import { LabeledInput } from "../../components/LabeledInput";
+import { SearchableSelect } from "../../components/SearchableSelect";
 import { FaTrash } from "react-icons/fa";
 import { ChangeEvent, useCallback, useMemo } from "react";
 import {
@@ -10,6 +11,7 @@ import {
   WeightType,
 } from "@/lib/types";
 import { useBlock } from "@/app/providers/BlockProvider";
+import { useUser } from "@/app/providers/UserProvider";
 import { getAvailableOptions } from "@/lib/blockUtils";
 import { COLORS } from "@/lib/colors";
 import { Info, InfoAction } from "../Info";
@@ -31,6 +33,7 @@ export const ExerciseInfo = ({
 }: Props) => {
   const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
     useBlock();
+  const { curUser, addCustomExercise, addCustomApparatus } = useUser();
   const { getNewSetsFromLatest, getUpdatedExercise } = useCompletedExercises();
   const pointFive = useMemo(
     () => exercise.sets[0]?.weight % 1 === 0.5,
@@ -158,9 +161,9 @@ export const ExerciseInfo = ({
   }, [exercise]);
 
   const switchExercise = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>, type: ExerciseInfoName) => {
+    (value: string, type: ExerciseInfoName) => {
       const updatedExercise = getUpdatedExercise(
-        e.target.value as ExerciseName | ExerciseApparatus | WeightType,
+        value as ExerciseName | ExerciseApparatus | WeightType,
         type,
         exercise,
       );
@@ -172,27 +175,31 @@ export const ExerciseInfo = ({
 
   return (
     <Info title={`Exercise ${eIdx + 1}`} actions={infoActions}>
-      <LabeledInput
+      <SearchableSelect
         label="Exercise:"
-        textValue={exercise.name}
+        value={exercise.name}
         options={getAvailableOptions(
           exercise,
           templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
           "name",
+          curUser?.customExercises,
         )}
-        includeEmptyOption
-        onChangeSelect={(e) => switchExercise(e, "name")}
+        onSelect={(value) => switchExercise(value, "name")}
+        onAddCustom={addCustomExercise}
+        className="mb-0"
       />
-      <LabeledInput
+      <SearchableSelect
         label="Apparatus:"
-        textValue={exercise.apparatus}
+        value={exercise.apparatus}
         options={getAvailableOptions(
           exercise,
           templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
           "apparatus",
+          curUser?.customApparatuses,
         )}
-        includeEmptyOption
-        onChangeSelect={(e) => switchExercise(e, "apparatus")}
+        onSelect={(value) => switchExercise(value, "apparatus")}
+        onAddCustom={addCustomApparatus}
+        className="mb-0"
       />
       <div className="d-flex w-100 gap-3">
         <LabeledInput
@@ -250,7 +257,7 @@ export const ExerciseInfo = ({
             textValue={exercise.weightType}
             options={Object.values(WeightType)}
             includeEmptyOption
-            onChangeSelect={(e) => switchExercise(e, "weightType")}
+            onChangeSelect={(e) => switchExercise(e.target.value, "weightType")}
           />
         </div>
       )}

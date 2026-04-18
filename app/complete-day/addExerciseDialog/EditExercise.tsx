@@ -7,7 +7,9 @@ import {
 import { Dispatch, SetStateAction, useCallback } from "react";
 import { getAvailableOptions } from "@/lib/blockUtils";
 import { LabeledInput } from "@/app/components/LabeledInput";
+import { SearchableSelect } from "@/app/components/SearchableSelect";
 import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
+import { useUser } from "@/app/providers/UserProvider";
 
 interface Props {
   exerciseState: Exercise;
@@ -16,12 +18,6 @@ interface Props {
 }
 
 export type ExerciseInfoName = "name" | "apparatus" | "weightType";
-interface ExerciseInfo {
-  name: ExerciseInfoName;
-  title: string;
-  value: ExerciseName | ExerciseApparatus | WeightType;
-  options: (string | WeightType)[];
-}
 
 export const EditExercise = ({
   exerciseState,
@@ -29,32 +25,12 @@ export const EditExercise = ({
   exercisesState,
 }: Props) => {
   const { getUpdatedExercise } = useCompletedExercises();
-
-  const exerciseInfoMap: ExerciseInfo[] = [
-    {
-      name: "name",
-      title: "Exercise:",
-      value: exerciseState.name as ExerciseName,
-      options: getAvailableOptions(exerciseState, exercisesState, "name"),
-    },
-    {
-      name: "apparatus",
-      title: "Apparatus:",
-      value: exerciseState.apparatus as ExerciseApparatus,
-      options: getAvailableOptions(exerciseState, exercisesState, "apparatus"),
-    },
-    {
-      name: "weightType",
-      title: "Weight Type:",
-      value: exerciseState.weightType as WeightType,
-      options: Object.values(WeightType),
-    },
-  ];
+  const { curUser, addCustomExercise, addCustomApparatus } = useUser();
 
   const switchExercise = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>, type: ExerciseInfoName) => {
+    (value: string, type: ExerciseInfoName) => {
       const updatedExercise = getUpdatedExercise(
-        e.target.value as ExerciseName | ExerciseApparatus | WeightType,
+        value as ExerciseName | ExerciseApparatus | WeightType,
         type,
         exerciseState,
       );
@@ -66,17 +42,40 @@ export const EditExercise = ({
 
   return (
     <>
-      {exerciseInfoMap.map((exerciseInfo, i) => (
-        <LabeledInput
-          key={exerciseInfo.name}
-          label={exerciseInfo.title}
-          textValue={exerciseInfo.value}
-          options={exerciseInfo.options}
-          includeEmptyOption
-          onChangeSelect={(e) => switchExercise(e, exerciseInfo.name)}
-          className={i !== exerciseInfoMap.length - 1 ? "mb-2" : "mb-1"}
-        />
-      ))}
+      <SearchableSelect
+        label="Exercise:"
+        value={exerciseState.name}
+        options={getAvailableOptions(
+          exerciseState,
+          exercisesState,
+          "name",
+          curUser?.customExercises,
+        )}
+        onSelect={(value) => switchExercise(value, "name")}
+        onAddCustom={addCustomExercise}
+        className="mb-2"
+      />
+      <SearchableSelect
+        label="Apparatus:"
+        value={exerciseState.apparatus}
+        options={getAvailableOptions(
+          exerciseState,
+          exercisesState,
+          "apparatus",
+          curUser?.customApparatuses,
+        )}
+        onSelect={(value) => switchExercise(value, "apparatus")}
+        onAddCustom={addCustomApparatus}
+        className="mb-2"
+      />
+      <LabeledInput
+        label="Weight Type:"
+        textValue={exerciseState.weightType}
+        options={Object.values(WeightType)}
+        includeEmptyOption
+        onChangeSelect={(e) => switchExercise(e.target.value, "weightType")}
+        className="mb-1"
+      />
     </>
   );
 };
