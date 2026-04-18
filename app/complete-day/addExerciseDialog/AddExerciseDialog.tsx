@@ -19,7 +19,7 @@ export const AddExerciseDialog = ({
   onClose,
 }: Props) => {
   const { curBlock, updateBlock } = useBlock();
-  const [exerciseState, setExerciseState] = useState<Exercise>({
+  const [newExercise, setNewExercise] = useState<Exercise>({
     name: "",
     apparatus: "",
     gym: curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym || "",
@@ -36,7 +36,7 @@ export const AddExerciseDialog = ({
         {
           ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
           exercises,
-        }
+        },
       );
 
       const newBlock: Block = {
@@ -49,7 +49,7 @@ export const AddExerciseDialog = ({
   };
 
   const handleSubmitExercise = () => {
-    const updatedExercises = exercisesState.toSpliced(addIdx, 0, exerciseState);
+    const updatedExercises = exercisesState.toSpliced(addIdx, 0, newExercise);
     setExercisesState(updatedExercises);
     saveExercises(updatedExercises);
     onClose();
@@ -60,9 +60,9 @@ export const AddExerciseDialog = ({
       icon: <FaSave fontSize={28} />,
       onClick: handleSubmitExercise,
       disabled:
-        exerciseState.name === "" ||
-        exerciseState.apparatus === "" ||
-        exerciseState.weightType === "",
+        newExercise.name === "" ||
+        newExercise.apparatus === "" ||
+        newExercise.weightType === "",
       variant: "primary",
     },
   ];
@@ -75,8 +75,8 @@ export const AddExerciseDialog = ({
       actions={editActions}
     >
       <EditExercise
-        exerciseState={exerciseState}
-        setExerciseState={setExerciseState}
+        newExercise={newExercise}
+        setNewExercise={setNewExercise}
         exercisesState={exercisesState}
       />
     </ActionDialog>

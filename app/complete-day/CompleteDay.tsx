@@ -15,7 +15,7 @@ import { COLORS } from "@/lib/colors";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
 import { SubmitSetDialog } from "./submitSetDialog";
 import { AddButton } from "../components/AddButton";
-import { AddExerciseDialog } from "./addExerciseDialog";
+import { AddExerciseDialog } from "./AddExerciseDialog/AddExerciseDialog";
 import { RiTimerLine } from "react-icons/ri";
 import { useTimer } from "../providers/TimerProvider";
 import { LuWarehouse } from "react-icons/lu";

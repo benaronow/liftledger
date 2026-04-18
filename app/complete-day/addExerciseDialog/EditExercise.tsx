@@ -10,18 +10,17 @@ import { LabeledInput } from "@/app/components/LabeledInput";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
 import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
 import { useUser } from "@/app/providers/UserProvider";
+import { ExerciseInfoName } from "@/app/create-block/editDay/ExerciseInfo";
 
 interface Props {
-  exerciseState: Exercise;
-  setExerciseState: Dispatch<SetStateAction<Exercise>>;
+  newExercise: Exercise;
+  setNewExercise: Dispatch<SetStateAction<Exercise>>;
   exercisesState: Exercise[];
 }
 
-export type ExerciseInfoName = "name" | "apparatus" | "weightType";
-
 export const EditExercise = ({
-  exerciseState,
-  setExerciseState,
+  newExercise,
+  setNewExercise,
   exercisesState,
 }: Props) => {
   const { getUpdatedExercise } = useCompletedExercises();
@@ -32,21 +31,21 @@ export const EditExercise = ({
       const updatedExercise = getUpdatedExercise(
         value as ExerciseName | ExerciseApparatus | WeightType,
         type,
-        exerciseState,
+        newExercise,
       );
 
-      setExerciseState(updatedExercise);
+      setNewExercise(updatedExercise);
     },
-    [getUpdatedExercise, exerciseState, setExerciseState],
+    [getUpdatedExercise, newExercise, setNewExercise],
   );
 
   return (
     <>
       <SearchableSelect
         label="Exercise:"
-        value={exerciseState.name}
+        value={newExercise.name}
         options={getAvailableOptions(
-          exerciseState,
+          newExercise,
           exercisesState,
           "name",
           curUser?.customExercises,
@@ -57,9 +56,9 @@ export const EditExercise = ({
       />
       <SearchableSelect
         label="Apparatus:"
-        value={exerciseState.apparatus}
+        value={newExercise.apparatus}
         options={getAvailableOptions(
-          exerciseState,
+          newExercise,
           exercisesState,
           "apparatus",
           curUser?.customApparatuses,
@@ -70,7 +69,7 @@ export const EditExercise = ({
       />
       <LabeledInput
         label="Weight Type:"
-        textValue={exerciseState.weightType}
+        textValue={newExercise.weightType}
         options={Object.values(WeightType)}
         includeEmptyOption
         onChangeSelect={(e) => switchExercise(e.target.value, "weightType")}

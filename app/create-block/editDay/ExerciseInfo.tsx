@@ -15,8 +15,9 @@ import { useUser } from "@/app/providers/UserProvider";
 import { getAvailableOptions } from "@/lib/blockUtils";
 import { COLORS } from "@/lib/colors";
 import { Info, InfoAction } from "../Info";
-import { ExerciseInfoName } from "@/app/complete-day/addExerciseDialog/EditExercise";
 import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
+
+export type ExerciseInfoName = "name" | "apparatus" | "weightType";
 
 interface Props {
   exercise: Exercise;
