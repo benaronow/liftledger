@@ -14,11 +14,9 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useUser } from "./UserProvider";
+import { USER_API_URL, useUser } from "./UserProvider";
 import api from "@/lib/config";
 import { useBlock } from "./BlockProvider";
-
-const COMPLETED_EXERCISES_API_URL = "/api/completedExercises";
 
 interface CompletedExercisesContextType {
   completedExercises: {
@@ -66,7 +64,7 @@ export const CompletedExercisesProvider = ({
 
   const getCompletedExercises = async (userId: string) => {
     setCompletedExercisesLoading(true);
-    const res = await api.get(`${COMPLETED_EXERCISES_API_URL}/${userId}`);
+    const res = await api.get(`${USER_API_URL}/${userId}/completedExercises`);
     const result: {
       current: Exercise[];
       previous: ExerciseWithDate[];

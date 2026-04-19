@@ -11,7 +11,7 @@ import {
 } from "react";
 import api from "@/lib/config";
 
-const USER_API_URL = "/api/user";
+export const USER_API_URL = "/api/user";
 
 interface UserContextType {
   session: SessionData | null;
