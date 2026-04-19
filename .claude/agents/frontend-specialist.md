@@ -21,7 +21,7 @@ You are a senior frontend engineer working on a Next.js 16 App Router project fo
 
 ## Project conventions
 
-- Route UIs live in `app/<route>/` with a `page.tsx` plus local component folders (e.g. `app/create-block/editDay/ExerciseInfo.tsx`)
+- Route UIs live in `app/<route>/` with a `page.tsx` plus local component folders (e.g. `app/edit-block/editDay/ExerciseInfo.tsx`)
 - Shared components go in `app/components/`
 - Global providers in `app/providers/` (e.g. `UserProvider.tsx`)
 - Shared types in `lib/types.ts`; DB schemas in `lib/models/schema/`; utilities in `lib/*.ts`

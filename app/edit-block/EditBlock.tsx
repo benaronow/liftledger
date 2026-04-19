@@ -2,33 +2,26 @@
 
 import { RouteType } from "@/lib/types";
 import { useTheme } from "@mui/material";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { EditDay } from "./editDay";
-import { EditWeek } from "./editWeek";
+import { useEffect, useRef } from "react";
+import { EditDay } from "./EditDay";
+import { EditWeek } from "./EditWeek";
 import { useRouter } from "next/navigation";
 import { useScreenState } from "@/app/providers/ScreenStateProvider";
 import { Spinner } from "../components/spinner";
 import { useUser } from "@/app/providers/UserProvider";
-import { useBlock } from "../providers/BlockProvider";
 import { FaSave } from "react-icons/fa";
 import { ArrowBackIosNew } from "@mui/icons-material";
 import { ActionsFooter, FooterAction } from "../components/ActionsFooter";
+import { SaveBlockDialog } from "./SaveBlockDialog";
+import { useEditBlock } from "./EditBlockProvider";
 
-export const CreateBlock = () => {
+export const EditBlock = () => {
   const router = useRouter();
   const { curUser, session } = useUser();
-  const {
-    curBlock,
-    templateBlock,
-    unsetTemplateBlock,
-    editingWeekIdx,
-    setEditingWeekIdx,
-    createBlock,
-    updateBlock,
-  } = useBlock();
   const { innerWidth, isFetching, toggleScreenState } = useScreenState();
   const theme = useTheme();
-  const [editingDayIdx, setEditingDayIdx] = useState(-1);
+  const { editingDayIdx, setEditingDayIdx, setSaveDialogOpen, templateErrors } =
+    useEditBlock();
   const pageContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -52,37 +45,6 @@ export const CreateBlock = () => {
     pageContainerRef.current?.scrollTo({ top: 0 });
   }, [editingDayIdx]);
 
-  const handleSubmit = () => {
-    toggleScreenState("fetching", true);
-    if (curBlock) {
-      updateBlock(templateBlock);
-    } else {
-      createBlock(templateBlock);
-    }
-    unsetTemplateBlock();
-    setEditingWeekIdx(0);
-    router.push("/dashboard");
-  };
-
-  const templateErrors = useMemo(() => {
-    const errors: string[] = [];
-    if (!templateBlock.name) errors.push("Block name missing");
-    if (templateBlock.length === 0) errors.push("Block length too short");
-    if (!templateBlock.primaryGym) errors.push("Primary gym missing");
-    for (const day of templateBlock.weeks[editingWeekIdx]) {
-      for (const exercise of day.exercises) {
-        if (
-          !exercise.name ||
-          !exercise.apparatus ||
-          !exercise.weightType ||
-          exercise.sets.length === 0
-        )
-          errors.push(day.name);
-      }
-    }
-    return errors;
-  }, [templateBlock, editingWeekIdx]);
-
   const footerActions: FooterAction[] = [
     (editingDayIdx !== -1
       ? {
@@ -94,7 +56,7 @@ export const CreateBlock = () => {
       : {
           icon: <FaSave style={{ fontSize: "18px" }} />,
           label: "Save",
-          onClick: handleSubmit,
+          onClick: () => setSaveDialogOpen(true),
           disabled: templateErrors.length > 0,
           variant: "primary",
         }) as FooterAction,
@@ -109,12 +71,9 @@ export const CreateBlock = () => {
         style={{ height: "100dvh", padding: "65px 15px 140px" }}
         ref={pageContainerRef}
       >
-        {editingDayIdx === -1 ? (
-          <EditWeek setEditingDay={setEditingDayIdx} errors={templateErrors} />
-        ) : (
-          <EditDay editingDayIdx={editingDayIdx} />
-        )}
+        {editingDayIdx === -1 ? <EditWeek /> : <EditDay />}
       </div>
+      <SaveBlockDialog />
       <ActionsFooter actions={footerActions} />
     </>
   );

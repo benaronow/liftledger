@@ -78,7 +78,7 @@ export const History = () => {
   const handleCreateFromTemplate = (block: Block) => {
     setTemplateBlock(getTemplateFromBlock(block));
     setEditingWeekIdx(0);
-    router.push("/create-block");
+    router.push("/edit-block");
   };
 
   const completedBlocks = curUser?.blocks

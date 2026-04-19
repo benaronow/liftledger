@@ -1,21 +1,16 @@
 import { Exercise } from "@/lib/types";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent } from "react";
 import { AddButton } from "../../components/AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { LabeledInput } from "@/app/components/LabeledInput";
-import { DialogAction, ActionDialog } from "@/app/components/ActionDialog";
-import { IoArrowBack } from "react-icons/io5";
-import { FaTrash } from "react-icons/fa";
+import { useEditBlock } from "../EditBlockProvider";
+import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
 
-interface EditDayProps {
-  editingDayIdx: number;
-}
-
-export const EditDay = ({ editingDayIdx }: EditDayProps) => {
+export const EditDay = () => {
   const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
     useBlock();
-  const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
+  const { editingDayIdx } = useEditBlock();
 
   const handleDayNameInput = (
     e: ChangeEvent<HTMLInputElement>,
@@ -66,41 +61,6 @@ export const EditDay = ({ editingDayIdx }: EditDayProps) => {
     });
   };
 
-  const handleRemoveExercise = () => {
-    if (templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises.length > 1)
-      setTemplateBlock({
-        ...templateBlock,
-        weeks: templateBlock.weeks.map((week, wIdx) =>
-          wIdx === editingWeekIdx
-            ? week.map((day, dIdx) =>
-                dIdx === editingDayIdx && deletingIdx !== undefined
-                  ? {
-                      ...day,
-                      exercises: day.exercises.toSpliced(deletingIdx, 1),
-                    }
-                  : day,
-              )
-            : week,
-        ),
-      });
-  };
-
-  const deleteActions: DialogAction[] = [
-    {
-      icon: <IoArrowBack fontSize={28} />,
-      onClick: () => setDeletingIdx(undefined),
-      variant: "dangerInverted",
-    },
-    {
-      icon: <FaTrash fontSize={26} />,
-      onClick: () => {
-        handleRemoveExercise();
-        setDeletingIdx(undefined);
-      },
-      variant: "danger",
-    },
-  ];
-
   return (
     <>
       <div
@@ -127,12 +87,7 @@ export const EditDay = ({ editingDayIdx }: EditDayProps) => {
               }
             >
               <AddButton onClick={() => handleAddExercise(idx)} />
-              <ExerciseInfo
-                exercise={exercise}
-                eIdx={idx}
-                editingDayIdx={editingDayIdx}
-                setDeletingIdx={setDeletingIdx}
-              />
+              <ExerciseInfo exercise={exercise} eIdx={idx} />
             </div>
           ),
         )}
@@ -145,21 +100,7 @@ export const EditDay = ({ editingDayIdx }: EditDayProps) => {
           }
         />
       </div>
-      <ActionDialog
-        open={deletingIdx !== undefined}
-        onClose={() => setDeletingIdx(undefined)}
-        title={"Delete Exercise"}
-        actions={deleteActions}
-      >
-        <div className="d-flex flex-column">
-          <span className="text-white text-wrap mb-4">
-            Are you sure you want to delete this exercise?
-          </span>
-          <strong className="text-white text-wrap">
-            This action cannot be undone.
-          </strong>
-        </div>
-      </ActionDialog>
+      <DeleteExerciseDialog />
     </>
   );
 };

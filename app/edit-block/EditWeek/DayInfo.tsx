@@ -5,24 +5,18 @@ import { FaTrash } from "react-icons/fa";
 import { useBlock } from "@/app/providers/BlockProvider";
 import { Info, InfoAction } from "../Info";
 import { useMemo } from "react";
+import { useEditBlock } from "../EditBlockProvider";
 
 interface Props {
   day: Day;
   dIdx: number;
-  setEditingDay: (day: number) => void;
-  setDeletingIdx: React.Dispatch<React.SetStateAction<number | undefined>>;
   hasErrors: boolean;
 }
 
-export const DayInfo = ({
-  day,
-  dIdx,
-  setEditingDay,
-  setDeletingIdx,
-  hasErrors,
-}: Props) => {
+export const DayInfo = ({ day, dIdx, hasErrors }: Props) => {
   const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
     useBlock();
+  const { setEditingDayIdx, setDeletingDayIdx } = useEditBlock();
 
   const handleMoveDay = (day: Day, dayIdx: number, type: "up" | "down") => {
     if ((dayIdx !== 0 || type !== "up") && (dayIdx !== 6 || type !== "down")) {
@@ -37,10 +31,6 @@ export const DayInfo = ({
         ),
       });
     }
-  };
-
-  const handleEditDay = (dayIdx: number) => {
-    setEditingDay(dayIdx);
   };
 
   const handleDuplicateDay = (dayIdx: number) => {
@@ -85,7 +75,7 @@ export const DayInfo = ({
       icon: (
         <BiSolidEdit style={{ transform: "rotate(90deg)", fontSize: "22px" }} />
       ),
-      onClick: () => handleEditDay(dIdx),
+      onClick: () => setEditingDayIdx(dIdx),
       variant: "primary",
     },
     {
@@ -97,7 +87,7 @@ export const DayInfo = ({
     {
       icon: <FaTrash fontSize="medium" />,
       disabled: templateBlock.weeks[editingWeekIdx].length === 1,
-      onClick: () => setDeletingIdx(dIdx),
+      onClick: () => setDeletingDayIdx(dIdx),
       variant: "danger",
     },
   ];

@@ -16,26 +16,21 @@ import { getAvailableOptions } from "@/lib/blockUtils";
 import { COLORS } from "@/lib/colors";
 import { Info, InfoAction } from "../Info";
 import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
+import { useEditBlock } from "../EditBlockProvider";
 
 export type ExerciseInfoName = "name" | "apparatus" | "weightType";
 
 interface Props {
   exercise: Exercise;
   eIdx: number;
-  editingDayIdx: number;
-  setDeletingIdx: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
-export const ExerciseInfo = ({
-  exercise,
-  eIdx,
-  editingDayIdx,
-  setDeletingIdx,
-}: Props) => {
+export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
   const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
     useBlock();
   const { curUser, addCustomExercise, addCustomApparatus } = useUser();
   const { getNewSetsFromLatest, getUpdatedExercise } = useCompletedExercises();
+  const { editingDayIdx, setDeletingExerciseIdx } = useEditBlock();
   const pointFive = useMemo(
     () => exercise.sets[0]?.weight % 1 === 0.5,
     [exercise.sets],
@@ -152,7 +147,7 @@ export const ExerciseInfo = ({
       disabled:
         templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises.length ===
         1,
-      onClick: () => setDeletingIdx(eIdx),
+      onClick: () => setDeletingExerciseIdx(eIdx),
       variant: "danger",
     },
   ];

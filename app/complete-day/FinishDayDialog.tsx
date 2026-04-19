@@ -36,6 +36,7 @@ export const FinishDayDialog = () => {
 
     await updateBlock(newBlock);
     getCompletedExercises(curUser?._id || "");
+    setFinishing(false);
     router.push("/dashboard");
   }, [curBlock, updateBlock, router, curUser, getCompletedExercises]);
 

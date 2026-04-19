@@ -1,30 +1,24 @@
 import { Day } from "@/lib/types";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
+import React, { ChangeEvent, useEffect, useMemo } from "react";
 import { LabeledInput } from "../../components/LabeledInput";
 import { AddButton } from "../../components/AddButton";
 import { DayInfo } from "./DayInfo";
 import { EMPTY_BLOCK, useBlock } from "@/app/providers/BlockProvider";
-import { IoArrowBack } from "react-icons/io5";
-import { FaTrash } from "react-icons/fa";
-import { DialogAction, ActionDialog } from "@/app/components/ActionDialog";
 import { useUser } from "@/app/providers/UserProvider";
+import { DeleteDayDialog } from "./DeleteDayDialog";
 import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
+import { useEditBlock } from "../EditBlockProvider";
 
-interface EditWeekProps {
-  setEditingDay: (day: number) => void;
-  errors: string[];
-}
-
-export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
+export const EditWeek = () => {
   const router = useRouter();
   const { curUser, updateUser } = useUser();
   const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
     useBlock();
   const { getNewSetsFromLatest } = useCompletedExercises();
-  const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
+  const { templateErrors } = useEditBlock();
 
   const blockStarted = useMemo(
     () =>
@@ -154,33 +148,6 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
     });
   };
 
-  const handleRemoveDay = () => {
-    setTemplateBlock({
-      ...templateBlock,
-      weeks: templateBlock.weeks.map((week, idx) =>
-        idx === editingWeekIdx && deletingIdx !== undefined
-          ? week.toSpliced(deletingIdx, 1)
-          : week,
-      ),
-    });
-  };
-
-  const deleteActions: DialogAction[] = [
-    {
-      icon: <IoArrowBack fontSize={28} />,
-      onClick: () => setDeletingIdx(undefined),
-      variant: "dangerInverted",
-    },
-    {
-      icon: <FaTrash fontSize={26} />,
-      onClick: () => {
-        handleRemoveDay();
-        setDeletingIdx(undefined);
-      },
-      variant: "danger",
-    },
-  ];
-
   return (
     <>
       <div
@@ -225,9 +192,7 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
               <DayInfo
                 day={day}
                 dIdx={idx}
-                setEditingDay={setEditingDay}
-                setDeletingIdx={setDeletingIdx}
-                hasErrors={errors.includes(day.name)}
+                hasErrors={templateErrors.includes(day.name)}
               />
             </React.Fragment>
           ))}
@@ -240,21 +205,7 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
           />
         )}
       </div>
-      <ActionDialog
-        open={deletingIdx !== undefined}
-        onClose={() => setDeletingIdx(undefined)}
-        title={"Delete Day"}
-        actions={deleteActions}
-      >
-        <div className="d-flex flex-column">
-          <span className="text-white text-wrap mb-4">
-            Are you sure you want to delete this day?
-          </span>
-          <strong className="text-white text-wrap">
-            This action cannot be undone.
-          </strong>
-        </div>
-      </ActionDialog>
+      <DeleteDayDialog />
     </>
   );
 };

@@ -10,7 +10,7 @@ import { LabeledInput } from "@/app/components/LabeledInput";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
 import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
 import { useUser } from "@/app/providers/UserProvider";
-import { ExerciseInfoName } from "@/app/create-block/editDay/ExerciseInfo";
+import { ExerciseInfoName } from "@/app/edit-block/EditDay/ExerciseInfo";
 
 interface Props {
   newExercise: Exercise;
