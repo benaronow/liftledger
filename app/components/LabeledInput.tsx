@@ -18,6 +18,9 @@ interface Props {
   width?: string | number;
   className?: string;
   trailing?: JSX.Element;
+  type?: string;
+  step?: string | number;
+  min?: string | number;
 }
 
 export const LabeledInput = ({
@@ -34,6 +37,9 @@ export const LabeledInput = ({
   width,
   className,
   trailing,
+  type,
+  step,
+  min,
 }: Props) => {
   return (
     <div className={`d-flex flex-column align-items-start w-100 ${className}`}>
@@ -56,6 +62,9 @@ export const LabeledInput = ({
               height: height ?? 35,
               width: width ?? "100%",
             }}
+            type={type}
+            step={step}
+            min={min}
             value={textValue}
             onChange={onChangeText}
             disabled={disabled}
@@ -82,7 +91,7 @@ export const LabeledInput = ({
         )}
         {options && onChangeSelect && (
           <FormSelect
-            className="w-100 p-1 border-0"
+            className="w-100 p-1 border-0 overflow-hidden text-truncate"
             value={textValue}
             onChange={onChangeSelect}
             style={{

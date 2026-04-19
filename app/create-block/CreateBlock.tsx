@@ -68,6 +68,7 @@ export const CreateBlock = () => {
     const errors: string[] = [];
     if (!templateBlock.name) errors.push("Block name missing");
     if (templateBlock.length === 0) errors.push("Block length too short");
+    if (!templateBlock.primaryGym) errors.push("Primary gym missing");
     for (const day of templateBlock.weeks[editingWeekIdx]) {
       for (const exercise of day.exercises) {
         if (

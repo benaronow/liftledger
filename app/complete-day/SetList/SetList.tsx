@@ -1,8 +1,6 @@
 import { Exercise, Set } from "@/lib/types";
 import {
-  Dispatch,
   RefObject,
-  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -13,31 +11,21 @@ import { FaTimes } from "react-icons/fa";
 import { ActionButton } from "../../components/ActionButton";
 import { ProgressIcon } from "./ProgressIcon";
 import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
+import { useCompleteDay } from "../CompleteDayProvider";
 
 interface Props {
   exercise: Exercise;
-  isExerciseComplete: boolean;
   isCurrentExercise: boolean;
-  setExerciseToEdit: Dispatch<
-    SetStateAction<
-      | {
-          setIdx: number | undefined;
-          exercise: Exercise;
-        }
-      | undefined
-    >
-  >;
   containerRef: RefObject<HTMLDivElement | null>;
 }
 
-export const SetChips = ({
+export const SetList = ({
   exercise,
-  isExerciseComplete,
   isCurrentExercise,
-  setExerciseToEdit,
   containerRef,
 }: Props) => {
   const { findLatestOccurrence } = useCompletedExercises();
+  const { isExerciseComplete, setExerciseToEdit } = useCompleteDay();
 
   useEffect(() => {
     const el = document.getElementById(exercise.name + exercise.apparatus);
@@ -47,7 +35,7 @@ export const SetChips = ({
         top: el.offsetTop - 65,
         behavior: "smooth",
       });
-  }, [exercise, isCurrentExercise]);
+  }, []);
 
   const nextSetIdx = useMemo(() => {
     if (!isCurrentExercise) return -1;
@@ -202,7 +190,7 @@ export const SetChips = ({
             exercise,
           })
         }
-        disabled={!isExerciseComplete || exerciseHasSkippedSets}
+        disabled={!isExerciseComplete(exercise) || exerciseHasSkippedSets}
       />
     </div>
   );

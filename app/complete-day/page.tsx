@@ -1,7 +1,12 @@
 import { CompleteDay } from "./CompleteDay";
+import { CompleteDayProvider } from "./CompleteDayProvider";
 
 const Page = () => {
-  return <CompleteDay />;
+  return (
+    <CompleteDayProvider>
+      <CompleteDay />
+    </CompleteDayProvider>
+  );
 };
 
 export default Page;

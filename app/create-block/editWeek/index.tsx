@@ -10,10 +10,8 @@ import { IoArrowBack } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 import { DialogAction, ActionDialog } from "@/app/components/ActionDialog";
 import { useUser } from "@/app/providers/UserProvider";
-import { ActionButton } from "@/app/components/ActionButton";
-import { AddGymDialog } from "@/app/create-block/editWeek/AddGymDialog";
-import { GrFormAdd } from "react-icons/gr";
 import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
+import { SearchableSelect } from "@/app/components/SearchableSelect";
 
 interface EditWeekProps {
   setEditingDay: (day: number) => void;
@@ -22,7 +20,7 @@ interface EditWeekProps {
 
 export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
   const router = useRouter();
-  const { curUser } = useUser();
+  const { curUser, updateUser } = useUser();
   const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
     useBlock();
   const { getNewSetsFromLatest } = useCompletedExercises();
@@ -39,9 +37,6 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
       ),
     [curBlock],
   );
-
-  const [gymDialogOpen, setGymDialogOpen] = useState<boolean>(false);
-  const noGyms = !curUser?.gyms || curUser?.gyms?.length === 0;
 
   useEffect(() => {
     if (templateBlock.primaryGym === undefined && curUser?.gyms?.length) {
@@ -110,8 +105,15 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
     });
   };
 
-  const handleChangePrimaryGym = (e: ChangeEvent<HTMLSelectElement>) => {
-    setPrimaryGym(e.target.value);
+  const handleAddGym = async (gym: string) => {
+    if (!curUser) return;
+
+    updateUser({
+      ...curUser,
+      gyms: [...(curUser?.gyms || []), gym],
+    });
+
+    setPrimaryGym(gym);
   };
 
   const handleAddDay = (idx: number) => {
@@ -204,23 +206,14 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
             textValue={templateBlock.length}
             onChangeText={handleLengthInput}
           />
-          <LabeledInput
-            label="Primary Gym: "
-            textValue={templateBlock.primaryGym ?? "Please add a gym"}
-            options={[
-              ...(noGyms ? ["Please add a gym"] : []),
-              ...(curUser?.gyms || []),
-            ]}
-            disabled={noGyms || blockStarted}
-            onChangeSelect={handleChangePrimaryGym}
-            trailing={
-              <ActionButton
-                icon={<GrFormAdd style={{ fontSize: "50px" }} />}
-                onClick={() => setGymDialogOpen(true)}
-                width={35}
-                className="ms-2"
-              ></ActionButton>
-            }
+          <SearchableSelect
+            label="Primary Gym:"
+            value={templateBlock.primaryGym ?? ""}
+            options={curUser?.gyms || []}
+            onSelect={(gym: string) => setPrimaryGym(gym)}
+            onAddCustom={handleAddGym}
+            disabled={blockStarted}
+            placeholder="Please select a gym"
           />
         </div>
         <div className="d-flex flex-column align-items-center gap-2 w-100">
@@ -262,11 +255,6 @@ export const EditWeek = ({ setEditingDay, errors }: EditWeekProps) => {
           </strong>
         </div>
       </ActionDialog>
-      <AddGymDialog
-        open={gymDialogOpen}
-        onClose={() => setGymDialogOpen(false)}
-        onAdd={(gym: string) => setPrimaryGym(gym)}
-      />
     </>
   );
 };

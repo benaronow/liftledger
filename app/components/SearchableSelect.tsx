@@ -10,6 +10,8 @@ interface Props {
   onSelect: (value: string) => void;
   onAddCustom?: (value: string) => Promise<void>;
   className?: string;
+  disabled?: boolean;
+  placeholder?: string;
 }
 
 export const SearchableSelect = ({
@@ -19,6 +21,8 @@ export const SearchableSelect = ({
   onSelect,
   onAddCustom,
   className,
+  disabled,
+  placeholder,
 }: Props) => {
   const [inputValue, setInputValue] = useState(value);
   const [open, setOpen] = useState(false);
@@ -96,6 +100,8 @@ export const SearchableSelect = ({
           }}
           onFocus={() => setOpen(true)}
           onBlur={handleBlur}
+          disabled={disabled}
+          placeholder={placeholder}
         />
         {open && (filtered.length > 0 || isCustom) && (
           <div

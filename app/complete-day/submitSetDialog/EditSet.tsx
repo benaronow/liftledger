@@ -1,51 +1,24 @@
 import { Exercise } from "@/lib/types";
-import {
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-  useMemo,
-  useState,
-} from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useMemo } from "react";
 import { LabeledInput } from "../../components/LabeledInput";
 import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
+import { useCompleteDay } from "../CompleteDayProvider";
 
 interface Props {
-  setIdx: number;
-  exerciseState: Exercise;
-  setExerciseState: Dispatch<SetStateAction<Exercise>>;
+  exerciseState?: Exercise;
+  setExerciseState: Dispatch<SetStateAction<Exercise | undefined>>;
 }
 
-export const EditSet = ({ setIdx, exerciseState, setExerciseState }: Props) => {
+export const EditSet = ({ exerciseState, setExerciseState }: Props) => {
+  const { exerciseToEdit: { setIdx } = { setIdx: 0 } } = useCompleteDay();
   const { findLatestOccurrence } = useCompletedExercises();
-  const [tempWeight, setTempWeight] = useState(
-    setIdx !== undefined ? `${exerciseState.sets[setIdx].weight || ""}` : "",
-  );
-  type ChangeSetType = "reps" | "weight" | "note";
-
-  const setInfoMap = [
-    {
-      name: "reps",
-      title: "Reps:",
-      value: setIdx !== undefined ? exerciseState?.sets[setIdx]?.reps : "",
-    },
-    {
-      name: "weight",
-      title: "Weight:",
-      value: tempWeight,
-    },
-    {
-      name: "note",
-      title: "Note:",
-      value: setIdx !== undefined ? exerciseState?.sets[setIdx]?.note : "",
-    },
-  ];
 
   const latestPreviousSetNote = useMemo(() => {
     return findLatestOccurrence(
       (e: Exercise) => {
         if (
-          e.name === exerciseState.name &&
-          e.apparatus === exerciseState.apparatus &&
+          e.name === exerciseState?.name &&
+          e.apparatus === exerciseState?.apparatus &&
           e.sets[setIdx]
         )
           return e.sets[setIdx].note !== "" ? e.sets[setIdx].note : "no note";
@@ -54,13 +27,15 @@ export const EditSet = ({ setIdx, exerciseState, setExerciseState }: Props) => {
     );
   }, [exerciseState, setIdx, findLatestOccurrence]);
 
-  const handleSetChange = (
+  const handleChange = (
     e: ChangeEvent<HTMLInputElement>,
-    type: ChangeSetType,
+    type: "reps" | "weight" | "note",
   ) => {
+    if (!exerciseState) return;
+
     setExerciseState({
       ...exerciseState,
-      sets: exerciseState?.sets.toSpliced(setIdx, 1, {
+      sets: exerciseState.sets.toSpliced(setIdx, 1, {
         ...exerciseState.sets[setIdx],
         reps:
           type === "reps"
@@ -74,12 +49,6 @@ export const EditSet = ({ setIdx, exerciseState, setExerciseState }: Props) => {
           type === "note" ? e.target.value : exerciseState.sets[setIdx].note,
       }),
     });
-
-    if (
-      type === "weight" &&
-      /^$|^-?(?:\d+\.\d*|\d+\.?|\.?\d+)$/.test(e.target.value)
-    )
-      setTempWeight(e.target.value);
   };
 
   return (
@@ -87,17 +56,27 @@ export const EditSet = ({ setIdx, exerciseState, setExerciseState }: Props) => {
       {latestPreviousSetNote && latestPreviousSetNote !== "no note" && (
         <span className="small mb-2 text-wrap text-white">{`Previous note: ${latestPreviousSetNote}`}</span>
       )}
-      {setInfoMap.map((setInfo, i) => (
-        <LabeledInput
-          key={setInfo.name}
-          label={setInfo.title}
-          textValue={setInfo.value}
-          onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
-            handleSetChange(e, setInfo.name as ChangeSetType);
-          }}
-          className={i !== setInfoMap.length - 1 ? "mb-2" : "mb-1"}
-        />
-      ))}
+      <LabeledInput
+        label="Reps:"
+        textValue={exerciseState?.sets[setIdx]?.reps || ""}
+        onChangeText={(e) => handleChange(e, "reps")}
+        className="mb-2"
+      />
+      <LabeledInput
+        label="Weight:"
+        textValue={exerciseState?.sets[setIdx]?.weight || ""}
+        type="number"
+        step="any"
+        min="0"
+        onChangeText={(e) => handleChange(e, "weight")}
+        className="mb-2"
+      />
+      <LabeledInput
+        label="Note:"
+        textValue={exerciseState?.sets[setIdx]?.note}
+        onChangeText={(e) => handleChange(e, "note")}
+        className="mb-1"
+      />
     </>
   );
 };

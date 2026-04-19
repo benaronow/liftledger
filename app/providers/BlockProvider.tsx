@@ -72,7 +72,7 @@ export const BlockContext = createContext(defaultBlockContext);
 export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
   const { session, curUser, getUser } = useUser();
   const [curBlock, setCurBlock] = useState<Block>();
-  const [curBlockLoading, setCurBlockLoading] = useState(true);
+  const [curBlockLoading, setCurBlockLoading] = useState(false);
   const [templateBlock, setTemplateBlock] = useState<Block>(EMPTY_BLOCK);
   const [editingWeekIdx, setEditingWeekIdx] = useState(0);
 
@@ -81,11 +81,8 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
   };
 
   const getCurBlock = async () => {
+    if (!curUser || !curUser.curBlock) return;
     setCurBlockLoading(true);
-    if (!curUser || !curUser.curBlock) {
-      setCurBlockLoading(false);
-      return;
-    }
     const res = await api.get(`${BLOCK_API_URL}/${curUser.curBlock}`);
     const result: Block = res.data;
     setCurBlock(result);
@@ -98,16 +95,19 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
 
   const createBlock = async (block: Block) => {
     if (!curUser || !curUser._id) return;
+    setCurBlockLoading(true);
     const res = await api.post(`${BLOCK_API_URL}`, {
       uid: curUser._id,
       block,
     });
     const result: Block = res.data;
     setCurBlock(result);
+    setCurBlockLoading(false);
   };
 
   const updateBlock = async (block: Block) => {
     if (!curUser || !curUser._id) return;
+    setCurBlockLoading(true);
     const res = await api.put(`${BLOCK_API_URL}/${block._id}`, {
       uid: curUser._id,
       block,
@@ -119,6 +119,7 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
     } else {
       setCurBlock(result.block);
     }
+    setCurBlockLoading(false);
   };
 
   return (
