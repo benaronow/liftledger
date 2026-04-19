@@ -29,6 +29,8 @@ interface CompleteDayContextModel {
   setEditing: Dispatch<SetStateAction<boolean>>;
   editGymDialogOpen: boolean;
   setEditGymDialogOpen: Dispatch<SetStateAction<boolean>>;
+  finishDayDialogOpen: boolean;
+  setFinishDayDialogOpen: Dispatch<SetStateAction<boolean>>;
   isExerciseComplete: (exercise: Exercise) => boolean;
   currentExIdx: number;
   isDayStarted: boolean;
@@ -44,6 +46,8 @@ const defaultCompleteDayContext: CompleteDayContextModel = {
   setEditing: () => {},
   editGymDialogOpen: false,
   setEditGymDialogOpen: () => {},
+  finishDayDialogOpen: false,
+  setFinishDayDialogOpen: () => {},
   isExerciseComplete: (exercise: Exercise) => !!exercise,
   currentExIdx: 0,
   isDayStarted: false,
@@ -61,6 +65,7 @@ export const CompleteDayProvider = ({ children }: PropsWithChildren) => {
   const [deletingIdx, setDeletingIdx] = useState<number>();
   const [editing, setEditing] = useState(false);
   const [editGymDialogOpen, setEditGymDialogOpen] = useState(false);
+  const [finishDayDialogOpen, setFinishDayDialogOpen] = useState(false);
 
   const exercises = useMemo(
     () =>
@@ -108,6 +113,8 @@ export const CompleteDayProvider = ({ children }: PropsWithChildren) => {
         setEditing,
         editGymDialogOpen,
         setEditGymDialogOpen,
+        finishDayDialogOpen,
+        setFinishDayDialogOpen,
         deletingIdx,
         setDeletingIdx,
         isExerciseComplete,

@@ -25,76 +25,95 @@ export const ActionsFooter = ({ actions }: Props) => {
 
   return (
     <div
-      className="position-absolute w-100"
+      className="d-flex flex-column position-absolute w-100"
       style={{
         bottom: 0,
         zIndex: 2,
-        background: COLORS.container,
+        background: COLORS.primary,
         borderRadius: "20px 20px 0 0",
         overflow: "hidden",
         boxShadow: "0px -4px 15px rgba(0,0,0,0.5)",
-        paddingBottom: "75px",
       }}
     >
-      <div
-        style={{
-          maxHeight: expanded ? "80px" : "0px",
-          overflow: "hidden",
-          transition: "max-height 0.2s ease",
-        }}
-      >
-        <div className="d-flex align-items-center justify-content-around px-3 py-2 gap-2">
-          {secondaryActions.map((action, idx) => (
-            <ActionButton
-              key={idx}
-              icon={action.icon}
-              label={action.label}
-              onClick={() => {
-                action.onClick();
-                setExpanded(false);
-              }}
-              disabled={action.disabled}
-              variant={action.variant}
-              height={50}
-            />
-          ))}
-        </div>
-      </div>
-      {expanded && (
+      <div className="w-100">
         <div
           style={{
-            height: "2px",
-            background: COLORS.background,
-            margin: "0 12px",
+            maxHeight: expanded ? "75px" : "0px",
+            overflow: "hidden",
+            transition: "max-height 0.2s ease",
+            background: COLORS.container,
           }}
-        />
-      )}
-      <div className="d-flex align-items-center justify-content-between px-3 py-2 gap-2">
-        {actions.length > 1 ? (
+        >
+          <div className="d-flex align-items-center justify-content-around px-3 py-2 gap-2">
+            {secondaryActions.map((action, idx) => (
+              <ActionButton
+                key={idx}
+                icon={action.icon}
+                label={action.label}
+                onClick={() => {
+                  action.onClick();
+                  setExpanded(false);
+                }}
+                disabled={action.disabled}
+                variant={action.variant}
+                height={50}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="d-flex align-items-center">
+          {actions.length > 1 && (
+            <ActionButton
+              icon={
+                expanded ? (
+                  <IoClose style={{ fontSize: "20px" }} />
+                ) : (
+                  <IoMenu style={{ fontSize: "20px" }} />
+                )
+              }
+              onClick={() => setExpanded((prev) => !prev)}
+              variant="primary"
+              height={50}
+              width={50}
+            />
+          )}
           <ActionButton
-            icon={
-              expanded ? (
-                <IoClose style={{ fontSize: "20px" }} />
-              ) : (
-                <IoMenu style={{ fontSize: "20px" }} />
-              )
-            }
-            onClick={() => setExpanded((prev) => !prev)}
-            variant="primary"
+            icon={primaryAction.icon}
+            label={primaryAction.label}
+            onClick={primaryAction.onClick}
+            disabled={primaryAction.disabled}
+            variant={primaryAction.variant}
             height={50}
-            width={50}
+            roundedSide="0"
           />
-        ) : (
-          <div />
+          {actions.length > 1 && (
+            <div
+              style={{
+                height: 50,
+                width: 50,
+                minWidth: 50,
+                background: primaryAction.disabled
+                  ? COLORS.primaryDisabled
+                  : COLORS.primary,
+              }}
+            />
+          )}
+        </div>
+      </div>
+      <div className="d-flex w-100" style={{ height: 75 }}>
+        {actions.length > 1 && (
+          <div
+            className="h-100"
+            style={{ minWidth: 50, background: COLORS.primary }}
+          />
         )}
-        <ActionButton
-          icon={primaryAction.icon}
-          label={primaryAction.label}
-          onClick={primaryAction.onClick}
-          disabled={primaryAction.disabled}
-          variant={primaryAction.variant}
-          height={50}
-          width="auto"
+        <div
+          className="h-100 w-100"
+          style={{
+            background: primaryAction.disabled
+              ? COLORS.primaryDisabled
+              : COLORS.primary,
+          }}
         />
       </div>
     </div>

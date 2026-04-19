@@ -13,6 +13,7 @@ import { AddButton } from "../components/AddButton";
 import { AddExerciseDialog } from "./AddExerciseDialog/AddExerciseDialog";
 import { FaTrash } from "react-icons/fa";
 import { EditGymDialog } from "./EditGymDialog";
+import { FinishDayDialog } from "./FinishDayDialog";
 import { useCompleteDay } from "./CompleteDayProvider";
 import { CompleteDayFooter } from "./CompleteDayFooter";
 import { useRouter } from "next/navigation";
@@ -135,6 +136,7 @@ export const CompleteDay = () => {
       <DeleteExerciseDialog />
       <SubmitSetDialog />
       <EditGymDialog />
+      <FinishDayDialog />
       <CompleteDayFooter />
     </>
   );

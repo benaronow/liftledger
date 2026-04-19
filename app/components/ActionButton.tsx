@@ -15,7 +15,8 @@ interface Props {
   width?: string | number;
   variant?: Variant;
   disabled?: boolean;
-  roundedSide?: "start" | "end" | "top" | "bottom";
+  roundedSide?: "start" | "end" | "top" | "bottom" | "0";
+  border?: string;
   className?: string;
 }
 
@@ -28,11 +29,12 @@ export const ActionButton = ({
   variant,
   disabled,
   roundedSide,
+  border,
   className,
 }: Props) => {
   const getButtonStyle = (
     variant: Variant | undefined,
-    disabled: boolean | undefined
+    disabled: boolean | undefined,
   ) => {
     switch (variant) {
       case "primaryInverted":
@@ -65,9 +67,11 @@ export const ActionButton = ({
         background: getButtonStyle(variant, disabled).background,
         color: getButtonStyle(variant, disabled).color,
         height: height ?? 35,
+        minHeight: height ?? undefined,
         width: width ?? "100%",
+        minWidth: width ?? undefined,
       }}
-      className={`d-flex align-items-center justify-content-center border-0 gap-2 rounded${
+      className={`d-flex align-items-center justify-content-center ${border ?? "border-0"} gap-2 rounded${
         roundedSide ? `-${roundedSide}` : ""
       } text-nowrap px-2 py-1 ${className}`}
       onClick={disabled ? undefined : onClick}
