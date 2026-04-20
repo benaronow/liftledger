@@ -4,7 +4,6 @@ import { FaTrash } from "react-icons/fa";
 import { ChangeEvent, useCallback, useMemo } from "react";
 import { Exercise, Set } from "@/lib/types";
 import { useBlock } from "@/app/layoutProviders/BlockProvider";
-import { COLORS } from "@/lib/colors";
 import { Info, InfoAction } from "../Info";
 import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
 import { useEditBlock } from "../EditBlockProvider";
@@ -28,9 +27,10 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
     () => templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
     [templateBlock],
   );
-  const pointFive = useMemo(
-    () => exercise.sets[0]?.weight % 1 === 0.5,
-    [exercise.sets],
+
+  const visibleExerciseCount = useMemo(
+    () => curDayExercises.filter((e) => !e.addedOn).length,
+    [curDayExercises],
   );
 
   const handleMoveExercise = (type: "up" | "down") => {
@@ -38,20 +38,40 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
       ...templateBlock,
       weeks: templateBlock.weeks.map((week, wIdx) =>
         wIdx === editingWeekIdx
-          ? week.map((day, dIdx) =>
-              dIdx === editingDayIdx
-                ? {
-                    ...day,
-                    exercises: day.exercises
-                      .toSpliced(eIdx, 1)
-                      .toSpliced(
-                        type === "up" ? eIdx - 1 : eIdx + 1,
-                        0,
-                        exercise,
-                      ),
-                  }
-                : day,
-            )
+          ? week.map((day, dIdx) => {
+              if (dIdx !== editingDayIdx) return day;
+
+              const exercises = day.exercises;
+              const nonAddonFullIndices = exercises
+                .map((_, i) => i)
+                .filter((i) => !exercises[i].addedOn);
+
+              // Each non-addon exercise owns its immediately trailing addons.
+              // groupEnd returns the last index belonging to that group.
+              const groupEnd = (fullIdx: number) => {
+                const next = nonAddonFullIndices.find((i) => i > fullIdx);
+                return next !== undefined ? next - 1 : exercises.length - 1;
+              };
+
+              const lowerVisIdx = type === "up" ? eIdx - 1 : eIdx;
+              const upperVisIdx = type === "up" ? eIdx : eIdx + 1;
+
+              const lowerFullIdx = nonAddonFullIndices[lowerVisIdx];
+              const upperFullIdx = nonAddonFullIndices[upperVisIdx];
+              const lowerEnd = groupEnd(lowerFullIdx);
+              const upperEnd = groupEnd(upperFullIdx);
+
+              return {
+                ...day,
+                exercises: [
+                  ...exercises.slice(0, lowerFullIdx),
+                  ...exercises.slice(upperFullIdx, upperEnd + 1),
+                  ...exercises.slice(lowerEnd + 1, upperFullIdx),
+                  ...exercises.slice(lowerFullIdx, lowerEnd + 1),
+                  ...exercises.slice(upperEnd + 1),
+                ],
+              };
+            })
           : week,
       ),
     });
@@ -81,11 +101,12 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
     e: ChangeEvent<HTMLInputElement>,
     type: "sets" | "reps" | "weight",
   ) => {
-    const value = parseInt(e.target.value)
-      ? Math.min(
-          parseInt(e.target.value),
-          type === "sets" ? 999 : parseInt(e.target.value),
-        )
+    const parsed =
+      type === "weight" ? parseFloat(e.target.value) : parseInt(e.target.value);
+    const value = parsed
+      ? type === "sets"
+        ? Math.min(parsed, 999)
+        : parsed
       : 0;
 
     updateExercise({
@@ -96,21 +117,8 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
           : exercise.sets.map((set: Set) => ({
               ...set,
               reps: type === "reps" ? value : exercise.sets[0].reps,
-              weight:
-                type === "weight"
-                  ? value + (pointFive ? 0.5 : 0)
-                  : exercise.sets[0].weight,
+              weight: type === "weight" ? value : exercise.sets[0].weight,
             })),
-    });
-  };
-
-  const handlePointFive = (selected: boolean) => {
-    updateExercise({
-      ...exercise,
-      sets: exercise.sets.map((set: Set) => ({
-        ...set,
-        weight: Math.floor(set.weight) + (selected ? 0.5 : 0),
-      })),
     });
   };
 
@@ -133,7 +141,7 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
           style={{ transform: "rotate(270deg)" }}
         />
       ),
-      disabled: eIdx === curDayExercises.length - 1,
+      disabled: eIdx === visibleExerciseCount - 1,
       onClick: () => handleMoveExercise("down"),
       variant: "primary",
     },
@@ -194,37 +202,18 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
         )}
       </div>
       {!curBlock && (
-        <div className="d-flex w-100 align-items-end">
+        <div className="d-flex w-100 gap-3 ">
           <LabeledInput
             label="Weight:"
-            textValue={Math.floor(exercise.sets[0]?.weight) || 0}
+            textValue={exercise.sets[0]?.weight || ""}
+            type="number"
+            step="any"
+            min="0"
             onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
               handleNumberInput(e, "weight");
             }}
             disabled={editDisabled}
           />
-          <button
-            className="d-flex align-items-center p-1 rounded border-0 ms-1 me-3"
-            style={{
-              ...(editDisabled
-                ? {
-                    color: pointFive
-                      ? COLORS.textDisabled
-                      : COLORS.primaryDisabled,
-                    background: pointFive
-                      ? COLORS.primaryDisabled
-                      : COLORS.textDisabled,
-                  }
-                : {
-                    color: pointFive ? "white" : COLORS.primary,
-                    background: pointFive ? COLORS.primary : "white",
-                  }),
-              height: 35,
-            }}
-            onClick={() => handlePointFive(!pointFive)}
-          >
-            <span>+0.5lbs</span>
-          </button>
           <LabeledInput
             label="Weight type:"
             textValue={exercise.weightType}
