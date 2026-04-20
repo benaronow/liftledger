@@ -1,7 +1,7 @@
-import { Spinner } from "./components/spinner";
+import { LogoSpinner } from "./components/LogoSpinner";
 
 const Loading = () => {
-  return <Spinner />;
+  return <LogoSpinner />;
 };
 
 export default Loading;

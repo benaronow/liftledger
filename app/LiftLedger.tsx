@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useUser } from "./layoutProviders/UserProvider";
-import { Spinner } from "./components/spinner";
+import { LogoSpinner } from "./components/LogoSpinner";
 
 export const LiftLedger = () => {
   const router = useRouter();
@@ -16,5 +16,5 @@ export const LiftLedger = () => {
     }
   }, [attemptedLogin]);
 
-  return <Spinner />;
+  return <LogoSpinner />;
 };

@@ -2,7 +2,7 @@
 
 import { RouteType } from "@/lib/types";
 import { useEffect, useRef } from "react";
-import { Spinner } from "@/app/components/spinner";
+import { LogoSpinner } from "@/app/components/LogoSpinner";
 import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
 import { useUser } from "@/app/layoutProviders/UserProvider";
 import { SetList } from "./SetList/SetList";
@@ -50,7 +50,7 @@ export const CompleteDay = () => {
     if (!exercises.length) router.push("/dashboard");
   }, [exercises]);
 
-  if (!exercises.length || isFetching) return <Spinner />;
+  if (!exercises.length || isFetching) return <LogoSpinner />;
 
   return (
     <>

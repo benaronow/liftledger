@@ -7,22 +7,30 @@ import { EditDay } from "./EditDay";
 import { EditWeek } from "./EditWeek";
 import { useRouter } from "next/navigation";
 import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
-import { Spinner } from "@/app/components/spinner";
+import { LogoSpinner } from "@/app/components/LogoSpinner";
 import { useUser } from "@/app/layoutProviders/UserProvider";
 import { FaSave } from "react-icons/fa";
 import { ArrowBackIosNew } from "@mui/icons-material";
 import { ActionsFooter, FooterAction } from "@/app/components/ActionsFooter";
 import { SaveBlockDialog } from "./SaveBlockDialog";
 import { useEditBlock } from "./EditBlockProvider";
+import { useBlock } from "../layoutProviders/BlockProvider";
 
 export const EditBlock = () => {
   const router = useRouter();
   const { curUser, session } = useUser();
   const { innerWidth, isFetching, toggleScreenState } = useScreenState();
   const theme = useTheme();
+  const { curBlock, curBlockLoading, setTemplateBlock } = useBlock();
   const { editingDayIdx, setEditingDayIdx, setSaveDialogOpen, templateErrors } =
     useEditBlock();
   const pageContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!curBlock) return;
+
+    setTemplateBlock(curBlock);
+  }, [curBlock]);
 
   useEffect(() => {
     if (!session) {
@@ -62,7 +70,8 @@ export const EditBlock = () => {
         }) as FooterAction,
   ];
 
-  if (!curUser || isFetching) return <Spinner />;
+  if (!curUser || (!curBlock && curBlockLoading) || isFetching)
+    return <LogoSpinner />;
 
   return (
     <>

@@ -1,7 +1,7 @@
 "use client";
 
-import styles from "./spinner.module.css";
-export const Spinner = () => {
+import styles from "./logoSpinner.module.css";
+export const LogoSpinner = () => {
   return (
     <div
       className="d-flex flex-column justify-content-center align-items-center"

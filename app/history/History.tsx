@@ -7,7 +7,7 @@ import { Block, RouteType } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
-import { Spinner } from "@/app/components/spinner";
+import { LogoSpinner } from "@/app/components/LogoSpinner";
 import { useUser } from "@/app/layoutProviders/UserProvider";
 import { useBlock } from "@/app/layoutProviders/BlockProvider";
 import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
@@ -140,7 +140,7 @@ export const History = () => {
       );
     });
 
-  if (!curUser || isFetching) return <Spinner />;
+  if (!curUser || isFetching) return <LogoSpinner />;
 
   return (
     <div

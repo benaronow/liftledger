@@ -7,9 +7,8 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
 import { useUser } from "@/app/layoutProviders/UserProvider";
-import { Spinner } from "@/app/components/spinner";
+import { LogoSpinner } from "@/app/components/LogoSpinner";
 import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
-// styles moved inline with Bootstrap utilities where applicable
 
 export const CreateAccount = () => {
   const router = useRouter();
@@ -53,7 +52,7 @@ export const CreateAccount = () => {
     if (curUser) router.push("/dashboard");
   };
 
-  if (!attemptedLogin || isFetching) return <Spinner />;
+  if (!attemptedLogin || isFetching) return <LogoSpinner />;
 
   return (
     <div

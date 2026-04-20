@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useUser } from "@/app/layoutProviders/UserProvider";
 import dayjs from "dayjs";
 import { Day, Exercise, RouteType, Set } from "@/lib/types";
-import { Spinner } from "@/app/components/spinner";
+import { LogoSpinner } from "@/app/components/LogoSpinner";
 import Link from "next/link";
 import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
 import { useBlock } from "@/app/layoutProviders/BlockProvider";
@@ -120,7 +120,7 @@ export const Dashboard = () => {
   ];
 
   if ((session && !curUser) || curBlockLoading || isFetching)
-    return <Spinner />;
+    return <LogoSpinner />;
 
   return (
     <div

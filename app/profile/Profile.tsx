@@ -6,7 +6,7 @@ import { useUser } from "@/app/layoutProviders/UserProvider";
 import { useRouter } from "next/navigation";
 import { RouteType } from "@/lib/types";
 import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
-import { Spinner } from "@/app/components/spinner";
+import { LogoSpinner } from "@/app/components/LogoSpinner";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { COLORS } from "@/lib/colors";
@@ -35,7 +35,7 @@ export const Profile = () => {
     router.push("/auth/logout");
   };
 
-  if (!curUser || isFetching) return <Spinner />;
+  if (!curUser || isFetching) return <LogoSpinner />;
 
   return (
     <div
