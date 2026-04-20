@@ -7,9 +7,13 @@ import {
   useEffect,
   useState,
 } from "react";
-import { SizeInfo } from "@/lib/types";
 
 type StateType = "overlay" | "fetching";
+
+export interface SizeInfo {
+  width?: number;
+  height?: number;
+}
 
 interface ScreenStateContextType {
   innerWidth: number | undefined;

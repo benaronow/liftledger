@@ -1,11 +1,10 @@
 "use client";
 
-import { Exercise, ExerciseApparatus, ExerciseName, User } from "@/lib/types";
+import { User } from "@/lib/types";
 import { SessionData } from "@auth0/nextjs-auth0/types";
 import {
   createContext,
   PropsWithChildren,
-  useCallback,
   useContext,
   useEffect,
   useState,
@@ -23,13 +22,6 @@ interface UserContextType {
   createUser: (user: Partial<User>) => Promise<void>;
   updateUser: (user: User) => Promise<void>;
   deleteUser: (email: string) => Promise<void>;
-  addCustomExerciseName: (value: string) => Promise<void>;
-  addCustomExerciseApparatus: (value: string) => Promise<void>;
-  getFilteredExerciseOptions: (
-    curExercise: Exercise,
-    allReservedExercises: Exercise[],
-    type: "name" | "apparatus",
-  ) => string[];
 }
 
 const defaultUserContext: UserContextType = {
@@ -40,9 +32,6 @@ const defaultUserContext: UserContextType = {
   createUser: async () => {},
   updateUser: async () => {},
   deleteUser: async () => {},
-  addCustomExerciseName: async () => {},
-  addCustomExerciseApparatus: async () => {},
-  getFilteredExerciseOptions: () => [],
 };
 
 export const UserContext = createContext(defaultUserContext);
@@ -96,102 +85,6 @@ export const UserProvider = ({
     setCurUserLoading(false);
   };
 
-  const addCustomExerciseName = async (value: string) => {
-    if (
-      !curUser ||
-      curUser.customExercises?.includes(value) ||
-      Object.values(ExerciseName).includes(value as ExerciseName)
-    )
-      return;
-    await updateUser({
-      ...curUser,
-      customExercises: [...(curUser.customExercises ?? []), value],
-    });
-  };
-
-  const addCustomExerciseApparatus = async (value: string) => {
-    if (
-      !curUser ||
-      curUser.customApparatuses?.includes(value) ||
-      Object.values(ExerciseApparatus).includes(value as ExerciseApparatus)
-    )
-      return;
-    await updateUser({
-      ...curUser,
-      customApparatuses: [...(curUser.customApparatuses ?? []), value],
-    });
-  };
-
-  const getFilteredExerciseNameOptions = useCallback(
-    (curApparatus: string, unavailableExercises: Exercise[]) => {
-      const baseNames = Object.values(ExerciseName);
-
-      const customNames =
-        curUser?.customExercises?.filter(
-          (c) =>
-            !baseNames.some((b: string) => b.toLowerCase() === c.toLowerCase()),
-        ) ?? [];
-
-      return [...baseNames, ...customNames].filter(
-        (n) =>
-          !unavailableExercises.find(
-            (e) => e.name === n && e.apparatus === curApparatus,
-          ),
-      );
-    },
-    [curUser],
-  );
-
-  const getFilteredExerciseApparatusOptions = useCallback(
-    (curName: string, unavailableExercises: Exercise[]) => {
-      const baseApparatuses = Object.values(ExerciseApparatus);
-
-      const customApparatuses =
-        curUser?.customApparatuses?.filter(
-          (c) =>
-            !baseApparatuses.some(
-              (b: string) => b.toLowerCase() === c.toLowerCase(),
-            ),
-        ) ?? [];
-
-      return [...baseApparatuses, ...customApparatuses].filter(
-        (a) =>
-          !unavailableExercises.find(
-            (e) => e.apparatus === a && e.name === curName,
-          ),
-      );
-    },
-    [curUser],
-  );
-
-  const getFilteredExerciseOptions = useCallback(
-    (
-      curExercise: Exercise,
-      allReservedExercises: Exercise[],
-      type: "name" | "apparatus",
-    ) => {
-      const unavailableExercises = allReservedExercises.filter(
-        (e) =>
-          e.name !== curExercise.name || e.apparatus !== curExercise.apparatus,
-      );
-
-      if (type === "name")
-        return getFilteredExerciseNameOptions(
-          curExercise.apparatus,
-          unavailableExercises,
-        );
-
-      if (type === "apparatus")
-        return getFilteredExerciseApparatusOptions(
-          curExercise.name,
-          unavailableExercises,
-        );
-
-      return [];
-    },
-    [getFilteredExerciseNameOptions, getFilteredExerciseApparatusOptions],
-  );
-
   return (
     <UserContext.Provider
       value={{
@@ -203,9 +96,6 @@ export const UserProvider = ({
         createUser,
         updateUser,
         deleteUser,
-        addCustomExerciseName,
-        addCustomExerciseApparatus,
-        getFilteredExerciseOptions,
       }}
     >
       {children}

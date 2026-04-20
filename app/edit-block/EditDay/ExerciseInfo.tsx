@@ -1,21 +1,16 @@
 import { ArrowBackIosNew } from "@mui/icons-material";
 import { LabeledInput } from "@/app/components/LabeledInput";
-import { SearchableSelect } from "@/app/components/SearchableSelect";
 import { FaTrash } from "react-icons/fa";
 import { ChangeEvent, useCallback, useMemo } from "react";
-import {
-  Exercise,
-  ExerciseApparatus,
-  ExerciseName,
-  Set,
-  WeightType,
-} from "@/lib/types";
+import { Exercise, Set } from "@/lib/types";
 import { useBlock } from "@/app/layoutProviders/BlockProvider";
-import { useUser } from "@/app/layoutProviders/UserProvider";
 import { COLORS } from "@/lib/colors";
 import { Info, InfoAction } from "../Info";
 import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
 import { useEditBlock } from "../EditBlockProvider";
+import { WEIGHT_TYPES } from "@/lib/weightTypes";
+import { ExerciseNameSelect } from "@/app/components/ExerciseNameSelect";
+import { ExerciseApparatusSelect } from "@/app/components/ExerciseApparatusSelect";
 
 export type ExerciseInfoName = "name" | "apparatus" | "weightType";
 
@@ -27,13 +22,12 @@ interface Props {
 export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
   const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
     useBlock();
-  const {
-    addCustomExerciseName,
-    addCustomExerciseApparatus,
-    getFilteredExerciseOptions,
-  } = useUser();
   const { getNewSetsFromLatest, getUpdatedExercise } = useCompletedExercises();
   const { editingDayIdx, setDeletingExerciseIdx } = useEditBlock();
+  const curDayExercises = useMemo(
+    () => templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
+    [templateBlock],
+  );
   const pointFive = useMemo(
     () => exercise.sets[0]?.weight % 1 === 0.5,
     [exercise.sets],
@@ -139,17 +133,13 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
           style={{ transform: "rotate(270deg)" }}
         />
       ),
-      disabled:
-        eIdx ===
-        templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises.length - 1,
+      disabled: eIdx === curDayExercises.length - 1,
       onClick: () => handleMoveExercise("down"),
       variant: "primary",
     },
     {
       icon: <FaTrash fontSize="medium" />,
-      disabled:
-        templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises.length ===
-        1,
+      disabled: curDayExercises.length === 1,
       onClick: () => setDeletingExerciseIdx(eIdx),
       variant: "danger",
     },
@@ -161,11 +151,7 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
 
   const switchExercise = useCallback(
     (value: string, type: ExerciseInfoName) => {
-      const updatedExercise = getUpdatedExercise(
-        value as ExerciseName | ExerciseApparatus | WeightType,
-        type,
-        exercise,
-      );
+      const updatedExercise = getUpdatedExercise(value, type, exercise);
 
       updateExercise(updatedExercise);
     },
@@ -174,28 +160,18 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
 
   return (
     <Info title={`Exercise ${eIdx + 1}`} actions={infoActions}>
-      <SearchableSelect
+      <ExerciseNameSelect
         label="Exercise:"
-        value={exercise.name}
-        options={getFilteredExerciseOptions(
-          exercise,
-          templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
-          "name",
-        )}
+        curExercise={exercise}
+        reservedExercises={curDayExercises}
         onSelect={(value) => switchExercise(value, "name")}
-        onAddCustom={addCustomExerciseName}
         className="mb-0"
       />
-      <SearchableSelect
+      <ExerciseApparatusSelect
         label="Apparatus:"
-        value={exercise.apparatus}
-        options={getFilteredExerciseOptions(
-          exercise,
-          templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
-          "apparatus",
-        )}
+        curExercise={exercise}
+        reservedExercises={curDayExercises}
         onSelect={(value) => switchExercise(value, "apparatus")}
-        onAddCustom={addCustomExerciseApparatus}
         className="mb-0"
       />
       <div className="d-flex w-100 gap-3">
@@ -252,7 +228,7 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
           <LabeledInput
             label="Weight type:"
             textValue={exercise.weightType}
-            options={Object.values(WeightType)}
+            options={WEIGHT_TYPES}
             includeEmptyOption
             onChangeSelect={(e) => switchExercise(e.target.value, "weightType")}
           />

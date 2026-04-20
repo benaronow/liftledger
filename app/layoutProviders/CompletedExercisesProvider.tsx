@@ -2,11 +2,8 @@
 
 import {
   Exercise,
-  ExerciseApparatus,
-  ExerciseName,
   ExerciseWithDate,
   Set,
-  WeightType,
 } from "@/lib/types";
 import {
   createContext,
@@ -33,7 +30,7 @@ interface CompletedExercisesContextType {
   ) => T | undefined;
   getNewSetsFromLatest: (exercise: Exercise, numSets?: number) => Set[];
   getUpdatedExercise: (
-    update: ExerciseName | ExerciseApparatus | WeightType,
+    update: string,
     type: "name" | "apparatus" | "weightType",
     exercise: Exercise,
   ) => Exercise;
@@ -149,19 +146,17 @@ export const CompletedExercisesProvider = ({
 
   const getUpdatedExercise = useCallback(
     (
-      update: ExerciseName | ExerciseApparatus | WeightType,
+      update: string,
       type: "name" | "apparatus" | "weightType",
       exercise: Exercise,
     ) => {
       const newExercise = {
         ...exercise,
-        name: type === "name" ? (update as ExerciseName) : exercise.name,
+        name: type === "name" ? update : exercise.name,
         apparatus:
-          type === "apparatus"
-            ? (update as ExerciseApparatus)
-            : exercise.apparatus,
+          type === "apparatus" ? update : exercise.apparatus,
         weightType:
-          type === "weightType" ? (update as WeightType) : exercise.weightType,
+          type === "weightType" ? update : exercise.weightType,
       };
 
       return {

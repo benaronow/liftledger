@@ -1,12 +1,14 @@
 "use client";
 
 import { COLORS } from "@/lib/colors";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Spinner } from "react-bootstrap";
 
 interface Props {
   label?: string;
   value: string;
   options: string[];
+  unavailableOptions?: string[];
   onSelect: (value: string) => void;
   onAddCustom?: (value: string) => Promise<void>;
   className?: string;
@@ -18,6 +20,7 @@ export const SearchableSelect = ({
   label,
   value,
   options,
+  unavailableOptions,
   onSelect,
   onAddCustom,
   className,
@@ -26,20 +29,43 @@ export const SearchableSelect = ({
 }: Props) => {
   const [inputValue, setInputValue] = useState(value);
   const [open, setOpen] = useState(false);
-  const [hovered, setHovered] = useState<string | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [addingCustom, setAddingCustom] = useState(false);
 
   useEffect(() => {
     setInputValue(value);
   }, [value]);
 
-  const filtered = options.filter((o) =>
+  const filteredOptions = options.filter((o) =>
     o.toLowerCase().includes(inputValue.toLowerCase()),
   );
 
-  const isCustom =
-    inputValue.trim() !== "" &&
-    !options.some((o) => o.toLowerCase() === inputValue.trim().toLowerCase());
+  const isUnavailable = useMemo(
+    () =>
+      inputValue.trim() !== "" &&
+      unavailableOptions?.some(
+        (o) => o.toLowerCase() === inputValue.trim().toLowerCase(),
+      ),
+    [inputValue, unavailableOptions],
+  );
+
+  const isCustom = useMemo(
+    () =>
+      inputValue.trim() !== "" &&
+      !isUnavailable &&
+      !options.some((o) => o.toLowerCase() === inputValue.trim().toLowerCase()),
+    [inputValue, options],
+  );
+
+  const showDropdown =
+    open && (filteredOptions.length > 0 || isCustom || isUnavailable);
+
+  const addButtonText = useMemo(
+    () =>
+      isUnavailable
+        ? `"${inputValue.trim()}" is unavailable`
+        : `Add "${inputValue.trim()}"`,
+    [isUnavailable, inputValue],
+  );
 
   const handleSelect = (option: string) => {
     setInputValue(option);
@@ -48,40 +74,27 @@ export const SearchableSelect = ({
   };
 
   const handleAddCustom = async () => {
+    setAddingCustom(true);
+
     const trimmed = inputValue.trim();
-    onSelect(trimmed);
     try {
       await onAddCustom?.(trimmed);
+      onSelect(trimmed);
     } catch {
-      setInputValue(value);
+      setInputValue("");
     }
-    setOpen(false);
-  };
 
-  const handleBlur = () => {
-    setTimeout(() => {
-      setOpen(false);
-      setInputValue(value);
-    }, 150);
+    setAddingCustom(false);
+    setOpen(false);
   };
 
   const optionBg = (option: string) => {
     if (option === value) return COLORS.primary;
-    if (option === hovered) return "#58585b";
-    return "#131314";
+    return COLORS.dark;
   };
 
-  const addingDisabled = useMemo(
-    () =>
-      options?.map((o) => o.toLowerCase())?.includes(inputValue.toLowerCase()),
-    [options, inputValue],
-  );
-
   return (
-    <div
-      className={`d-flex flex-column align-items-start w-100 ${className}`}
-      ref={containerRef}
-    >
+    <div className={`d-flex flex-column align-items-start w-100 ${className}`}>
       {label && (
         <span
           className="fw-semibold text-nowrap text-white mb-1"
@@ -105,12 +118,13 @@ export const SearchableSelect = ({
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          onBlur={handleBlur}
+          onBlur={() => setOpen(false)}
           disabled={disabled}
           placeholder={placeholder}
         />
-        {open && (filtered.length > 0 || isCustom) && (
+        {showDropdown && (
           <div
+            onMouseDown={(e) => e.preventDefault()}
             className="position-absolute w-100 rounded overflow-hidden"
             style={{
               top: "100%",
@@ -128,25 +142,21 @@ export const SearchableSelect = ({
                 overflowY: "auto",
               }}
             >
-              {filtered.map((option) => (
-                <div
+              {filteredOptions.map((option) => (
+                <button
                   key={option}
-                  className="px-2 py-1"
+                  className="d-flex px-2 py-1 border-0 w-100 justify-content-start"
                   style={{
-                    cursor: "pointer",
                     fontSize: "14px",
                     background: optionBg(option),
                     color: "white",
-                    userSelect: "none",
                   }}
-                  onMouseDown={() => handleSelect(option)}
-                  onMouseEnter={() => setHovered(option)}
-                  onMouseLeave={() => setHovered(null)}
+                  onClick={() => handleSelect(option)}
                 >
                   {option}
-                </div>
+                </button>
               ))}
-              {isCustom && (
+              {(isUnavailable || isCustom) && (
                 <button
                   className="px-2 py-1 border-0"
                   style={{
@@ -155,11 +165,13 @@ export const SearchableSelect = ({
                     color: COLORS.primary,
                   }}
                   onClick={handleAddCustom}
-                  disabled={addingDisabled}
+                  disabled={isUnavailable}
                 >
-                  {addingDisabled
-                    ? `"${inputValue.trim()}" already exists`
-                    : `Add "${inputValue.trim()}"`}
+                  {addingCustom ? (
+                    <Spinner size="sm" animation="border" variant="light" />
+                  ) : (
+                    addButtonText
+                  )}
                 </button>
               )}
             </div>

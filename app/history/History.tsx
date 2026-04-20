@@ -38,9 +38,10 @@ export const History = () => {
   }, [innerWidth]);
 
   const getCompletedDate = (block: Block) => {
-    return block.weeks[block.length - 1][
-      block.weeks[block.length - 1].length - 1
-    ].completedDate;
+    const finalWeek = block.weeks[block.weeks.length - 1];
+    const finalDay = finalWeek[finalWeek.length - 1];
+
+    return finalDay.completedDate;
   };
 
   const getTemplateFromBlock = (block: Block) => ({

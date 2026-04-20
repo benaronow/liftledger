@@ -12,6 +12,7 @@ import {
   CompletedExercisesProvider,
   TimerProvider,
 } from "./layoutProviders";
+import { ExerciseOptionsProvider } from "./layoutProviders/ExerciseOptionsProvider";
 
 interface Props {
   readonly children: ReactNode;
@@ -103,11 +104,13 @@ const RootLayout = async ({ children }: Props) => {
                   <header className={styles.header}>
                     <Header />
                   </header>
-                  <CompletedExercisesProvider>
-                    <TimerProvider>
-                      <main className={styles.main}>{children}</main>
-                    </TimerProvider>
-                  </CompletedExercisesProvider>
+                  <ExerciseOptionsProvider>
+                    <CompletedExercisesProvider>
+                      <TimerProvider>
+                        <main className={styles.main}>{children}</main>
+                      </TimerProvider>
+                    </CompletedExercisesProvider>
+                  </ExerciseOptionsProvider>
                   <footer className={styles.footer}>
                     <Footer />
                   </footer>

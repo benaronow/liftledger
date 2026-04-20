@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useUser } from "@/app/layoutProviders/UserProvider";
 import dayjs from "dayjs";
-import { Day, Exercise, RouteType, Set, WeightType } from "@/lib/types";
+import { Day, Exercise, RouteType, Set } from "@/lib/types";
 import { Spinner } from "@/app/components/spinner";
 import Link from "next/link";
 import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
@@ -58,7 +58,7 @@ export const Dashboard = () => {
                         curSet.weight *
                         (curEx.weightType === type
                           ? 1
-                          : curEx.weightType === WeightType.Kilograms
+                          : curEx.weightType === "kgs"
                             ? 2.205
                             : 0.454)
                       : 0),
