@@ -6,11 +6,11 @@ import { ControlPointDuplicate } from "@mui/icons-material";
 import { Block, RouteType } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useScreenState } from "@/app/providers/ScreenStateProvider";
+import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
 import { Spinner } from "../components/spinner";
-import { useUser } from "@/app/providers/UserProvider";
-import { useBlock } from "@/app/providers/BlockProvider";
-import { useCompletedExercises } from "../providers/CompletedExercisesProvider";
+import { useUser } from "@/app/layoutProviders/UserProvider";
+import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { useCompletedExercises } from "../layoutProviders/CompletedExercisesProvider";
 
 export const History = () => {
   const router = useRouter();

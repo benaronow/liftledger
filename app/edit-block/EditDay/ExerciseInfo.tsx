@@ -10,12 +10,11 @@ import {
   Set,
   WeightType,
 } from "@/lib/types";
-import { useBlock } from "@/app/providers/BlockProvider";
-import { useUser } from "@/app/providers/UserProvider";
-import { getAvailableOptions } from "@/lib/blockUtils";
+import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { useUser } from "@/app/layoutProviders/UserProvider";
 import { COLORS } from "@/lib/colors";
 import { Info, InfoAction } from "../Info";
-import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
+import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
 import { useEditBlock } from "../EditBlockProvider";
 
 export type ExerciseInfoName = "name" | "apparatus" | "weightType";
@@ -28,7 +27,11 @@ interface Props {
 export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
   const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
     useBlock();
-  const { curUser, addCustomExercise, addCustomApparatus } = useUser();
+  const {
+    addCustomExerciseName,
+    addCustomExerciseApparatus,
+    getFilteredExerciseOptions,
+  } = useUser();
   const { getNewSetsFromLatest, getUpdatedExercise } = useCompletedExercises();
   const { editingDayIdx, setDeletingExerciseIdx } = useEditBlock();
   const pointFive = useMemo(
@@ -174,27 +177,25 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
       <SearchableSelect
         label="Exercise:"
         value={exercise.name}
-        options={getAvailableOptions(
+        options={getFilteredExerciseOptions(
           exercise,
           templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
           "name",
-          curUser?.customExercises,
         )}
         onSelect={(value) => switchExercise(value, "name")}
-        onAddCustom={addCustomExercise}
+        onAddCustom={addCustomExerciseName}
         className="mb-0"
       />
       <SearchableSelect
         label="Apparatus:"
         value={exercise.apparatus}
-        options={getAvailableOptions(
+        options={getFilteredExerciseOptions(
           exercise,
           templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
           "apparatus",
-          curUser?.customApparatuses,
         )}
         onSelect={(value) => switchExercise(value, "apparatus")}
-        onAddCustom={addCustomApparatus}
+        onAddCustom={addCustomExerciseApparatus}
         className="mb-0"
       />
       <div className="d-flex w-100 gap-3">

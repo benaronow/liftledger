@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useBlock } from "../providers/BlockProvider";
+import { useBlock } from "../layoutProviders/BlockProvider";
 
 interface EditBlockContextModel {
   editingDayIdx: number;

@@ -1,3 +1,5 @@
+"use client";
+
 import { Block } from "@/lib/types";
 import {
   createContext,

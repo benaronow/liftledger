@@ -5,7 +5,7 @@ import { LuWarehouse } from "react-icons/lu";
 import { RiTimerLine } from "react-icons/ri";
 import { useCompleteDay } from "./CompleteDayProvider";
 import { BiSolidEdit } from "react-icons/bi";
-import { useTimer } from "../providers/TimerProvider";
+import { useTimer } from "../layoutProviders/TimerProvider";
 
 export const CompleteDayFooter = () => {
   const { timerEnd, setTimerDialogOpen } = useTimer();

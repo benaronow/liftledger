@@ -4,11 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 import { ActionDialog } from "./ActionDialog";
 import { LabeledInput } from "./LabeledInput";
 import { FaSave } from "react-icons/fa";
-import { useTimer } from "../providers/TimerProvider";
+import { useTimer } from "../layoutProviders/TimerProvider";
 import { COLORS } from "@/lib/colors";
 import { IoIosArrowForward, IoMdClose } from "react-icons/io";
 import { RiTimerLine } from "react-icons/ri";
-import { useUser } from "../providers/UserProvider";
+import { useUser } from "../layoutProviders/UserProvider";
 import { ActionButton } from "./ActionButton";
 import { BiSolidEdit } from "react-icons/bi";
 
@@ -118,7 +118,7 @@ export const Timer = () => {
 
     const totalSeconds = Math.max(
       0,
-      Math.floor((new Date(timerEnd).getTime() - currentTime.getTime()) / 1000)
+      Math.floor((new Date(timerEnd).getTime() - currentTime.getTime()) / 1000),
     );
     const mins = Math.floor(totalSeconds / 60)
       .toString()
@@ -214,7 +214,7 @@ export const Timer = () => {
                           onChangeSelect={(e) =>
                             updatePresetsState(
                               idx,
-                              parseInt(e.target.value) * 60 + (preset % 60)
+                              parseInt(e.target.value) * 60 + (preset % 60),
                             )
                           }
                           height={35}
@@ -227,7 +227,7 @@ export const Timer = () => {
                             updatePresetsState(
                               idx,
                               Math.floor(preset / 60) * 60 +
-                                parseInt(e.target.value)
+                                parseInt(e.target.value),
                             )
                           }
                           height={35}

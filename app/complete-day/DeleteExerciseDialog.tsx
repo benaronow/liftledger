@@ -1,6 +1,6 @@
 import { ActionDialog, DialogAction } from "../components/ActionDialog";
 import { Block, Day, Exercise } from "@/lib/types";
-import { useBlock } from "@/app/providers/BlockProvider";
+import { useBlock } from "../layoutProviders/BlockProvider";
 import { IoArrowBack } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 import { useCompleteDay } from "./CompleteDayProvider";

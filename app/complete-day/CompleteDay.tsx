@@ -3,8 +3,8 @@
 import { RouteType } from "@/lib/types";
 import { useEffect, useRef } from "react";
 import { Spinner } from "../components/spinner";
-import { useScreenState } from "@/app/providers/ScreenStateProvider";
-import { useUser } from "@/app/providers/UserProvider";
+import { useScreenState } from "../layoutProviders/ScreenStateProvider";
+import { useUser } from "../layoutProviders/UserProvider";
 import { SetList } from "./SetList/SetList";
 import { COLORS } from "@/lib/colors";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";

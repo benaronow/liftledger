@@ -5,26 +5,26 @@ import {
   WeightType,
 } from "@/lib/types";
 import { Dispatch, SetStateAction, useCallback } from "react";
-import { getAvailableOptions } from "@/lib/blockUtils";
 import { LabeledInput } from "@/app/components/LabeledInput";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
-import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
-import { useUser } from "@/app/providers/UserProvider";
+import { useCompletedExercises } from "../../layoutProviders/CompletedExercisesProvider";
+import { useUser } from "../../layoutProviders/UserProvider";
 import { ExerciseInfoName } from "@/app/edit-block/EditDay/ExerciseInfo";
+import { useCompleteDay } from "../CompleteDayProvider";
 
 interface Props {
   newExercise: Exercise;
   setNewExercise: Dispatch<SetStateAction<Exercise>>;
-  exercisesState: Exercise[];
 }
 
-export const EditExercise = ({
-  newExercise,
-  setNewExercise,
-  exercisesState,
-}: Props) => {
+export const EditExercise = ({ newExercise, setNewExercise }: Props) => {
+  const { exercises } = useCompleteDay();
   const { getUpdatedExercise } = useCompletedExercises();
-  const { curUser, addCustomExercise, addCustomApparatus } = useUser();
+  const {
+    addCustomExerciseName,
+    addCustomExerciseApparatus,
+    getFilteredExerciseOptions,
+  } = useUser();
 
   const switchExercise = useCallback(
     (value: string, type: ExerciseInfoName) => {
@@ -44,27 +44,21 @@ export const EditExercise = ({
       <SearchableSelect
         label="Exercise:"
         value={newExercise.name}
-        options={getAvailableOptions(
-          newExercise,
-          exercisesState,
-          "name",
-          curUser?.customExercises,
-        )}
+        options={getFilteredExerciseOptions(newExercise, exercises, "name")}
         onSelect={(value) => switchExercise(value, "name")}
-        onAddCustom={addCustomExercise}
+        onAddCustom={addCustomExerciseName}
         className="mb-2"
       />
       <SearchableSelect
         label="Apparatus:"
         value={newExercise.apparatus}
-        options={getAvailableOptions(
+        options={getFilteredExerciseOptions(
           newExercise,
-          exercisesState,
+          exercises,
           "apparatus",
-          curUser?.customApparatuses,
         )}
         onSelect={(value) => switchExercise(value, "apparatus")}
-        onAddCustom={addCustomApparatus}
+        onAddCustom={addCustomExerciseApparatus}
         className="mb-2"
       />
       <LabeledInput

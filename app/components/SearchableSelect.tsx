@@ -1,7 +1,7 @@
 "use client";
 
 import { COLORS } from "@/lib/colors";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface Props {
   label?: string;
@@ -70,6 +70,12 @@ export const SearchableSelect = ({
     if (option === hovered) return "#58585b";
     return "#131314";
   };
+
+  const addingDisabled = useMemo(
+    () =>
+      options?.map((o) => o.toLowerCase())?.includes(inputValue.toLowerCase()),
+    [options, inputValue],
+  );
 
   return (
     <div
@@ -141,24 +147,20 @@ export const SearchableSelect = ({
                 </div>
               ))}
               {isCustom && (
-                <div
-                  className="px-2 py-1"
+                <button
+                  className="px-2 py-1 border-0"
                   style={{
-                    cursor: "pointer",
-                    fontSize: "14px",
+                    fontSize: 14,
+                    background: COLORS.dark,
                     color: COLORS.primary,
-                    background:
-                      hovered === "__custom__" ? "#58585b" : "#131314",
-                    borderTop:
-                      filtered.length > 0 ? "1px solid #58585b" : "none",
-                    userSelect: "none",
                   }}
-                  onMouseDown={handleAddCustom}
-                  onMouseEnter={() => setHovered("__custom__")}
-                  onMouseLeave={() => setHovered(null)}
+                  onClick={handleAddCustom}
+                  disabled={addingDisabled}
                 >
-                  Add &quot;{inputValue.trim()}&quot;
-                </div>
+                  {addingDisabled
+                    ? `"${inputValue.trim()}" already exists`
+                    : `Add "${inputValue.trim()}"`}
+                </button>
               )}
             </div>
           </div>

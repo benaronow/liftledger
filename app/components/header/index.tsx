@@ -2,9 +2,9 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { RouteType } from "@/lib/types";
-import { useScreenState } from "@/app/providers/ScreenStateProvider";
-import { useUser } from "@/app/providers/UserProvider";
-import { useBlock } from "@/app/providers/BlockProvider";
+import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
+import { useUser } from "@/app/layoutProviders/UserProvider";
+import { useBlock } from "@/app/layoutProviders/BlockProvider";
 import styles from "./header.module.css";
 import { Avatar } from "@mui/material";
 

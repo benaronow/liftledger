@@ -1,5 +1,5 @@
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
-import { useBlock } from "@/app/providers/BlockProvider";
+import { useBlock } from "@/app/layoutProviders/BlockProvider";
 import { useEditBlock } from "../EditBlockProvider";
 import { IoArrowBack } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";

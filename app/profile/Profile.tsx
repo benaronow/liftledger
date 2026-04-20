@@ -2,10 +2,10 @@
 
 import { Avatar } from "@mui/material";
 import { useEffect } from "react";
-import { useUser } from "../providers/UserProvider";
+import { useUser } from "../layoutProviders/UserProvider";
 import { useRouter } from "next/navigation";
 import { RouteType } from "@/lib/types";
-import { useScreenState } from "@/app/providers/ScreenStateProvider";
+import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
 import { Spinner } from "../components/spinner";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";

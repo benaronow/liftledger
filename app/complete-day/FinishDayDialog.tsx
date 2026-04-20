@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 import { ActionDialog, DialogAction } from "../components/ActionDialog";
 import { useCompleteDay } from "./CompleteDayProvider";
-import { useBlock } from "../providers/BlockProvider";
-import { useCompletedExercises } from "../providers/CompletedExercisesProvider";
-import { useUser } from "../providers/UserProvider";
+import { useBlock } from "../layoutProviders/BlockProvider";
+import { useCompletedExercises } from "../layoutProviders/CompletedExercisesProvider";
+import { useUser } from "../layoutProviders/UserProvider";
 import { useRouter } from "next/navigation";
 import { Block } from "@/lib/types";
 import { IoArrowBack } from "react-icons/io5";

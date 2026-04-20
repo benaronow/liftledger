@@ -2,7 +2,7 @@ import { Day } from "@/lib/types";
 import { ArrowBackIosNew, ControlPointDuplicate } from "@mui/icons-material";
 import { BiSolidEdit } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
-import { useBlock } from "@/app/providers/BlockProvider";
+import { useBlock } from "@/app/layoutProviders/BlockProvider";
 import { Info, InfoAction } from "../Info";
 import { useMemo } from "react";
 import { useEditBlock } from "../EditBlockProvider";
@@ -27,7 +27,7 @@ export const DayInfo = ({ day, dIdx, hasErrors }: Props) => {
             ? week
                 .toSpliced(dayIdx, 1)
                 .toSpliced(type === "up" ? dayIdx - 1 : dayIdx + 1, 0, day)
-            : week
+            : week,
         ),
       });
     }
@@ -43,7 +43,7 @@ export const DayInfo = ({ day, dIdx, hasErrors }: Props) => {
     setTemplateBlock({
       ...templateBlock,
       weeks: templateBlock.weeks.map((week, idx) =>
-        idx === editingWeekIdx ? week.toSpliced(dayIdx + 1, 0, day) : week
+        idx === editingWeekIdx ? week.toSpliced(dayIdx + 1, 0, day) : week,
       ),
     });
   };
@@ -109,11 +109,11 @@ export const DayInfo = ({ day, dIdx, hasErrors }: Props) => {
         {`Name: ${day.name} [${day.exercises.reduce(
           (acc, cur) =>
             acc + (cur.addedOn ? 0 : cur.sets.filter((s) => !s.addedOn).length),
-          0
+          0,
         )}]`}
       </strong>
       {templateBlock.weeks[editingWeekIdx][dIdx].exercises.some(
-        (e) => e.name && e.apparatus && e.sets.length
+        (e) => e.name && e.apparatus && e.sets.length,
       ) &&
         templateBlock.weeks[editingWeekIdx][dIdx].exercises
           .filter((ex) => !ex.addedOn)

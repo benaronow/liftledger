@@ -2,13 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useUser } from "../providers/UserProvider";
+import { useUser } from "../layoutProviders/UserProvider";
 import dayjs from "dayjs";
 import { Day, Exercise, RouteType, Set, WeightType } from "@/lib/types";
 import { Spinner } from "../components/spinner";
 import Link from "next/link";
-import { useScreenState } from "@/app/providers/ScreenStateProvider";
-import { useBlock } from "@/app/providers/BlockProvider";
+import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
+import { useBlock } from "@/app/layoutProviders/BlockProvider";
 import { ActionButton } from "../components/ActionButton";
 import { BiLogIn } from "react-icons/bi";
 

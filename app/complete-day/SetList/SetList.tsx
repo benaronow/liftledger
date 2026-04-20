@@ -1,16 +1,11 @@
 import { Exercise, Set } from "@/lib/types";
-import {
-  RefObject,
-  useCallback,
-  useEffect,
-  useMemo,
-} from "react";
+import { RefObject, useCallback, useEffect, useMemo } from "react";
 import { COLORS } from "@/lib/colors";
 import { BiPlusCircle } from "react-icons/bi";
 import { FaTimes } from "react-icons/fa";
 import { ActionButton } from "../../components/ActionButton";
 import { ProgressIcon } from "./ProgressIcon";
-import { useCompletedExercises } from "@/app/providers/CompletedExercisesProvider";
+import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
 import { useCompleteDay } from "../CompleteDayProvider";
 
 interface Props {

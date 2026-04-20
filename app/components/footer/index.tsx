@@ -3,14 +3,14 @@
 import { usePathname } from "next/navigation";
 import { RouteType } from "@/lib/types";
 import { useEffect, useState } from "react";
-import { useScreenState } from "@/app/providers/ScreenStateProvider";
+import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
 import { useTheme } from "@mui/material";
 import Link from "next/link";
 import { GiProgression } from "react-icons/gi";
 import { FaEdit, FaHistory } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
-import { useUser } from "@/app/providers/UserProvider";
-import { useBlock } from "@/app/providers/BlockProvider";
+import { useUser } from "@/app/layoutProviders/UserProvider";
+import { useBlock } from "@/app/layoutProviders/BlockProvider";
 import styles from "./footer.module.css";
 
 export const Footer = () => {
