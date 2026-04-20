@@ -1,11 +1,11 @@
 import { useMemo } from "react";
-import { ActionsFooter, FooterAction } from "../components/ActionsFooter";
+import { ActionsFooter, FooterAction } from "@/app/components/ActionsFooter";
 import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import { LuWarehouse } from "react-icons/lu";
 import { RiTimerLine } from "react-icons/ri";
 import { useCompleteDay } from "./CompleteDayProvider";
 import { BiSolidEdit } from "react-icons/bi";
-import { useTimer } from "../layoutProviders/TimerProvider";
+import { useTimer } from "@/app/layoutProviders/TimerProvider";
 
 export const CompleteDayFooter = () => {
   const { timerEnd, setTimerDialogOpen } = useTimer();

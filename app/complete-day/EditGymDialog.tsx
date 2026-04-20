@@ -1,10 +1,10 @@
 import { FaSave } from "react-icons/fa";
-import { useUser } from "../layoutProviders/UserProvider";
+import { useUser } from "@/app/layoutProviders/UserProvider";
 import { useState } from "react";
-import { useBlock } from "../layoutProviders/BlockProvider";
-import { ActionDialog, DialogAction } from "../components/ActionDialog";
-import { SearchableSelect } from "../components/SearchableSelect";
-import { useCompletedExercises } from "../layoutProviders/CompletedExercisesProvider";
+import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
+import { SearchableSelect } from "@/app/components/SearchableSelect";
+import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
 import { useCompleteDay } from "./CompleteDayProvider";
 import { IoArrowBack } from "react-icons/io5";
 import { Spinner } from "react-bootstrap";

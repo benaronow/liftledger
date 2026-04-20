@@ -7,8 +7,8 @@ import {
 import { Dispatch, SetStateAction, useCallback } from "react";
 import { LabeledInput } from "@/app/components/LabeledInput";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
-import { useCompletedExercises } from "../../layoutProviders/CompletedExercisesProvider";
-import { useUser } from "../../layoutProviders/UserProvider";
+import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { useUser } from "@/app/layoutProviders/UserProvider";
 import { ExerciseInfoName } from "@/app/edit-block/EditDay/ExerciseInfo";
 import { useCompleteDay } from "../CompleteDayProvider";
 

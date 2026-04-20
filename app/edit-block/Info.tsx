@@ -1,6 +1,6 @@
 import { COLORS } from "@/lib/colors";
 import { PropsWithChildren } from "react";
-import { ActionButton, Variant } from "../components/ActionButton";
+import { ActionButton, Variant } from "@/app/components/ActionButton";
 import { GoAlertFill } from "react-icons/go";
 
 export interface InfoAction {

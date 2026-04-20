@@ -11,7 +11,7 @@ import {
 } from "react";
 import api from "@/lib/config";
 import { USER_API_URL, useUser } from "./UserProvider";
-import { Timer } from "../components/Timer";
+import { Timer } from "@/app/components/Timer";
 
 interface TimerContextType {
   timerEnd?: Date;

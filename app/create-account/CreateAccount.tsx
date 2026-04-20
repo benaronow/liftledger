@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
-import { useUser } from "../layoutProviders/UserProvider";
-import { Spinner } from "../components/spinner";
+import { useUser } from "@/app/layoutProviders/UserProvider";
+import { Spinner } from "@/app/components/spinner";
 import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
 // styles moved inline with Bootstrap utilities where applicable
 

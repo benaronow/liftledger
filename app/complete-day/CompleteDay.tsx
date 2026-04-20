@@ -2,14 +2,14 @@
 
 import { RouteType } from "@/lib/types";
 import { useEffect, useRef } from "react";
-import { Spinner } from "../components/spinner";
-import { useScreenState } from "../layoutProviders/ScreenStateProvider";
-import { useUser } from "../layoutProviders/UserProvider";
+import { Spinner } from "@/app/components/spinner";
+import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
+import { useUser } from "@/app/layoutProviders/UserProvider";
 import { SetList } from "./SetList/SetList";
 import { COLORS } from "@/lib/colors";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
 import { SubmitSetDialog } from "./SubmitSetDialog";
-import { AddButton } from "../components/AddButton";
+import { AddButton } from "@/app/components/AddButton";
 import { AddExerciseDialog } from "./AddExerciseDialog";
 import { FaTrash } from "react-icons/fa";
 import { EditGymDialog } from "./EditGymDialog";

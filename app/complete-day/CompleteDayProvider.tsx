@@ -10,7 +10,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useBlock } from "../layoutProviders/BlockProvider";
+import { useBlock } from "@/app/layoutProviders/BlockProvider";
 
 export interface ExerciseToEdit {
   setIdx: number;

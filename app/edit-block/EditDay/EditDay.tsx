@@ -1,6 +1,6 @@
 import { Exercise } from "@/lib/types";
 import { ChangeEvent } from "react";
-import { AddButton } from "../../components/AddButton";
+import { AddButton } from "@/app/components/AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
 import { useBlock } from "@/app/layoutProviders/BlockProvider";
 import { LabeledInput } from "@/app/components/LabeledInput";

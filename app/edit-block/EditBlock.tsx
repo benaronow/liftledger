@@ -7,11 +7,11 @@ import { EditDay } from "./EditDay";
 import { EditWeek } from "./EditWeek";
 import { useRouter } from "next/navigation";
 import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
-import { Spinner } from "../components/spinner";
+import { Spinner } from "@/app/components/spinner";
 import { useUser } from "@/app/layoutProviders/UserProvider";
 import { FaSave } from "react-icons/fa";
 import { ArrowBackIosNew } from "@mui/icons-material";
-import { ActionsFooter, FooterAction } from "../components/ActionsFooter";
+import { ActionsFooter, FooterAction } from "@/app/components/ActionsFooter";
 import { SaveBlockDialog } from "./SaveBlockDialog";
 import { useEditBlock } from "./EditBlockProvider";
 

@@ -1,6 +1,6 @@
 import { ArrowBackIosNew } from "@mui/icons-material";
-import { LabeledInput } from "../../components/LabeledInput";
-import { SearchableSelect } from "../../components/SearchableSelect";
+import { LabeledInput } from "@/app/components/LabeledInput";
+import { SearchableSelect } from "@/app/components/SearchableSelect";
 import { FaTrash } from "react-icons/fa";
 import { ChangeEvent, useCallback, useMemo } from "react";
 import {

@@ -2,14 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useUser } from "../layoutProviders/UserProvider";
+import { useUser } from "@/app/layoutProviders/UserProvider";
 import dayjs from "dayjs";
 import { Day, Exercise, RouteType, Set, WeightType } from "@/lib/types";
-import { Spinner } from "../components/spinner";
+import { Spinner } from "@/app/components/spinner";
 import Link from "next/link";
 import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
 import { useBlock } from "@/app/layoutProviders/BlockProvider";
-import { ActionButton } from "../components/ActionButton";
+import { ActionButton } from "@/app/components/ActionButton";
 import { BiLogIn } from "react-icons/bi";
 
 export const Dashboard = () => {
