@@ -1,11 +1,18 @@
 import type { ReactNode } from "react";
 import "./styles/globals.css";
 import styles from "./styles/layout.module.css";
-import { Providers } from "./providers";
 import { auth0 } from "@/lib/auth0";
-import { Header } from "./components/header";
-import { Footer } from "./components/footer";
-import { Timer } from "./components/Timer";
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
+import {
+  MUIProviders,
+  ScreenStateProvider,
+  UserProvider,
+  BlockProvider,
+  CompletedExercisesProvider,
+  TimerProvider,
+} from "./layoutProviders";
+import { ExerciseOptionsProvider } from "./layoutProviders/ExerciseOptionsProvider";
 
 interface Props {
   readonly children: ReactNode;
@@ -89,20 +96,29 @@ const RootLayout = async ({ children }: Props) => {
         ></script>
       </head>
       <body>
-        <Providers session={session}>
-          <section className={styles.container}>
-            <header className={styles.header}>
-              <Header />
-            </header>
-            <main className={styles.main}>
-              <Timer />
-              {children}
-            </main>
-            <footer className={styles.footer}>
-              <Footer />
-            </footer>
-          </section>
-        </Providers>
+        <MUIProviders>
+          <ScreenStateProvider>
+            <UserProvider session={session}>
+              <BlockProvider>
+                <section className={styles.container}>
+                  <header className={styles.header}>
+                    <Header />
+                  </header>
+                  <ExerciseOptionsProvider>
+                    <CompletedExercisesProvider>
+                      <TimerProvider>
+                        <main className={styles.main}>{children}</main>
+                      </TimerProvider>
+                    </CompletedExercisesProvider>
+                  </ExerciseOptionsProvider>
+                  <footer className={styles.footer}>
+                    <Footer />
+                  </footer>
+                </section>
+              </BlockProvider>
+            </UserProvider>
+          </ScreenStateProvider>
+        </MUIProviders>
       </body>
     </html>
   );

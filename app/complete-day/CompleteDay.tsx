@@ -1,45 +1,36 @@
 "use client";
 
-import { Block, Exercise, RouteType, Set } from "@/lib/types";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Spinner } from "../components/spinner";
-import { useScreenState } from "@/app/providers/ScreenStateProvider";
-import { useUser } from "@/app/providers/UserProvider";
-import { SetChips } from "./setChips/SetChips";
-import { BiSolidEdit } from "react-icons/bi";
-import { IoMdCheckmark, IoMdClose } from "react-icons/io";
-import { useBlock } from "@/app/providers/BlockProvider";
-import { ActionsFooter, FooterAction } from "../components/ActionsFooter";
+import { RouteType } from "@/lib/types";
+import { useEffect, useRef } from "react";
+import { LogoSpinner } from "@/app/components/LogoSpinner";
+import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
+import { useUser } from "@/app/layoutProviders/UserProvider";
+import { SetList } from "./SetList/SetList";
 import { COLORS } from "@/lib/colors";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
-import { SubmitSetDialog } from "./submitSetDialog";
-import { AddButton } from "../components/AddButton";
-import { AddExerciseDialog } from "./addExerciseDialog";
-import { RiTimerLine } from "react-icons/ri";
-import { useTimer } from "../providers/TimerProvider";
-import { LuWarehouse } from "react-icons/lu";
+import { SubmitSetDialog } from "./SubmitSetDialog";
+import { AddButton } from "@/app/components/AddButton";
+import { AddExerciseDialog } from "./AddExerciseDialog";
 import { FaTrash } from "react-icons/fa";
 import { EditGymDialog } from "./EditGymDialog";
-import { useCompletedExercises } from "../providers/CompletedExercisesProvider";
+import { FinishDayDialog } from "./FinishDayDialog";
+import { useCompleteDay } from "./CompleteDayProvider";
+import { CompleteDayFooter } from "./CompleteDayFooter";
+import { useRouter } from "next/navigation";
 
 export const CompleteDay = () => {
   const router = useRouter();
-  const { session, curUser } = useUser();
-  const { timerEnd, setTimerDialogOpen } = useTimer();
-  const { curBlock, updateBlock } = useBlock();
-  const { getCompletedExercises } = useCompletedExercises();
+  const { session } = useUser();
   const { isFetching, toggleScreenState } = useScreenState();
-  const [exerciseToEdit, setExerciseToEdit] = useState<{
-    setIdx: number | undefined;
-    exercise: Exercise;
-  }>();
-  const [addExerciseIdx, setAddExerciseIdx] = useState<number | undefined>(
-    undefined,
-  );
-  const [editing, setEditing] = useState(false);
-  const [editGymDialogOpen, setEditGymDialogOpen] = useState<boolean>(false);
-  const [deletingIdx, setDeletingIdx] = useState<number | undefined>(undefined);
+  const {
+    exercises,
+    setAddExerciseIdx,
+    editing,
+    setDeletingIdx,
+    isExerciseComplete,
+    currentExIdx,
+  } = useCompleteDay();
+
   const pageContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -55,122 +46,17 @@ export const CompleteDay = () => {
     }
   }, []);
 
-  const exercises = useMemo(
-    () =>
-      curBlock
-        ? curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].exercises
-        : [],
-    [curBlock],
-  );
-
   useEffect(() => {
     if (!exercises.length) router.push("/dashboard");
   }, [exercises]);
 
-  const [exercisesState, setExercisesState] = useState(exercises);
-
-  useEffect(() => {
-    setExercisesState(exercises);
-  }, [curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym]);
-
-  const isExerciseComplete = (exercise: Exercise) =>
-    exercise.sets.length !== 0 &&
-    exercise.sets.reduce(
-      (acc: boolean, curSet: Set) =>
-        acc && (curSet.completed || (curSet.skipped ?? false)),
-      true,
-    );
-
-  const currentExIdx = useMemo(
-    () =>
-      exercisesState.findIndex(
-        (exercise: Exercise) => !isExerciseComplete(exercise),
-      ),
-    [exercisesState],
-  );
-
-  const finishDay = useCallback(async () => {
-    if (curBlock) {
-      const newBlock: Block = {
-        ...curBlock,
-        weeks: curBlock.weeks.toSpliced(
-          curBlock.curWeekIdx,
-          1,
-          curBlock.weeks[curBlock.curWeekIdx].toSpliced(curBlock.curDayIdx, 1, {
-            ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
-            completedDate: new Date(),
-          }),
-        ),
-      };
-
-      await updateBlock(newBlock);
-      getCompletedExercises(curUser?._id || "");
-
-      router.push("/dashboard");
-    }
-  }, [curBlock, updateBlock, router, curUser, getCompletedExercises]);
-
-  const newExercise: Exercise = {
-    name: "",
-    apparatus: "",
-    weightType: "",
-    gym: curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym || "",
-    sets: [],
-  };
-
-  const isDayStarted = useMemo(
-    () =>
-      exercisesState.some((exercise) =>
-        exercise.sets.some((set) => set.completed || set.skipped),
-      ),
-    [exercisesState],
-  );
-
-  const isDayComplete = useMemo(
-    () => exercises.every((exercise: Exercise) => isExerciseComplete(exercise)),
-    [exercises],
-  );
-
-  const footerActions: FooterAction[] = useMemo(
-    () => [
-      {
-        icon: <LuWarehouse fontSize={20} />,
-        label: "Gym",
-        onClick: () => setEditGymDialogOpen(true),
-        disabled: isDayStarted,
-        variant: "primary",
-      },
-      {
-        icon: <RiTimerLine fontSize={20} />,
-        label: "Timer",
-        onClick: () => setTimerDialogOpen(true),
-        disabled: !!timerEnd,
-        variant: "primary",
-      },
-      {
-        icon: editing ? <IoMdClose /> : <BiSolidEdit />,
-        label: editing ? "Stop Editing" : "Edit",
-        onClick: () => setEditing((prev) => !prev),
-        variant: "primary",
-      },
-      {
-        icon: <IoMdCheckmark style={{ fontSize: "20px" }} />,
-        label: "Finish",
-        onClick: finishDay,
-        disabled: !isDayComplete,
-        variant: "primary",
-      },
-    ],
-    [editing, setEditing, finishDay, isDayComplete],
-  );
-
-  if (!exercises.length || isFetching) return <Spinner />;
+  if (!exercises.length || isFetching) return <LogoSpinner />;
 
   return (
     <>
       <div
         className="d-flex flex-column align-items-center w-100 overflow-scroll"
-        style={{ height: "100dvh", padding: "65px 15px 140px" }}
+        style={{ height: "100dvh", padding: "65px 15px 150px" }}
         ref={pageContainerRef}
       >
         <div className="d-flex flex-column align-items-center w-100">
@@ -179,21 +65,11 @@ export const CompleteDay = () => {
               className="d-flex flex-column align-items-center w-100 gap-2"
               key={idx}
             >
-              {editing && (
-                <AddButton
-                  onClick={() => {
-                    setAddExerciseIdx(idx);
-                    setExerciseToEdit({
-                      setIdx: undefined,
-                      exercise: newExercise,
-                    });
-                  }}
-                />
-              )}
+              {editing && <AddButton onClick={() => setAddExerciseIdx(idx)} />}
               <div
                 id={exercise.name + exercise.apparatus}
                 className={`d-flex flex-column align-items-center w-100 rounded overflow-hidden mb-${
-                  idx === exercisesState.length - 1 ? "3" : "4"
+                  idx === exercises.length - 1 ? "3" : "4"
                 }`}
                 style={{ boxShadow: "0px 5px 10px #131314" }}
               >
@@ -242,11 +118,9 @@ export const CompleteDay = () => {
                   </div>
                 </div>
                 {!editing && (
-                  <SetChips
-                    exercise={exercisesState[idx]}
-                    isExerciseComplete={isExerciseComplete(exercisesState[idx])}
+                  <SetList
+                    exercise={exercises[idx]}
                     isCurrentExercise={idx === currentExIdx}
-                    setExerciseToEdit={setExerciseToEdit}
                     containerRef={pageContainerRef}
                   />
                 )}
@@ -254,50 +128,16 @@ export const CompleteDay = () => {
             </div>
           ))}
           {editing && (
-            <AddButton
-              onClick={() => {
-                setAddExerciseIdx(exercisesState.length);
-                setExerciseToEdit({
-                  setIdx: undefined,
-                  exercise: { ...newExercise, addedOn: true },
-                });
-              }}
-            />
+            <AddButton onClick={() => setAddExerciseIdx(exercises.length)} />
           )}
         </div>
       </div>
-      {exerciseToEdit && exerciseToEdit.setIdx !== undefined && (
-        <SubmitSetDialog
-          setIdx={exerciseToEdit.setIdx}
-          exercise={exerciseToEdit.exercise}
-          exercisesState={exercisesState}
-          setExercisesState={setExercisesState}
-          onClose={() => setExerciseToEdit(undefined)}
-        />
-      )}
-      {exerciseToEdit && addExerciseIdx !== undefined && (
-        <AddExerciseDialog
-          addIdx={addExerciseIdx}
-          exercisesState={exercisesState}
-          setExercisesState={setExercisesState}
-          onClose={() => {
-            setAddExerciseIdx(undefined);
-            setExerciseToEdit(undefined);
-          }}
-        />
-      )}
-      <EditGymDialog
-        open={editGymDialogOpen}
-        onClose={() => setEditGymDialogOpen(false)}
-        setExercisesState={setExercisesState}
-      />
-      <DeleteExerciseDialog
-        deletingIdx={deletingIdx}
-        setDeletingIdx={setDeletingIdx}
-        exercisesState={exercisesState}
-        setExercisesState={setExercisesState}
-      />
-      <ActionsFooter actions={footerActions} />
+      <AddExerciseDialog />
+      <DeleteExerciseDialog />
+      <SubmitSetDialog />
+      <EditGymDialog />
+      <FinishDayDialog />
+      <CompleteDayFooter />
     </>
   );
 };

@@ -1,132 +1,3 @@
-// enum Muscle {
-//   Traps = "Traps",
-//   Rhomboids = "Rhomboids",
-//   FrontDelts = "Front Delts",
-//   SideDelts = "Side Delts",
-//   RearDelts = "Rear Delts",
-//   Biceps = "Biceps",
-//   Triceps = "Triceps",
-//   Brachialis = "Brachialis",
-//   Brachioradialis = "Brachioradialis",
-//   Forearms = "Forearms",
-//   Pecs = "Pecs",
-//   Abs = "Abs",
-//   Obliques = "Obliques",
-//   Lats = "Lats",
-//   ErectorSpinae = "Erector Spinae",
-//   Glutes = "Glutes",
-//   Adductors = "Adductors",
-//   Abductors = "Abductors",
-//   Quads = "Quads",
-//   Hamstrings = "Hamstrings",
-//   Calves = "Calves",
-// }
-
-export enum ExerciseName {
-  BenchPress = "Bench Press",
-  InclineBenchPress = "Incline Bench Press",
-  ChestPress = "Chest Press",
-  SqueezePress = "Squeeze Press",
-  StandingChestFly = "Standing Chest Fly",
-  SeatedChestFly = "Seated Chest Fly",
-  PlateLoadedChestPress = "Plate-loaded Chest Press",
-  ChestDip = "Chest Dip",
-  StandingOverheadPress = "Standing Overhead Press",
-  SeatedOverheadPress = "Seated Overhead Press",
-  ArnoldPress = "Arnold Press",
-  FrontRaises = "Front Raise",
-  LateralRaises = "Lateral Raise",
-  BentOverRow = "Bent Over Row",
-  ReverseGripRow = "Reverse Grip Row",
-  ChestSupportedRow = "Chest Supported Row",
-  PendlayRow = "Pendlay Row",
-  SeatedRow = "Seated Row",
-  CloseGripSeatedRow = "Close Grip Seated Row",
-  WideGripSeatedRow = "Wide Grip Seated Row",
-  Pullup = "Pullup",
-  Chinup = "Chinup",
-  Pulldown = "Pulldown",
-  WideGripPulldown = "Wide Grip Pulldown",
-  CloseGripPulldown = "Close Grip Pulldown",
-  ReverseGripPulldown = "Reverse Grip Pulldown",
-  DivergingPulldown = "Diverging Pulldown",
-  TBarRow = "T-Bar Row",
-  SingleArmDumbbellRow = "Single Arm Dumbbell Row",
-  Pullover = "Pullover",
-  RearDeltFly = "Rear Delt Fly",
-  FacePull = "Face Pull",
-  KelsoShrug = "Kelso Shrug",
-  GoodMorning = "Good Morning",
-  BackExtension = "Back Extension",
-  BackSquat = "Back Squat",
-  FrontSquat = "Front Squat",
-  ZercherSquat = "Zercher Squat",
-  HackSquat = "Hack Squat",
-  LegPress = "Leg Press",
-  Deadlift = "Deadlift",
-  RomanianDeadLift = "Romanian Deadlift",
-  HamstringCurl = "Hamstring Curl",
-  LegExtension = "Leg Extension",
-  CalfRaise = "Calf Raise",
-  HipThrust = "Hip Thrust",
-  HipAdduction = "Hip Adduction",
-  HipAbduction = "Hip Abduction",
-  SplitSquat = "Split Squat",
-  BulgarianSplitSquat = "Bulgarian Split Squat",
-  Lunge = "Lunge",
-  ReverseLunge = "Reverse Lunge",
-  Shrug = "Shrug",
-  FarmersCarry = "Farmer's Carry",
-  SuitcaseCarry = "Suitcase Carry",
-  BicepCurl = "Bicep Curl",
-  HammerCurl = "Hammer Curl",
-  CrossBodyHammerCurl = "Cross-body Hammer Curl",
-  PreacherCurl = "Preacher Curl",
-  SpiderCurl = "Spider Curl",
-  InclineCurl = "Incline Curl",
-  ReverseCurl = "Reverse Curl",
-  ZottmanCurl = "Zottman Curl",
-  ConcentrationCurl = "Concentration Curl",
-  StandingOverheadExtension = "Standing Overhead Extension",
-  SeatedOverheadExtension = "Seated Overhead Extension",
-  TricepCrossbodyExtension = "Tricep Cross-body Extension",
-  TricepPushdown = "Tricep Pushdown",
-  TricepDip = "Tricep Dip",
-  Skullcrusher = "Skullcrusher",
-  CloseGripPress = "Close Grip Press",
-  FlatJMPress = "Flat JM Press",
-  InclineJMPress = "Incline JM Press",
-  TricepKickback = "Tricep Kickback",
-  ForearmCurl = "Forearm Curl",
-  ReverseForearmCurl = "Reverse Forearm Curl",
-  Crunch = "Crunch",
-  DeclineCrunch = "Decline Crunch",
-  CableCrunch = "Cable Crunch",
-  LyingCableCrunch = "Lying Cable Crunch",
-  LyingLegRaise = "Lying Leg Raise",
-  HangingKneeRaise = "Hanging Knee Raise",
-  HangingLegRaise = "Hanging Leg Raise",
-  RussianTwist = "Russian Twist",
-}
-
-export enum ExerciseApparatus {
-  Barbell = "Barbell",
-  StraightBar = "Straight Bar",
-  EZCurlBar = "EZ Curl Bar",
-  Dumbell = "Dumbell",
-  SmithMachine = "Smith Machine",
-  CableMachine = "Cable Machine",
-  DedicatedMachine = "Dedicated Machine",
-  Chain = "Chain",
-  Band = "Band",
-  Bodyweight = "Bodyweight",
-}
-
-export enum WeightType {
-  Pounds = "lbs",
-  Kilograms = "kgs",
-}
-
 export interface Set {
   reps: number;
   weight: number;
@@ -188,17 +59,12 @@ export interface User {
   timerEnd?: Date;
   timerPresets: TimerPresets;
   gyms: string[];
-  customExercises: string[];
-  customApparatuses: string[];
+  customExerciseNames: string[];
+  customExerciseApparatuses: string[];
 }
 
 export interface GetParams {
   params: Promise<{ id: string }>;
-}
-
-export interface SizeInfo {
-  width?: number;
-  height?: number;
 }
 
 export enum RouteType {
@@ -206,7 +72,7 @@ export enum RouteType {
   Progress = "/progress",
   History = "/history",
   Home = "/dashboard",
-  Add = "/create-block",
+  Add = "/edit-block",
   Profile = "/profile",
   Settings = "/settings",
   Workout = "/complete-day",

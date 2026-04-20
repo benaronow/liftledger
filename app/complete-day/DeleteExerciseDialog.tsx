@@ -1,46 +1,45 @@
-import { ActionDialog, DialogAction } from "../components/ActionDialog";
-import { Dispatch, SetStateAction } from "react";
+import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
 import { Block, Day, Exercise } from "@/lib/types";
-import { useBlock } from "@/app/providers/BlockProvider";
+import { useBlock } from "@/app/layoutProviders/BlockProvider";
 import { IoArrowBack } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
+import { useCompleteDay } from "./CompleteDayProvider";
+import { useState } from "react";
+import { Spinner } from "react-bootstrap";
 
-interface Props {
-  deletingIdx: number | undefined;
-  setDeletingIdx: Dispatch<SetStateAction<number | undefined>>;
-  exercisesState: Exercise[];
-  setExercisesState: Dispatch<SetStateAction<Exercise[]>>;
-}
-
-export const DeleteExerciseDialog = ({
-  deletingIdx,
-  setDeletingIdx,
-  exercisesState,
-  setExercisesState,
-}: Props) => {
+export const DeleteExerciseDialog = () => {
   const { curBlock, updateBlock } = useBlock();
+  const { deletingIdx, setDeletingIdx, exercises } = useCompleteDay();
+  const [deletingExercise, setDeletingExercise] = useState(false);
 
-  const saveExercises = (exercises: Exercise[]) => {
+  const saveExercises = async (exercises: Exercise[]) => {
     if (curBlock) {
       const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].toSpliced(
         curBlock.curDayIdx,
         1,
-        { ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx], exercises },
+        {
+          ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
+          exercises,
+        },
       );
       const newBlock: Block = {
         ...curBlock,
         weeks: curBlock.weeks.toSpliced(curBlock.curWeekIdx, 1, newDays),
       };
-      updateBlock(newBlock);
+      await updateBlock(newBlock);
     }
   };
 
-  const handleRemoveAddon = () => {
+  const handleDeleteExercise = async () => {
     if (deletingIdx === undefined) return;
-    const updated = exercisesState.filter((_, i) => i !== deletingIdx);
-    setExercisesState(updated);
-    saveExercises(updated);
+
+    setDeletingExercise(true);
+    const updated = exercises.filter(
+      (_: Exercise, i: number) => i !== deletingIdx,
+    );
+    await saveExercises(updated);
     setDeletingIdx(undefined);
+    setDeletingExercise(false);
   };
 
   const deleteActions: DialogAction[] = [
@@ -48,29 +47,39 @@ export const DeleteExerciseDialog = ({
       icon: <IoArrowBack fontSize={28} />,
       onClick: () => setDeletingIdx(undefined),
       variant: "dangerInverted",
+      disabled: deletingExercise,
     },
     {
-      icon: <FaTrash fontSize={26} />,
-      onClick: handleRemoveAddon,
+      icon: deletingExercise ? (
+        <Spinner animation="border" variant="light" />
+      ) : (
+        <FaTrash fontSize={26} />
+      ),
+      onClick: handleDeleteExercise,
       variant: "danger",
+      disabled: deletingExercise,
     },
   ];
 
   return (
-    <ActionDialog
-      open={deletingIdx !== undefined}
-      onClose={() => setDeletingIdx(undefined)}
-      title="Remove Exercise"
-      actions={deleteActions}
-    >
-      <div className="d-flex flex-column">
-        <span className="text-white text-wrap mb-4">
-          Are you sure you want to remove this add-on exercise?
-        </span>
-        <strong className="text-white text-wrap">
-          This action cannot be undone.
-        </strong>
-      </div>
-    </ActionDialog>
+    <>
+      {deletingIdx !== undefined && (
+        <ActionDialog
+          open={deletingIdx !== undefined}
+          onClose={() => setDeletingIdx(undefined)}
+          title="Remove Exercise"
+          actions={deleteActions}
+        >
+          <div className="d-flex flex-column">
+            <span className="text-white text-wrap mb-4">
+              Are you sure you want to remove this add-on exercise?
+            </span>
+            <strong className="text-white text-wrap">
+              This action cannot be undone.
+            </strong>
+          </div>
+        </ActionDialog>
+      )}
+    </>
   );
 };

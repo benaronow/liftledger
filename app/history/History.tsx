@@ -6,11 +6,11 @@ import { ControlPointDuplicate } from "@mui/icons-material";
 import { Block, RouteType } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useScreenState } from "@/app/providers/ScreenStateProvider";
-import { Spinner } from "../components/spinner";
-import { useUser } from "@/app/providers/UserProvider";
-import { useBlock } from "@/app/providers/BlockProvider";
-import { useCompletedExercises } from "../providers/CompletedExercisesProvider";
+import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
+import { LogoSpinner } from "@/app/components/LogoSpinner";
+import { useUser } from "@/app/layoutProviders/UserProvider";
+import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
 
 export const History = () => {
   const router = useRouter();
@@ -38,9 +38,10 @@ export const History = () => {
   }, [innerWidth]);
 
   const getCompletedDate = (block: Block) => {
-    return block.weeks[block.length - 1][
-      block.weeks[block.length - 1].length - 1
-    ].completedDate;
+    const finalWeek = block.weeks[block.weeks.length - 1];
+    const finalDay = finalWeek[finalWeek.length - 1];
+
+    return finalDay.completedDate;
   };
 
   const getTemplateFromBlock = (block: Block) => ({
@@ -78,7 +79,7 @@ export const History = () => {
   const handleCreateFromTemplate = (block: Block) => {
     setTemplateBlock(getTemplateFromBlock(block));
     setEditingWeekIdx(0);
-    router.push("/create-block");
+    router.push("/edit-block");
   };
 
   const completedBlocks = curUser?.blocks
@@ -139,7 +140,7 @@ export const History = () => {
       );
     });
 
-  if (!curUser || isFetching) return <Spinner />;
+  if (!curUser || isFetching) return <LogoSpinner />;
 
   return (
     <div

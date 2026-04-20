@@ -2,14 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useUser } from "../providers/UserProvider";
+import { useUser } from "@/app/layoutProviders/UserProvider";
 import dayjs from "dayjs";
-import { Day, Exercise, RouteType, Set, WeightType } from "@/lib/types";
-import { Spinner } from "../components/spinner";
+import { Day, Exercise, RouteType, Set } from "@/lib/types";
+import { LogoSpinner } from "@/app/components/LogoSpinner";
 import Link from "next/link";
-import { useScreenState } from "@/app/providers/ScreenStateProvider";
-import { useBlock } from "@/app/providers/BlockProvider";
-import { ActionButton } from "../components/ActionButton";
+import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
+import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { ActionButton } from "@/app/components/ActionButton";
 import { BiLogIn } from "react-icons/bi";
 
 export const Dashboard = () => {
@@ -58,7 +58,7 @@ export const Dashboard = () => {
                         curSet.weight *
                         (curEx.weightType === type
                           ? 1
-                          : curEx.weightType === WeightType.Kilograms
+                          : curEx.weightType === "kgs"
                             ? 2.205
                             : 0.454)
                       : 0),
@@ -120,7 +120,7 @@ export const Dashboard = () => {
   ];
 
   if ((session && !curUser) || curBlockLoading || isFetching)
-    return <Spinner />;
+    return <LogoSpinner />;
 
   return (
     <div
