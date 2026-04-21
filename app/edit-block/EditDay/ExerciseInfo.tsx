@@ -10,6 +10,7 @@ import { useEditBlock } from "../EditBlockProvider";
 import { WEIGHT_TYPES } from "@/lib/weightTypes";
 import { ExerciseNameSelect } from "@/app/components/ExerciseNameSelect";
 import { ExerciseApparatusSelect } from "@/app/components/ExerciseApparatusSelect";
+import { moveExercise } from "./moveExercise";
 
 export type ExerciseInfoName = "name" | "apparatus" | "weightType";
 
@@ -38,40 +39,14 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
       ...templateBlock,
       weeks: templateBlock.weeks.map((week, wIdx) =>
         wIdx === editingWeekIdx
-          ? week.map((day, dIdx) => {
-              if (dIdx !== editingDayIdx) return day;
-
-              const exercises = day.exercises;
-              const nonAddonFullIndices = exercises
-                .map((_, i) => i)
-                .filter((i) => !exercises[i].addedOn);
-
-              // Each non-addon exercise owns its immediately trailing addons.
-              // groupEnd returns the last index belonging to that group.
-              const groupEnd = (fullIdx: number) => {
-                const next = nonAddonFullIndices.find((i) => i > fullIdx);
-                return next !== undefined ? next - 1 : exercises.length - 1;
-              };
-
-              const lowerVisIdx = type === "up" ? eIdx - 1 : eIdx;
-              const upperVisIdx = type === "up" ? eIdx : eIdx + 1;
-
-              const lowerFullIdx = nonAddonFullIndices[lowerVisIdx];
-              const upperFullIdx = nonAddonFullIndices[upperVisIdx];
-              const lowerEnd = groupEnd(lowerFullIdx);
-              const upperEnd = groupEnd(upperFullIdx);
-
-              return {
-                ...day,
-                exercises: [
-                  ...exercises.slice(0, lowerFullIdx),
-                  ...exercises.slice(upperFullIdx, upperEnd + 1),
-                  ...exercises.slice(lowerEnd + 1, upperFullIdx),
-                  ...exercises.slice(lowerFullIdx, lowerEnd + 1),
-                  ...exercises.slice(upperEnd + 1),
-                ],
-              };
-            })
+          ? week.map((day, dIdx) =>
+              dIdx !== editingDayIdx
+                ? day
+                : {
+                    ...day,
+                    exercises: moveExercise(day.exercises, eIdx, type),
+                  },
+            )
           : week,
       ),
     });

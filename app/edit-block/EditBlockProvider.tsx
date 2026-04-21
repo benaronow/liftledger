@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { validateTemplate } from "./validateTemplate";
 
 interface EditBlockContextModel {
   editingDayIdx: number;
@@ -50,24 +51,10 @@ export const EditBlockProvider = ({ children }: PropsWithChildren) => {
     number | undefined
   >(undefined);
 
-  const templateErrors = useMemo(() => {
-    const errors: string[] = [];
-    if (!templateBlock.name) errors.push("Block name missing");
-    if (templateBlock.length === 0) errors.push("Block length too short");
-    if (!templateBlock.primaryGym) errors.push("Primary gym missing");
-    for (const day of templateBlock.weeks[editingWeekIdx]) {
-      for (const exercise of day.exercises) {
-        if (
-          !exercise.name ||
-          !exercise.apparatus ||
-          !exercise.weightType ||
-          exercise.sets.length === 0
-        )
-          errors.push(day.name);
-      }
-    }
-    return errors;
-  }, [templateBlock, editingWeekIdx]);
+  const templateErrors = useMemo(
+    () => validateTemplate(templateBlock, editingWeekIdx),
+    [templateBlock, editingWeekIdx],
+  );
 
   return (
     <EditBlockContext.Provider
