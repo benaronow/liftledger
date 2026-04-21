@@ -6,6 +6,7 @@ import { FaTimes } from "react-icons/fa";
 import { ActionButton } from "@/app/components/ActionButton";
 import { ProgressIcon } from "./ProgressIcon";
 import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { computeProgress } from "./computeProgress";
 import { useCompleteDay } from "../CompleteDayProvider";
 
 interface Props {
@@ -19,7 +20,7 @@ export const SetList = ({
   isCurrentExercise,
   containerRef,
 }: Props) => {
-  const { findLatestOccurrence } = useCompletedExercises();
+  const { findLatestOccurrence, completedExercises } = useCompletedExercises();
   const { isExerciseComplete, setExerciseToEdit } = useCompleteDay();
 
   useEffect(() => {
@@ -90,15 +91,9 @@ export const SetList = ({
   };
 
   const getProgressSign = useCallback(
-    (setIdx: number) => {
-      const { repDiff, weightDiff } = getDiffs(setIdx);
-
-      if (weightDiff === undefined || repDiff === undefined) return undefined;
-      if (weightDiff > 0 || (repDiff > 0 && weightDiff === 0)) return 1;
-      if (weightDiff < 0 || (repDiff < 0 && weightDiff === 0)) return -1;
-      return 0;
-    },
-    [getDiffs],
+    (setIdx: number) =>
+      computeProgress(setIdx, exercise, completedExercises.previous),
+    [exercise, completedExercises.previous],
   );
 
   const exerciseHasSkippedSets = useMemo(
