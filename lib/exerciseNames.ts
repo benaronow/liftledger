@@ -11,7 +11,7 @@ export const EXERCISE_NAMES: string[] = [
   "Chest Dip",
   "Chest Fly",
   "Chest Press",
-  "Chest Supported Row",
+  "Chest-supported Row",
   "Chinup",
   "Close Grip Press",
   "Close Grip Pulldown",
