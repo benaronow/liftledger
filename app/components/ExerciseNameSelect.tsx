@@ -20,7 +20,7 @@ export const ExerciseNameSelect = ({
 }: Props) => {
   const {
     addCustomExerciseName,
-    getAllExerciseNameOptions,
+    allExerciseNameOptions,
     getAvailableExerciseNameOptions,
   } = useExerciseOptions();
 
@@ -31,10 +31,10 @@ export const ExerciseNameSelect = ({
 
   const unavailableNameOptions = useMemo(
     () =>
-      getAllExerciseNameOptions().filter(
+      allExerciseNameOptions.filter(
         (o) => !availableNameOptions.includes(o),
       ),
-    [availableNameOptions, getAllExerciseNameOptions],
+    [availableNameOptions, allExerciseNameOptions],
   );
 
   return (

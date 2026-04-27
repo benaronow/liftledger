@@ -8,18 +8,19 @@ import {
   PropsWithChildren,
   useCallback,
   useContext,
+  useMemo,
 } from "react";
 import { useUser } from "./UserProvider";
 
 interface ExerciseOptionsContextModel {
   addCustomExerciseName: (value: string) => Promise<void>;
   addCustomExerciseApparatus: (value: string) => Promise<void>;
-  getAllExerciseNameOptions: () => string[];
+  allExerciseNameOptions: string[];
   getAvailableExerciseNameOptions: (
     curExercise: Exercise,
     allReservedExercises: Exercise[],
   ) => string[];
-  getAllExerciseApparatusOptions: () => string[];
+  allExerciseApparatusOptions: string[];
   getAvailableExerciseApparatusOptions: (
     curExercise: Exercise,
     allReservedExercises: Exercise[],
@@ -29,9 +30,9 @@ interface ExerciseOptionsContextModel {
 const defaultExerciseOptionsContext: ExerciseOptionsContextModel = {
   addCustomExerciseName: async () => {},
   addCustomExerciseApparatus: async () => {},
-  getAllExerciseNameOptions: () => [],
+  allExerciseNameOptions: [],
   getAvailableExerciseNameOptions: () => [],
-  getAllExerciseApparatusOptions: () => [],
+  allExerciseApparatusOptions: [],
   getAvailableExerciseApparatusOptions: () => [],
 };
 
@@ -51,15 +52,15 @@ export const ExerciseOptionsProvider = ({
           !baseOptions.some((b: string) => b.toLowerCase() === c.toLowerCase()),
       ) ?? [];
 
-    return [...baseOptions, ...filteredCustom];
+    return [...baseOptions, ...filteredCustom].sort();
   };
 
-  const getAllExerciseNameOptions = useCallback(
+  const allExerciseNameOptions = useMemo<string[]>(
     () => getAllOptions(EXERCISE_NAMES, curUser?.customExerciseNames),
     [curUser],
   );
 
-  const getAllExerciseApparatusOptions = useCallback(
+  const allExerciseApparatusOptions = useMemo<string[]>(
     () =>
       getAllOptions(EXERCISE_APPARATUSES, curUser?.customExerciseApparatuses),
     [curUser],
@@ -69,7 +70,7 @@ export const ExerciseOptionsProvider = ({
     async (value: string) => {
       if (
         !curUser ||
-        getAllExerciseNameOptions()
+        allExerciseNameOptions
           .map((o) => o.toLowerCase())
           .includes(value.toLowerCase())
       )
@@ -87,7 +88,7 @@ export const ExerciseOptionsProvider = ({
     async (value: string) => {
       if (
         !curUser ||
-        getAllExerciseApparatusOptions()
+        allExerciseApparatusOptions
           .map((o) => o.toLowerCase())
           .includes(value.toLowerCase())
       )
@@ -111,7 +112,7 @@ export const ExerciseOptionsProvider = ({
           e.name !== curExercise.name || e.apparatus !== curExercise.apparatus,
       );
 
-      return getAllExerciseNameOptions().filter(
+      return allExerciseNameOptions.filter(
         (n) =>
           !unavailableExercises.find(
             (e) => e.name === n && e.apparatus === curExercise.apparatus,
@@ -128,7 +129,7 @@ export const ExerciseOptionsProvider = ({
           e.name !== curExercise.name || e.apparatus !== curExercise.apparatus,
       );
 
-      return getAllExerciseApparatusOptions().filter(
+      return allExerciseApparatusOptions.filter(
         (a) =>
           !unavailableExercises.find(
             (e) => e.apparatus === a && e.name === curExercise.name,
@@ -143,9 +144,9 @@ export const ExerciseOptionsProvider = ({
       value={{
         addCustomExerciseName,
         addCustomExerciseApparatus,
-        getAllExerciseNameOptions,
+        allExerciseNameOptions,
         getAvailableExerciseNameOptions,
-        getAllExerciseApparatusOptions,
+        allExerciseApparatusOptions,
         getAvailableExerciseApparatusOptions,
       }}
     >

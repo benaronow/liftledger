@@ -20,7 +20,7 @@ export const ExerciseApparatusSelect = ({
 }: Props) => {
   const {
     addCustomExerciseApparatus,
-    getAllExerciseApparatusOptions,
+    allExerciseApparatusOptions,
     getAvailableExerciseApparatusOptions,
   } = useExerciseOptions();
 
@@ -31,10 +31,14 @@ export const ExerciseApparatusSelect = ({
 
   const unavailableApparatusOptions = useMemo(
     () =>
-      getAllExerciseApparatusOptions().filter(
-        (o) => !availableApparatusOptions.includes(o),
+      allExerciseApparatusOptions.filter(
+        (o) =>
+          !getAvailableExerciseApparatusOptions(
+            curExercise,
+            reservedExercises,
+          ).includes(o),
       ),
-    [availableApparatusOptions, getAllExerciseApparatusOptions],
+    [availableApparatusOptions, allExerciseApparatusOptions],
   );
 
   return (

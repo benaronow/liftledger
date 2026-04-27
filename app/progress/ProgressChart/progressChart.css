@@ -1,0 +1,12 @@
+.recharts-surface {
+  outline: none;
+}
+
+.recharts-legend-item {
+  margin-right: 0px !important;
+  text-align: center;
+}
+
+g {
+  outline: none;
+}

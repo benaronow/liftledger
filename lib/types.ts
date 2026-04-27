@@ -17,7 +17,12 @@ export interface Exercise {
   addedOn?: boolean;
 }
 
-export interface ExerciseWithDate extends Exercise {
+export interface CompletedExercise {
+  name: string;
+  apparatus: string;
+  gym?: string;
+  sets: Set[];
+  weightType: string;
   completedDate?: Date;
 }
 
