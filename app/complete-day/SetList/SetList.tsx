@@ -57,18 +57,13 @@ export const SetList = ({
   const getDiffs = useCallback(
     (setIdx: number) => {
       const lastCompletedSet = findLatestOccurrence(
-        (e: Exercise) => {
-          if (
-            e.name === exercise.name &&
-            e.apparatus === exercise.apparatus &&
-            e.gym === exercise.gym &&
-            e.sets[setIdx] &&
-            e.sets[setIdx].completed
-          )
-            return e.sets[setIdx];
-        },
-        { includeCurrentDay: false },
-      );
+        (e: Exercise) =>
+          e.name === exercise.name &&
+          e.apparatus === exercise.apparatus &&
+          e.gym === exercise.gym &&
+          !!e.sets[setIdx] &&
+          e.sets[setIdx].completed,
+      )?.sets[setIdx];
 
       if (lastCompletedSet) {
         const repDiff = exercise.sets[setIdx]

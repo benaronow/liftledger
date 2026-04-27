@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Exercise,
-  ExerciseWithDate,
-  Set,
-} from "@/lib/types";
+import { Exercise, CompletedExercise, Set } from "@/lib/types";
 import {
   createContext,
   PropsWithChildren,
@@ -20,14 +16,14 @@ import { useBlock } from "./BlockProvider";
 interface CompletedExercisesContextType {
   completedExercises: {
     current: Exercise[];
-    previous: ExerciseWithDate[];
+    previous: CompletedExercise[];
   };
   completedExercisesLoading: boolean;
   getCompletedExercises: (userId: string) => Promise<void>;
-  findLatestOccurrence: <T>(
-    checkerFunc: (e: Exercise) => T,
-    options: { includeCurrentDay: boolean },
-  ) => T | undefined;
+  findLatestOccurrence: (
+    checkerFunc: (e: Exercise) => boolean,
+    options?: { includeCurrentDay: boolean },
+  ) => CompletedExercise | undefined;
   getNewSetsFromLatest: (exercise: Exercise, numSets?: number) => Set[];
   getUpdatedExercise: (
     update: string,
@@ -56,7 +52,7 @@ export const CompletedExercisesProvider = ({
   const { curBlock } = useBlock();
   const [completedExercises, setCompletedExercises] = useState<{
     current: Exercise[];
-    previous: ExerciseWithDate[];
+    previous: CompletedExercise[];
   }>({ current: [], previous: [] });
   const [completedExercisesLoading, setCompletedExercisesLoading] =
     useState(false);
@@ -66,7 +62,7 @@ export const CompletedExercisesProvider = ({
     const res = await api.get(`${USER_API_URL}/${userId}/completedExercises`);
     const result: {
       current: Exercise[];
-      previous: ExerciseWithDate[];
+      previous: CompletedExercise[];
     } = res.data;
     if (result) setCompletedExercises(result);
     setCompletedExercisesLoading(false);
@@ -77,18 +73,17 @@ export const CompletedExercisesProvider = ({
   }, [curUser]);
 
   const findLatestOccurrence = useCallback(
-    <T,>(
-      checkerFunc: (e: Exercise) => T,
-      { includeCurrentDay }: { includeCurrentDay: boolean },
-    ): T | undefined => {
-      const exercises: ExerciseWithDate[] = [
-        ...(includeCurrentDay ? completedExercises.current : []),
+    (
+      checkerFunc: (e: Exercise) => boolean,
+      options?: { includeCurrentDay: boolean },
+    ): CompletedExercise | undefined => {
+      const exercises: CompletedExercise[] = [
+        ...(options?.includeCurrentDay ? completedExercises.current : []),
         ...completedExercises.previous,
       ];
 
       for (const exercise of exercises) {
-        const result = checkerFunc(exercise);
-        if (result) return result;
+        if (checkerFunc(exercise)) return exercise;
       }
     },
     [completedExercises, curBlock],
@@ -97,17 +92,12 @@ export const CompletedExercisesProvider = ({
   const getNewSetsFromLatest = useCallback(
     (exercise: Exercise, numSets?: number) => {
       const latestOccurrenceSameGymSets = findLatestOccurrence(
-        (e: Exercise) => {
-          if (
-            e.name === exercise.name &&
-            e.apparatus === exercise.apparatus &&
-            e.gym === exercise.gym
-          )
-            return e.sets;
-        },
-        { includeCurrentDay: false },
+        (e: Exercise) =>
+          e.name === exercise.name &&
+          e.apparatus === exercise.apparatus &&
+          e.gym === exercise.gym,
       )
-        ?.filter((set) => !set.addedOn)
+        ?.sets?.filter((set) => !set.addedOn)
         .map((set) => ({
           ...set,
           completed: false,
@@ -116,11 +106,8 @@ export const CompletedExercisesProvider = ({
         }));
 
       const latestOccurrenceAllGymsSetNum = findLatestOccurrence(
-        (e: Exercise) => {
-          if (e.name === exercise.name && e.apparatus === exercise.apparatus)
-            return e;
-        },
-        { includeCurrentDay: false },
+        (e: Exercise) =>
+          e.name === exercise.name && e.apparatus === exercise.apparatus,
       )?.sets.filter((set) => !set.addedOn).length;
 
       const sets =
@@ -153,10 +140,8 @@ export const CompletedExercisesProvider = ({
       const newExercise = {
         ...exercise,
         name: type === "name" ? update : exercise.name,
-        apparatus:
-          type === "apparatus" ? update : exercise.apparatus,
-        weightType:
-          type === "weightType" ? update : exercise.weightType,
+        apparatus: type === "apparatus" ? update : exercise.apparatus,
+        weightType: type === "weightType" ? update : exercise.weightType,
       };
 
       return {

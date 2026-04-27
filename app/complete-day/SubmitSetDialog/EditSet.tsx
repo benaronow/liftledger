@@ -15,16 +15,11 @@ export const EditSet = ({ exerciseState, setExerciseState }: Props) => {
 
   const latestPreviousSetNote = useMemo(() => {
     return findLatestOccurrence(
-      (e: Exercise) => {
-        if (
-          e.name === exerciseState?.name &&
-          e.apparatus === exerciseState?.apparatus &&
-          e.sets[setIdx]
-        )
-          return e.sets[setIdx].note !== "" ? e.sets[setIdx].note : "no note";
-      },
-      { includeCurrentDay: false },
-    );
+      (e: Exercise) =>
+        e.name === exerciseState?.name &&
+        e.apparatus === exerciseState?.apparatus &&
+        !!e.sets[setIdx],
+    )?.sets[setIdx].note;
   }, [exerciseState, setIdx, findLatestOccurrence]);
 
   const handleChange = (
@@ -53,7 +48,7 @@ export const EditSet = ({ exerciseState, setExerciseState }: Props) => {
 
   return (
     <>
-      {latestPreviousSetNote && latestPreviousSetNote !== "no note" && (
+      {!!latestPreviousSetNote && (
         <span className="small mb-2 text-wrap text-white">{`Previous note: ${latestPreviousSetNote}`}</span>
       )}
       <LabeledInput

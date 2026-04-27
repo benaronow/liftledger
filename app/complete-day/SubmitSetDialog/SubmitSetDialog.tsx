@@ -101,17 +101,12 @@ export const SubmitSetDialog = () => {
     }
 
     const latestPreviousSet = findLatestOccurrence(
-      (e: Exercise) => {
-        if (
-          e.name === exercise?.name &&
-          e.apparatus === exercise?.apparatus &&
-          e.gym === exercise.gym &&
-          e.sets[setIdx]
-        )
-          return e.sets[setIdx];
-      },
-      { includeCurrentDay: false },
-    );
+      (e: Exercise) =>
+        e.name === exercise?.name &&
+        e.apparatus === exercise?.apparatus &&
+        e.gym === exercise.gym &&
+        !!e.sets[setIdx],
+    )?.sets[setIdx];
 
     const updatedSet = options?.skip
       ? (latestPreviousSet ?? exerciseState.sets[setIdx])

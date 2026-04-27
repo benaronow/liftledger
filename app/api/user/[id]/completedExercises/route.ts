@@ -1,7 +1,7 @@
 import { connectDB } from "@/lib/connectDB";
 import BlockModel from "@/lib/models/block";
 import UserModel from "@/lib/models/user";
-import { Block, Exercise, ExerciseWithDate, GetParams } from "@/lib/types";
+import { Block, Exercise, CompletedExercise, GetParams } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest, { params }: GetParams) => {
@@ -17,7 +17,7 @@ export const GET = async (req: NextRequest, { params }: GetParams) => {
     (block) => String(block._id) === String(user?.curBlock),
   );
 
-  const previousCompletedExercises: ExerciseWithDate[] = blocks
+  const previousCompletedExercises: CompletedExercise[] = blocks
     .flatMap((block) => {
       if (block._id === curBlock?._id) {
         return block.weeks
@@ -40,7 +40,7 @@ export const GET = async (req: NextRequest, { params }: GetParams) => {
         week.flatMap((day) =>
           day.exercises.map((exercise) => ({
             ...exercise,
-            completedDate: day.completedDate,
+            completedDate: day.completedDate!,
           })),
         ),
       );
