@@ -179,6 +179,7 @@ export const EditWeek = () => {
             options={curUser?.gyms || []}
             onSelect={(gym: string) => setPrimaryGym(gym)}
             onAddCustom={handleAddGym}
+            canAddCustom
             disabled={blockStarted}
             placeholder="Please select a gym"
           />

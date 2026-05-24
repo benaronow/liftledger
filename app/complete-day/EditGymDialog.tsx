@@ -99,6 +99,7 @@ export const EditGymDialog = () => {
             options={curUser?.gyms || []}
             onSelect={setGymName}
             onAddCustom={handleAddGym}
+            canAddCustom
             placeholder="Please select a gym"
           />
         </ActionDialog>

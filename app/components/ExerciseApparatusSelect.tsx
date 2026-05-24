@@ -49,6 +49,7 @@ export const ExerciseApparatusSelect = ({
       unavailableOptions={unavailableApparatusOptions}
       onSelect={onSelect}
       onAddCustom={addCustomExerciseApparatus}
+      canAddCustom
       className={className}
     />
   );

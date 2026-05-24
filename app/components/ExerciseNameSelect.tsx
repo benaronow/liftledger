@@ -31,9 +31,7 @@ export const ExerciseNameSelect = ({
 
   const unavailableNameOptions = useMemo(
     () =>
-      allExerciseNameOptions.filter(
-        (o) => !availableNameOptions.includes(o),
-      ),
+      allExerciseNameOptions.filter((o) => !availableNameOptions.includes(o)),
     [availableNameOptions, allExerciseNameOptions],
   );
 
@@ -45,6 +43,7 @@ export const ExerciseNameSelect = ({
       unavailableOptions={unavailableNameOptions}
       onSelect={onSelect}
       onAddCustom={addCustomExerciseName}
+      canAddCustom
       className={className}
     />
   );
