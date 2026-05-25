@@ -21,7 +21,6 @@ interface UserContextType {
   getUser: (email: string) => Promise<void>;
   createUser: (user: Partial<User>) => Promise<void>;
   updateUser: (user: User) => Promise<void>;
-  deleteUser: (email: string) => Promise<void>;
 }
 
 const defaultUserContext: UserContextType = {
@@ -31,7 +30,6 @@ const defaultUserContext: UserContextType = {
   getUser: async () => {},
   createUser: async () => {},
   updateUser: async () => {},
-  deleteUser: async () => {},
 };
 
 export const UserContext = createContext(defaultUserContext);
@@ -77,14 +75,6 @@ export const UserProvider = ({
     setCurUserLoading(false);
   };
 
-  const deleteUser = async (uid: string) => {
-    setCurUserLoading(true);
-    const res = await api.delete(`${USER_API_URL}/${uid}`);
-    const result: { acknowledged: boolean; deletedCount: number } = res.data;
-    if (result.acknowledged && result.deletedCount > 0) setCurUser(undefined);
-    setCurUserLoading(false);
-  };
-
   return (
     <UserContext.Provider
       value={{
@@ -95,7 +85,6 @@ export const UserProvider = ({
         getUser,
         createUser,
         updateUser,
-        deleteUser,
       }}
     >
       {children}
