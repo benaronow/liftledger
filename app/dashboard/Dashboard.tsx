@@ -1,28 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useUser } from "@/app/layoutContainer/UserProvider";
 import dayjs from "dayjs";
 import { Day, Exercise, RouteType, Set } from "@/lib/types";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
 import Link from "next/link";
-import { useScreenState } from "@/app/layoutContainer/ScreenStateProvider";
 import { useBlock } from "@/app/layoutContainer/BlockProvider";
 
 export const Dashboard = () => {
   const { curUser } = useUser();
   const { curBlock, curBlockLoading } = useBlock();
-  const { isFetching, toggleScreenState } = useScreenState();
-  const router = useRouter();
-  useEffect(() => {
-    toggleScreenState("fetching", false);
-    router.prefetch(RouteType.Add);
-    router.prefetch(RouteType.History);
-    router.prefetch(RouteType.Profile);
-    router.prefetch(RouteType.Progress);
-    router.prefetch(RouteType.Workout);
-  }, []);
 
   const getExerciseCompleted = (exercise: Exercise) => {
     return exercise.sets.reduce(
@@ -110,7 +97,7 @@ export const Dashboard = () => {
     { metric: "Total Weight Lifted:", value: getTotalWeight("lbs") },
   ];
 
-  if (curBlockLoading || isFetching) return <LogoSpinner />;
+  if (!curUser || curBlockLoading) return <LogoSpinner />;
 
   return (
     <div className="d-flex flex-column align-items-center justify-content-evenly h-100 w-100">
@@ -189,9 +176,6 @@ export const Dashboard = () => {
                 transform: "translateY(-60px)",
               }}
               href={RouteType.Workout}
-              onClick={() => {
-                toggleScreenState("fetching", true);
-              }}
             >
               <span>Lift!</span>
             </Link>

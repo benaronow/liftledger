@@ -1,42 +1,23 @@
 "use client";
 
 import { Avatar } from "@mui/material";
-import { useEffect } from "react";
 import { useUser } from "@/app/layoutContainer/UserProvider";
 import { useRouter } from "next/navigation";
-import { RouteType } from "@/lib/types";
-import { useScreenState } from "@/app/layoutContainer/ScreenStateProvider";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
 import { COLORS } from "@/lib/colors";
 
 export const Profile = () => {
   const { session, curUser } = useUser();
-  const { isFetching, toggleScreenState } = useScreenState();
   const router = useRouter();
-
-  useEffect(() => {
-    if (!session) {
-      router.push("/dashboard");
-    } else {
-      toggleScreenState("fetching", false);
-      router.prefetch(RouteType.Add);
-      router.prefetch(RouteType.Home);
-      router.prefetch(RouteType.History);
-      router.prefetch(RouteType.Progress);
-    }
-  }, []);
 
   const handleLogout = () => {
     router.push("/auth/logout");
   };
 
-  if (!curUser || isFetching) return <LogoSpinner />;
+  if (!curUser) return <LogoSpinner />;
 
   return (
-    <div
-      className="d-flex flex-column align-items-center w-100"
-      style={{ height: "100%", overflow: "scroll" }}
-    >
+    <div className="d-flex flex-column align-items-center h-100 w-100 overflow-scroll">
       <div
         className="d-flex flex-column align-items-center text-white text-nowrap w-100"
         style={{

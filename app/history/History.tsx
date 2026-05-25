@@ -1,12 +1,11 @@
 "use client";
 
-import { useTheme } from "@mui/material";
+import { useMediaQuery, useTheme } from "@mui/material";
 import dayjs from "dayjs";
 import { ControlPointDuplicate } from "@mui/icons-material";
-import { Block, RouteType } from "@/lib/types";
+import { Block } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useScreenState } from "@/app/layoutContainer/ScreenStateProvider";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
 import { useUser } from "@/app/layoutContainer/UserProvider";
 import { useBlock } from "@/app/layoutContainer/BlockProvider";
@@ -15,28 +14,15 @@ import { ActionButton } from "../components/ActionButton";
 
 export const History = () => {
   const router = useRouter();
-  const { curUser, session } = useUser();
+  const { curUser } = useUser();
   const { curBlock, setTemplateBlock, setEditingWeekIdx } = useBlock();
   const { getNewSetsFromLatest } = useCompletedExercises();
-  const { innerWidth, isFetching, toggleScreenState } = useScreenState();
   const theme = useTheme();
+  const isTabletOrLarger = useMediaQuery(theme.breakpoints.up("sm"));
 
   useEffect(() => {
-    if (!session) {
-      router.push("/dashboard");
-    } else {
-      toggleScreenState("fetching", false);
-      router.prefetch(RouteType.Add);
-      router.prefetch(RouteType.Home);
-      router.prefetch(RouteType.Profile);
-      router.prefetch(RouteType.Progress);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (innerWidth && innerWidth > theme.breakpoints.values["sm"])
-      router.push("/dashboard");
-  }, [innerWidth]);
+    if (isTabletOrLarger) router.push("/dashboard");
+  }, [isTabletOrLarger]);
 
   const getCompletedDate = (block: Block) => {
     if (block.endDate) return block.endDate;
@@ -124,7 +110,7 @@ export const History = () => {
       );
     });
 
-  if (!curUser || isFetching) return <LogoSpinner />;
+  if (!curUser) return <LogoSpinner />;
 
   return (
     <div

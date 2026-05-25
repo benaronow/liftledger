@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import "./styles/globals.css";
-import { LayoutContainer } from "./layoutContainer/LayoutContainer";
+import { LayoutContainer } from "./layoutContainer";
 import { auth0 } from "@/lib/auth0";
 
 interface Props {

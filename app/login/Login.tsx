@@ -1,19 +1,14 @@
 "use client";
 
 import { ActionButton } from "@/app/components/ActionButton";
-import { useScreenState } from "@/app/layoutContainer/ScreenStateProvider";
 import { useRouter } from "next/navigation";
 import { BiLogIn } from "react-icons/bi";
 
 export const Login = () => {
-  const { toggleScreenState } = useScreenState();
   const router = useRouter();
 
   return (
-    <div
-      className="d-flex flex-column w-100 align-items-center"
-      style={{ height: "100%", justifyContent: "center", gap: "20px" }}
-    >
+    <div className="d-flex flex-column h-100 w-100 align-items-center justify-content-center gap-4">
       <span
         className="text-white"
         style={{
@@ -28,7 +23,6 @@ export const Login = () => {
         label="Log in"
         icon={<BiLogIn fontSize={24} />}
         onClick={() => {
-          toggleScreenState("fetching", true);
           router.push("/auth/login");
         }}
         width="auto"

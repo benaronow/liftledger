@@ -1,17 +1,18 @@
 "use client";
 
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useEffect } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import styles from "./LayoutContainer.module.css";
 import { MUIProviders } from "./MUIProviders";
-import { ScreenStateProvider } from "./ScreenStateProvider";
 import { UserProvider } from "./UserProvider";
 import { BlockProvider } from "./BlockProvider";
 import { ExerciseOptionsProvider } from "./ExerciseOptionsProvider";
 import { CompletedExercisesProvider } from "./CompletedExercisesProvider";
 import { TimerProvider } from "./TimerProvider";
 import { SessionData } from "@auth0/nextjs-auth0/types";
+import { usePathname, useRouter } from "next/navigation";
+import { RouteType } from "@/lib/types";
 
 interface Props {
   session: SessionData | null;
@@ -20,9 +21,26 @@ interface Props {
 export const LayoutContainer = ({
   children,
   session,
-}: PropsWithChildren<Props>) => (
-  <MUIProviders>
-    <ScreenStateProvider>
+}: PropsWithChildren<Props>) => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!session && pathname !== "/login") {
+      router.push("/login");
+    }
+  }, [session]);
+
+  useEffect(() => {
+    router.prefetch(RouteType.Add);
+    router.prefetch(RouteType.History);
+    router.prefetch(RouteType.Profile);
+    router.prefetch(RouteType.Progress);
+    router.prefetch(RouteType.Workout);
+  }, []);
+
+  return (
+    <MUIProviders>
       <UserProvider session={session}>
         <BlockProvider>
           <ExerciseOptionsProvider>
@@ -42,6 +60,6 @@ export const LayoutContainer = ({
           </ExerciseOptionsProvider>
         </BlockProvider>
       </UserProvider>
-    </ScreenStateProvider>
-  </MUIProviders>
-);
+    </MUIProviders>
+  );
+};
