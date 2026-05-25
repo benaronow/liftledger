@@ -7,21 +7,16 @@ import { useRouter } from "next/navigation";
 import { RouteType } from "@/lib/types";
 import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import { COLORS } from "@/lib/colors";
 
 export const Profile = () => {
   const { session, curUser } = useUser();
   const { isFetching, toggleScreenState } = useScreenState();
   const router = useRouter();
-  dayjs.extend(utc);
 
   useEffect(() => {
     if (!session) {
       router.push("/dashboard");
-    } else if (!curUser) {
-      router.push("/create-account");
     } else {
       toggleScreenState("fetching", false);
       router.prefetch(RouteType.Add);
@@ -56,7 +51,7 @@ export const Profile = () => {
         }}
       >
         <Avatar
-          sx={{ height: "75px", width: "75px", marginRight: "20px" }}
+          sx={{ height: "75px", width: "75px" }}
           src={session?.user.picture}
         />
         <div
@@ -93,19 +88,6 @@ export const Profile = () => {
               Email:
             </span>
             <span>{curUser ? curUser.email : "Unavailable"}</span>
-          </div>
-          <div
-            className="d-flex justify-content-between w-100"
-            style={{ fontFamily: "League+Spartan", fontSize: "14px" }}
-          >
-            <span className="fw-bold" style={{ fontFamily: "League+Spartan" }}>
-              Birthday:
-            </span>
-            <span>
-              {curUser
-                ? `${dayjs(curUser.birthday).utc().format("MM/DD/YYYY")}`
-                : "Unavailable"}
-            </span>
           </div>
         </div>
         <button

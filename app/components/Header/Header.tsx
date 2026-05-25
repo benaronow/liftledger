@@ -16,7 +16,6 @@ export const Header = () => {
   const { toggleScreenState } = useScreenState();
 
   const getTitle = () => {
-    if (pathname.includes(RouteType.Signup)) return "Create Account";
     if (pathname.includes(RouteType.Progress)) return "Progress";
     if (pathname.includes(RouteType.History)) return "History";
     if (pathname.includes(RouteType.Add))
