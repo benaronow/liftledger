@@ -11,6 +11,7 @@ import { LogoSpinner } from "@/app/components/LogoSpinner";
 import { useUser } from "@/app/layoutProviders/UserProvider";
 import { useBlock } from "@/app/layoutProviders/BlockProvider";
 import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { ActionButton } from "../components/ActionButton";
 
 export const History = () => {
   const router = useRouter();
@@ -90,54 +91,35 @@ export const History = () => {
       return (
         <div
           key={idx}
-          className="d-flex align-items-center w-100 text-white text-nowrap justify-content-between"
+          className="d-flex align-items-center w-100 text-white text-nowrap justify-content-between rounded"
           style={{
             fontFamily: "League+Spartan",
             fontSize: "14px",
             marginBottom: "15px",
-            background: "#58585b",
+            background: "#131314",
             borderRadius: "5px",
-            border: "solid 5px #58585b",
             boxShadow: "0px 5px 10px #131314",
+            height: "35px",
+            paddingLeft: "10px",
           }}
         >
-          <div
-            className="d-flex w-100 align-items-center"
-            style={{
-              background: "#131314",
-              padding: "5px 10px",
-              borderRadius: "5px",
-              height: "35px",
-              fontSize: "14px",
-              overflow: "hidden",
-            }}
-          >
-            <span className="text-nowrap text-truncate">
-              <span className="fw-bold" style={{ marginRight: "5px" }}>{`${
-                idx + 1
-              }. ${block.name}`}</span>
-              <span>{`(${dayjs(block.startDate).format("M/DD/YY")} -  ${
-                getCompletedDate(block)
-                  ? dayjs(getCompletedDate(block)).format("M/DD/YY")
-                  : "N/A"
-              })`}</span>
-            </span>
-          </div>
-          <button
-            className="d-flex justify-content-center align-items-center border-0"
-            style={{
-              marginLeft: "5px",
-              background: "#0096FF",
-              color: "white",
-              height: "35px",
-              width: "35px",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
+          <span className="overflow-hidden text-nowrap text-truncate">
+            <span className="fw-bold" style={{ marginRight: "5px" }}>{`${
+              idx + 1
+            }. ${block.name}`}</span>
+            <span>{`(${dayjs(block.startDate).format("M/DD/YY")} -  ${
+              getCompletedDate(block)
+                ? dayjs(getCompletedDate(block)).format("M/DD/YY")
+                : "N/A"
+            })`}</span>
+          </span>
+          <ActionButton
+            roundedSide="end"
+            height={35}
+            width={35}
+            icon={<ControlPointDuplicate />}
             onClick={() => handleCreateFromTemplate(block)}
-          >
-            <ControlPointDuplicate />
-          </button>
+          />
         </div>
       );
     });
