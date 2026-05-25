@@ -1,7 +1,7 @@
 import { Day } from "@/lib/types";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, useEffect, useMemo } from "react";
+import React, { ChangeEvent, useEffect } from "react";
 import { LabeledInput } from "@/app/components/LabeledInput";
 import { AddButton } from "@/app/components/AddButton";
 import { DayInfo } from "./DayInfo";
@@ -19,18 +19,6 @@ export const EditWeek = () => {
     useBlock();
   const { getNewSetsFromLatest } = useCompletedExercises();
   const { templateErrors } = useEditBlock();
-
-  const blockStarted = useMemo(
-    () =>
-      curBlock?.weeks.some((week) =>
-        week.some((day) =>
-          day.exercises.some((exercise) =>
-            exercise.sets.some((set) => set.completed || set.skipped),
-          ),
-        ),
-      ),
-    [curBlock],
-  );
 
   useEffect(() => {
     if (templateBlock.primaryGym === undefined && curUser?.gyms?.length) {
@@ -69,33 +57,34 @@ export const EditWeek = () => {
   };
 
   const setPrimaryGym = (gym: string) => {
+    const curWeekIdx = curBlock?.curWeekIdx ?? 0;
+    const curDayIdx = curBlock?.curDayIdx ?? 0;
+
     setTemplateBlock({
       ...templateBlock,
       primaryGym: gym,
-      weeks: templateBlock.weeks.map((week, wIdx) =>
-        wIdx === editingWeekIdx
-          ? week.map((day, idx) =>
-              idx >= (curBlock?.curDayIdx ?? 0)
-                ? {
-                    ...day,
-                    gym,
-                    exercises: day.exercises.map((exercise) =>
-                      exercise.sets.some((s) => s.completed)
-                        ? exercise
-                        : {
-                            ...exercise,
-                            gym,
-                            sets: getNewSetsFromLatest({
-                              ...exercise,
-                              gym,
-                            }),
-                          },
-                    ),
-                  }
-                : day,
-            )
-          : week,
-      ),
+      weeks: templateBlock.weeks.map((week, wIdx) => {
+        if (wIdx < curWeekIdx) return week;
+
+        return week.map((day, dIdx) => {
+          if (wIdx === curWeekIdx && dIdx < curDayIdx) return day;
+
+          const dayHasCompletedSets = day.exercises.some((ex) =>
+            ex.sets.some((s) => s.completed || s.skipped),
+          );
+          if (dayHasCompletedSets) return day;
+
+          return {
+            ...day,
+            gym,
+            exercises: day.exercises.map((exercise) => ({
+              ...exercise,
+              gym,
+              sets: getNewSetsFromLatest({ ...exercise, gym }),
+            })),
+          };
+        });
+      }),
     });
   };
 
@@ -180,7 +169,6 @@ export const EditWeek = () => {
             onSelect={(gym: string) => setPrimaryGym(gym)}
             onAddCustom={handleAddGym}
             canAddCustom
-            disabled={blockStarted}
             placeholder="Please select a gym"
           />
         </div>

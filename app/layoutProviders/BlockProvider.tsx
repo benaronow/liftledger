@@ -56,6 +56,7 @@ interface BlockContextType {
   setEditingWeekIdx: Dispatch<SetStateAction<number>>;
   createBlock: (block: Block) => Promise<void>;
   updateBlock: (block: Block) => Promise<void>;
+  quitBlock: () => Promise<void>;
 }
 
 const defaultBlockContext: BlockContextType = {
@@ -67,6 +68,7 @@ const defaultBlockContext: BlockContextType = {
   setEditingWeekIdx: () => {},
   createBlock: async () => {},
   updateBlock: async () => {},
+  quitBlock: async () => {},
 };
 
 export const BlockContext = createContext(defaultBlockContext);
@@ -124,6 +126,17 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
     setCurBlockLoading(false);
   };
 
+  const quitBlock = async () => {
+    if (!curUser || !curUser._id || !curBlock?._id) return;
+    setCurBlockLoading(true);
+    await api.post(`${BLOCK_API_URL}/${curBlock._id}/quit`, {
+      uid: curUser._id,
+    });
+    setCurBlock(undefined);
+    getUser(session?.user.email || "");
+    setCurBlockLoading(false);
+  };
+
   return (
     <BlockContext.Provider
       value={{
@@ -136,6 +149,7 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
         setEditingWeekIdx,
         createBlock,
         updateBlock,
+        quitBlock,
       }}
     >
       {children}

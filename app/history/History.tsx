@@ -38,6 +38,8 @@ export const History = () => {
   }, [innerWidth]);
 
   const getCompletedDate = (block: Block) => {
+    if (block.endDate) return block.endDate;
+
     const finalWeek = block.weeks[block.weeks.length - 1];
     const finalDay = finalWeek[finalWeek.length - 1];
 

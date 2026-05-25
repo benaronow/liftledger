@@ -43,6 +43,7 @@ export interface Block {
   weeks: Day[][];
   curWeekIdx: number;
   curDayIdx: number;
+  endDate?: Date;
 }
 
 export interface TimerPresets {

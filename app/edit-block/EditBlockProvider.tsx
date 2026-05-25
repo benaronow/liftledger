@@ -17,6 +17,8 @@ interface EditBlockContextModel {
   setEditingDayIdx: Dispatch<SetStateAction<number>>;
   saveDialogOpen: boolean;
   setSaveDialogOpen: Dispatch<SetStateAction<boolean>>;
+  quitDialogOpen: boolean;
+  setQuitDialogOpen: Dispatch<SetStateAction<boolean>>;
   templateErrors: string[];
   deletingDayIdx: number | undefined;
   setDeletingDayIdx: Dispatch<SetStateAction<number | undefined>>;
@@ -29,6 +31,8 @@ const defaultEditBlockContext: EditBlockContextModel = {
   setEditingDayIdx: () => {},
   saveDialogOpen: false,
   setSaveDialogOpen: () => {},
+  quitDialogOpen: false,
+  setQuitDialogOpen: () => {},
   templateErrors: [],
   deletingDayIdx: undefined,
   setDeletingDayIdx: () => {},
@@ -44,6 +48,7 @@ export const EditBlockProvider = ({ children }: PropsWithChildren) => {
   const { templateBlock, editingWeekIdx } = useBlock();
   const [editingDayIdx, setEditingDayIdx] = useState(-1);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [quitDialogOpen, setQuitDialogOpen] = useState(false);
   const [deletingDayIdx, setDeletingDayIdx] = useState<number | undefined>(
     undefined,
   );
@@ -63,6 +68,8 @@ export const EditBlockProvider = ({ children }: PropsWithChildren) => {
         setEditingDayIdx,
         saveDialogOpen,
         setSaveDialogOpen,
+        quitDialogOpen,
+        setQuitDialogOpen,
         templateErrors,
         deletingDayIdx,
         setDeletingDayIdx,
