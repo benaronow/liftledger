@@ -1,7 +1,7 @@
 import { Exercise } from "@/lib/types";
 import { Dispatch, SetStateAction, useCallback } from "react";
 import { LabeledInput } from "@/app/components/LabeledInput";
-import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { ExerciseInfoName } from "@/app/edit-block/EditDay/ExerciseInfo";
 import { useCompleteDay } from "../CompleteDayProvider";
 import { WEIGHT_TYPES } from "@/lib/weightTypes";

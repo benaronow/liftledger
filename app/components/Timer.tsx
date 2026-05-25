@@ -4,11 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 import { ActionDialog } from "./ActionDialog";
 import { LabeledInput } from "./LabeledInput";
 import { FaSave } from "react-icons/fa";
-import { useTimer } from "@/app/layoutProviders/TimerProvider";
+import { useTimer } from "@/app/layoutContainer/TimerProvider";
 import { COLORS } from "@/lib/colors";
 import { IoIosArrowForward, IoMdClose } from "react-icons/io";
 import { RiTimerLine } from "react-icons/ri";
-import { useUser } from "@/app/layoutProviders/UserProvider";
+import { useUser } from "@/app/layoutContainer/UserProvider";
 import { ActionButton } from "./ActionButton";
 import { BiSolidEdit } from "react-icons/bi";
 

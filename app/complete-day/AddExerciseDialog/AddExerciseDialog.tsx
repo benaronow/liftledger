@@ -2,7 +2,7 @@ import { DialogAction, ActionDialog } from "@/app/components/ActionDialog";
 import { EditExercise } from "./EditExercise";
 import { useEffect, useState } from "react";
 import { Block, Day, Exercise } from "@/lib/types";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import { FaSave } from "react-icons/fa";
 import { useCompleteDay } from "../CompleteDayProvider";
 import { IoArrowBack } from "react-icons/io5";

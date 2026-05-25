@@ -3,22 +3,18 @@
 import { usePathname } from "next/navigation";
 import { RouteType } from "@/lib/types";
 import { useEffect, useState } from "react";
-import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
-import { useTheme } from "@mui/material";
 import Link from "next/link";
 import { GiProgression } from "react-icons/gi";
 import { FaEdit, FaHistory } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
-import { useUser } from "@/app/layoutProviders/UserProvider";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { useUser } from "@/app/layoutContainer/UserProvider";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import styles from "./footer.module.css";
 
 export const Footer = () => {
   const pathname = usePathname();
   const { curUser } = useUser();
   const { curBlock, setTemplateBlock, setEditingWeekIdx } = useBlock();
-  const { innerWidth, innerHeight, toggleScreenState } = useScreenState();
-  const theme = useTheme();
 
   const [isStandalone, setIsStandalone] = useState(true);
   useEffect(() => {
@@ -27,7 +23,6 @@ export const Footer = () => {
 
   const handleIconClick = (route: string) => {
     if (!pathname.includes(route)) {
-      toggleScreenState("fetching", true);
       if (route === RouteType.Add && curBlock) {
         setTemplateBlock(curBlock);
         setEditingWeekIdx(curBlock.curWeekIdx);
@@ -62,15 +57,9 @@ export const Footer = () => {
     { route: RouteType.Settings, icon: <IoSettingsSharp />, isHome: false },
   ];
 
-  const hideFooter =
-    !!innerHeight &&
-    innerHeight < 500 &&
-    !!innerWidth &&
-    innerWidth > theme.breakpoints.values["sm"];
-
   return (
     <>
-      {pathname !== "/" && curUser && !hideFooter && (
+      {pathname !== "/" && curUser && (
         <div
           className={styles.containerAnimate}
           style={{

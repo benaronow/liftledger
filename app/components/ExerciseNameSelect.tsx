@@ -1,5 +1,5 @@
 import { Exercise } from "@/lib/types";
-import { useExerciseOptions } from "../layoutProviders/ExerciseOptionsProvider";
+import { useExerciseOptions } from "../layoutContainer/ExerciseOptionsProvider";
 import { useMemo } from "react";
 import { SearchableSelect } from "./SearchableSelect";
 

@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import { validateTemplate } from "./validateTemplate";
 
 interface EditBlockContextModel {

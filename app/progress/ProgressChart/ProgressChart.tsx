@@ -11,7 +11,7 @@ import {
 import { GYM_COLORS } from "./gymColors";
 import dayjs from "dayjs";
 import { useMemo } from "react";
-import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { useProgress } from "../ProgressProvider";
 import "./progressChart.css";
 import { ExerciseTooltip } from "./ExerciseTooltip";

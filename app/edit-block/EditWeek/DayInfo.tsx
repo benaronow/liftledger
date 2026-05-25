@@ -2,7 +2,7 @@ import { Day } from "@/lib/types";
 import { ArrowBackIosNew, ControlPointDuplicate } from "@mui/icons-material";
 import { BiSolidEdit } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import { Info, InfoAction } from "../Info";
 import { useMemo } from "react";
 import { useEditBlock } from "../EditBlockProvider";

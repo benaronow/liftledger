@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useUser } from "@/app/layoutProviders/UserProvider";
-import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
-import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
+import { useUser } from "@/app/layoutContainer/UserProvider";
+import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
+import { useScreenState } from "@/app/layoutContainer/ScreenStateProvider";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
 import { ExerciseSelector } from "./ExerciseSelector";
 import { ProgressChart } from "./ProgressChart";
@@ -28,11 +28,7 @@ export const Progress = () => {
   return (
     <div
       className="d-flex flex-column w-100"
-      style={{
-        height: "100dvh",
-        padding: "65px 15px 85px",
-        overflow: "hidden",
-      }}
+      style={{ height: "100%", overflow: "hidden" }}
     >
       <ExerciseSelector />
       <ProgressChart />

@@ -6,11 +6,11 @@ import { ControlPointDuplicate } from "@mui/icons-material";
 import { Block, RouteType } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
+import { useScreenState } from "@/app/layoutContainer/ScreenStateProvider";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
-import { useUser } from "@/app/layoutProviders/UserProvider";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
-import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { useUser } from "@/app/layoutContainer/UserProvider";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
+import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { ActionButton } from "../components/ActionButton";
 
 export const History = () => {
@@ -129,11 +129,7 @@ export const History = () => {
   return (
     <div
       className="d-flex flex-column align-items-center w-100"
-      style={{
-        height: "100dvh",
-        padding: "65px 15px 85px",
-        overflow: "scroll",
-      }}
+      style={{ height: "100%", overflow: "scroll" }}
     >
       {completedBlocks && completedBlocks[0] ? (
         completedBlocks

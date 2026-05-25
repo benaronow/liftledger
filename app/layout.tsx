@@ -1,18 +1,7 @@
 import type { ReactNode } from "react";
 import "./styles/globals.css";
-import styles from "./styles/layout.module.css";
+import { LayoutContainer } from "./layoutContainer/LayoutContainer";
 import { auth0 } from "@/lib/auth0";
-import { Header } from "./components/Header";
-import { Footer } from "./components/Footer";
-import {
-  MUIProviders,
-  ScreenStateProvider,
-  UserProvider,
-  BlockProvider,
-  CompletedExercisesProvider,
-  TimerProvider,
-} from "./layoutProviders";
-import { ExerciseOptionsProvider } from "./layoutProviders/ExerciseOptionsProvider";
 
 interface Props {
   readonly children: ReactNode;
@@ -96,29 +85,7 @@ const RootLayout = async ({ children }: Props) => {
         ></script>
       </head>
       <body>
-        <MUIProviders>
-          <ScreenStateProvider>
-            <UserProvider session={session}>
-              <BlockProvider>
-                <section className={styles.container}>
-                  <header className={styles.header}>
-                    <Header />
-                  </header>
-                  <ExerciseOptionsProvider>
-                    <CompletedExercisesProvider>
-                      <TimerProvider>
-                        <main className={styles.main}>{children}</main>
-                      </TimerProvider>
-                    </CompletedExercisesProvider>
-                  </ExerciseOptionsProvider>
-                  <footer className={styles.footer}>
-                    <Footer />
-                  </footer>
-                </section>
-              </BlockProvider>
-            </UserProvider>
-          </ScreenStateProvider>
-        </MUIProviders>
+        <LayoutContainer session={session}>{children}</LayoutContainer>
       </body>
     </html>
   );

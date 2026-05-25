@@ -2,13 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useUser } from "@/app/layoutProviders/UserProvider";
+import { useUser } from "@/app/layoutContainer/UserProvider";
 import dayjs from "dayjs";
 import { Day, Exercise, RouteType, Set } from "@/lib/types";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
 import Link from "next/link";
-import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { useScreenState } from "@/app/layoutContainer/ScreenStateProvider";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
 
 export const Dashboard = () => {
   const { curUser } = useUser();
@@ -113,14 +113,7 @@ export const Dashboard = () => {
   if (curBlockLoading || isFetching) return <LogoSpinner />;
 
   return (
-    <div
-      className="d-flex flex-column align-items-center justify-content-evenly w-100"
-      style={{
-        position: "relative",
-        height: "100dvh",
-        padding: "50px 50px 70px",
-      }}
-    >
+    <div className="d-flex flex-column align-items-center justify-content-evenly h-100 w-100">
       <div
         className="d-flex flex-column align-items-center text-white"
         style={{ fontFamily: "League+Spartan", fontWeight: 900 }}

@@ -2,10 +2,10 @@
 
 import { Avatar } from "@mui/material";
 import { useEffect } from "react";
-import { useUser } from "@/app/layoutProviders/UserProvider";
+import { useUser } from "@/app/layoutContainer/UserProvider";
 import { useRouter } from "next/navigation";
 import { RouteType } from "@/lib/types";
-import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
+import { useScreenState } from "@/app/layoutContainer/ScreenStateProvider";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
 import { COLORS } from "@/lib/colors";
 
@@ -35,11 +35,7 @@ export const Profile = () => {
   return (
     <div
       className="d-flex flex-column align-items-center w-100"
-      style={{
-        height: "100dvh",
-        padding: "65px 15px 85px",
-        overflow: "scroll",
-      }}
+      style={{ height: "100%", overflow: "scroll" }}
     >
       <div
         className="d-flex flex-column align-items-center text-white text-nowrap w-100"

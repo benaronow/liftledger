@@ -2,7 +2,7 @@ import { Exercise } from "@/lib/types";
 import { ChangeEvent } from "react";
 import { AddButton } from "@/app/components/AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import { LabeledInput } from "@/app/components/LabeledInput";
 import { useEditBlock } from "../EditBlockProvider";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";

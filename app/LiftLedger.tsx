@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect } from "react";
-import { useUser } from "./layoutProviders/UserProvider";
+import { useUser } from "./layoutContainer/UserProvider";
 import { LogoSpinner } from "./components/LogoSpinner";
 
 export const LiftLedger = () => {

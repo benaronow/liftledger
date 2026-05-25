@@ -1,7 +1,7 @@
 import { Exercise } from "@/lib/types";
 import { ChangeEvent, Dispatch, SetStateAction, useMemo } from "react";
 import { LabeledInput } from "@/app/components/LabeledInput";
-import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { useCompleteDay } from "../CompleteDayProvider";
 
 interface Props {

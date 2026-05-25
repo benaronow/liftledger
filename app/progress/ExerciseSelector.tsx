@@ -1,5 +1,5 @@
 import { SearchableSelect } from "../components/SearchableSelect";
-import { useExerciseOptions } from "../layoutProviders/ExerciseOptionsProvider";
+import { useExerciseOptions } from "../layoutContainer/ExerciseOptionsProvider";
 import { useProgress } from "./ProgressProvider";
 
 export const ExerciseSelector = () => {

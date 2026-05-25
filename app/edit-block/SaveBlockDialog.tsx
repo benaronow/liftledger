@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import { useRouter } from "next/navigation";
 import { IoArrowBack } from "react-icons/io5";
 import { FaSave } from "react-icons/fa";

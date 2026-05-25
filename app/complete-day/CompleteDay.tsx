@@ -3,8 +3,8 @@
 import { RouteType } from "@/lib/types";
 import { useEffect, useRef } from "react";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
-import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
-import { useUser } from "@/app/layoutProviders/UserProvider";
+import { useScreenState } from "@/app/layoutContainer/ScreenStateProvider";
+import { useUser } from "@/app/layoutContainer/UserProvider";
 import { SetList } from "./SetList/SetList";
 import { COLORS } from "@/lib/colors";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
@@ -55,8 +55,8 @@ export const CompleteDay = () => {
   return (
     <>
       <div
-        className="d-flex flex-column align-items-center w-100 overflow-scroll"
-        style={{ height: "100dvh", padding: "65px 15px 150px" }}
+        className="d-flex flex-column align-items-center h-100 w-100 overflow-scroll"
+        style={{ paddingBottom: "50px" }}
         ref={pageContainerRef}
       >
         <div className="d-flex flex-column align-items-center w-100">

@@ -1,7 +1,7 @@
 "use client";
 
 import { ActionButton } from "@/app/components/ActionButton";
-import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
+import { useScreenState } from "@/app/layoutContainer/ScreenStateProvider";
 import { useRouter } from "next/navigation";
 import { BiLogIn } from "react-icons/bi";
 
@@ -12,12 +12,7 @@ export const Login = () => {
   return (
     <div
       className="d-flex flex-column w-100 align-items-center"
-      style={{
-        height: "100dvh",
-        padding: "65px 15px 85px",
-        justifyContent: "center",
-        gap: "20px",
-      }}
+      style={{ height: "100%", justifyContent: "center", gap: "20px" }}
     >
       <span
         className="text-white"

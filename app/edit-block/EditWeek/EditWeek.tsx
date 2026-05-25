@@ -5,10 +5,10 @@ import React, { ChangeEvent, useEffect } from "react";
 import { LabeledInput } from "@/app/components/LabeledInput";
 import { AddButton } from "@/app/components/AddButton";
 import { DayInfo } from "./DayInfo";
-import { EMPTY_BLOCK, useBlock } from "@/app/layoutProviders/BlockProvider";
-import { useUser } from "@/app/layoutProviders/UserProvider";
+import { EMPTY_BLOCK, useBlock } from "@/app/layoutContainer/BlockProvider";
+import { useUser } from "@/app/layoutContainer/UserProvider";
 import { DeleteDayDialog } from "./DeleteDayDialog";
-import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
 import { useEditBlock } from "../EditBlockProvider";
 

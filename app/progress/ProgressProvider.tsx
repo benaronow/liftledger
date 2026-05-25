@@ -9,8 +9,8 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useCompletedExercises } from "../layoutProviders/CompletedExercisesProvider";
-import { useExerciseOptions } from "../layoutProviders/ExerciseOptionsProvider";
+import { useCompletedExercises } from "../layoutContainer/CompletedExercisesProvider";
+import { useExerciseOptions } from "../layoutContainer/ExerciseOptionsProvider";
 
 interface ProgressContextModel {
   selectedName: string;

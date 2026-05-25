@@ -6,16 +6,14 @@ import { useEffect, useRef } from "react";
 import { EditDay } from "./EditDay";
 import { EditWeek } from "./EditWeek";
 import { useRouter } from "next/navigation";
-import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
+import { useScreenState } from "@/app/layoutContainer/ScreenStateProvider";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
-import { useUser } from "@/app/layoutProviders/UserProvider";
-import { FaSave, FaStopCircle } from "react-icons/fa";
-import { ArrowBackIosNew } from "@mui/icons-material";
-import { ActionsFooter, FooterAction } from "@/app/components/ActionsFooter";
+import { useUser } from "@/app/layoutContainer/UserProvider";
 import { SaveBlockDialog } from "./SaveBlockDialog";
 import { QuitBlockDialog } from "./QuitBlockDialog";
 import { useEditBlock } from "./EditBlockProvider";
-import { useBlock } from "../layoutProviders/BlockProvider";
+import { useBlock } from "../layoutContainer/BlockProvider";
+import { EditBlockFooter } from "./EditBlockFooter";
 
 export const EditBlock = () => {
   const router = useRouter();
@@ -23,13 +21,7 @@ export const EditBlock = () => {
   const { innerWidth, isFetching, toggleScreenState } = useScreenState();
   const theme = useTheme();
   const { curBlock, curBlockLoading, setTemplateBlock } = useBlock();
-  const {
-    editingDayIdx,
-    setEditingDayIdx,
-    setSaveDialogOpen,
-    setQuitDialogOpen,
-    templateErrors,
-  } = useEditBlock();
+  const { editingDayIdx } = useEditBlock();
   const pageContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,47 +51,21 @@ export const EditBlock = () => {
     pageContainerRef.current?.scrollTo({ top: 0 });
   }, [editingDayIdx]);
 
-  const footerActions: FooterAction[] =
-    editingDayIdx !== -1
-      ? [
-          {
-            icon: <ArrowBackIosNew style={{ fontSize: "20px" }} />,
-            label: "Return to week",
-            onClick: () => setEditingDayIdx(-1),
-            variant: "primary",
-          },
-        ]
-      : [
-          {
-            icon: <FaSave style={{ fontSize: "18px" }} />,
-            label: "Save",
-            onClick: () => setSaveDialogOpen(true),
-            disabled: templateErrors.length > 0,
-            variant: "primary",
-          },
-          {
-            icon: <FaStopCircle style={{ fontSize: "20px" }} />,
-            label: "Quit Block",
-            onClick: () => setQuitDialogOpen(true),
-            variant: "danger",
-          },
-        ];
-
   if (!curUser || (!curBlock && curBlockLoading) || isFetching)
     return <LogoSpinner />;
 
   return (
     <>
       <div
-        className="d-flex flex-column align-items-center w-100 overflow-scroll"
-        style={{ height: "100dvh", padding: "65px 15px 140px" }}
+        className="d-flex flex-column align-items-center h-100 w-100 overflow-scroll"
+        style={{ paddingBottom: "50px" }}
         ref={pageContainerRef}
       >
         {editingDayIdx === -1 ? <EditWeek /> : <EditDay />}
       </div>
       <SaveBlockDialog />
       <QuitBlockDialog />
-      <ActionsFooter actions={footerActions} />
+      <EditBlockFooter />
     </>
   );
 };
