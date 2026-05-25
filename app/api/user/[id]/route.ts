@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const GET = async (req: NextRequest, { params }: GetParams) => {
   await connectDB();
 
-  const user = await UserModel.findOne({ email: (await params).id }).populate([
+  const user = await UserModel.findOne({ auth0Id: (await params).id }).populate([
     { path: "blocks", model: BlockModel },
   ]);
 

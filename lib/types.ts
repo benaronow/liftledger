@@ -57,6 +57,7 @@ export interface TimerPresets {
 export interface User {
   _id?: string;
   email: string;
+  auth0Id: string;
   firstName?: string;
   lastName?: string;
   blocks: Block[];

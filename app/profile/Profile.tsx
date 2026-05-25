@@ -72,7 +72,7 @@ export const Profile = () => {
     if (!curUser) return;
     setEmailError("");
     try {
-      await api.patch("/api/auth0", { email, dbUserId: curUser._id });
+      await api.patch("/api/auth0", { email });
       setEditingEmail(false);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {

@@ -18,7 +18,7 @@ interface UserContextType {
   attemptedLogin: boolean;
   curUser?: User;
   curUserLoading: boolean;
-  getUser: (email: string) => Promise<void>;
+  getUser: (sub: string) => Promise<void>;
   createUser: (user: Partial<User>) => Promise<void>;
   updateUser: (user: User) => Promise<void>;
 }
@@ -46,9 +46,9 @@ export const UserProvider = ({
   const [curUser, setCurUser] = useState<User>();
   const [curUserLoading, setCurUserLoading] = useState(false);
 
-  const getUser = async (email: string) => {
+  const getUser = async (sub: string) => {
     setCurUserLoading(true);
-    const res = await api.get(`${USER_API_URL}/${email}`);
+    const res = await api.get(`${USER_API_URL}/${sub}`);
     const result: User = res.data;
     setAttemptedLogin(true);
     if (result) setCurUser(result);
@@ -56,7 +56,7 @@ export const UserProvider = ({
   };
 
   useEffect(() => {
-    if (session?.user.email && !curUser) getUser(session.user.email);
+    if (session?.user.sub && !curUser) getUser(session.user.sub);
   }, [curUser]);
 
   const createUser = async (user: Partial<User>) => {

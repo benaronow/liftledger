@@ -35,7 +35,7 @@ export const PATCH = async (req: NextRequest) => {
   if (!session)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { email, dbUserId } = await req.json();
+  const { email } = await req.json();
 
   const isValidEmail =
     email &&
@@ -70,6 +70,23 @@ export const PATCH = async (req: NextRequest) => {
       { status: 409 },
     );
 
+  await connectDB();
+  let oldUser;
+  try {
+    oldUser = await UserModel.findOneAndUpdate(
+      { auth0Id: sub },
+      { $set: { email } },
+    );
+  } catch {
+    return NextResponse.json(
+      { error: "Failed to update email in database" },
+      { status: 500 },
+    );
+  }
+
+  if (!oldUser)
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+
   const emailUpdate = await fetch(
     `https://${process.env.AUTH0_TENANT_DOMAIN}/api/v2/users/${encodeURIComponent(sub)}`,
     {
@@ -88,14 +105,24 @@ export const PATCH = async (req: NextRequest) => {
 
   if (!emailUpdate.ok) {
     const error = await emailUpdate.json();
+
+    try {
+      await UserModel.findOneAndUpdate(
+        { auth0Id: sub },
+        { $set: { email: oldUser.email } },
+      );
+    } catch (revertErr) {
+      console.error(
+        "Failed to revert MongoDB email update after Auth0 failure:",
+        revertErr,
+      );
+    }
+
     return NextResponse.json(
       { error: error.message ?? "Failed to update email" },
       { status: emailUpdate.status },
     );
   }
-
-  await connectDB();
-  await UserModel.findByIdAndUpdate(dbUserId, { $set: { email } });
 
   return NextResponse.json({ ok: true });
 };
@@ -114,6 +141,20 @@ export const DELETE = async () => {
     return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }
 
+  await connectDB();
+  let deletedUser;
+  try {
+    deletedUser = await UserModel.findOneAndDelete({ auth0Id: sub });
+  } catch {
+    return NextResponse.json(
+      { error: "Failed to delete account from database" },
+      { status: 500 },
+    );
+  }
+
+  if (!deletedUser)
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+
   const deleteRes = await fetch(
     `https://${process.env.AUTH0_TENANT_DOMAIN}/api/v2/users/${encodeURIComponent(sub)}`,
     {
@@ -123,19 +164,22 @@ export const DELETE = async () => {
   );
 
   if (!deleteRes.ok) {
-    let errorMsg = "Failed to delete Auth0 account";
-    try {
-      const error = await deleteRes.json();
-      errorMsg = error.message ?? errorMsg;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_) {
-      // Auth0 DELETE returns 204 No Content on success; error body may be empty
-    }
-    return NextResponse.json({ error: errorMsg }, { status: deleteRes.status });
-  }
+    const error = await deleteRes.json();
 
-  await connectDB();
-  await UserModel.deleteOne({ email: session.user.email });
+    try {
+      await UserModel.create(deletedUser.toObject());
+    } catch (revertErr) {
+      console.error(
+        "Failed to restore MongoDB user after Auth0 failure:",
+        revertErr,
+      );
+    }
+
+    return NextResponse.json(
+      { error: error.message ?? "Failed to delete Auth0 account" },
+      { status: deleteRes.status },
+    );
+  }
 
   return NextResponse.json({ ok: true });
 };
@@ -146,11 +190,19 @@ export const POST = async () => {
   if (!session)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  if (!session.user.sub.startsWith("auth0|"))
+  const sub = session.user.sub;
+  if (!sub.startsWith("auth0|"))
     return NextResponse.json(
       { error: "Password cannot be reset for connected accounts" },
       { status: 400 },
     );
+
+  // Use the email from MongoDB rather than the session, since the session
+  // email can be stale if the user updated their email in the same session.
+  await connectDB();
+  const dbUser = await UserModel.findOne({ auth0Id: sub }, { email: 1 });
+  if (!dbUser)
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
 
   const res = await fetch(
     `https://${process.env.AUTH0_DOMAIN}/dbconnections/change_password`,
@@ -159,7 +211,7 @@ export const POST = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         client_id: process.env.AUTH0_CLIENT_ID,
-        email: session.user.email,
+        email: dbUser.email,
         connection: "Username-Password-Authentication",
       }),
     },
