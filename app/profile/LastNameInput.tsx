@@ -28,29 +28,35 @@ export const LastNameInput = () => {
     setSavingLastName(false);
   }, [curUser, lastName, updateUser]);
 
+  const renderEnd = useCallback(
+    () => (
+      <ActionButton
+        variant="primary"
+        height={35}
+        width={35}
+        roundedSide="end"
+        disabled={!lastNameEdited || lastName.trim() === ""}
+        icon={
+          savingLastName ? (
+            <Spinner animation="border" variant="light" size="sm" />
+          ) : (
+            <FaSave size={14} />
+          )
+        }
+        onClick={handleSaveLastName}
+      />
+    ),
+    [lastNameEdited, lastName, savingLastName, handleSaveLastName],
+  );
+
   return (
     <LabeledTextInput
       label="Last Name"
       placeholder="Enter last name..."
       value={lastName}
       onChange={(e) => setLastName(e.target.value)}
-      renderEnd={() => (
-        <ActionButton
-          variant="primary"
-          height={35}
-          width={35}
-          roundedSide="end"
-          disabled={!lastNameEdited || lastName.trim() === ""}
-          icon={
-            savingLastName ? (
-              <Spinner animation="border" variant="light" size="sm" />
-            ) : (
-              <FaSave size={14} />
-            )
-          }
-          onClick={handleSaveLastName}
-        />
-      )}
+      renderEnd={renderEnd}
+      onBlur={() => setLastName(curUser?.lastName ?? "")}
     />
   );
 };

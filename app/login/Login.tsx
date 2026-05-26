@@ -8,7 +8,10 @@ export const Login = () => {
   const router = useRouter();
 
   return (
-    <div className="d-flex flex-column h-100 w-100 align-items-center justify-content-center gap-4">
+    <div
+      className="d-flex flex-column h-100 w-100 align-items-center justify-content-center gap-4"
+      style={{ padding: "15px 0px" }}
+    >
       <span
         className="text-white"
         style={{

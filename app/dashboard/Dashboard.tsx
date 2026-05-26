@@ -100,7 +100,10 @@ export const Dashboard = () => {
   if (!curUser || curBlockLoading) return <LogoSpinner />;
 
   return (
-    <div className="d-flex flex-column align-items-center justify-content-evenly h-100 w-100">
+    <div
+      className="d-flex flex-column align-items-center justify-content-evenly h-100 w-100"
+      style={{ padding: "15px 0px" }}
+    >
       <div
         className="d-flex flex-column align-items-center text-white"
         style={{ fontFamily: "League+Spartan", fontWeight: 900 }}

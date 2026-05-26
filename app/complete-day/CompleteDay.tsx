@@ -38,7 +38,7 @@ export const CompleteDay = () => {
     <>
       <div
         className="d-flex flex-column align-items-center h-100 w-100 overflow-scroll"
-        style={{ paddingBottom: "50px" }}
+        style={{ padding: "15px 0px 65px" }}
         ref={pageContainerRef}
       >
         <div className="d-flex flex-column align-items-center w-100">

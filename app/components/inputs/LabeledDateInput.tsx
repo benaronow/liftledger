@@ -1,6 +1,7 @@
-import { DatePicker } from "@mui/x-date-pickers";
-import { Dayjs } from "dayjs";
+import { COLORS } from "@/lib/colors";
+import dayjs, { Dayjs } from "dayjs";
 import { JSX } from "react";
+import DatePicker from "react-datepicker";
 import { LabeledInputContainer } from "./LabeledInputContainer";
 
 type Props = {
@@ -39,24 +40,23 @@ export const LabeledDateInput = ({
       onBlur={onBlur}
     >
       <DatePicker
-        value={value}
-        onChange={onChange}
+        selected={value && value.isValid() ? value.toDate() : null}
+        onChange={(d: Date | null) => onChange?.(d ? dayjs(d) : null)}
         disabled={disabled}
         readOnly={readOnly}
-        className="w-100 rounded bg-white"
-        slotProps={{
-          textField: {
-            fullWidth: true,
-            sx: {
-              "& .MuiPickersInputBase-root": {
-                fontSize: "16px",
-                padding: "4px 8px",
-                width: width ?? "100%",
-                height: height ?? 35,
-              },
-            },
-          },
-        }}
+        wrapperClassName="w-100"
+        customInput={
+          <input
+            className="w-100 px-2 py-1 border-0 rounded"
+            style={{
+              fontSize: "16px",
+              outlineColor: COLORS.primary,
+              background: disabled ? COLORS.textDisabled : "white",
+              height: height ?? 35,
+              width: width ?? "100%",
+            }}
+          />
+        }
       />
     </LabeledInputContainer>
   );

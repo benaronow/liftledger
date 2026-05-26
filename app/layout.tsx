@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import "./styles/globals.css";
+import "react-datepicker/dist/react-datepicker.css";
 import { LayoutContainer } from "./layoutContainer";
 import { auth0 } from "@/lib/auth0";
 

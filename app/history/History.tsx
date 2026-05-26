@@ -114,8 +114,8 @@ export const History = () => {
 
   return (
     <div
-      className="d-flex flex-column align-items-center w-100"
-      style={{ height: "100%", overflow: "scroll" }}
+      className="d-flex flex-column align-items-center w-100 h-100 overflow-y-scroll"
+      style={{ padding: "15px 0px" }}
     >
       {completedBlocks && completedBlocks[0] ? (
         completedBlocks

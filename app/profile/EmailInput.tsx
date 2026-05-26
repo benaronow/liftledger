@@ -39,6 +39,30 @@ export const EmailInput = ({ isConnectionUser }: Props) => {
     }
   }, [curUser, email, updateEmail]);
 
+  const renderEnd = useMemo(
+    () =>
+      isConnectionUser
+        ? () => (
+            <ActionButton
+              variant="primary"
+              height={35}
+              width={35}
+              roundedSide="end"
+              disabled={!emailEdited || email.trim() === ""}
+              icon={
+                savingEmail ? (
+                  <Spinner animation="border" variant="light" size="sm" />
+                ) : (
+                  <FaSave size={14} />
+                )
+              }
+              onClick={handleSaveEmail}
+            />
+          )
+        : undefined,
+    [isConnectionUser, emailEdited, email, savingEmail, handleSaveEmail],
+  );
+
   return (
     <LabeledTextInput
       label="Email"
@@ -50,27 +74,8 @@ export const EmailInput = ({ isConnectionUser }: Props) => {
       }}
       disabled={!isConnectionUser}
       error={emailError}
-      renderEnd={
-        isConnectionUser
-          ? () => (
-              <ActionButton
-                variant="primary"
-                height={35}
-                width={35}
-                roundedSide="end"
-                disabled={!emailEdited || email.trim() === ""}
-                icon={
-                  savingEmail ? (
-                    <Spinner animation="border" variant="light" size="sm" />
-                  ) : (
-                    <FaSave size={14} />
-                  )
-                }
-                onClick={handleSaveEmail}
-              />
-            )
-          : undefined
-      }
+      renderEnd={renderEnd}
+      onBlur={() => setEmail(curUser?.email ?? "")}
     />
   );
 };

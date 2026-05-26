@@ -11,7 +11,10 @@ export const Progress = () => {
   if (completedExercisesLoading) return <LogoSpinner />;
 
   return (
-    <div className="d-flex flex-column h-100 w-100">
+    <div
+      className="d-flex flex-column h-100 w-100"
+      style={{ padding: "15px 0px" }}
+    >
       <ExerciseSelector />
       <ProgressChart />
     </div>

@@ -30,7 +30,10 @@ export const Profile = () => {
   if (!curUser) return <LogoSpinner />;
 
   return (
-    <div className="d-flex flex-column align-items-center h-100 w-100 gap-3 overflow-scroll">
+    <div
+      className="d-flex flex-column align-items-center h-100 w-100 gap-3 overflow-scroll"
+      style={{ padding: "15px 0px" }}
+    >
       <div
         className="d-flex flex-column align-items-center w-100 gap-3 p-3"
         style={{

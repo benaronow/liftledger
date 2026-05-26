@@ -151,6 +151,7 @@ export const EditWeek = () => {
             label="Name: "
             value={templateBlock.name}
             onChange={handleBlockNameInput}
+            placeholder="Enter block name..."
           />
           <LabeledDateInput
             label="Start: "
@@ -169,7 +170,7 @@ export const EditWeek = () => {
             onSelect={(gym: string) => setPrimaryGym(gym)}
             onAddCustom={handleAddGym}
             canAddCustom
-            placeholder="Please select a gym"
+            placeholder="Enter gym..."
           />
         </div>
         <div className="d-flex flex-column align-items-center gap-2 w-100">
