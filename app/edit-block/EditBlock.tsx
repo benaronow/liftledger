@@ -41,8 +41,10 @@ export const EditBlock = () => {
   return (
     <>
       <div
-        className="d-flex flex-column align-items-center h-100 w-100 overflow-scroll"
-        style={{ paddingBottom: "50px" }}
+        className="d-flex flex-column align-items-center h-100 w-100 overflow-hidden"
+        style={{
+          paddingBottom: "50px",
+        }}
         ref={pageContainerRef}
       >
         {editingDayIdx === -1 ? <EditWeek /> : <EditDay />}

@@ -1,8 +1,8 @@
 import { Exercise } from "@/lib/types";
 import { ChangeEvent, Dispatch, SetStateAction, useMemo } from "react";
-import { LabeledInput } from "@/app/components/LabeledInput";
 import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { useCompleteDay } from "../CompleteDayProvider";
+import { LabeledTextInput } from "@/app/components/inputs";
 
 interface Props {
   exerciseState?: Exercise;
@@ -51,25 +51,25 @@ export const EditSet = ({ exerciseState, setExerciseState }: Props) => {
       {!!latestPreviousSetNote && (
         <span className="small mb-2 text-wrap text-white">{`Previous note: ${latestPreviousSetNote}`}</span>
       )}
-      <LabeledInput
+      <LabeledTextInput
         label="Reps:"
-        textValue={exerciseState?.sets[setIdx]?.reps || ""}
-        onChangeText={(e) => handleChange(e, "reps")}
+        value={exerciseState?.sets[setIdx]?.reps || ""}
+        onChange={(e) => handleChange(e, "reps")}
         className="mb-2"
       />
-      <LabeledInput
+      <LabeledTextInput
         label="Weight:"
-        textValue={exerciseState?.sets[setIdx]?.weight || ""}
+        value={exerciseState?.sets[setIdx]?.weight || ""}
         type="number"
         step="any"
         min="0"
-        onChangeText={(e) => handleChange(e, "weight")}
+        onChange={(e) => handleChange(e, "weight")}
         className="mb-2"
       />
-      <LabeledInput
+      <LabeledTextInput
         label="Note:"
-        textValue={exerciseState?.sets[setIdx]?.note}
-        onChangeText={(e) => handleChange(e, "note")}
+        value={exerciseState?.sets[setIdx]?.note}
+        onChange={(e) => handleChange(e, "note")}
         className="mb-1"
       />
     </>

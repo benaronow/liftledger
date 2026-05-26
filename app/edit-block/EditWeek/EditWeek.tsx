@@ -2,7 +2,6 @@ import { Day } from "@/lib/types";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, useEffect } from "react";
-import { LabeledInput } from "@/app/components/LabeledInput";
 import { AddButton } from "@/app/components/AddButton";
 import { DayInfo } from "./DayInfo";
 import { EMPTY_BLOCK, useBlock } from "@/app/layoutContainer/BlockProvider";
@@ -11,6 +10,7 @@ import { DeleteDayDialog } from "./DeleteDayDialog";
 import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
 import { useEditBlock } from "../EditBlockProvider";
+import { LabeledTextInput, LabeledDateInput } from "@/app/components/inputs";
 
 export const EditWeek = () => {
   const router = useRouter();
@@ -147,20 +147,20 @@ export const EditWeek = () => {
           className="d-flex flex-column w-100 text-white"
           style={{ gap: "10px", marginBottom: "20px" }}
         >
-          <LabeledInput
+          <LabeledTextInput
             label="Name: "
-            textValue={templateBlock.name}
-            onChangeText={handleBlockNameInput}
+            value={templateBlock.name}
+            onChange={handleBlockNameInput}
           />
-          <LabeledInput
+          <LabeledDateInput
             label="Start: "
-            dateValue={dayjs(templateBlock.startDate)}
-            onChangeDate={handleDateInput}
+            value={dayjs(templateBlock.startDate)}
+            onChange={handleDateInput}
           />
-          <LabeledInput
+          <LabeledTextInput
             label="Weeks: "
-            textValue={templateBlock.length}
-            onChangeText={handleLengthInput}
+            value={templateBlock.length}
+            onChange={handleLengthInput}
           />
           <SearchableSelect
             label="Primary Gym:"

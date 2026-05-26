@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ActionDialog } from "./ActionDialog";
-import { LabeledInput } from "./LabeledInput";
 import { FaSave } from "react-icons/fa";
 import { useTimer } from "@/app/layoutContainer/TimerProvider";
 import { COLORS } from "@/lib/colors";
@@ -11,6 +10,7 @@ import { RiTimerLine } from "react-icons/ri";
 import { useUser } from "@/app/layoutContainer/UserProvider";
 import { ActionButton } from "./ActionButton";
 import { BiSolidEdit } from "react-icons/bi";
+import { LabeledSelect } from "./inputs";
 
 const TIME_OPTIONS = [
   "00",
@@ -208,10 +208,10 @@ export const Timer = () => {
                   <div className="d-flex w-100" key={idx}>
                     {presetEditIdx === idx ? (
                       <div className="w-100 d-flex gap-1 align-items-center bg-white rounded-start justify-content-center">
-                        <LabeledInput
-                          textValue={presetMins}
+                        <LabeledSelect
+                          value={presetMins}
                           options={TIME_OPTIONS}
-                          onChangeSelect={(e) =>
+                          onChange={(e) =>
                             updatePresetsState(
                               idx,
                               parseInt(e.target.value) * 60 + (preset % 60),
@@ -220,10 +220,10 @@ export const Timer = () => {
                           height={35}
                         />
                         <span>:</span>
-                        <LabeledInput
-                          textValue={presetSecs}
+                        <LabeledSelect
+                          value={presetSecs}
                           options={TIME_OPTIONS}
-                          onChangeSelect={(e) =>
+                          onChange={(e) =>
                             updatePresetsState(
                               idx,
                               Math.floor(preset / 60) * 60 +

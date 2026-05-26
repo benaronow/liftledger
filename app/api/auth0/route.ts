@@ -124,7 +124,16 @@ export const PATCH = async (req: NextRequest) => {
     );
   }
 
-  return NextResponse.json({ ok: true });
+  try {
+    const newUser = await UserModel.findOne({ auth0Id: sub });
+    return NextResponse.json(newUser);
+  } catch (e) {
+    console.error("Failed to fetch updated user after email change:", e);
+    return NextResponse.json(
+      { error: "Email updated but failed to fetch updated user" },
+      { status: 500 },
+    );
+  }
 };
 
 export const DELETE = async () => {

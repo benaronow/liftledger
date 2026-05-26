@@ -25,10 +25,9 @@ export const Info = ({
 }: PropsWithChildren<Props>) => {
   return (
     <div
-      className="w-100 rounded position-relative"
+      className="w-100 rounded position-relative overflow-hidden"
       style={{
         marginBottom: "15px",
-        boxShadow: "0px 5px 10px #131314",
       }}
     >
       {disabledMessage && (

@@ -21,6 +21,7 @@ interface UserContextType {
   getUser: (sub: string) => Promise<void>;
   createUser: (user: Partial<User>) => Promise<void>;
   updateUser: (user: User) => Promise<void>;
+  updateEmail: (email: string) => Promise<void>;
 }
 
 const defaultUserContext: UserContextType = {
@@ -30,6 +31,7 @@ const defaultUserContext: UserContextType = {
   getUser: async () => {},
   createUser: async () => {},
   updateUser: async () => {},
+  updateEmail: async () => {},
 };
 
 export const UserContext = createContext(defaultUserContext);
@@ -75,6 +77,17 @@ export const UserProvider = ({
     setCurUserLoading(false);
   };
 
+  const updateEmail = async (email: string) => {
+    try {
+      const res = await api.patch("/api/auth0", { email });
+      const result: User = res.data;
+      if (result) setCurUser(result);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+      throw new Error(e?.response?.data?.error ?? "Failed to update email");
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -85,6 +98,7 @@ export const UserProvider = ({
         getUser,
         createUser,
         updateUser,
+        updateEmail,
       }}
     >
       {children}

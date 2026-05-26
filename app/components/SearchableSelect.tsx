@@ -3,6 +3,7 @@
 import { COLORS } from "@/lib/colors";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Spinner } from "react-bootstrap";
+import { LabeledInputContainer } from "./inputs";
 
 interface Props {
   label?: string;
@@ -103,15 +104,7 @@ export const SearchableSelect = ({
   };
 
   return (
-    <div className={`d-flex flex-column align-items-start w-100 ${className}`}>
-      {label && (
-        <span
-          className="fw-semibold text-nowrap text-white mb-1"
-          style={{ fontSize: "14px" }}
-        >
-          {label}
-        </span>
-      )}
+    <LabeledInputContainer label={label} className={className}>
       <div className="position-relative w-100">
         <input
           className="w-100 rounded px-2 py-1 border-0"
@@ -187,6 +180,6 @@ export const SearchableSelect = ({
           </div>
         )}
       </div>
-    </div>
+    </LabeledInputContainer>
   );
 };
