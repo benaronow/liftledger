@@ -6,20 +6,29 @@ import { IoArrowBack } from "react-icons/io5";
 import { Spinner } from "react-bootstrap";
 import { useEditBlock } from "./EditBlockProvider";
 import { FaStopCircle } from "react-icons/fa";
+import { useUser } from "../layoutContainer/UserProvider";
 
 export const QuitBlockDialog = () => {
   const router = useRouter();
-  const { unsetTemplateBlock, setEditingWeekIdx, quitBlock } = useBlock();
+  const { quitBlock } = useUser();
+  const { unsetTemplateBlock, setEditingWeekIdx } = useBlock();
   const { quitDialogOpen, setQuitDialogOpen } = useEditBlock();
   const [quitting, setQuitting] = useState(false);
+  const [error, setError] = useState("");
 
   const handleQuit = async () => {
+    setError("");
     setQuitting(true);
-    await quitBlock();
-    unsetTemplateBlock();
-    setEditingWeekIdx(0);
-    setQuitting(false);
-    router.push("/dashboard");
+    try {
+      await quitBlock();
+      unsetTemplateBlock();
+      setEditingWeekIdx(0);
+      router.push("/dashboard");
+    } catch (e: unknown) {
+      setError((e as Error).message || "Failed to quit block");
+    } finally {
+      setQuitting(false);
+    }
   };
 
   const actions: DialogAction[] = [
@@ -59,6 +68,11 @@ export const QuitBlockDialog = () => {
               so far.
             </strong>
           </div>
+          {error && (
+            <div className="text-danger mt-2" style={{ fontSize: "13px" }}>
+              {error}
+            </div>
+          )}
         </ActionDialog>
       )}
     </>

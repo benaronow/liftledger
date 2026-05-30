@@ -11,7 +11,7 @@ import { ExerciseOptionsProvider } from "./ExerciseOptionsProvider";
 import { CompletedExercisesProvider } from "./CompletedExercisesProvider";
 import { TimerProvider } from "./TimerProvider";
 import { SessionData } from "@auth0/nextjs-auth0/types";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { RouteType } from "@/lib/types";
 
 interface Props {
@@ -23,13 +23,6 @@ export const LayoutContainer = ({
   session,
 }: PropsWithChildren<Props>) => {
   const router = useRouter();
-  const pathname = usePathname();
-
-  useEffect(() => {
-    if (!session && pathname !== "/login") {
-      router.push("/login");
-    }
-  }, [session]);
 
   useEffect(() => {
     router.prefetch(RouteType.Add);

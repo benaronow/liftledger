@@ -18,6 +18,7 @@ interface Props {
   roundedSide?: "start" | "end" | "top" | "bottom" | "0";
   border?: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export const ActionButton = ({
@@ -31,6 +32,7 @@ export const ActionButton = ({
   roundedSide,
   border,
   className,
+  style,
 }: Props) => {
   const getButtonStyle = (
     variant: Variant | undefined,
@@ -70,6 +72,7 @@ export const ActionButton = ({
         minHeight: height ?? undefined,
         width: width ?? "100%",
         minWidth: width ?? undefined,
+        ...(style ?? {}),
       }}
       className={`d-flex align-items-center justify-content-center ${border ?? "border-0"} gap-2 rounded${
         roundedSide ? `-${roundedSide}` : ""

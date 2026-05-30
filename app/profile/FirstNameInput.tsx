@@ -1,20 +1,23 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { FocusEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useUser } from "../layoutContainer/UserProvider";
 import { LabeledTextInput } from "../components/inputs";
 import { ActionButton } from "../components/ActionButton";
 import { Spinner } from "react-bootstrap";
 import { FaSave } from "react-icons/fa";
+import { COLORS } from "@/lib/colors";
 
 export const FirstNameInput = () => {
   const { curUser, updateUser } = useUser();
   const [firstName, setFirstName] = useState("");
   const [savingFirstName, setSavingFirstName] = useState(false);
+  const [firstNameError, setFirstNameError] = useState("");
+  const [focused, setFocused] = useState(false);
 
   useEffect(() => {
     if (curUser) {
       setFirstName(curUser.firstName ?? "");
     }
-  }, [curUser?._id]);
+  }, [curUser]);
 
   const firstNameEdited = useMemo(
     () => firstName !== (curUser?.firstName ?? ""),
@@ -23,19 +26,39 @@ export const FirstNameInput = () => {
 
   const handleSaveFirstName = useCallback(async () => {
     if (!curUser) return;
+    setFirstNameError("");
     setSavingFirstName(true);
-    await updateUser({ ...curUser, firstName });
-    setSavingFirstName(false);
+    try {
+      await updateUser({ ...curUser, firstName });
+    } catch (e: unknown) {
+      setFirstNameError((e as Error).message);
+    } finally {
+      setSavingFirstName(false);
+    }
   }, [curUser, firstName, updateUser]);
 
-  const renderEnd = useCallback(
-    () => (
+  const handleBlur = useCallback(
+    (e: FocusEvent<HTMLDivElement>) => {
+      if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+      setFirstName(curUser?.firstName ?? "");
+      setFocused(false);
+    },
+    [curUser?.firstName],
+  );
+
+  const renderEnd = useCallback(() => {
+    const disabled = !firstNameEdited || firstName.trim() === "";
+    const outline = focused
+      ? `solid 2px ${disabled ? COLORS.primaryDisabled : COLORS.primary}`
+      : undefined;
+
+    return (
       <ActionButton
         variant="primary"
         height={35}
         width={35}
         roundedSide="end"
-        disabled={!firstNameEdited || firstName.trim() === ""}
+        disabled={disabled}
         icon={
           savingFirstName ? (
             <Spinner animation="border" variant="light" size="sm" />
@@ -44,19 +67,30 @@ export const FirstNameInput = () => {
           )
         }
         onClick={handleSaveFirstName}
+        style={{ outline }}
       />
-    ),
-    [firstNameEdited, firstName, savingFirstName, handleSaveFirstName],
-  );
+    );
+  }, [
+    firstNameEdited,
+    firstName,
+    savingFirstName,
+    handleSaveFirstName,
+    focused,
+  ]);
 
   return (
     <LabeledTextInput
       label="First Name"
       placeholder="Enter first name..."
       value={firstName}
-      onChange={(e) => setFirstName(e.target.value)}
+      onChange={(e) => {
+        setFirstName(e.target.value);
+        setFirstNameError("");
+      }}
+      error={firstNameError}
       renderEnd={renderEnd}
-      onBlur={() => setFirstName(curUser?.firstName ?? "")}
+      onFocus={() => setFocused(true)}
+      onBlur={handleBlur}
     />
   );
 };

@@ -1,11 +1,12 @@
-import { JSX, PropsWithChildren } from "react";
+import { FocusEvent, JSX, PropsWithChildren } from "react";
 
 interface Props {
   className?: string;
   label?: string;
   error?: string;
   renderEnd?: () => JSX.Element;
-  onBlur?: () => void;
+  onFocus?: (e: FocusEvent<HTMLDivElement>) => void;
+  onBlur?: (e: FocusEvent<HTMLDivElement>) => void;
 }
 
 export const LabeledInputContainer = ({
@@ -14,11 +15,12 @@ export const LabeledInputContainer = ({
   error,
   renderEnd,
   children,
+  onFocus,
   onBlur,
 }: PropsWithChildren<Props>) => {
   return (
     <div
-      className={`d-flex flex-column align-items-start w-100 gap-1 ${className}`}
+      className={`d-flex flex-column align-items-start w-100 gap-1 ${className ?? ""}`}
     >
       {label && (
         <span
@@ -28,7 +30,7 @@ export const LabeledInputContainer = ({
           {label}
         </span>
       )}
-      <div className="d-flex w-100" onBlur={onBlur}>
+      <div className="d-flex w-100" onFocus={onFocus} onBlur={onBlur}>
         {children}
         {renderEnd && renderEnd()}
       </div>

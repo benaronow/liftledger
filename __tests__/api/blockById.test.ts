@@ -21,6 +21,7 @@ import BlockModel from "@/lib/models/block";
 import { Block } from "@/lib/types";
 
 const makeUser = () => ({
+  auth0Id: "auth0|test-user",
   email: "test@example.com",
   firstName: "Test",
   lastName: "User",

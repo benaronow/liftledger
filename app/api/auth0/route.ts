@@ -3,7 +3,11 @@ import UserModel from "@/lib/models/user";
 import { auth0 } from "@/lib/auth0";
 import { NextRequest, NextResponse } from "next/server";
 
-const getAuth0Token = async (): Promise<string> => {
+type TokenResult =
+  | { ok: true; token: string }
+  | { ok: false; status: number; message: string };
+
+const getAuth0Token = async (): Promise<TokenResult> => {
   const res = await fetch(
     `https://${process.env.AUTH0_TENANT_DOMAIN}/oauth/token`,
     {
@@ -18,17 +22,32 @@ const getAuth0Token = async (): Promise<string> => {
     },
   );
 
+  if (res.status === 429)
+    return {
+      ok: false,
+      status: 429,
+      message: "Auth0 rate limit exceeded — please try again in a moment",
+    };
+
   const data = await res.json();
 
-  if (!data.access_token) {
+  if (!res.ok || !data.access_token) {
     console.error("Auth0 token error:", data);
-    throw new Error(
-      data.error_description ?? "Failed to obtain management token",
-    );
+    return {
+      ok: false,
+      status: res.status || 500,
+      message: data.error_description ?? "Failed to obtain management token",
+    };
   }
 
-  return data.access_token;
+  return { ok: true, token: data.access_token };
 };
+
+const rateLimitResponse = () =>
+  NextResponse.json(
+    { error: "Auth0 rate limit exceeded — please try again in a moment" },
+    { status: 429 },
+  );
 
 export const PATCH = async (req: NextRequest) => {
   const session = await auth0.getSession();
@@ -51,18 +70,22 @@ export const PATCH = async (req: NextRequest) => {
       { status: 400 },
     );
 
-  let token: string;
-  try {
-    token = await getAuth0Token();
-  } catch (e) {
-    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
-  }
+  const tokenResult = await getAuth0Token();
+  if (!tokenResult.ok)
+    return NextResponse.json(
+      { error: tokenResult.message },
+      { status: tokenResult.status },
+    );
+  const token = tokenResult.token;
 
   const auth0UsersByEmail = await fetch(
     `https://${process.env.AUTH0_TENANT_DOMAIN}/api/v2/users-by-email?email=${encodeURIComponent(email)}`,
     { headers: { Authorization: `Bearer ${token}` } },
   );
-  const sameEmailUsers: { user_id: string }[] = await auth0UsersByEmail.json();
+  if (auth0UsersByEmail.status === 429) return rateLimitResponse();
+  const sameEmailUsers: { user_id: string }[] = auth0UsersByEmail.ok
+    ? await auth0UsersByEmail.json()
+    : [];
   const sameEmailUserExists = sameEmailUsers.some((u) => u.user_id !== sub);
   if (sameEmailUserExists)
     return NextResponse.json(
@@ -71,21 +94,10 @@ export const PATCH = async (req: NextRequest) => {
     );
 
   await connectDB();
-  let oldUser;
-  try {
-    oldUser = await UserModel.findOneAndUpdate(
-      { auth0Id: sub },
-      { $set: { email } },
-    );
-  } catch {
-    return NextResponse.json(
-      { error: "Failed to update email in database" },
-      { status: 500 },
-    );
-  }
-
-  if (!oldUser)
+  const existingUser = await UserModel.findOne({ auth0Id: sub });
+  if (!existingUser)
     return NextResponse.json({ error: "User not found" }, { status: 404 });
+  const oldEmail = existingUser.email;
 
   const emailUpdate = await fetch(
     `https://${process.env.AUTH0_TENANT_DOMAIN}/api/v2/users/${encodeURIComponent(sub)}`,
@@ -103,37 +115,58 @@ export const PATCH = async (req: NextRequest) => {
     },
   );
 
+  if (emailUpdate.status === 429) return rateLimitResponse();
+
   if (!emailUpdate.ok) {
-    const error = await emailUpdate.json();
-
-    try {
-      await UserModel.findOneAndUpdate(
-        { auth0Id: sub },
-        { $set: { email: oldUser.email } },
-      );
-    } catch (revertErr) {
-      console.error(
-        "Failed to revert MongoDB email update after Auth0 failure:",
-        revertErr,
-      );
-    }
-
+    const error = await emailUpdate.json().catch(() => ({}));
     return NextResponse.json(
       { error: error.message ?? "Failed to update email" },
       { status: emailUpdate.status },
     );
   }
 
+  let updatedUser;
   try {
-    const newUser = await UserModel.findOne({ auth0Id: sub });
-    return NextResponse.json(newUser);
-  } catch (e) {
-    console.error("Failed to fetch updated user after email change:", e);
+    updatedUser = await UserModel.findOneAndUpdate(
+      { auth0Id: sub },
+      { $set: { email } },
+      { new: true },
+    );
+  } catch (dbErr) {
+    console.error(
+      "Failed to update MongoDB email after Auth0 success — reverting Auth0:",
+      dbErr,
+    );
+
+    const revertRes = await fetch(
+      `https://${process.env.AUTH0_TENANT_DOMAIN}/api/v2/users/${encodeURIComponent(sub)}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: oldEmail,
+          email_verified: true,
+          connection: "Username-Password-Authentication",
+        }),
+      },
+    );
+    if (!revertRes.ok) {
+      console.error(
+        "Failed to revert Auth0 email after MongoDB failure — accounts now out of sync for sub:",
+        sub,
+      );
+    }
+
     return NextResponse.json(
-      { error: "Email updated but failed to fetch updated user" },
+      { error: "Failed to update email in database" },
       { status: 500 },
     );
   }
+
+  return NextResponse.json(updatedUser);
 };
 
 export const DELETE = async () => {
@@ -143,26 +176,13 @@ export const DELETE = async () => {
 
   const sub = session.user.sub;
 
-  let token: string;
-  try {
-    token = await getAuth0Token();
-  } catch (e) {
-    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
-  }
-
-  await connectDB();
-  let deletedUser;
-  try {
-    deletedUser = await UserModel.findOneAndDelete({ auth0Id: sub });
-  } catch {
+  const tokenResult = await getAuth0Token();
+  if (!tokenResult.ok)
     return NextResponse.json(
-      { error: "Failed to delete account from database" },
-      { status: 500 },
+      { error: tokenResult.message },
+      { status: tokenResult.status },
     );
-  }
-
-  if (!deletedUser)
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  const token = tokenResult.token;
 
   const deleteRes = await fetch(
     `https://${process.env.AUTH0_TENANT_DOMAIN}/api/v2/users/${encodeURIComponent(sub)}`,
@@ -172,21 +192,24 @@ export const DELETE = async () => {
     },
   );
 
+  if (deleteRes.status === 429) return rateLimitResponse();
+
   if (!deleteRes.ok) {
-    const error = await deleteRes.json();
-
-    try {
-      await UserModel.create(deletedUser.toObject());
-    } catch (revertErr) {
-      console.error(
-        "Failed to restore MongoDB user after Auth0 failure:",
-        revertErr,
-      );
-    }
-
+    const error = await deleteRes.json().catch(() => ({}));
     return NextResponse.json(
       { error: error.message ?? "Failed to delete Auth0 account" },
       { status: deleteRes.status },
+    );
+  }
+
+  await connectDB();
+  try {
+    await UserModel.findOneAndDelete({ auth0Id: sub });
+  } catch (dbErr) {
+    console.error(
+      "Auth0 account deleted but MongoDB cleanup failed for sub:",
+      sub,
+      dbErr,
     );
   }
 
@@ -226,11 +249,14 @@ export const POST = async () => {
     },
   );
 
-  if (!res.ok)
+  if (res.status === 429) return rateLimitResponse();
+
+  if (!res.ok) {
     return NextResponse.json(
       { error: "Failed to send reset email" },
       { status: res.status },
     );
+  }
 
   return NextResponse.json({ ok: true });
 };

@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { FocusEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useUser } from "../layoutContainer/UserProvider";
 import { LabeledTextInput } from "../components/inputs";
 import { ActionButton } from "../components/ActionButton";
 import { Spinner } from "react-bootstrap";
 import { FaSave } from "react-icons/fa";
+import { COLORS } from "@/lib/colors";
 
 type Props = {
   isConnectionUser: boolean;
@@ -14,12 +15,13 @@ export const EmailInput = ({ isConnectionUser }: Props) => {
   const [email, setEmail] = useState("");
   const [savingEmail, setSavingEmail] = useState(false);
   const [emailError, setEmailError] = useState("");
+  const [focused, setFocused] = useState(false);
 
   useEffect(() => {
     if (curUser) {
       setEmail(curUser.email);
     }
-  }, [curUser?._id]);
+  }, [curUser]);
 
   const emailEdited = useMemo(
     () => email !== (curUser?.email ?? ""),
@@ -39,29 +41,47 @@ export const EmailInput = ({ isConnectionUser }: Props) => {
     }
   }, [curUser, email, updateEmail]);
 
-  const renderEnd = useMemo(
-    () =>
-      isConnectionUser
-        ? () => (
-            <ActionButton
-              variant="primary"
-              height={35}
-              width={35}
-              roundedSide="end"
-              disabled={!emailEdited || email.trim() === ""}
-              icon={
-                savingEmail ? (
-                  <Spinner animation="border" variant="light" size="sm" />
-                ) : (
-                  <FaSave size={14} />
-                )
-              }
-              onClick={handleSaveEmail}
-            />
-          )
-        : undefined,
-    [isConnectionUser, emailEdited, email, savingEmail, handleSaveEmail],
+  const handleBlur = useCallback(
+    (e: FocusEvent<HTMLDivElement>) => {
+      if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+      setEmail(curUser?.email ?? "");
+      setFocused(false);
+    },
+    [curUser?.email],
   );
+
+  const renderEnd = useCallback(() => {
+    const disabled = !emailEdited || email.trim() === "";
+    const outline = focused
+      ? `solid 2px ${disabled ? COLORS.primaryDisabled : COLORS.primary}`
+      : undefined;
+
+    return (
+      <ActionButton
+        variant="primary"
+        height={35}
+        width={35}
+        roundedSide="end"
+        disabled={disabled}
+        icon={
+          savingEmail ? (
+            <Spinner animation="border" variant="light" size="sm" />
+          ) : (
+            <FaSave size={14} />
+          )
+        }
+        onClick={handleSaveEmail}
+        style={{ outline }}
+      />
+    );
+  }, [
+    isConnectionUser,
+    emailEdited,
+    email,
+    savingEmail,
+    handleSaveEmail,
+    focused,
+  ]);
 
   return (
     <LabeledTextInput
@@ -74,8 +94,9 @@ export const EmailInput = ({ isConnectionUser }: Props) => {
       }}
       disabled={!isConnectionUser}
       error={emailError}
-      renderEnd={renderEnd}
-      onBlur={() => setEmail(curUser?.email ?? "")}
+      renderEnd={isConnectionUser ? renderEnd : undefined}
+      onFocus={() => setFocused(true)}
+      onBlur={handleBlur}
     />
   );
 };

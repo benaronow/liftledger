@@ -7,6 +7,7 @@ import { FaTrash } from "react-icons/fa";
 import { IoArrowBack } from "react-icons/io5";
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
 import api from "@/lib/config";
+import { AxiosError } from "axios";
 
 interface Props {
   open: boolean;
@@ -24,9 +25,10 @@ export const DeleteAccountDialog = ({ open, onClose }: Props) => {
     try {
       await api.delete("/api/auth0");
       router.push("/auth/logout");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      setError(e?.response?.data?.error ?? "Failed to delete account");
+    } catch (e: unknown) {
+      const error = (e as AxiosError<{ error?: string }>)?.response?.data
+        ?.error;
+      setError(error ?? "Failed to delete account");
       setDeleting(false);
     }
   };

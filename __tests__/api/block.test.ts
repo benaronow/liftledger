@@ -20,6 +20,7 @@ import UserModel from "@/lib/models/user";
 import BlockModel from "@/lib/models/block";
 
 const makeUser = () => ({
+  auth0Id: "auth0|test-user",
   email: "test@example.com",
   firstName: "Test",
   lastName: "User",

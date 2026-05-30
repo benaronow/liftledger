@@ -6,6 +6,7 @@ import { FaPaperPlane } from "react-icons/fa";
 import { IoArrowBack } from "react-icons/io5";
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
 import api from "@/lib/config";
+import { AxiosError } from "axios";
 
 interface Props {
   open: boolean;
@@ -29,9 +30,10 @@ export const ResetPasswordDialog = ({ open, onClose }: Props) => {
     try {
       await api.post("/api/auth0", {});
       setSent(true);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      setError(e?.response?.data?.error ?? "Failed to send reset email");
+    } catch (e: unknown) {
+      const error = (e as AxiosError<{ error?: string }>)?.response?.data
+        ?.error;
+      setError(error ?? "Failed to send reset email");
     } finally {
       setSending(false);
     }

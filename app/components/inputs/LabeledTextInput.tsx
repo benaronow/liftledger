@@ -1,6 +1,7 @@
 import { COLORS } from "@/lib/colors";
-import { ChangeEvent, JSX } from "react";
+import { ChangeEvent, FocusEvent, JSX } from "react";
 import { LabeledInputContainer } from "./LabeledInputContainer";
+import styles from "./LabeledTextInput.module.css";
 
 type Props = {
   className?: string;
@@ -17,7 +18,8 @@ type Props = {
   step?: string | number;
   min?: string | number;
   renderEnd?: () => JSX.Element;
-  onBlur?: () => void;
+  onFocus?: (e: FocusEvent<HTMLDivElement>) => void;
+  onBlur?: (e: FocusEvent<HTMLDivElement>) => void;
 };
 
 export const LabeledTextInput = ({
@@ -35,6 +37,7 @@ export const LabeledTextInput = ({
   step,
   min,
   renderEnd,
+  onFocus,
   onBlur,
 }: Props) => {
   return (
@@ -43,13 +46,13 @@ export const LabeledTextInput = ({
       label={label}
       error={error}
       renderEnd={renderEnd}
+      onFocus={onFocus}
       onBlur={onBlur}
     >
       <input
-        className={`w-100 px-2 py-1 border-0 ${renderEnd ? "rounded-start" : "rounded"}`}
+        className={`${styles.formInput} w-100 px-2 py-1 border-0 ${renderEnd ? "rounded-start" : "rounded"}`}
         style={{
           fontSize: "16px",
-          outlineColor: COLORS.primary,
           background: disabled ? COLORS.textDisabled : "white",
           height: height ?? 35,
           width: width ?? "100%",
