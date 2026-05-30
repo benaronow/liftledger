@@ -19,7 +19,10 @@ export const POST = async (req: NextRequest, { params }: GetParams) => {
 
   const block = await BlockModel.findOne({ _id: user.curBlock });
   if (!block)
-    return NextResponse.json({ error: "Block not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "User does not have a current block" },
+      { status: 400 },
+    );
 
   const weeks = block.weeks.slice(0, block.curWeekIdx + 1);
   const endDate = new Date();
@@ -48,7 +51,8 @@ export const POST = async (req: NextRequest, { params }: GetParams) => {
     try {
       await BlockModel.findOneAndUpdate(
         { _id: user.curBlock },
-        { $set: { weeks: block.weeks, endDate: block.endDate } },
+        { $set: { weeks: block.weeks } },
+        { $unset: { endDate: "" } },
       );
     } catch (revertErr) {
       console.error(

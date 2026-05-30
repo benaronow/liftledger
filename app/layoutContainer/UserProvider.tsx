@@ -24,6 +24,7 @@ interface UserContextType {
   getCurrentUser: () => Promise<void>;
   createUser: (user: Partial<User>) => Promise<void>;
   updateUser: (user: User) => Promise<void>;
+  deleteUser: (id: string) => Promise<void>;
   updateEmail: (email: string) => Promise<void>;
   quitBlock: () => Promise<void>;
 }
@@ -36,6 +37,7 @@ const defaultUserContext: UserContextType = {
   getCurrentUser: async () => {},
   createUser: async () => {},
   updateUser: async () => {},
+  deleteUser: async () => {},
   updateEmail: async () => {},
   quitBlock: async () => {},
 };
@@ -136,6 +138,24 @@ export const UserProvider = ({
     [setCurUserLoading, setCurUser],
   );
 
+  const deleteUser = useCallback(
+    async (id: string) => {
+      setCurUserLoading(true);
+
+      try {
+        await api.delete("/api/auth0", { data: { id } });
+        setCurUser(undefined);
+      } catch (e: unknown) {
+        const error = (e as AxiosError<{ error?: string }>)?.response?.data
+          ?.error;
+        throw new Error(error ?? "Failed to delete user");
+      } finally {
+        setCurUserLoading(false);
+      }
+    },
+    [setCurUserLoading, setCurUser],
+  );
+
   const updateEmail = useCallback(
     async (email: string) => {
       setCurUserLoading(true);
@@ -184,6 +204,7 @@ export const UserProvider = ({
         getCurrentUser,
         createUser,
         updateUser,
+        deleteUser,
         updateEmail,
         quitBlock,
       }}

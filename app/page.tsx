@@ -18,7 +18,6 @@ const IndexPage = () => {
         email: session.user.email,
         timerPresets: { 0: 120, 1: 150, 2: 180, 3: 210, 4: 240 },
       });
-      router.push("/dashboard");
     } catch (e) {
       console.error("Failed to create user:", e);
       router.push("/login");

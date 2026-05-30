@@ -6,8 +6,7 @@ import { Spinner } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
 import { IoArrowBack } from "react-icons/io5";
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
-import api from "@/lib/config";
-import { AxiosError } from "axios";
+import { useUser } from "@/app/layoutContainer/UserProvider";
 
 interface Props {
   open: boolean;
@@ -16,19 +15,22 @@ interface Props {
 
 export const DeleteAccountDialog = ({ open, onClose }: Props) => {
   const router = useRouter();
+  const { curUser, deleteUser } = useUser();
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
 
   const handleDelete = async () => {
+    if (!curUser?._id) {
+      setError("User not found");
+      return;
+    }
     setError("");
     setDeleting(true);
     try {
-      await api.delete("/api/auth0");
+      await deleteUser(curUser._id);
       router.push("/auth/logout");
     } catch (e: unknown) {
-      const error = (e as AxiosError<{ error?: string }>)?.response?.data
-        ?.error;
-      setError(error ?? "Failed to delete account");
+      setError((e as Error).message ?? "Failed to delete account");
       setDeleting(false);
     }
   };

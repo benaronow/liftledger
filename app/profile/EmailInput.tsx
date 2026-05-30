@@ -74,14 +74,7 @@ export const EmailInput = ({ isConnectionUser }: Props) => {
         style={{ outline }}
       />
     );
-  }, [
-    isConnectionUser,
-    emailEdited,
-    email,
-    savingEmail,
-    handleSaveEmail,
-    focused,
-  ]);
+  }, [emailEdited, email, savingEmail, handleSaveEmail, focused]);
 
   return (
     <LabeledTextInput

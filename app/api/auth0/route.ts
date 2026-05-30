@@ -86,7 +86,9 @@ export const PATCH = async (req: NextRequest) => {
   const sameEmailUsers: { user_id: string }[] = auth0UsersByEmail.ok
     ? await auth0UsersByEmail.json()
     : [];
-  const sameEmailUserExists = sameEmailUsers.some((u) => u.user_id !== sub);
+  const sameEmailUserExists = sameEmailUsers.some(
+    (u) => u.user_id.toLowerCase() !== sub.toLowerCase(),
+  );
   if (sameEmailUserExists)
     return NextResponse.json(
       { error: "A user with this email already exists." },
@@ -148,7 +150,7 @@ export const PATCH = async (req: NextRequest) => {
         },
         body: JSON.stringify({
           email: oldEmail,
-          email_verified: true,
+          email_verified: session.user.email_verified,
           connection: "Username-Password-Authentication",
         }),
       },
@@ -169,12 +171,21 @@ export const PATCH = async (req: NextRequest) => {
   return NextResponse.json(updatedUser);
 };
 
-export const DELETE = async () => {
+export const DELETE = async (req: NextRequest) => {
+  const { id } = await req.json();
+  if (!id)
+    return NextResponse.json({ error: "Missing id" }, { status: 400 });
+
+  await connectDB();
+  const user = await UserModel.findOne({ _id: id });
+  if (!user)
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+
   const session = await auth0.getSession();
-  if (!session)
+  if (!session || session.user.sub !== user.auth0Id)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const sub = session.user.sub;
+  const sub = user.auth0Id;
 
   const tokenResult = await getAuth0Token();
   if (!tokenResult.ok)
@@ -202,13 +213,12 @@ export const DELETE = async () => {
     );
   }
 
-  await connectDB();
   try {
-    await UserModel.findOneAndDelete({ auth0Id: sub });
+    await UserModel.findOneAndDelete({ _id: id });
   } catch (dbErr) {
     console.error(
-      "Auth0 account deleted but MongoDB cleanup failed for sub:",
-      sub,
+      "Auth0 account deleted but MongoDB cleanup failed for id:",
+      id,
       dbErr,
     );
   }
