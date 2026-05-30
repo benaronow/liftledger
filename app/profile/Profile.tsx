@@ -1,130 +1,67 @@
 "use client";
 
 import { Avatar } from "@mui/material";
-import { useEffect } from "react";
-import { useUser } from "@/app/layoutProviders/UserProvider";
+import { useMemo } from "react";
+import { useUser } from "@/app/layoutContainer/UserProvider";
 import { useRouter } from "next/navigation";
-import { RouteType } from "@/lib/types";
-import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
+import { FirstNameInput } from "./FirstNameInput";
+import { LastNameInput } from "./LastNameInput";
+import { EmailInput } from "./EmailInput";
+import { DangerZone } from "./DangerZone";
+import { ActionButton } from "../components/ActionButton";
+import { TbLogout2 } from "react-icons/tb";
+import { ResetPasswordButton } from "./ResetPasswordButton";
 import { COLORS } from "@/lib/colors";
 
 export const Profile = () => {
   const { session, curUser } = useUser();
-  const { isFetching, toggleScreenState } = useScreenState();
   const router = useRouter();
-  dayjs.extend(utc);
 
-  useEffect(() => {
-    if (!session) {
-      router.push("/dashboard");
-    } else if (!curUser) {
-      router.push("/create-account");
-    } else {
-      toggleScreenState("fetching", false);
-      router.prefetch(RouteType.Add);
-      router.prefetch(RouteType.Home);
-      router.prefetch(RouteType.History);
-      router.prefetch(RouteType.Progress);
-    }
-  }, []);
+  const isConnectionUser = useMemo(
+    () => session?.user.sub?.startsWith("auth0|") ?? false,
+    [session?.user.sub],
+  );
 
   const handleLogout = () => {
     router.push("/auth/logout");
   };
 
-  if (!curUser || isFetching) return <LogoSpinner />;
+  if (!curUser) return <LogoSpinner />;
 
   return (
     <div
-      className="d-flex flex-column align-items-center w-100"
-      style={{
-        height: "100dvh",
-        padding: "65px 15px 85px",
-        overflow: "scroll",
-      }}
+      className="d-flex flex-column align-items-center h-100 w-100 gap-3 overflow-scroll"
+      style={{ padding: "15px 0px" }}
     >
       <div
-        className="d-flex flex-column align-items-center text-white text-nowrap w-100"
+        className="d-flex flex-column align-items-center w-100 gap-3 p-3"
         style={{
-          fontFamily: "League+Spartan",
-          fontSize: "14px",
-          marginBottom: "10px",
-          borderRadius: "5px",
+          background: `linear-gradient(90deg, transparent 0%, ${COLORS.container} 30%, ${COLORS.container} 70%, transparent 100%)`,
         }}
       >
         <Avatar
-          sx={{ height: "75px", width: "75px", marginRight: "20px" }}
+          sx={{ height: "80px", width: "80px", border: `3px solid white` }}
           src={session?.user.picture}
         />
-        <div
-          className="d-flex flex-column w-100"
-          style={{
-            justifyContent: "space-between",
-            background: "#131314",
-            margin: "15px 0px",
-            borderRadius: "5px",
-            padding: "10px",
-            gap: "10px",
-            border: "solid 5px #58585b",
-            boxShadow: "0px 5px 10px #131314",
-          }}
-        >
-          <div
-            className="d-flex justify-content-between w-100"
-            style={{ fontFamily: "League+Spartan", fontSize: "14px" }}
-          >
-            <span className="fw-bold" style={{ fontFamily: "League+Spartan" }}>
-              Name:
-            </span>
-            <span>
-              {curUser
-                ? `${curUser?.firstName} ${curUser?.lastName}`
-                : "Unavailable"}
-            </span>
-          </div>
-          <div
-            className="d-flex justify-content-between w-100"
-            style={{ fontFamily: "League+Spartan", fontSize: "14px" }}
-          >
-            <span className="fw-bold" style={{ fontFamily: "League+Spartan" }}>
-              Email:
-            </span>
-            <span>{curUser ? curUser.email : "Unavailable"}</span>
-          </div>
-          <div
-            className="d-flex justify-content-between w-100"
-            style={{ fontFamily: "League+Spartan", fontSize: "14px" }}
-          >
-            <span className="fw-bold" style={{ fontFamily: "League+Spartan" }}>
-              Birthday:
-            </span>
-            <span>
-              {curUser
-                ? `${dayjs(curUser.birthday).utc().format("MM/DD/YYYY")}`
-                : "Unavailable"}
-            </span>
-          </div>
-        </div>
-        <button
-          className="border border-0 px-3 py-2 rounded"
-          style={{ background: COLORS.primary }}
-        >
-          <span
-            className="text-white"
-            style={{
-              fontFamily: "League+Spartan",
-              fontSize: "16px",
-              fontWeight: 600,
-            }}
-            onClick={handleLogout}
-          >
-            Log Out
-          </span>
-        </button>
       </div>
+      <div
+        className="d-flex flex-column align-items-center w-100 rounded gap-3 p-3"
+        style={{ background: COLORS.dark }}
+      >
+        <FirstNameInput />
+        <LastNameInput />
+        <EmailInput isConnectionUser={isConnectionUser} />
+        <ResetPasswordButton isConnectionUser={isConnectionUser} />
+        <ActionButton
+          label="Log Out"
+          icon={<TbLogout2 fontSize={22} />}
+          variant="dangerInverted"
+          onClick={handleLogout}
+          className="mt-3"
+        />
+      </div>
+      <DangerZone />
     </div>
   );
 };

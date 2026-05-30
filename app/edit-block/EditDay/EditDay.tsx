@@ -2,10 +2,10 @@ import { Exercise } from "@/lib/types";
 import { ChangeEvent } from "react";
 import { AddButton } from "@/app/components/AddButton";
 import { ExerciseInfo } from "./ExerciseInfo";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
-import { LabeledInput } from "@/app/components/LabeledInput";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import { useEditBlock } from "../EditBlockProvider";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
+import { LabeledTextInput } from "@/app/components/inputs";
 
 export const EditDay = () => {
   const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
@@ -68,10 +68,10 @@ export const EditDay = () => {
         style={{ fontFamily: "League+Spartan", fontSize: "16px" }}
       >
         <div className="w-100" style={{ marginBottom: "20px" }}>
-          <LabeledInput
+          <LabeledTextInput
             label="Name:"
-            textValue={templateBlock.weeks[editingWeekIdx][editingDayIdx].name}
-            onChangeText={(e: ChangeEvent<HTMLInputElement>) =>
+            value={templateBlock.weeks[editingWeekIdx][editingDayIdx].name}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
               handleDayNameInput(e, editingDayIdx)
             }
           />

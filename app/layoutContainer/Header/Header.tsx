@@ -2,9 +2,8 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { RouteType } from "@/lib/types";
-import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
-import { useUser } from "@/app/layoutProviders/UserProvider";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { useUser } from "@/app/layoutContainer/UserProvider";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import styles from "./header.module.css";
 import { Avatar } from "@mui/material";
 
@@ -13,10 +12,8 @@ export const Header = () => {
   const pathname = usePathname();
   const { session } = useUser();
   const { curBlock } = useBlock();
-  const { toggleScreenState } = useScreenState();
 
   const getTitle = () => {
-    if (pathname.includes(RouteType.Signup)) return "Create Account";
     if (pathname.includes(RouteType.Progress)) return "Progress";
     if (pathname.includes(RouteType.History)) return "History";
     if (pathname.includes(RouteType.Add))
@@ -74,7 +71,6 @@ export const Header = () => {
                 cursor: "pointer",
               }}
               onClick={() => {
-                toggleScreenState("fetching", true);
                 router.push("/profile");
               }}
             >

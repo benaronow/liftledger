@@ -1,8 +1,23 @@
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { auth0 } from "./lib/auth0";
 
 export async function proxy(request: NextRequest) {
-  return await auth0.middleware(request);
+  const authRes = await auth0.middleware(request);
+  const { pathname } = request.nextUrl;
+
+  if (pathname.startsWith("/auth") || pathname === "/login") {
+    return authRes;
+  }
+
+  const session = await auth0.getSession(request);
+  if (session) return authRes;
+
+  if (pathname.startsWith("/api")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  return NextResponse.redirect(new URL("/login", request.nextUrl.origin));
 }
 
 export const config = {

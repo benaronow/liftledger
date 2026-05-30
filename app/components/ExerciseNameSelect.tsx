@@ -1,5 +1,5 @@
 import { Exercise } from "@/lib/types";
-import { useExerciseOptions } from "../layoutProviders/ExerciseOptionsProvider";
+import { useExerciseOptions } from "../layoutContainer/ExerciseOptionsProvider";
 import { useMemo } from "react";
 import { SearchableSelect } from "./SearchableSelect";
 
@@ -31,9 +31,7 @@ export const ExerciseNameSelect = ({
 
   const unavailableNameOptions = useMemo(
     () =>
-      allExerciseNameOptions.filter(
-        (o) => !availableNameOptions.includes(o),
-      ),
+      allExerciseNameOptions.filter((o) => !availableNameOptions.includes(o)),
     [availableNameOptions, allExerciseNameOptions],
   );
 
@@ -45,6 +43,7 @@ export const ExerciseNameSelect = ({
       unavailableOptions={unavailableNameOptions}
       onSelect={onSelect}
       onAddCustom={addCustomExerciseName}
+      canAddCustom
       className={className}
     />
   );

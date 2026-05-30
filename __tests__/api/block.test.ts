@@ -1,5 +1,13 @@
 // @vitest-environment node
-import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  afterEach,
+  vi,
+} from "vitest";
 import { NextRequest } from "next/server";
 import { startDb, stopDb, clearDb } from "./helpers";
 
@@ -12,10 +20,10 @@ import UserModel from "@/lib/models/user";
 import BlockModel from "@/lib/models/block";
 
 const makeUser = () => ({
+  auth0Id: "auth0|test-user",
   email: "test@example.com",
   firstName: "Test",
   lastName: "User",
-  birthday: new Date("1990-01-01"),
   timerPresets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 },
   gyms: ["Gym A"],
   customExerciseNames: [],
@@ -77,7 +85,9 @@ describe("POST /api/block", () => {
   it("persists the block in the database", async () => {
     const user = await UserModel.create(makeUser());
 
-    const res = await POST(postRequest({ uid: user._id.toString(), block: makeBlock() }));
+    const res = await POST(
+      postRequest({ uid: user._id.toString(), block: makeBlock() }),
+    );
     const data = await res.json();
 
     const found = await BlockModel.findById(data._id);
@@ -88,7 +98,9 @@ describe("POST /api/block", () => {
   it("sets curBlock on the user and adds to blocks array", async () => {
     const user = await UserModel.create(makeUser());
 
-    const res = await POST(postRequest({ uid: user._id.toString(), block: makeBlock() }));
+    const res = await POST(
+      postRequest({ uid: user._id.toString(), block: makeBlock() }),
+    );
     const data = await res.json();
 
     const updated = await UserModel.findById(user._id);

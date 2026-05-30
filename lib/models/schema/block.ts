@@ -36,6 +36,7 @@ const blockSchema: Schema = new Schema(
     ],
     curDayIdx: { type: Number, required: true },
     curWeekIdx: { type: Number, required: true },
+    endDate: { type: Date },
   },
   { collection: "Block" }
 );

@@ -1,37 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useUser } from "@/app/layoutProviders/UserProvider";
+import { useUser } from "@/app/layoutContainer/UserProvider";
 import dayjs from "dayjs";
 import { Day, Exercise, RouteType, Set } from "@/lib/types";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
 import Link from "next/link";
-import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
-import { ActionButton } from "@/app/components/ActionButton";
-import { BiLogIn } from "react-icons/bi";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
 
 export const Dashboard = () => {
-  const { session, attemptedLogin, curUser } = useUser();
+  const { curUser } = useUser();
   const { curBlock, curBlockLoading } = useBlock();
-  const { isFetching, toggleScreenState } = useScreenState();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (session && attemptedLogin && !curUser) {
-      router.push("/create-account");
-    }
-  }, [attemptedLogin]);
-
-  useEffect(() => {
-    toggleScreenState("fetching", false);
-    router.prefetch(RouteType.Add);
-    router.prefetch(RouteType.History);
-    router.prefetch(RouteType.Profile);
-    router.prefetch(RouteType.Progress);
-    router.prefetch(RouteType.Workout);
-  }, []);
 
   const getExerciseCompleted = (exercise: Exercise) => {
     return exercise.sets.reduce(
@@ -119,130 +97,93 @@ export const Dashboard = () => {
     { metric: "Total Weight Lifted:", value: getTotalWeight("lbs") },
   ];
 
-  if ((session && !curUser) || curBlockLoading || isFetching)
-    return <LogoSpinner />;
+  if (!curUser || curBlockLoading) return <LogoSpinner />;
 
   return (
     <div
-      className="d-flex flex-column align-items-center justify-content-evenly w-100"
-      style={{
-        position: "relative",
-        height: "100dvh",
-        padding: "50px 50px 70px",
-      }}
+      className="d-flex flex-column align-items-center justify-content-evenly h-100 w-100"
+      style={{ padding: "15px 0px" }}
     >
-      {session ? (
-        <>
-          <div
-            className="d-flex flex-column align-items-center text-white"
-            style={{ fontFamily: "League+Spartan", fontWeight: 900 }}
-          >
-            {curUser && !curBlock ? (
-              <span
-                className="text-nowrap"
-                style={{ fontSize: "16px", marginBottom: "5px" }}
-              >
-                Create a training block to get started!
-              </span>
-            ) : (
-              <>
-                <span
-                  className="text-nowrap"
-                  style={{ fontSize: "16px", marginBottom: "5px" }}
-                >
-                  Currently Completing:
-                </span>
-                <span style={{ fontSize: "24px" }}>{curBlock?.name}</span>
-              </>
-            )}
-          </div>
-          {curBlock && (
-            <>
-              {metricValueMap.map((pair, idx) => (
-                <div
-                  key={idx}
-                  className="d-flex align-items-center justify-content-around w-100 text-white text-nowrap"
-                  style={{
-                    fontFamily: "League+Spartan",
-                    fontSize: "16px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <span
-                    className="d-flex fw-bold justify-content-start text-start"
-                    style={{ width: "75%" }}
-                  >
-                    {pair.metric}
-                  </span>
-                  <span
-                    className="d-flex justify-content-end text-end"
-                    style={{ width: "125%" }}
-                  >
-                    {pair.value}
-                  </span>
-                </div>
-              ))}
-              <div className="w-100" style={{ height: "67px" }}>
-                <div
-                  className="d-flex border border-0 justify-content-center align-items-center text-white text-decoration-none"
-                  style={{
-                    fontFamily: "League+Spartan",
-                    fontSize: "20px",
-                    fontWeight: 600,
-                    borderRadius: "25px",
-                    height: "60px",
-                    background: "#004c81",
-                    transform: "translateY(7px)",
-                  }}
-                />
-                <Link
-                  className="d-flex w-100 border border-0 justify-content-center align-items-center text-white text-decoration-none"
-                  style={{
-                    fontFamily: "League+Spartan",
-                    fontSize: "20px",
-                    fontWeight: 600,
-                    borderRadius: "25px",
-                    height: "60px",
-                    background: "#0096FF",
-                    transition: "transform 0.1s",
-                    transform: "translateY(-60px)",
-                  }}
-                  href={RouteType.Workout}
-                  onClick={() => {
-                    toggleScreenState("fetching", true);
-                  }}
-                >
-                  <span>Lift!</span>
-                </Link>
-              </div>
-            </>
-          )}
-        </>
-      ) : (
-        <div
-          className="d-flex flex-column w-100 align-items-center"
-          style={{ height: "80px", justifyContent: "space-between" }}
-        >
+      <div
+        className="d-flex flex-column align-items-center text-white"
+        style={{ fontFamily: "League+Spartan", fontWeight: 900 }}
+      >
+        {curUser && !curBlock ? (
           <span
-            className="text-white"
-            style={{
-              fontFamily: "League+Spartan",
-              fontWeight: 900,
-              fontSize: "24px",
-            }}
+            className="text-nowrap"
+            style={{ fontSize: "16px", marginBottom: "5px" }}
           >
-            Welcome to LiftLedger!
+            Create a training block to get started!
           </span>
-          <ActionButton
-            label="Log in"
-            icon={<BiLogIn fontSize={24} />}
-            onClick={() => {
-              toggleScreenState("fetching", true);
-              router.push("/auth/login");
-            }}
-            width="auto"
-          />
-        </div>
+        ) : (
+          <>
+            <span
+              className="text-nowrap"
+              style={{ fontSize: "16px", marginBottom: "5px" }}
+            >
+              Currently Completing:
+            </span>
+            <span style={{ fontSize: "24px" }}>{curBlock?.name}</span>
+          </>
+        )}
+      </div>
+      {curBlock && (
+        <>
+          {metricValueMap.map((pair, idx) => (
+            <div
+              key={idx}
+              className="d-flex align-items-center justify-content-around w-100 text-white text-nowrap"
+              style={{
+                fontFamily: "League+Spartan",
+                fontSize: "16px",
+                marginBottom: "10px",
+              }}
+            >
+              <span
+                className="d-flex fw-bold justify-content-start text-start"
+                style={{ width: "75%" }}
+              >
+                {pair.metric}
+              </span>
+              <span
+                className="d-flex justify-content-end text-end"
+                style={{ width: "125%" }}
+              >
+                {pair.value}
+              </span>
+            </div>
+          ))}
+          <div className="w-100" style={{ height: "67px" }}>
+            <div
+              className="d-flex border border-0 justify-content-center align-items-center text-white text-decoration-none"
+              style={{
+                fontFamily: "League+Spartan",
+                fontSize: "20px",
+                fontWeight: 600,
+                borderRadius: "25px",
+                height: "60px",
+                background: "#004c81",
+                transform: "translateY(7px)",
+              }}
+            />
+            <Link
+              className="d-flex w-100 border border-0 justify-content-center align-items-center text-white text-decoration-none"
+              style={{
+                fontFamily: "League+Spartan",
+                fontSize: "20px",
+                fontWeight: 600,
+                borderRadius: "25px",
+                height: "60px",
+                background: "#0096FF",
+                transition: "transform 0.1s",
+                transform: "translateY(-60px)",
+              }}
+              href={RouteType.Workout}
+            >
+              <span>Lift!</span>
+            </Link>
+          </div>
+        </>
       )}
     </div>
   );

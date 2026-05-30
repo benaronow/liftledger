@@ -43,6 +43,7 @@ export interface Block {
   weeks: Day[][];
   curWeekIdx: number;
   curDayIdx: number;
+  endDate?: Date;
 }
 
 export interface TimerPresets {
@@ -56,9 +57,9 @@ export interface TimerPresets {
 export interface User {
   _id?: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  birthday: Date;
+  auth0Id: string;
+  firstName?: string;
+  lastName?: string;
   blocks: Block[];
   curBlock?: string;
   timerEnd?: Date;
@@ -73,7 +74,7 @@ export interface GetParams {
 }
 
 export enum RouteType {
-  Signup = "/create-account",
+  Login = "/login",
   Progress = "/progress",
   History = "/history",
   Home = "/dashboard",

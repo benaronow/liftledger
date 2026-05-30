@@ -6,12 +6,14 @@ import {
   Dispatch,
   PropsWithChildren,
   SetStateAction,
+  useCallback,
   useContext,
   useEffect,
   useState,
 } from "react";
 import { useUser } from "./UserProvider";
 import api from "@/lib/config";
+import { AxiosError } from "axios";
 
 const BLOCK_API_URL = "/api/block";
 
@@ -72,7 +74,7 @@ const defaultBlockContext: BlockContextType = {
 export const BlockContext = createContext(defaultBlockContext);
 
 export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
-  const { session, curUser, getUser } = useUser();
+  const { curUser, getCurrentUser } = useUser();
   const [curBlock, setCurBlock] = useState<Block>();
   const [curBlockLoading, setCurBlockLoading] = useState(false);
   const [templateBlock, setTemplateBlock] = useState<Block>(EMPTY_BLOCK);
@@ -82,47 +84,89 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
     setTemplateBlock(EMPTY_BLOCK);
   };
 
-  const getCurBlock = async () => {
-    if (!curUser || !curUser.curBlock) return;
+  const getCurBlock = useCallback(async () => {
+    if (!curUser || !curUser.curBlock) {
+      setCurBlock(undefined);
+      return;
+    }
+
     setCurBlockLoading(true);
-    const res = await api.get(`${BLOCK_API_URL}/${curUser.curBlock}`);
-    const result: Block = res.data;
-    setCurBlock(result);
-    setCurBlockLoading(false);
-  };
+
+    try {
+      const res = await api.get(`${BLOCK_API_URL}/${curUser.curBlock}`);
+      const result: Block = res.data;
+      if (result) setCurBlock(result);
+    } catch (e: unknown) {
+      const error = (e as AxiosError<{ error?: string }>)?.response?.data
+        ?.error;
+      throw new Error(error ?? "Failed to fetch block");
+    } finally {
+      setCurBlockLoading(false);
+    }
+  }, [curUser?._id, curUser?.curBlock]);
 
   useEffect(() => {
-    getCurBlock();
-  }, [curUser?._id]);
+    getCurBlock().catch((e) => console.error(e));
+  }, [getCurBlock]);
 
-  const createBlock = async (block: Block) => {
-    if (!curUser || !curUser._id) return;
-    setCurBlockLoading(true);
-    const res = await api.post(`${BLOCK_API_URL}`, {
-      uid: curUser._id,
-      block,
-    });
-    const result: Block = res.data;
-    setCurBlock(result);
-    setCurBlockLoading(false);
-  };
+  const createBlock = useCallback(
+    async (block: Block) => {
+      if (!curUser || !curUser._id) return;
 
-  const updateBlock = async (block: Block) => {
-    if (!curUser || !curUser._id) return;
-    setCurBlockLoading(true);
-    const res = await api.put(`${BLOCK_API_URL}/${block._id}`, {
-      uid: curUser._id,
-      block,
-    });
-    const result: { block: Block; done: boolean } = res.data;
-    if (result.done) {
-      setCurBlock(undefined);
-      getUser(session?.user.email || "");
-    } else {
-      setCurBlock(result.block);
-    }
-    setCurBlockLoading(false);
-  };
+      setCurBlockLoading(true);
+
+      try {
+        const res = await api.post(`${BLOCK_API_URL}`, {
+          uid: curUser._id,
+          block,
+        });
+        const result: Block = res.data;
+        if (result) setCurBlock(result);
+      } catch (e: unknown) {
+        const error = (e as AxiosError<{ error?: string }>)?.response?.data
+          ?.error;
+        throw new Error(error ?? "Failed to create block");
+      } finally {
+        setCurBlockLoading(false);
+      }
+    },
+    [curUser?._id],
+  );
+
+  const updateBlock = useCallback(
+    async (block: Block) => {
+      if (!curUser || !curUser._id) return;
+
+      setCurBlockLoading(true);
+
+      try {
+        const res = await api.put(`${BLOCK_API_URL}/${block._id}`, {
+          uid: curUser._id,
+          block,
+        });
+        const result: { block: Block; done: boolean } = res.data;
+
+        if (result.done) {
+          setCurBlock(undefined);
+
+          try {
+            await getCurrentUser();
+          } catch (e) {
+            console.error(e);
+          }
+        } else if (result.block) {
+          setCurBlock(result.block);
+        }
+      } catch (e: unknown) {
+        const error = (e as AxiosError<{ error?: string }>)?.response?.data
+          ?.error;
+        throw new Error(error ?? "Failed to update block");
+      } finally {
+        setCurBlockLoading(false);
+      }
+    },
+    [curUser?._id, getCurrentUser],
+  );
 
   return (
     <BlockContext.Provider

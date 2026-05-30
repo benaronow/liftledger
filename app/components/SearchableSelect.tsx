@@ -1,8 +1,9 @@
 "use client";
 
 import { COLORS } from "@/lib/colors";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Spinner } from "react-bootstrap";
+import { LabeledInputContainer } from "./inputs";
 
 interface Props {
   label?: string;
@@ -11,6 +12,7 @@ interface Props {
   unavailableOptions?: string[];
   onSelect: (value: string) => void;
   onAddCustom?: (value: string) => Promise<void>;
+  canAddCustom?: boolean;
   className?: string;
   disabled?: boolean;
   placeholder?: string;
@@ -23,6 +25,7 @@ export const SearchableSelect = ({
   unavailableOptions,
   onSelect,
   onAddCustom,
+  canAddCustom,
   className,
   disabled,
   placeholder,
@@ -35,8 +38,10 @@ export const SearchableSelect = ({
     setInputValue(value);
   }, [value]);
 
-  const filteredOptions = options.filter((o) =>
-    o.toLowerCase().includes(inputValue.toLowerCase()),
+  const filteredOptions = useMemo(
+    () =>
+      options.filter((o) => o.toLowerCase().includes(inputValue.toLowerCase())),
+    [options, inputValue],
   );
 
   const isUnavailable = useMemo(
@@ -56,8 +61,10 @@ export const SearchableSelect = ({
     [inputValue, options],
   );
 
+  const showAddOrUnavailable = canAddCustom && (isCustom || isUnavailable);
+
   const showDropdown =
-    open && (filteredOptions.length > 0 || isCustom || isUnavailable);
+    open && (filteredOptions.length > 0 || showAddOrUnavailable);
 
   const addButtonText = useMemo(
     () =>
@@ -67,13 +74,16 @@ export const SearchableSelect = ({
     [isUnavailable, inputValue],
   );
 
-  const handleSelect = (option: string) => {
-    setInputValue(option);
-    onSelect(option);
-    setOpen(false);
-  };
+  const handleSelect = useCallback(
+    (option: string) => {
+      setInputValue(option);
+      onSelect(option);
+      setOpen(false);
+    },
+    [onSelect],
+  );
 
-  const handleAddCustom = async () => {
+  const handleAddCustom = useCallback(async () => {
     setAddingCustom(true);
 
     const trimmed = inputValue.trim();
@@ -86,7 +96,7 @@ export const SearchableSelect = ({
 
     setAddingCustom(false);
     setOpen(false);
-  };
+  }, [inputValue, onAddCustom, onSelect]);
 
   const optionBg = (option: string) => {
     if (option === value) return COLORS.primary;
@@ -94,15 +104,7 @@ export const SearchableSelect = ({
   };
 
   return (
-    <div className={`d-flex flex-column align-items-start w-100 ${className}`}>
-      {label && (
-        <span
-          className="fw-semibold text-nowrap text-white mb-1"
-          style={{ fontSize: "14px" }}
-        >
-          {label}
-        </span>
-      )}
+    <LabeledInputContainer label={label} className={className}>
       <div className="position-relative w-100">
         <input
           className="w-100 rounded px-2 py-1 border-0"
@@ -156,7 +158,7 @@ export const SearchableSelect = ({
                   {option}
                 </button>
               ))}
-              {(isUnavailable || isCustom) && (
+              {showAddOrUnavailable && (
                 <button
                   className="px-2 py-1 border-0"
                   style={{
@@ -178,6 +180,6 @@ export const SearchableSelect = ({
           </div>
         )}
       </div>
-    </div>
+    </LabeledInputContainer>
   );
 };

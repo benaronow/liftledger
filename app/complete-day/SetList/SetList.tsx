@@ -5,7 +5,7 @@ import { BiPlusCircle } from "react-icons/bi";
 import { FaTimes } from "react-icons/fa";
 import { ActionButton } from "@/app/components/ActionButton";
 import { ProgressIcon } from "./ProgressIcon";
-import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { computeProgress } from "./computeProgress";
 import { useCompleteDay } from "../CompleteDayProvider";
 

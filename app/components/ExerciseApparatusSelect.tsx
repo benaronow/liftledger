@@ -1,5 +1,5 @@
 import { Exercise } from "@/lib/types";
-import { useExerciseOptions } from "../layoutProviders/ExerciseOptionsProvider";
+import { useExerciseOptions } from "../layoutContainer/ExerciseOptionsProvider";
 import { useMemo } from "react";
 import { SearchableSelect } from "./SearchableSelect";
 
@@ -49,6 +49,7 @@ export const ExerciseApparatusSelect = ({
       unavailableOptions={unavailableApparatusOptions}
       onSelect={onSelect}
       onAddCustom={addCustomExerciseApparatus}
+      canAddCustom
       className={className}
     />
   );

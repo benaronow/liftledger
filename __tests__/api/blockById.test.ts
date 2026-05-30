@@ -1,5 +1,13 @@
 // @vitest-environment node
-import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  afterEach,
+  vi,
+} from "vitest";
 import { NextRequest } from "next/server";
 import { startDb, stopDb, clearDb } from "./helpers";
 
@@ -13,10 +21,10 @@ import BlockModel from "@/lib/models/block";
 import { Block } from "@/lib/types";
 
 const makeUser = () => ({
+  auth0Id: "auth0|test-user",
   email: "test@example.com",
   firstName: "Test",
   lastName: "User",
-  birthday: new Date("1990-01-01"),
   timerPresets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 },
   gyms: ["Gym A"],
   customExerciseNames: [],
@@ -73,7 +81,10 @@ describe("GET /api/block/[id]", () => {
   it("returns the block by id", async () => {
     const block = await BlockModel.create(makeBlock());
 
-    const res = await GET(getRequest(block._id.toString()), makeParams(block._id.toString()));
+    const res = await GET(
+      getRequest(block._id.toString()),
+      makeParams(block._id.toString()),
+    );
     const data = await res.json();
 
     expect(res.status).toBe(200);
@@ -130,7 +141,12 @@ describe("PUT /api/block/[id] — day progression", () => {
 describe("PUT /api/block/[id] — week progression", () => {
   it("creates next week and advances curWeekIdx when last day of week is complete", async () => {
     const block = await BlockModel.create(
-      makeBlock({ weeks: [[makeDay(new Date())]], curWeekIdx: 0, curDayIdx: 0, length: 4 }),
+      makeBlock({
+        weeks: [[makeDay(new Date())]],
+        curWeekIdx: 0,
+        curDayIdx: 0,
+        length: 4,
+      }),
     );
     const user = await UserModel.create(makeUser());
 

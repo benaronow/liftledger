@@ -1,4 +1,4 @@
-import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { useProgress } from "../ProgressProvider";
 import { COLORS } from "@/lib/colors";
 import dayjs from "dayjs";

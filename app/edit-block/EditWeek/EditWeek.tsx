@@ -1,16 +1,16 @@
 import { Day } from "@/lib/types";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, useEffect, useMemo } from "react";
-import { LabeledInput } from "@/app/components/LabeledInput";
+import React, { ChangeEvent, useEffect } from "react";
 import { AddButton } from "@/app/components/AddButton";
 import { DayInfo } from "./DayInfo";
-import { EMPTY_BLOCK, useBlock } from "@/app/layoutProviders/BlockProvider";
-import { useUser } from "@/app/layoutProviders/UserProvider";
+import { EMPTY_BLOCK, useBlock } from "@/app/layoutContainer/BlockProvider";
+import { useUser } from "@/app/layoutContainer/UserProvider";
 import { DeleteDayDialog } from "./DeleteDayDialog";
-import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
 import { useEditBlock } from "../EditBlockProvider";
+import { LabeledTextInput, LabeledDateInput } from "@/app/components/inputs";
 
 export const EditWeek = () => {
   const router = useRouter();
@@ -19,18 +19,6 @@ export const EditWeek = () => {
     useBlock();
   const { getNewSetsFromLatest } = useCompletedExercises();
   const { templateErrors } = useEditBlock();
-
-  const blockStarted = useMemo(
-    () =>
-      curBlock?.weeks.some((week) =>
-        week.some((day) =>
-          day.exercises.some((exercise) =>
-            exercise.sets.some((set) => set.completed || set.skipped),
-          ),
-        ),
-      ),
-    [curBlock],
-  );
 
   useEffect(() => {
     if (templateBlock.primaryGym === undefined && curUser?.gyms?.length) {
@@ -69,33 +57,34 @@ export const EditWeek = () => {
   };
 
   const setPrimaryGym = (gym: string) => {
+    const curWeekIdx = curBlock?.curWeekIdx ?? 0;
+    const curDayIdx = curBlock?.curDayIdx ?? 0;
+
     setTemplateBlock({
       ...templateBlock,
       primaryGym: gym,
-      weeks: templateBlock.weeks.map((week, wIdx) =>
-        wIdx === editingWeekIdx
-          ? week.map((day, idx) =>
-              idx >= (curBlock?.curDayIdx ?? 0)
-                ? {
-                    ...day,
-                    gym,
-                    exercises: day.exercises.map((exercise) =>
-                      exercise.sets.some((s) => s.completed)
-                        ? exercise
-                        : {
-                            ...exercise,
-                            gym,
-                            sets: getNewSetsFromLatest({
-                              ...exercise,
-                              gym,
-                            }),
-                          },
-                    ),
-                  }
-                : day,
-            )
-          : week,
-      ),
+      weeks: templateBlock.weeks.map((week, wIdx) => {
+        if (wIdx < curWeekIdx) return week;
+
+        return week.map((day, dIdx) => {
+          if (wIdx === curWeekIdx && dIdx < curDayIdx) return day;
+
+          const dayHasCompletedSets = day.exercises.some((ex) =>
+            ex.sets.some((s) => s.completed || s.skipped),
+          );
+          if (dayHasCompletedSets) return day;
+
+          return {
+            ...day,
+            gym,
+            exercises: day.exercises.map((exercise) => ({
+              ...exercise,
+              gym,
+              sets: getNewSetsFromLatest({ ...exercise, gym }),
+            })),
+          };
+        });
+      }),
     });
   };
 
@@ -158,20 +147,21 @@ export const EditWeek = () => {
           className="d-flex flex-column w-100 text-white"
           style={{ gap: "10px", marginBottom: "20px" }}
         >
-          <LabeledInput
+          <LabeledTextInput
             label="Name: "
-            textValue={templateBlock.name}
-            onChangeText={handleBlockNameInput}
+            value={templateBlock.name}
+            onChange={handleBlockNameInput}
+            placeholder="Enter block name..."
           />
-          <LabeledInput
+          <LabeledDateInput
             label="Start: "
-            dateValue={dayjs(templateBlock.startDate)}
-            onChangeDate={handleDateInput}
+            value={dayjs(templateBlock.startDate)}
+            onChange={handleDateInput}
           />
-          <LabeledInput
+          <LabeledTextInput
             label="Weeks: "
-            textValue={templateBlock.length}
-            onChangeText={handleLengthInput}
+            value={templateBlock.length}
+            onChange={handleLengthInput}
           />
           <SearchableSelect
             label="Primary Gym:"
@@ -179,8 +169,8 @@ export const EditWeek = () => {
             options={curUser?.gyms || []}
             onSelect={(gym: string) => setPrimaryGym(gym)}
             onAddCustom={handleAddGym}
-            disabled={blockStarted}
-            placeholder="Please select a gym"
+            canAddCustom
+            placeholder="Enter gym..."
           />
         </div>
         <div className="d-flex flex-column align-items-center gap-2 w-100">

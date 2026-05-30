@@ -1,43 +1,32 @@
 "use client";
 
-import { useTheme } from "@mui/material";
+import { useMediaQuery, useTheme } from "@mui/material";
 import dayjs from "dayjs";
 import { ControlPointDuplicate } from "@mui/icons-material";
-import { Block, RouteType } from "@/lib/types";
+import { Block } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
-import { useUser } from "@/app/layoutProviders/UserProvider";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
-import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { useUser } from "@/app/layoutContainer/UserProvider";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
+import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
+import { ActionButton } from "../components/ActionButton";
 
 export const History = () => {
   const router = useRouter();
-  const { curUser, session } = useUser();
+  const { curUser } = useUser();
   const { curBlock, setTemplateBlock, setEditingWeekIdx } = useBlock();
   const { getNewSetsFromLatest } = useCompletedExercises();
-  const { innerWidth, isFetching, toggleScreenState } = useScreenState();
   const theme = useTheme();
+  const isTabletOrLarger = useMediaQuery(theme.breakpoints.up("sm"));
 
   useEffect(() => {
-    if (!session) {
-      router.push("/dashboard");
-    } else {
-      toggleScreenState("fetching", false);
-      router.prefetch(RouteType.Add);
-      router.prefetch(RouteType.Home);
-      router.prefetch(RouteType.Profile);
-      router.prefetch(RouteType.Progress);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (innerWidth && innerWidth > theme.breakpoints.values["sm"])
-      router.push("/dashboard");
-  }, [innerWidth]);
+    if (isTabletOrLarger) router.push("/dashboard");
+  }, [isTabletOrLarger]);
 
   const getCompletedDate = (block: Block) => {
+    if (block.endDate) return block.endDate;
+
     const finalWeek = block.weeks[block.weeks.length - 1];
     const finalDay = finalWeek[finalWeek.length - 1];
 
@@ -88,68 +77,45 @@ export const History = () => {
       return (
         <div
           key={idx}
-          className="d-flex align-items-center w-100 text-white text-nowrap justify-content-between"
+          className="d-flex align-items-center w-100 text-white text-nowrap justify-content-between rounded"
           style={{
             fontFamily: "League+Spartan",
             fontSize: "14px",
             marginBottom: "15px",
-            background: "#58585b",
+            background: "#131314",
             borderRadius: "5px",
-            border: "solid 5px #58585b",
             boxShadow: "0px 5px 10px #131314",
+            height: "35px",
+            paddingLeft: "10px",
           }}
         >
-          <div
-            className="d-flex w-100 align-items-center"
-            style={{
-              background: "#131314",
-              padding: "5px 10px",
-              borderRadius: "5px",
-              height: "35px",
-              fontSize: "14px",
-              overflow: "hidden",
-            }}
-          >
-            <span className="text-nowrap text-truncate">
-              <span className="fw-bold" style={{ marginRight: "5px" }}>{`${
-                idx + 1
-              }. ${block.name}`}</span>
-              <span>{`(${dayjs(block.startDate).format("M/DD/YY")} -  ${
-                getCompletedDate(block)
-                  ? dayjs(getCompletedDate(block)).format("M/DD/YY")
-                  : "N/A"
-              })`}</span>
-            </span>
-          </div>
-          <button
-            className="d-flex justify-content-center align-items-center border-0"
-            style={{
-              marginLeft: "5px",
-              background: "#0096FF",
-              color: "white",
-              height: "35px",
-              width: "35px",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
+          <span className="overflow-hidden text-nowrap text-truncate">
+            <span className="fw-bold" style={{ marginRight: "5px" }}>{`${
+              idx + 1
+            }. ${block.name}`}</span>
+            <span>{`(${dayjs(block.startDate).format("M/DD/YY")} -  ${
+              getCompletedDate(block)
+                ? dayjs(getCompletedDate(block)).format("M/DD/YY")
+                : "N/A"
+            })`}</span>
+          </span>
+          <ActionButton
+            roundedSide="end"
+            height={35}
+            width={35}
+            icon={<ControlPointDuplicate />}
             onClick={() => handleCreateFromTemplate(block)}
-          >
-            <ControlPointDuplicate />
-          </button>
+          />
         </div>
       );
     });
 
-  if (!curUser || isFetching) return <LogoSpinner />;
+  if (!curUser) return <LogoSpinner />;
 
   return (
     <div
-      className="d-flex flex-column align-items-center w-100"
-      style={{
-        height: "100dvh",
-        padding: "65px 15px 85px",
-        overflow: "scroll",
-      }}
+      className="d-flex flex-column align-items-center w-100 h-100 overflow-y-scroll"
+      style={{ padding: "15px 0px" }}
     >
       {completedBlocks && completedBlocks[0] ? (
         completedBlocks

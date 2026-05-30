@@ -1,16 +1,16 @@
 import { ArrowBackIosNew } from "@mui/icons-material";
-import { LabeledInput } from "@/app/components/LabeledInput";
 import { FaTrash } from "react-icons/fa";
 import { ChangeEvent, useCallback, useMemo } from "react";
 import { Exercise, Set } from "@/lib/types";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import { Info, InfoAction } from "../Info";
-import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { useEditBlock } from "../EditBlockProvider";
 import { WEIGHT_TYPES } from "@/lib/weightTypes";
 import { ExerciseNameSelect } from "@/app/components/ExerciseNameSelect";
 import { ExerciseApparatusSelect } from "@/app/components/ExerciseApparatusSelect";
 import { moveExercise } from "./moveExercise";
+import { LabeledTextInput, LabeledSelect } from "@/app/components/inputs";
 
 export type ExerciseInfoName = "name" | "apparatus" | "weightType";
 
@@ -158,18 +158,18 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
         className="mb-0"
       />
       <div className="d-flex w-100 gap-3">
-        <LabeledInput
+        <LabeledTextInput
           label="Sets:"
-          textValue={exercise.sets.filter((set) => !set.addedOn).length}
-          onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
+          value={exercise.sets.filter((set) => !set.addedOn).length}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
             handleNumberInput(e, "sets");
           }}
         />
         {!curBlock && (
-          <LabeledInput
+          <LabeledTextInput
             label="Reps:"
-            textValue={exercise.sets[0]?.reps || 0}
-            onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
+            value={exercise.sets[0]?.reps || 0}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
               handleNumberInput(e, "reps");
             }}
             disabled={editDisabled}
@@ -178,23 +178,23 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
       </div>
       {!curBlock && (
         <div className="d-flex w-100 gap-3 ">
-          <LabeledInput
+          <LabeledTextInput
             label="Weight:"
-            textValue={exercise.sets[0]?.weight || ""}
+            value={exercise.sets[0]?.weight || ""}
             type="number"
             step="any"
             min="0"
-            onChangeText={(e: ChangeEvent<HTMLInputElement>) => {
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
               handleNumberInput(e, "weight");
             }}
             disabled={editDisabled}
           />
-          <LabeledInput
+          <LabeledSelect
             label="Weight type:"
-            textValue={exercise.weightType}
+            value={exercise.weightType}
             options={WEIGHT_TYPES}
             includeEmptyOption
-            onChangeSelect={(e) => switchExercise(e.target.value, "weightType")}
+            onChange={(e) => switchExercise(e.target.value, "weightType")}
           />
         </div>
       )}

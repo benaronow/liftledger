@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { FaSave } from "react-icons/fa";
 import { EditSet } from "./EditSet";
 import { DialogAction, ActionDialog } from "@/app/components/ActionDialog";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import { IoIosSkipForward } from "react-icons/io";
-import { useTimer } from "@/app/layoutProviders/TimerProvider";
-import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { useTimer } from "@/app/layoutContainer/TimerProvider";
+import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { useCompleteDay } from "../CompleteDayProvider";
 import { Spinner } from "react-bootstrap";
 

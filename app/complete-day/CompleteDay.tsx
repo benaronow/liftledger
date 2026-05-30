@@ -1,10 +1,7 @@
 "use client";
 
-import { RouteType } from "@/lib/types";
 import { useEffect, useRef } from "react";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
-import { useScreenState } from "@/app/layoutProviders/ScreenStateProvider";
-import { useUser } from "@/app/layoutProviders/UserProvider";
 import { SetList } from "./SetList/SetList";
 import { COLORS } from "@/lib/colors";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
@@ -20,8 +17,6 @@ import { useRouter } from "next/navigation";
 
 export const CompleteDay = () => {
   const router = useRouter();
-  const { session } = useUser();
-  const { isFetching, toggleScreenState } = useScreenState();
   const {
     exercises,
     setAddExerciseIdx,
@@ -34,29 +29,16 @@ export const CompleteDay = () => {
   const pageContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!session) {
-      router.push("/dashboard");
-    } else {
-      toggleScreenState("fetching", false);
-      router.prefetch(RouteType.Add);
-      router.prefetch(RouteType.Home);
-      router.prefetch(RouteType.Profile);
-      router.prefetch(RouteType.History);
-      router.prefetch(RouteType.Progress);
-    }
-  }, []);
-
-  useEffect(() => {
     if (!exercises.length) router.push("/dashboard");
   }, [exercises]);
 
-  if (!exercises.length || isFetching) return <LogoSpinner />;
+  if (!exercises.length) return <LogoSpinner />;
 
   return (
     <>
       <div
-        className="d-flex flex-column align-items-center w-100 overflow-scroll"
-        style={{ height: "100dvh", padding: "65px 15px 150px" }}
+        className="d-flex flex-column align-items-center h-100 w-100 overflow-scroll"
+        style={{ padding: "15px 0px 65px" }}
         ref={pageContainerRef}
       >
         <div className="d-flex flex-column align-items-center w-100">

@@ -1,10 +1,10 @@
 import { FaSave } from "react-icons/fa";
-import { useUser } from "@/app/layoutProviders/UserProvider";
+import { useUser } from "@/app/layoutContainer/UserProvider";
 import { useState } from "react";
-import { useBlock } from "@/app/layoutProviders/BlockProvider";
+import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
-import { useCompletedExercises } from "@/app/layoutProviders/CompletedExercisesProvider";
+import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { useCompleteDay } from "./CompleteDayProvider";
 import { IoArrowBack } from "react-icons/io5";
 import { Spinner } from "react-bootstrap";
@@ -99,6 +99,7 @@ export const EditGymDialog = () => {
             options={curUser?.gyms || []}
             onSelect={setGymName}
             onAddCustom={handleAddGym}
+            canAddCustom
             placeholder="Please select a gym"
           />
         </ActionDialog>

@@ -2,10 +2,10 @@ import { Schema } from "mongoose";
 
 const userSchema: Schema = new Schema(
   {
+    auth0Id: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    birthday: { type: Date, required: true },
+    firstName: { type: String },
+    lastName: { type: String },
     blocks: { type: [{ type: Schema.Types.ObjectId, ref: "Block" }] },
     curBlock: { type: Schema.Types.ObjectId, ref: "Block" },
     timerEnd: { type: Date },
@@ -18,7 +18,7 @@ const userSchema: Schema = new Schema(
     customExerciseNames: { type: [String], default: [] },
     customExerciseApparatuses: { type: [String], default: [] },
   },
-  { collection: "User" }
+  { collection: "User" },
 );
 
 export default userSchema;
