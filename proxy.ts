@@ -6,11 +6,16 @@ export async function proxy(request: NextRequest) {
   const authRes = await auth0.middleware(request);
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/auth") || pathname === "/login") {
+  if (pathname.startsWith("/auth")) return authRes;
+
+  const session = await auth0.getSession(request);
+
+  if (pathname === "/login" && session) {
+    return NextResponse.redirect(new URL("/dashboard", request.nextUrl.origin));
+  } else if (pathname === "/login") {
     return authRes;
   }
 
-  const session = await auth0.getSession(request);
   if (session) return authRes;
 
   if (pathname.startsWith("/api")) {
