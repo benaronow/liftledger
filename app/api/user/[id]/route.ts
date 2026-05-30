@@ -4,6 +4,17 @@ import UserModel from "@/lib/models/user";
 import { GetParams, User } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
+const UPDATABLE_FIELDS = [
+  "firstName",
+  "lastName",
+  "timerPresets",
+  "gyms",
+  "customExerciseNames",
+  "customExerciseApparatuses",
+] as const satisfies readonly (keyof User)[];
+
+type UpdatableField = (typeof UPDATABLE_FIELDS)[number];
+
 const authorize = async (_id: string) => {
   await connectDB();
 
@@ -37,10 +48,15 @@ export const PUT = async (req: NextRequest, { params }: GetParams) => {
   const result = await authorize(_id);
   if (!result.ok) return result.response;
 
-  const user: User = await req.json();
+  const body: Partial<User> = await req.json();
+  const update: Partial<Pick<User, UpdatableField>> = {};
+  for (const field of UPDATABLE_FIELDS) {
+    if (field in body) update[field] = body[field] as never;
+  }
+
   const updatedUser = await UserModel.findOneAndUpdate(
     { _id },
-    { $set: user },
+    { $set: update },
     { new: true },
   );
 

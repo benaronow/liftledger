@@ -51,8 +51,7 @@ export const POST = async (req: NextRequest, { params }: GetParams) => {
     try {
       await BlockModel.findOneAndUpdate(
         { _id: user.curBlock },
-        { $set: { weeks: block.weeks } },
-        { $unset: { endDate: "" } },
+        { $set: { weeks: block.weeks }, $unset: { endDate: "" } },
       );
     } catch (revertErr) {
       console.error(
