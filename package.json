@@ -1,5 +1,9 @@
 {
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "next --experimental-https",
     "build": "next build",
@@ -8,10 +12,15 @@
     "lint:fix": "eslint . --fix",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "api:dev": "yarn workspace @liftledger/api dev",
+    "api:build": "yarn workspace @liftledger/api build",
+    "api:start": "yarn workspace @liftledger/api start",
+    "api:test": "yarn workspace @liftledger/api test"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.14.0",
+    "@liftledger/shared": "*",
     "axios": "^1.7.9",
     "bootstrap": "5.3.8",
     "dayjs": "^1.11.13",

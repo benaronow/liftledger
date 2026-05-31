@@ -38,7 +38,7 @@ const blockSchema: Schema = new Schema(
     curWeekIdx: { type: Number, required: true },
     endDate: { type: Date },
   },
-  { collection: "Block" }
+  { collection: "Block" },
 );
 
 export default blockSchema;
