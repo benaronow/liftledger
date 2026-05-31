@@ -2,16 +2,22 @@ import { DialogAction, ActionDialog } from "@/app/components/ActionDialog";
 import { EditExercise } from "./EditExercise";
 import { useEffect, useMemo, useState } from "react";
 import { Block, Day, Exercise } from "@/lib/types";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
+import {
+  useMe,
+  useUpdateUserBlock,
+  useUserBlock,
+} from "@liftledger/api-client";
 import { FaSave } from "react-icons/fa";
 import { useCompleteDay } from "../CompleteDayProvider";
 import { IoArrowBack } from "react-icons/io5";
 import { Spinner } from "react-bootstrap";
 
 export const AddExerciseDialog = () => {
-  const { curBlock, updateBlock } = useBlock();
+  const { data: curUser } = useMe();
+  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
+  const { trigger: triggerUpdateUserBlock, isMutating: addingExercise } =
+    useUpdateUserBlock();
   const { addExerciseIdx, setAddExerciseIdx, exercises } = useCompleteDay();
-  const [addingExercise, setAddingExercise] = useState(false);
 
   const curGym = useMemo(
     () => curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym || "",
@@ -35,7 +41,7 @@ export const AddExerciseDialog = () => {
   );
 
   const saveExercises = async (exercises: Exercise[]) => {
-    if (!curBlock) return;
+    if (!curUser?._id || !curBlock) return;
     const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].toSpliced(
       curBlock.curDayIdx,
       1,
@@ -50,21 +56,17 @@ export const AddExerciseDialog = () => {
       weeks: curBlock?.weeks.toSpliced(curBlock.curWeekIdx, 1, newDays),
     };
 
-    await updateBlock(newBlock);
+    await triggerUpdateUserBlock({ userId: curUser._id, block: newBlock });
   };
 
   const handleAddExercise = async () => {
-    setAddingExercise(true);
-
     const updatedExercises = exercises.toSpliced(
       addExerciseIdx ?? exercises.length,
       0,
       newExercise,
     );
     await saveExercises(updatedExercises);
-
     setAddExerciseIdx(undefined);
-    setAddingExercise(false);
   };
 
   const editActions: DialogAction[] = [

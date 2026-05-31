@@ -1,12 +1,16 @@
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import { useEditBlock } from "../EditBlockProvider";
 import { IoArrowBack } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 
 export const DeleteDayDialog = () => {
-  const { templateBlock, setTemplateBlock, editingWeekIdx } = useBlock();
-  const { deletingDayIdx, setDeletingDayIdx } = useEditBlock();
+  const {
+    templateBlock,
+    setTemplateBlock,
+    editingWeekIdx,
+    deletingDayIdx,
+    setDeletingDayIdx,
+  } = useEditBlock();
 
   const handleRemoveDay = () => {
     setTemplateBlock({

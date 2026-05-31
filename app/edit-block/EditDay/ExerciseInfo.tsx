@@ -2,9 +2,14 @@ import { MdArrowBackIosNew } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
 import { ChangeEvent, useCallback, useMemo } from "react";
 import { Exercise, Set } from "@/lib/types";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
+import {
+  getNewSetsFromLatest,
+  getUpdatedExercise,
+  useCompletedExercises,
+  useMe,
+  useUserBlock,
+} from "@liftledger/api-client";
 import { Info, InfoAction } from "../Info";
-import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { useEditBlock } from "../EditBlockProvider";
 import { WEIGHT_TYPES } from "@/lib/weightTypes";
 import { ExerciseNameSelect } from "@/app/components/ExerciseNameSelect";
@@ -20,10 +25,16 @@ interface Props {
 }
 
 export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
-  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
-    useBlock();
-  const { getNewSetsFromLatest, getUpdatedExercise } = useCompletedExercises();
-  const { editingDayIdx, setDeletingExerciseIdx } = useEditBlock();
+  const { data: curUser } = useMe();
+  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
+  const { data: completedExercises } = useCompletedExercises(curUser?._id);
+  const {
+    templateBlock,
+    setTemplateBlock,
+    editingWeekIdx,
+    editingDayIdx,
+    setDeletingExerciseIdx,
+  } = useEditBlock();
   const curDayExercises = useMemo(
     () => templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
     [templateBlock, editingWeekIdx, editingDayIdx],
@@ -91,7 +102,7 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
       ...exercise,
       sets:
         type === "sets"
-          ? getNewSetsFromLatest(exercise, value)
+          ? getNewSetsFromLatest(completedExercises, exercise, value)
           : exercise.sets.map((set: Set) => ({
               ...set,
               reps: type === "reps" ? value : exercise.sets[0].reps,
@@ -137,11 +148,16 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
 
   const switchExercise = useCallback(
     (value: string, type: ExerciseInfoName) => {
-      const updatedExercise = getUpdatedExercise(value, type, exercise);
+      const updatedExercise = getUpdatedExercise(
+        completedExercises,
+        value,
+        type,
+        exercise,
+      );
 
       updateExercise(updatedExercise);
     },
-    [getUpdatedExercise, exercise, updateExercise],
+    [completedExercises, exercise, updateExercise],
   );
 
   return (

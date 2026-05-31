@@ -6,13 +6,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import styles from "./LayoutContainer.module.css";
-import { UserProvider } from "./UserProvider";
-import { BlockProvider } from "./BlockProvider";
-import { ExerciseOptionsProvider } from "./ExerciseOptionsProvider";
-import { CompletedExercisesProvider } from "./CompletedExercisesProvider";
-import { TimerProvider } from "./TimerProvider";
 import { RouteType } from "@/lib/types";
 import { LogoSpinner } from "../components/LogoSpinner";
+import { Timer } from "../components/Timer";
 
 export const LayoutContainer = ({ children }: PropsWithChildren) => {
   const router = useRouter();
@@ -34,32 +30,34 @@ export const LayoutContainer = ({ children }: PropsWithChildren) => {
     }
   }, [isAuthenticated, isLoading, pathname, router]);
 
-  // Show a spinner during Auth0 bootstrap, and while we're redirecting an
-  // unauthenticated visit toward /login. Login page itself renders normally.
-  const showSpinner =
-    isLoading || (!isAuthenticated && pathname !== RouteType.Login);
+  // Three render states:
+  //   1. Bootstrapping / redirecting → spinner only.
+  //   2. Unauthenticated on /login → render Login children, no chrome (Header
+  //      / Footer / Timer all call useMe() in their bodies and would fire a
+  //      tokenless fetch).
+  //   3. Authenticated → full layout.
+  if (!isAuthenticated) {
+    return (
+      <section className={styles.container}>
+        <div className={styles.content}>
+          {pathname === RouteType.Login && !isLoading ? children : <LogoSpinner />}
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <UserProvider>
-      <BlockProvider>
-        <ExerciseOptionsProvider>
-          <CompletedExercisesProvider>
-            <TimerProvider>
-              <section className={styles.container}>
-                <header className={styles.header}>
-                  <Header />
-                </header>
-                <div className={styles.content}>
-                  {showSpinner ? <LogoSpinner /> : children}
-                </div>
-                <footer className={styles.footer}>
-                  <Footer />
-                </footer>
-              </section>
-            </TimerProvider>
-          </CompletedExercisesProvider>
-        </ExerciseOptionsProvider>
-      </BlockProvider>
-    </UserProvider>
+    <section className={styles.container}>
+      <header className={styles.header}>
+        <Header />
+      </header>
+      <div className={styles.content}>
+        <Timer />
+        {children}
+      </div>
+      <footer className={styles.footer}>
+        <Footer />
+      </footer>
+    </section>
   );
 };

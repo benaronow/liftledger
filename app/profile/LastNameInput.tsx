@@ -3,13 +3,14 @@ import { ActionButton } from "../components/ActionButton";
 import { LabeledTextInput } from "../components/inputs";
 import { FaSave } from "react-icons/fa";
 import { FocusEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { useUser } from "../layoutContainer/UserProvider";
+import { useMe, useUpdateUser } from "@liftledger/api-client";
 import { COLORS } from "@/lib/colors";
 
 export const LastNameInput = () => {
-  const { curUser, updateUser } = useUser();
+  const { data: curUser } = useMe();
+  const { trigger: triggerUpdateUser, isMutating: savingLastName } =
+    useUpdateUser();
   const [lastName, setLastName] = useState("");
-  const [savingLastName, setSavingLastName] = useState(false);
   const [lastNameError, setLastNameError] = useState("");
   const [focused, setFocused] = useState(false);
 
@@ -27,15 +28,12 @@ export const LastNameInput = () => {
   const handleSaveLastName = useCallback(async () => {
     if (!curUser) return;
     setLastNameError("");
-    setSavingLastName(true);
     try {
-      await updateUser({ ...curUser, lastName });
+      await triggerUpdateUser({ ...curUser, lastName });
     } catch (e: unknown) {
       setLastNameError((e as Error).message);
-    } finally {
-      setSavingLastName(false);
     }
-  }, [curUser, lastName, updateUser]);
+  }, [curUser, lastName, triggerUpdateUser]);
 
   const handleBlur = useCallback(
     (e: FocusEvent<HTMLDivElement>) => {

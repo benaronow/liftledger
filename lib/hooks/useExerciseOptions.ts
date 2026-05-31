@@ -3,57 +3,22 @@
 import { Exercise } from "@/lib/types";
 import { EXERCISE_NAMES } from "@/lib/exerciseNames";
 import { EXERCISE_APPARATUSES } from "@/lib/exerciseApparatuses";
-import {
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useMemo,
-} from "react";
-import { useUser } from "./UserProvider";
+import { useCallback, useMemo } from "react";
+import { useMe, useUpdateUser } from "@liftledger/api-client";
 
-interface ExerciseOptionsContextModel {
-  addCustomExerciseName: (value: string) => Promise<void>;
-  addCustomExerciseApparatus: (value: string) => Promise<void>;
-  allExerciseNameOptions: string[];
-  getAvailableExerciseNameOptions: (
-    curExercise: Exercise,
-    allReservedExercises: Exercise[],
-  ) => string[];
-  allExerciseApparatusOptions: string[];
-  getAvailableExerciseApparatusOptions: (
-    curExercise: Exercise,
-    allReservedExercises: Exercise[],
-  ) => string[];
-}
+const getAllOptions = (baseOptions: string[], customOptions?: string[]) => {
+  const filteredCustom =
+    customOptions?.filter(
+      (c) =>
+        !baseOptions.some((b: string) => b.toLowerCase() === c.toLowerCase()),
+    ) ?? [];
 
-const defaultExerciseOptionsContext: ExerciseOptionsContextModel = {
-  addCustomExerciseName: async () => {},
-  addCustomExerciseApparatus: async () => {},
-  allExerciseNameOptions: [],
-  getAvailableExerciseNameOptions: () => [],
-  allExerciseApparatusOptions: [],
-  getAvailableExerciseApparatusOptions: () => [],
+  return [...baseOptions, ...filteredCustom].sort();
 };
 
-export const ExcerciseOptionsContext = createContext(
-  defaultExerciseOptionsContext,
-);
-
-export const ExerciseOptionsProvider = ({
-  children,
-}: PropsWithChildren<object>) => {
-  const { curUser, updateUser } = useUser();
-
-  const getAllOptions = (baseOptions: string[], customOptions?: string[]) => {
-    const filteredCustom =
-      customOptions?.filter(
-        (c) =>
-          !baseOptions.some((b: string) => b.toLowerCase() === c.toLowerCase()),
-      ) ?? [];
-
-    return [...baseOptions, ...filteredCustom].sort();
-  };
+export const useExerciseOptions = () => {
+  const { data: curUser } = useMe();
+  const { trigger: triggerUpdateUser } = useUpdateUser();
 
   const allExerciseNameOptions = useMemo<string[]>(
     () => getAllOptions(EXERCISE_NAMES, curUser?.customExerciseNames),
@@ -76,12 +41,12 @@ export const ExerciseOptionsProvider = ({
       )
         return;
 
-      await updateUser({
+      await triggerUpdateUser({
         ...curUser,
         customExerciseNames: [...(curUser.customExerciseNames ?? []), value],
       });
     },
-    [curUser, allExerciseNameOptions, updateUser],
+    [curUser, allExerciseNameOptions, triggerUpdateUser],
   );
 
   const addCustomExerciseApparatus = useCallback(
@@ -94,7 +59,7 @@ export const ExerciseOptionsProvider = ({
       )
         return;
 
-      await updateUser({
+      await triggerUpdateUser({
         ...curUser,
         customExerciseApparatuses: [
           ...(curUser.customExerciseApparatuses ?? []),
@@ -102,7 +67,7 @@ export const ExerciseOptionsProvider = ({
         ],
       });
     },
-    [curUser, allExerciseApparatusOptions, updateUser],
+    [curUser, allExerciseApparatusOptions, triggerUpdateUser],
   );
 
   const getAvailableExerciseNameOptions = useCallback(
@@ -139,20 +104,12 @@ export const ExerciseOptionsProvider = ({
     [allExerciseApparatusOptions],
   );
 
-  return (
-    <ExcerciseOptionsContext.Provider
-      value={{
-        addCustomExerciseName,
-        addCustomExerciseApparatus,
-        allExerciseNameOptions,
-        getAvailableExerciseNameOptions,
-        allExerciseApparatusOptions,
-        getAvailableExerciseApparatusOptions,
-      }}
-    >
-      {children}
-    </ExcerciseOptionsContext.Provider>
-  );
+  return {
+    addCustomExerciseName,
+    addCustomExerciseApparatus,
+    allExerciseNameOptions,
+    getAvailableExerciseNameOptions,
+    allExerciseApparatusOptions,
+    getAvailableExerciseApparatusOptions,
+  };
 };
-
-export const useExerciseOptions = () => useContext(ExcerciseOptionsContext);

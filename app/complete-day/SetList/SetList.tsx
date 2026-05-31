@@ -5,7 +5,11 @@ import { BiPlusCircle } from "react-icons/bi";
 import { FaTimes } from "react-icons/fa";
 import { ActionButton } from "@/app/components/ActionButton";
 import { ProgressIcon } from "./ProgressIcon";
-import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
+import {
+  findLatestOccurrence,
+  useCompletedExercises,
+  useMe,
+} from "@liftledger/api-client";
 import { computeProgress } from "./computeProgress";
 import { useCompleteDay } from "../CompleteDayProvider";
 
@@ -20,7 +24,8 @@ export const SetList = ({
   isCurrentExercise,
   containerRef,
 }: Props) => {
-  const { findLatestOccurrence, completedExercises } = useCompletedExercises();
+  const { data: curUser } = useMe();
+  const { data: completedExercises } = useCompletedExercises(curUser?._id);
   const { isExerciseComplete, setExerciseToEdit } = useCompleteDay();
 
   useEffect(() => {
@@ -54,6 +59,7 @@ export const SetList = ({
   const getDiffs = useCallback(
     (setIdx: number) => {
       const lastCompletedSet = findLatestOccurrence(
+        completedExercises,
         (e: Exercise) =>
           e.name === exercise.name &&
           e.apparatus === exercise.apparatus &&
@@ -74,7 +80,7 @@ export const SetList = ({
 
       return { repDiff: undefined, weightDiff: undefined };
     },
-    [exercise, findLatestOccurrence],
+    [exercise, completedExercises],
   );
 
   const getProgressString = (diff: number | undefined) => {
@@ -84,8 +90,8 @@ export const SetList = ({
 
   const getProgressSign = useCallback(
     (setIdx: number) =>
-      computeProgress(setIdx, exercise, completedExercises.previous),
-    [exercise, completedExercises.previous],
+      computeProgress(setIdx, exercise, completedExercises?.previous ?? []),
+    [exercise, completedExercises?.previous],
   );
 
   const exerciseHasSkippedSets = useMemo(

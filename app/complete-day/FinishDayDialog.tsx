@@ -1,7 +1,11 @@
 import { useCallback, useState } from "react";
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
 import { useCompleteDay } from "./CompleteDayProvider";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
+import {
+  useMe,
+  useUpdateUserBlock,
+  useUserBlock,
+} from "@liftledger/api-client";
 import { useRouter } from "next/navigation";
 import { Block } from "@/lib/types";
 import { IoArrowBack } from "react-icons/io5";
@@ -10,12 +14,14 @@ import { Spinner } from "react-bootstrap";
 
 export const FinishDayDialog = () => {
   const router = useRouter();
-  const { curBlock, updateBlock } = useBlock();
+  const { data: curUser } = useMe();
+  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
+  const { trigger: triggerUpdateUserBlock } = useUpdateUserBlock();
   const { finishDayDialogOpen, setFinishDayDialogOpen } = useCompleteDay();
   const [finishing, setFinishing] = useState(false);
 
   const handleFinishDay = useCallback(async () => {
-    if (!curBlock) return;
+    if (!curUser?._id || !curBlock) return;
 
     setFinishing(true);
     const newBlock: Block = {
@@ -30,12 +36,10 @@ export const FinishDayDialog = () => {
       ),
     };
 
-    // updateBlock invalidates the completedExercises cache via the api-client
-    // mutation, so the SWR-backed provider refetches automatically.
-    await updateBlock(newBlock);
+    await triggerUpdateUserBlock({ userId: curUser._id, block: newBlock });
     setFinishing(false);
     router.push("/dashboard");
-  }, [curBlock, updateBlock, router]);
+  }, [curUser?._id, curBlock, triggerUpdateUserBlock, router]);
 
   const actions: DialogAction[] = [
     {

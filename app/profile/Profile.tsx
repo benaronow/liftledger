@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useUser } from "@/app/layoutContainer/UserProvider";
+import { useMe } from "@liftledger/api-client";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
 import { FirstNameInput } from "./FirstNameInput";
 import { LastNameInput } from "./LastNameInput";
@@ -14,8 +14,8 @@ import { ResetPasswordButton } from "./ResetPasswordButton";
 import { COLORS } from "@/lib/colors";
 
 export const Profile = () => {
-  const { auth0User, curUser } = useUser();
-  const { logout } = useAuth0();
+  const { user: auth0User, logout } = useAuth0();
+  const { data: curUser } = useMe();
 
   const isConnectionUser = useMemo(
     () => auth0User?.sub?.startsWith("auth0|") ?? false,

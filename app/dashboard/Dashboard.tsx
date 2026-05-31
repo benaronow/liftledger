@@ -1,15 +1,17 @@
 "use client";
 
-import { useUser } from "@/app/layoutContainer/UserProvider";
+import { useMe, useUserBlock } from "@liftledger/api-client";
 import dayjs from "dayjs";
 import { Day, Exercise, RouteType, Set } from "@/lib/types";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
 import Link from "next/link";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
 
 export const Dashboard = () => {
-  const { curUser } = useUser();
-  const { curBlock, curBlockLoading } = useBlock();
+  const { data: curUser } = useMe();
+  const { data: curBlock, isLoading: curBlockLoading } = useUserBlock(
+    curUser?._id,
+    curUser?.curBlock,
+  );
 
   const getExerciseCompleted = (exercise: Exercise) => {
     return exercise.sets.reduce(

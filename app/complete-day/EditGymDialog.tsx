@@ -1,64 +1,72 @@
 import { FaSave } from "react-icons/fa";
-import { useUser } from "@/app/layoutContainer/UserProvider";
 import { useState } from "react";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
+import {
+  getNewSetsFromLatest,
+  useCompletedExercises,
+  useMe,
+  useUpdateUser,
+  useUpdateUserBlock,
+  useUserBlock,
+} from "@liftledger/api-client";
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
-import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { useCompleteDay } from "./CompleteDayProvider";
 import { IoArrowBack } from "react-icons/io5";
 import { Spinner } from "react-bootstrap";
 
 export const EditGymDialog = () => {
-  const { curUser, updateUser } = useUser();
-  const { curBlock, updateBlock } = useBlock();
-  const { getNewSetsFromLatest } = useCompletedExercises();
+  const { data: curUser } = useMe();
+  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
+  const { data: completedExercises } = useCompletedExercises(curUser?._id);
+  const { trigger: triggerUpdateUser } = useUpdateUser();
+  const { trigger: triggerUpdateUserBlock, isMutating: editingGym } =
+    useUpdateUserBlock();
   const { editGymDialogOpen, setEditGymDialogOpen } = useCompleteDay();
   const [gymName, setGymName] = useState<string>(
     curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym ?? "",
   );
-  const [editingGym, setEditingGym] = useState(false);
 
   const handleEditGym = async (name: string) => {
-    if (!curBlock) return;
+    if (!curUser?._id || !curBlock) return;
 
-    setEditingGym(true);
-    await updateBlock({
-      ...curBlock,
-      weeks: curBlock.weeks.map((week, wIdx) =>
-        wIdx === curBlock.curWeekIdx
-          ? week.map((day, dIdx) =>
-              dIdx === curBlock.curDayIdx
-                ? {
-                    ...day,
-                    gym: name,
-                    exercises: day.exercises.map((exercise) =>
-                      exercise.sets.some((s) => s.completed)
-                        ? exercise
-                        : {
-                            ...exercise,
-                            gym: name,
-                            sets: getNewSetsFromLatest({
+    await triggerUpdateUserBlock({
+      userId: curUser._id,
+      block: {
+        ...curBlock,
+        weeks: curBlock.weeks.map((week, wIdx) =>
+          wIdx === curBlock.curWeekIdx
+            ? week.map((day, dIdx) =>
+                dIdx === curBlock.curDayIdx
+                  ? {
+                      ...day,
+                      gym: name,
+                      exercises: day.exercises.map((exercise) =>
+                        exercise.sets.some((s) => s.completed)
+                          ? exercise
+                          : {
                               ...exercise,
                               gym: name,
-                            }),
-                          },
-                    ),
-                  }
-                : day,
-            )
-          : week,
-      ),
+                              sets: getNewSetsFromLatest(completedExercises, {
+                                ...exercise,
+                                gym: name,
+                              }),
+                            },
+                      ),
+                    }
+                  : day,
+              )
+            : week,
+        ),
+      },
     });
 
     setGymName("");
     setEditGymDialogOpen(false);
-    setEditingGym(false);
   };
 
   const handleAddGym = async (name: string) => {
     if (curUser) {
-      updateUser({ ...curUser, gyms: [...(curUser.gyms || []), name] });
+      triggerUpdateUser({ ...curUser, gyms: [...(curUser.gyms || []), name] });
     }
   };
 

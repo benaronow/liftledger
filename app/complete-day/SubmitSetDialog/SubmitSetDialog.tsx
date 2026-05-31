@@ -3,17 +3,25 @@ import { useEffect, useState } from "react";
 import { FaSave } from "react-icons/fa";
 import { EditSet } from "./EditSet";
 import { DialogAction, ActionDialog } from "@/app/components/ActionDialog";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import { IoIosSkipForward } from "react-icons/io";
-import { useTimer } from "@/app/layoutContainer/TimerProvider";
-import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
+import {
+  findLatestOccurrence,
+  useCompletedExercises,
+  useMe,
+  useUpdateUserBlock,
+  useUserBlock,
+} from "@liftledger/api-client";
 import { useCompleteDay } from "../CompleteDayProvider";
 import { Spinner } from "react-bootstrap";
+import { TimerSettingsDialog } from "@/app/components/TimerSettingsDialog";
 
 export const SubmitSetDialog = () => {
-  const { curBlock, updateBlock } = useBlock();
-  const { findLatestOccurrence } = useCompletedExercises();
-  const { setTimerDialogOpen } = useTimer();
+  const { data: curUser } = useMe();
+  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
+  const { data: completedExercises } = useCompletedExercises(curUser?._id);
+  const { trigger: triggerUpdateUserBlock } = useUpdateUserBlock();
+  const [timerDialogOpen, setTimerDialogOpen] = useState(false);
+
   const {
     exercises,
     exerciseToEdit: { exercise, setIdx } = { exercise: undefined, setIdx: 0 },
@@ -38,57 +46,57 @@ export const SubmitSetDialog = () => {
   }, [exercise, setIdx]);
 
   const saveExercises = async (updatedExercises: Exercise[]) => {
-    if (curBlock) {
-      const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].toSpliced(
-        curBlock.curDayIdx,
+    if (!curUser?._id || !curBlock) return;
+
+    const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].toSpliced(
+      curBlock.curDayIdx,
+      1,
+      {
+        ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
+        exercises: updatedExercises,
+      },
+    );
+
+    const updatedLaterDays: Day[] = newDays.map((day: Day, idx) =>
+      idx <= curBlock.curDayIdx
+        ? day
+        : {
+            ...day,
+            exercises: day.exercises.map((exercise: Exercise) => {
+              const completedExercise = updatedExercises.find(
+                (e: Exercise) =>
+                  e.name === exercise.name &&
+                  e.apparatus === exercise.apparatus &&
+                  e.gym === exercise.gym,
+              );
+
+              return completedExercise
+                ? {
+                    ...completedExercise,
+                    sets: completedExercise.sets
+                      .filter((set) => !set.addedOn)
+                      .map((set: Set) => ({
+                        ...set,
+                        completed: false,
+                        skipped: undefined,
+                        note: "",
+                      })),
+                  }
+                : exercise;
+            }),
+          },
+    );
+
+    const newBlock: Block = {
+      ...curBlock,
+      weeks: curBlock.weeks.toSpliced(
+        curBlock.curWeekIdx,
         1,
-        {
-          ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
-          exercises: updatedExercises,
-        },
-      );
+        updatedLaterDays,
+      ),
+    };
 
-      const updatedLaterDays: Day[] = newDays.map((day: Day, idx) =>
-        idx <= curBlock.curDayIdx
-          ? day
-          : {
-              ...day,
-              exercises: day.exercises.map((exercise: Exercise) => {
-                const completedExercise = updatedExercises.find(
-                  (e: Exercise) =>
-                    e.name === exercise.name &&
-                    e.apparatus === exercise.apparatus &&
-                    e.gym === exercise.gym,
-                );
-
-                return completedExercise
-                  ? {
-                      ...completedExercise,
-                      sets: completedExercise.sets
-                        .filter((set) => !set.addedOn)
-                        .map((set: Set) => ({
-                          ...set,
-                          completed: false,
-                          skipped: undefined,
-                          note: "",
-                        })),
-                    }
-                  : exercise;
-              }),
-            },
-      );
-
-      const newBlock: Block = {
-        ...curBlock,
-        weeks: curBlock?.weeks.toSpliced(
-          curBlock.curWeekIdx,
-          1,
-          updatedLaterDays,
-        ),
-      };
-
-      await updateBlock(newBlock);
-    }
+    await triggerUpdateUserBlock({ userId: curUser._id, block: newBlock });
   };
 
   const handleSubmitSet = async (options?: { skip: boolean }) => {
@@ -101,6 +109,7 @@ export const SubmitSetDialog = () => {
     }
 
     const latestPreviousSet = findLatestOccurrence(
+      completedExercises,
       (e: Exercise) =>
         e.name === exercise?.name &&
         e.apparatus === exercise?.apparatus &&
@@ -184,6 +193,10 @@ export const SubmitSetDialog = () => {
           />
         </ActionDialog>
       )}
+      <TimerSettingsDialog
+        open={timerDialogOpen}
+        onClose={() => setTimerDialogOpen(false)}
+      />
     </>
   );
 };

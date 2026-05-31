@@ -10,7 +10,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
+import { useMe, useUserBlock } from "@liftledger/api-client";
 
 export interface ExerciseToEdit {
   setIdx: number;
@@ -59,7 +59,8 @@ const CompleteDayContext = createContext<CompleteDayContextModel>(
 );
 
 export const CompleteDayProvider = ({ children }: PropsWithChildren) => {
-  const { curBlock } = useBlock();
+  const { data: curUser } = useMe();
+  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
   const [exerciseToEdit, setExerciseToEdit] = useState<ExerciseToEdit>();
   const [addExerciseIdx, setAddExerciseIdx] = useState<number>();
   const [deletingIdx, setDeletingIdx] = useState<number>();

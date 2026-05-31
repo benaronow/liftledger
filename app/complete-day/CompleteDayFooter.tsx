@@ -1,14 +1,18 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ActionsFooter, FooterAction } from "@/app/components/ActionsFooter";
 import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import { LuWarehouse } from "react-icons/lu";
 import { RiTimerLine } from "react-icons/ri";
 import { useCompleteDay } from "./CompleteDayProvider";
 import { BiSolidEdit } from "react-icons/bi";
-import { useTimer } from "@/app/layoutContainer/TimerProvider";
+import { useMe, useTimerEnd } from "@liftledger/api-client";
+import { TimerSettingsDialog } from "@/app/components/TimerSettingsDialog";
 
 export const CompleteDayFooter = () => {
-  const { timerEnd, setTimerDialogOpen } = useTimer();
+  const { data: curUser } = useMe();
+  const { data: timerEndData } = useTimerEnd(curUser?._id);
+  const [timerDialogOpen, setTimerDialogOpen] = useState(false);
+
   const {
     editing,
     setEditing,
@@ -38,7 +42,7 @@ export const CompleteDayFooter = () => {
         icon: <RiTimerLine fontSize={20} />,
         label: "Timer",
         onClick: () => setTimerDialogOpen(true),
-        disabled: !!timerEnd,
+        disabled: !!timerEndData?.timerEnd,
         variant: "primary",
       },
       {
@@ -54,8 +58,7 @@ export const CompleteDayFooter = () => {
       isDayComplete,
       isDayStarted,
       setEditGymDialogOpen,
-      timerEnd,
-      setTimerDialogOpen,
+      timerEndData?.timerEnd,
     ],
   );
 
@@ -69,8 +72,14 @@ export const CompleteDayFooter = () => {
   ];
 
   return (
-    <ActionsFooter
-      actions={editing ? editingFooterActions : defaultFooterActions}
-    />
+    <>
+      <ActionsFooter
+        actions={editing ? editingFooterActions : defaultFooterActions}
+      />
+      <TimerSettingsDialog
+        open={timerDialogOpen}
+        onClose={() => setTimerDialogOpen(false)}
+      />
+    </>
   );
 };

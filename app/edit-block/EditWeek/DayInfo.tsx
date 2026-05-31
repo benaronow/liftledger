@@ -2,7 +2,7 @@ import { Day } from "@/lib/types";
 import { MdArrowBackIosNew, MdControlPointDuplicate } from "react-icons/md";
 import { BiSolidEdit } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
+import { useMe, useUserBlock } from "@liftledger/api-client";
 import { Info, InfoAction } from "../Info";
 import { useMemo } from "react";
 import { useEditBlock } from "../EditBlockProvider";
@@ -14,9 +14,15 @@ interface Props {
 }
 
 export const DayInfo = ({ day, dIdx, hasErrors }: Props) => {
-  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
-    useBlock();
-  const { setEditingDayIdx, setDeletingDayIdx } = useEditBlock();
+  const { data: curUser } = useMe();
+  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
+  const {
+    templateBlock,
+    setTemplateBlock,
+    editingWeekIdx,
+    setEditingDayIdx,
+    setDeletingDayIdx,
+  } = useEditBlock();
 
   const handleMoveDay = (day: Day, dayIdx: number, type: "up" | "down") => {
     if ((dayIdx !== 0 || type !== "up") && (dayIdx !== 6 || type !== "down")) {

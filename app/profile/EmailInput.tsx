@@ -1,5 +1,5 @@
 import { FocusEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { useUser } from "../layoutContainer/UserProvider";
+import { useMe, useUpdateMyEmail } from "@liftledger/api-client";
 import { LabeledTextInput } from "../components/inputs";
 import { ActionButton } from "../components/ActionButton";
 import { Spinner } from "react-bootstrap";
@@ -12,9 +12,10 @@ type Props = {
 };
 
 export const EmailInput = ({ isConnectionUser }: Props) => {
-  const { curUser, updateEmail } = useUser();
+  const { data: curUser } = useMe();
+  const { trigger: triggerUpdateEmail, isMutating: savingEmail } =
+    useUpdateMyEmail();
   const [email, setEmail] = useState("");
-  const [savingEmail, setSavingEmail] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [focused, setFocused] = useState(false);
   const [verifySentFor, setVerifySentFor] = useState<string | null>(null);
@@ -33,16 +34,13 @@ export const EmailInput = ({ isConnectionUser }: Props) => {
   const handleSaveEmail = useCallback(async () => {
     if (!curUser) return;
     setEmailError("");
-    setSavingEmail(true);
     try {
-      await updateEmail(email);
+      await triggerUpdateEmail(email);
       setVerifySentFor(email);
     } catch (e: unknown) {
       setEmailError((e as Error).message);
-    } finally {
-      setSavingEmail(false);
     }
-  }, [curUser, email, updateEmail]);
+  }, [curUser, email, triggerUpdateEmail]);
 
   const handleBlur = useCallback(
     (e: FocusEvent<HTMLDivElement>) => {

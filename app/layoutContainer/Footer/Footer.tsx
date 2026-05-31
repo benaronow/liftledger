@@ -7,28 +7,17 @@ import Link from "next/link";
 import { GiProgression } from "react-icons/gi";
 import { FaEdit, FaHistory } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
-import { useUser } from "@/app/layoutContainer/UserProvider";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
+import { useMe } from "@liftledger/api-client";
 import styles from "./footer.module.css";
 
 export const Footer = () => {
   const pathname = usePathname();
-  const { curUser } = useUser();
-  const { curBlock, setTemplateBlock, setEditingWeekIdx } = useBlock();
+  const { data: curUser } = useMe();
 
   const [isStandalone, setIsStandalone] = useState(true);
   useEffect(() => {
     setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
   }, []);
-
-  const handleIconClick = (route: string) => {
-    if (!pathname.includes(route)) {
-      if (route === RouteType.Add && curBlock) {
-        setTemplateBlock(curBlock);
-        setEditingWeekIdx(curBlock.curWeekIdx);
-      }
-    }
-  };
 
   const navButtonMap = [
     { route: RouteType.Progress, icon: <GiProgression />, isHome: false },
@@ -88,7 +77,6 @@ export const Footer = () => {
                     : styles.inactiveIcon
                 } d-flex justify-content-center align-items-center`}
                 href={button.route}
-                onClick={() => handleIconClick(button.route)}
               >
                 {button.icon}
               </Link>

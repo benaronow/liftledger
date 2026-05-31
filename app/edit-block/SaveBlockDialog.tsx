@@ -1,38 +1,43 @@
-import { useState } from "react";
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
+import {
+  useMe,
+  useStartBlock,
+  useUpdateUserBlock,
+  useUserBlock,
+} from "@liftledger/api-client";
 import { useRouter } from "next/navigation";
 import { IoArrowBack } from "react-icons/io5";
 import { FaSave } from "react-icons/fa";
 import { Spinner } from "react-bootstrap";
 import { useEditBlock } from "./EditBlockProvider";
-import { useUser } from "../layoutContainer/UserProvider";
 
 export const SaveBlockDialog = () => {
   const router = useRouter();
-  const { startBlock } = useUser();
-  const {
-    curBlock,
-    templateBlock,
-    unsetTemplateBlock,
-    updateBlock,
-    setEditingWeekIdx,
-  } = useBlock();
+  const { data: curUser } = useMe();
+  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
+  const { trigger: triggerStartBlock, isMutating: starting } = useStartBlock();
+  const { trigger: triggerUpdateUserBlock, isMutating: updating } =
+    useUpdateUserBlock();
+  const saving = starting || updating;
+
+  const { templateBlock, unsetTemplateBlock, setEditingWeekIdx } =
+    useEditBlock();
   const { saveDialogOpen, setSaveDialogOpen } = useEditBlock();
-  const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
-    setSaving(true);
+    if (!curUser?._id) return;
 
     if (curBlock) {
-      await updateBlock(templateBlock);
+      await triggerUpdateUserBlock({
+        userId: curUser._id,
+        block: templateBlock,
+      });
     } else {
-      await startBlock(templateBlock);
+      await triggerStartBlock({ userId: curUser._id, block: templateBlock });
     }
 
     unsetTemplateBlock();
     setEditingWeekIdx(0);
-    setSaving(false);
     router.push("/dashboard");
   };
 

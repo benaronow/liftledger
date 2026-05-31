@@ -1,12 +1,15 @@
 "use client";
 
-import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
+import { useCompletedExercises, useMe } from "@liftledger/api-client";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
 import { ExerciseSelector } from "./ExerciseSelector";
 import { ProgressChart } from "./ProgressChart";
 
 export const Progress = () => {
-  const { completedExercisesLoading } = useCompletedExercises();
+  const { data: curUser } = useMe();
+  const { isLoading: completedExercisesLoading } = useCompletedExercises(
+    curUser?._id,
+  );
 
   if (completedExercisesLoading) return <LogoSpinner />;
 

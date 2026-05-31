@@ -2,10 +2,11 @@ import { MdArrowBackIosNew } from "react-icons/md";
 import { FaSave, FaStopCircle } from "react-icons/fa";
 import { ActionsFooter, FooterAction } from "../components/ActionsFooter";
 import { useEditBlock } from "./EditBlockProvider";
-import { useBlock } from "../layoutContainer/BlockProvider";
+import { useMe, useUserBlock } from "@liftledger/api-client";
 
 export const EditBlockFooter = () => {
-  const { curBlock } = useBlock();
+  const { data: curUser } = useMe();
+  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
   const {
     editingDayIdx,
     setEditingDayIdx,

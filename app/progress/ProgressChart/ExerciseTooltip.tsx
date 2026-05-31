@@ -1,4 +1,4 @@
-import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
+import { useCompletedExercises, useMe } from "@liftledger/api-client";
 import { useProgress } from "../ProgressProvider";
 import { COLORS } from "@/lib/colors";
 import dayjs from "dayjs";
@@ -10,7 +10,8 @@ type Props = {
 };
 
 export const ExerciseTooltip = ({ active, payload, label }: Props) => {
-  const { completedExercises } = useCompletedExercises();
+  const { data: curUser } = useMe();
+  const { data: completedExercises } = useCompletedExercises(curUser?._id);
   const { selectedName, selectedApparatus } = useProgress();
 
   if (!active || !payload?.length || !label) return null;
@@ -28,7 +29,7 @@ export const ExerciseTooltip = ({ active, payload, label }: Props) => {
       </div>
       {payload.map((entry) => {
         const gym = entry.name;
-        const exercise = completedExercises.previous.find(
+        const exercise = completedExercises?.previous.find(
           (e) =>
             e.name === selectedName &&
             e.apparatus === selectedApparatus &&

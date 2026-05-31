@@ -1,33 +1,30 @@
 import { useState } from "react";
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
+import { useMe, useQuitBlock } from "@liftledger/api-client";
 import { useRouter } from "next/navigation";
 import { IoArrowBack } from "react-icons/io5";
 import { Spinner } from "react-bootstrap";
 import { useEditBlock } from "./EditBlockProvider";
 import { FaStopCircle } from "react-icons/fa";
-import { useUser } from "../layoutContainer/UserProvider";
 
 export const QuitBlockDialog = () => {
   const router = useRouter();
-  const { quitBlock } = useUser();
-  const { unsetTemplateBlock, setEditingWeekIdx } = useBlock();
-  const { quitDialogOpen, setQuitDialogOpen } = useEditBlock();
-  const [quitting, setQuitting] = useState(false);
+  const { data: curUser } = useMe();
+  const { trigger: triggerQuitBlock, isMutating: quitting } = useQuitBlock();
+  const { unsetTemplateBlock, setEditingWeekIdx, quitDialogOpen, setQuitDialogOpen } =
+    useEditBlock();
   const [error, setError] = useState("");
 
   const handleQuit = async () => {
+    if (!curUser?._id) return;
     setError("");
-    setQuitting(true);
     try {
-      await quitBlock();
+      await triggerQuitBlock(curUser._id);
       unsetTemplateBlock();
       setEditingWeekIdx(0);
       router.push("/dashboard");
     } catch (e: unknown) {
       setError((e as Error).message || "Failed to quit block");
-    } finally {
-      setQuitting(false);
     }
   };
 

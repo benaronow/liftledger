@@ -1,6 +1,10 @@
 import { Exercise } from "@/lib/types";
 import { Dispatch, SetStateAction, useCallback } from "react";
-import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
+import {
+  getUpdatedExercise,
+  useCompletedExercises,
+  useMe,
+} from "@liftledger/api-client";
 import { ExerciseInfoName } from "@/app/edit-block/EditDay/ExerciseInfo";
 import { useCompleteDay } from "../CompleteDayProvider";
 import { WEIGHT_TYPES } from "@/lib/weightTypes";
@@ -15,15 +19,21 @@ interface Props {
 
 export const EditExercise = ({ newExercise, setNewExercise }: Props) => {
   const { exercises } = useCompleteDay();
-  const { getUpdatedExercise } = useCompletedExercises();
+  const { data: curUser } = useMe();
+  const { data: completedExercises } = useCompletedExercises(curUser?._id);
 
   const switchExercise = useCallback(
     (value: string, type: ExerciseInfoName) => {
-      const updatedExercise = getUpdatedExercise(value, type, newExercise);
+      const updatedExercise = getUpdatedExercise(
+        completedExercises,
+        value,
+        type,
+        newExercise,
+      );
 
       setNewExercise(updatedExercise);
     },
-    [getUpdatedExercise, newExercise, setNewExercise],
+    [completedExercises, newExercise, setNewExercise],
   );
 
   return (

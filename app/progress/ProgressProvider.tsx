@@ -9,8 +9,12 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useCompletedExercises } from "../layoutContainer/CompletedExercisesProvider";
-import { useExerciseOptions } from "../layoutContainer/ExerciseOptionsProvider";
+import {
+  findLatestOccurrence,
+  useCompletedExercises,
+  useMe,
+} from "@liftledger/api-client";
+import { useExerciseOptions } from "@/lib/hooks/useExerciseOptions";
 
 interface ProgressContextModel {
   selectedName: string;
@@ -31,7 +35,8 @@ const ProgressContext = createContext<ProgressContextModel>(
 );
 
 export const ProgressProvider = ({ children }: PropsWithChildren) => {
-  const { completedExercises, findLatestOccurrence } = useCompletedExercises();
+  const { data: curUser } = useMe();
+  const { data: completedExercises } = useCompletedExercises(curUser?._id);
   const { allExerciseNameOptions, allExerciseApparatusOptions } =
     useExerciseOptions();
   const [selectedName, setSelectedName] = useState("");
@@ -40,7 +45,7 @@ export const ProgressProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     if (selectedName) return;
 
-    const firstCompleted = completedExercises.previous[0]?.name;
+    const firstCompleted = completedExercises?.previous[0]?.name;
     if (firstCompleted) {
       setSelectedName(firstCompleted);
       return;
@@ -53,11 +58,12 @@ export const ProgressProvider = ({ children }: PropsWithChildren) => {
     if (!selectedName) return;
 
     const matchingOccurrence = findLatestOccurrence(
+      completedExercises,
       (e) => e.name === selectedName && e.apparatus === selectedApparatus,
     );
     if (matchingOccurrence) return;
 
-    const firstMatch = completedExercises.previous.find(
+    const firstMatch = completedExercises?.previous.find(
       (ex) => ex.name === selectedName,
     );
     if (firstMatch) {
@@ -70,7 +76,6 @@ export const ProgressProvider = ({ children }: PropsWithChildren) => {
     selectedName,
     selectedApparatus,
     allExerciseApparatusOptions,
-    findLatestOccurrence,
     completedExercises,
   ]);
 

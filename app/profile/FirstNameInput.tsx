@@ -1,5 +1,5 @@
 import { FocusEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { useUser } from "../layoutContainer/UserProvider";
+import { useMe, useUpdateUser } from "@liftledger/api-client";
 import { LabeledTextInput } from "../components/inputs";
 import { ActionButton } from "../components/ActionButton";
 import { Spinner } from "react-bootstrap";
@@ -7,9 +7,10 @@ import { FaSave } from "react-icons/fa";
 import { COLORS } from "@/lib/colors";
 
 export const FirstNameInput = () => {
-  const { curUser, updateUser } = useUser();
+  const { data: curUser } = useMe();
+  const { trigger: triggerUpdateUser, isMutating: savingFirstName } =
+    useUpdateUser();
   const [firstName, setFirstName] = useState("");
-  const [savingFirstName, setSavingFirstName] = useState(false);
   const [firstNameError, setFirstNameError] = useState("");
   const [focused, setFocused] = useState(false);
 
@@ -27,15 +28,12 @@ export const FirstNameInput = () => {
   const handleSaveFirstName = useCallback(async () => {
     if (!curUser) return;
     setFirstNameError("");
-    setSavingFirstName(true);
     try {
-      await updateUser({ ...curUser, firstName });
+      await triggerUpdateUser({ ...curUser, firstName });
     } catch (e: unknown) {
       setFirstNameError((e as Error).message);
-    } finally {
-      setSavingFirstName(false);
     }
-  }, [curUser, firstName, updateUser]);
+  }, [curUser, firstName, triggerUpdateUser]);
 
   const handleBlur = useCallback(
     (e: FocusEvent<HTMLDivElement>) => {

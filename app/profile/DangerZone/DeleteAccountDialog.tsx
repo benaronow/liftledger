@@ -5,7 +5,8 @@ import { Spinner } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
 import { IoArrowBack } from "react-icons/io5";
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
-import { useUser } from "@/app/layoutContainer/UserProvider";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useDeleteMe, useMe } from "@liftledger/api-client";
 
 interface Props {
   open: boolean;
@@ -13,8 +14,9 @@ interface Props {
 }
 
 export const DeleteAccountDialog = ({ open, onClose }: Props) => {
-  const { curUser, deleteCurrentUser } = useUser();
-  const [deleting, setDeleting] = useState(false);
+  const { logout } = useAuth0();
+  const { data: curUser } = useMe();
+  const { trigger: triggerDeleteMe, isMutating: deleting } = useDeleteMe();
   const [error, setError] = useState("");
 
   const handleDelete = async () => {
@@ -23,13 +25,11 @@ export const DeleteAccountDialog = ({ open, onClose }: Props) => {
       return;
     }
     setError("");
-    setDeleting(true);
     try {
-      await deleteCurrentUser();
-      // deleteCurrentUser triggers Auth0 logout, which redirects away from this page.
+      await triggerDeleteMe();
+      logout({ logoutParams: { returnTo: window.location.origin } });
     } catch (e: unknown) {
       setError((e as Error).message ?? "Failed to delete account");
-      setDeleting(false);
     }
   };
 

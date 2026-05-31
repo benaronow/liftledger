@@ -6,26 +6,22 @@ import { EditDay } from "./EditDay";
 import { EditWeek } from "./EditWeek";
 import { useRouter } from "next/navigation";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
-import { useUser } from "@/app/layoutContainer/UserProvider";
+import { useMe, useUserBlock } from "@liftledger/api-client";
 import { SaveBlockDialog } from "./SaveBlockDialog";
 import { QuitBlockDialog } from "./QuitBlockDialog";
 import { useEditBlock } from "./EditBlockProvider";
-import { useBlock } from "../layoutContainer/BlockProvider";
 import { EditBlockFooter } from "./EditBlockFooter";
 
 export const EditBlock = () => {
   const router = useRouter();
-  const { curUser } = useUser();
+  const { data: curUser } = useMe();
+  const { isLoading: curBlockLoading, data: curBlock } = useUserBlock(
+    curUser?._id,
+    curUser?.curBlock,
+  );
   const isTabletOrLarger = useMediaQuery("(min-width: 600px)");
-  const { curBlock, curBlockLoading, setTemplateBlock } = useBlock();
   const { editingDayIdx } = useEditBlock();
   const pageContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!curBlock) return;
-
-    setTemplateBlock(curBlock);
-  }, [curBlock, setTemplateBlock]);
 
   useEffect(() => {
     if (isTabletOrLarger) router.push("/dashboard");

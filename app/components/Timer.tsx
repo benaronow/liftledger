@@ -1,124 +1,42 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ActionDialog } from "./ActionDialog";
-import { FaSave } from "react-icons/fa";
-import { useTimer } from "@/app/layoutContainer/TimerProvider";
+import { useClearTimerEnd, useMe, useTimerEnd } from "@liftledger/api-client";
 import { COLORS } from "@/lib/colors";
 import { IoIosArrowForward, IoMdClose } from "react-icons/io";
 import { RiTimerLine } from "react-icons/ri";
-import { useUser } from "@/app/layoutContainer/UserProvider";
-import { ActionButton } from "./ActionButton";
-import { BiSolidEdit } from "react-icons/bi";
-import { LabeledSelect } from "./inputs";
 
-const TIME_OPTIONS = [
-  "00",
-  "01",
-  "02",
-  "03",
-  "04",
-  "05",
-  "06",
-  "07",
-  "08",
-  "09",
-  "10",
-  "11",
-  "12",
-  "13",
-  "14",
-  "15",
-  "16",
-  "17",
-  "18",
-  "19",
-  "20",
-  "21",
-  "22",
-  "23",
-  "24",
-  "25",
-  "26",
-  "27",
-  "28",
-  "29",
-  "30",
-  "31",
-  "32",
-  "33",
-  "34",
-  "35",
-  "36",
-  "37",
-  "38",
-  "39",
-  "40",
-  "41",
-  "42",
-  "43",
-  "44",
-  "45",
-  "46",
-  "47",
-  "48",
-  "49",
-  "50",
-  "51",
-  "52",
-  "53",
-  "54",
-  "55",
-  "56",
-  "57",
-  "58",
-  "59",
-];
-
+// Floating countdown that lives in the layout. Opening the timer-settings
+// dialog is the responsibility of whichever component wants to trigger it
+// (e.g. CompleteDayFooter, SubmitSetDialog) — they render their own
+// <TimerSettingsDialog>.
 export const Timer = () => {
-  const { curUser } = useUser();
-  const {
-    timerEnd,
-    setTimer,
-    unsetTimer,
-    timerPresets,
-    updateTimerPresets,
-    timerOpen,
-    setTimerOpen,
-    timerDialogOpen,
-    setTimerDialogOpen,
-  } = useTimer();
+  const { data: curUser } = useMe();
+  const { data: timerEndData } = useTimerEnd(curUser?._id);
+  const { trigger: triggerClearTimerEnd } = useClearTimerEnd();
+
+  const timerEnd = useMemo(() => {
+    const raw = timerEndData?.timerEnd;
+    if (!raw) return undefined;
+    return raw instanceof Date ? raw : new Date(raw);
+  }, [timerEndData?.timerEnd]);
+
+  const [open, setOpen] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [presetsState, setPresetsState] = useState<{ [key: number]: number }>();
-  const [presetEditIdx, setPresetEditIdx] = useState<number>();
-
-  useEffect(() => {
-    setPresetsState(timerPresets);
-  }, [timerPresets]);
-
-  useEffect(() => {
-    setPresetEditIdx(undefined);
-  }, [timerDialogOpen]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
-
     return () => clearInterval(intervalId);
   }, []);
-
-  const setTimerEnd = (totalSeconds: number) => {
-    const endTime = new Date(new Date().getTime() + totalSeconds * 1000);
-    setTimer(endTime);
-  };
 
   const timeString = useMemo(() => {
     if (!timerEnd) return "00 : 00";
 
     const totalSeconds = Math.max(
       0,
-      Math.floor((new Date(timerEnd).getTime() - currentTime.getTime()) / 1000),
+      Math.floor((timerEnd.getTime() - currentTime.getTime()) / 1000),
     );
     const mins = Math.floor(totalSeconds / 60)
       .toString()
@@ -127,145 +45,59 @@ export const Timer = () => {
     return `${mins} : ${secs}`;
   }, [timerEnd, currentTime]);
 
-  const updatePresetsState = (idx: number, totalSeconds: number) => {
-    const newPresets = { ...presetsState, [idx]: totalSeconds };
-    setPresetsState(newPresets);
-  };
+  if (!timerEnd) return null;
 
   return (
-    <>
-      {timerEnd && (
-        <div
-          className="position-absolute d-flex align-items-center justify-content-center rounded end-0 me-3 gap-2"
+    <div
+      className="position-absolute d-flex align-items-center justify-content-center rounded end-0 me-3 gap-2"
+      style={{
+        background: COLORS.container,
+        boxShadow: "0px 0px 15px #131314",
+        top: "60px",
+        height: "50px",
+        zIndex: 100,
+      }}
+    >
+      {open ? (
+        <>
+          <button
+            className="h-100 border-0 rounded-start text-white d-flex align-items-center justify-content-center p-2"
+            style={{
+              width: "50px",
+              height: "50px",
+              background: COLORS.primary,
+            }}
+            onClick={() => setOpen(false)}
+          >
+            <IoIosArrowForward fontSize={28} />
+          </button>
+          <strong className="text-white fs-4 text-nowrap">{timeString}</strong>
+          <button
+            className="h-100 border-0 rounded-end text-white d-flex align-items-center justify-content-center p-2"
+            style={{
+              width: "50px",
+              height: "50px",
+              background: COLORS.danger,
+            }}
+            onClick={() => curUser?._id && triggerClearTimerEnd(curUser._id)}
+          >
+            <IoMdClose fontSize={28} />
+          </button>
+        </>
+      ) : (
+        <button
+          className="h-100 border-0 rounded text-white d-flex align-items-center justify-content-center p-2"
           style={{
-            background: COLORS.container,
-            boxShadow: "0px 0px 15px #131314",
-            top: "60px",
+            width: "50px",
             height: "50px",
-            zIndex: 100,
+            background:
+              timeString === "00 : 00" ? COLORS.success : COLORS.primary,
           }}
+          onClick={() => setOpen(true)}
         >
-          {timerOpen ? (
-            <>
-              <button
-                className="h-100 border-0 rounded-start text-white d-flex align-items-center justify-content-center p-2"
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  background: COLORS.primary,
-                }}
-                onClick={() => setTimerOpen(false)}
-              >
-                <IoIosArrowForward fontSize={28} />
-              </button>
-              <strong className="text-white fs-4 text-nowrap">
-                {timeString}
-              </strong>
-              <button
-                className="h-100 border-0 rounded-end text-white d-flex align-items-center justify-content-center p-2"
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  background: COLORS.danger,
-                }}
-                onClick={unsetTimer}
-              >
-                <IoMdClose fontSize={28} />
-              </button>
-            </>
-          ) : (
-            <button
-              className="h-100 border-0 rounded text-white d-flex align-items-center justify-content-center p-2"
-              style={{
-                width: "50px",
-                height: "50px",
-                background:
-                  timeString === "00 : 00" ? COLORS.success : COLORS.primary,
-              }}
-              onClick={() => setTimerOpen(true)}
-            >
-              <RiTimerLine fontSize={28} />
-            </button>
-          )}
-        </div>
+          <RiTimerLine fontSize={28} />
+        </button>
       )}
-      {timerDialogOpen && (
-        <ActionDialog
-          open={timerDialogOpen}
-          onClose={() => setTimerDialogOpen(false)}
-          title="Start Timer"
-          actions={[]}
-        >
-          <div className="w-100 d-flex flex-column gap-3 align-items-center py-2 px-4">
-            {curUser &&
-              presetsState &&
-              Object.values(presetsState ?? {}).map((preset, idx) => {
-                const presetMins = Math.floor(preset / 60)
-                  .toString()
-                  .padStart(2, "0");
-                const presetSecs = (preset % 60).toString().padStart(2, "0");
-                return (
-                  <div className="d-flex w-100" key={idx}>
-                    {presetEditIdx === idx ? (
-                      <div className="w-100 d-flex gap-1 align-items-center bg-white rounded-start justify-content-center">
-                        <LabeledSelect
-                          value={presetMins}
-                          options={TIME_OPTIONS}
-                          onChange={(e) =>
-                            updatePresetsState(
-                              idx,
-                              parseInt(e.target.value) * 60 + (preset % 60),
-                            )
-                          }
-                          height={35}
-                        />
-                        <span>:</span>
-                        <LabeledSelect
-                          value={presetSecs}
-                          options={TIME_OPTIONS}
-                          onChange={(e) =>
-                            updatePresetsState(
-                              idx,
-                              Math.floor(preset / 60) * 60 +
-                                parseInt(e.target.value),
-                            )
-                          }
-                          height={35}
-                        />
-                      </div>
-                    ) : (
-                      <ActionButton
-                        label={`${presetMins} : ${presetSecs}`}
-                        icon={null}
-                        onClick={() => {
-                          setTimerEnd(preset);
-                          setTimerDialogOpen(false);
-                        }}
-                        variant="primaryInverted"
-                        roundedSide="start"
-                      />
-                    )}
-                    <ActionButton
-                      icon={
-                        presetEditIdx === idx ? <FaSave /> : <BiSolidEdit />
-                      }
-                      onClick={() => {
-                        if (presetEditIdx === idx) {
-                          updateTimerPresets(presetsState);
-                          setPresetEditIdx(undefined);
-                        } else {
-                          setPresetEditIdx(idx);
-                        }
-                      }}
-                      width={35}
-                      roundedSide="end"
-                    />
-                  </div>
-                );
-              })}
-          </div>
-        </ActionDialog>
-      )}
-    </>
+    </div>
   );
 };

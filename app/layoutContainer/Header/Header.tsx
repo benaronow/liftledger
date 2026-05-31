@@ -1,16 +1,17 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { useAuth0 } from "@auth0/auth0-react";
 import { RouteType } from "@/lib/types";
-import { useUser } from "@/app/layoutContainer/UserProvider";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
+import { useMe, useUserBlock } from "@liftledger/api-client";
 import styles from "./header.module.css";
 
 export const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { auth0User } = useUser();
-  const { curBlock } = useBlock();
+  const { user: auth0User } = useAuth0();
+  const { data: curUser } = useMe();
+  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
 
   const getTitle = () => {
     if (pathname.includes(RouteType.Progress)) return "Progress";

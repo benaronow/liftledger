@@ -1,6 +1,10 @@
 import { Exercise } from "@/lib/types";
 import { ChangeEvent, Dispatch, SetStateAction, useMemo } from "react";
-import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
+import {
+  findLatestOccurrence,
+  useCompletedExercises,
+  useMe,
+} from "@liftledger/api-client";
 import { useCompleteDay } from "../CompleteDayProvider";
 import { LabeledTextInput } from "@/app/components/inputs";
 
@@ -11,16 +15,18 @@ interface Props {
 
 export const EditSet = ({ exerciseState, setExerciseState }: Props) => {
   const { exerciseToEdit: { setIdx } = { setIdx: 0 } } = useCompleteDay();
-  const { findLatestOccurrence } = useCompletedExercises();
+  const { data: curUser } = useMe();
+  const { data: completedExercises } = useCompletedExercises(curUser?._id);
 
   const latestPreviousSetNote = useMemo(() => {
     return findLatestOccurrence(
+      completedExercises,
       (e: Exercise) =>
         e.name === exerciseState?.name &&
         e.apparatus === exerciseState?.apparatus &&
         !!e.sets[setIdx],
     )?.sets[setIdx].note;
-  }, [exerciseState, setIdx, findLatestOccurrence]);
+  }, [exerciseState, setIdx, completedExercises]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement>,

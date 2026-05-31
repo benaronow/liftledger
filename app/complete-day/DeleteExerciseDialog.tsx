@@ -1,45 +1,46 @@
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
 import { Block, Day, Exercise } from "@/lib/types";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
+import {
+  useMe,
+  useUpdateUserBlock,
+  useUserBlock,
+} from "@liftledger/api-client";
 import { IoArrowBack } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 import { useCompleteDay } from "./CompleteDayProvider";
-import { useState } from "react";
 import { Spinner } from "react-bootstrap";
 
 export const DeleteExerciseDialog = () => {
-  const { curBlock, updateBlock } = useBlock();
+  const { data: curUser } = useMe();
+  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
+  const { trigger: triggerUpdateUserBlock, isMutating: deletingExercise } =
+    useUpdateUserBlock();
   const { deletingIdx, setDeletingIdx, exercises } = useCompleteDay();
-  const [deletingExercise, setDeletingExercise] = useState(false);
 
   const saveExercises = async (exercises: Exercise[]) => {
-    if (curBlock) {
-      const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].toSpliced(
-        curBlock.curDayIdx,
-        1,
-        {
-          ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
-          exercises,
-        },
-      );
-      const newBlock: Block = {
-        ...curBlock,
-        weeks: curBlock.weeks.toSpliced(curBlock.curWeekIdx, 1, newDays),
-      };
-      await updateBlock(newBlock);
-    }
+    if (!curUser?._id || !curBlock) return;
+    const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].toSpliced(
+      curBlock.curDayIdx,
+      1,
+      {
+        ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
+        exercises,
+      },
+    );
+    const newBlock: Block = {
+      ...curBlock,
+      weeks: curBlock.weeks.toSpliced(curBlock.curWeekIdx, 1, newDays),
+    };
+    await triggerUpdateUserBlock({ userId: curUser._id, block: newBlock });
   };
 
   const handleDeleteExercise = async () => {
     if (deletingIdx === undefined) return;
-
-    setDeletingExercise(true);
     const updated = exercises.filter(
       (_: Exercise, i: number) => i !== deletingIdx,
     );
     await saveExercises(updated);
     setDeletingIdx(undefined);
-    setDeletingExercise(false);
   };
 
   const deleteActions: DialogAction[] = [

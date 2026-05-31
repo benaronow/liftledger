@@ -2,12 +2,21 @@
 
 import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useUser } from "./layoutContainer/UserProvider";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useCreateUser, useMe } from "@liftledger/api-client";
 import { LogoSpinner } from "./components/LogoSpinner";
 
 const IndexPage = () => {
   const router = useRouter();
-  const { auth0User, attemptedLogin, curUser, createUser } = useUser();
+  const { user: auth0User, isAuthenticated } = useAuth0();
+  const { data: curUser, isLoading, error } = useMe(isAuthenticated);
+  const { trigger: createUser } = useCreateUser();
+
+  // Equivalent to the old `attemptedLogin`: SWR has settled (either data or
+  // a 404 error has come back). Once true, page.tsx can decide whether to
+  // redirect to dashboard or auto-create the DB record.
+  const attemptedLogin =
+    isAuthenticated && !isLoading && (curUser !== undefined || error !== undefined);
 
   const createNewUser = useCallback(async () => {
     if (!auth0User?.sub || !auth0User.email) return;

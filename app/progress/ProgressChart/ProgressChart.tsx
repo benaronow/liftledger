@@ -11,7 +11,7 @@ import {
 import { GYM_COLORS } from "./gymColors";
 import dayjs from "dayjs";
 import { useMemo } from "react";
-import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
+import { useCompletedExercises, useMe } from "@liftledger/api-client";
 import { useProgress } from "../ProgressProvider";
 import "./progressChart.css";
 import { ExerciseTooltip } from "./ExerciseTooltip";
@@ -19,12 +19,13 @@ import { NoDataPlaceholder } from "./NoDataPlaceholder";
 import { CompletedExercise, type Set } from "@/lib/types";
 
 export const ProgressChart = () => {
-  const { completedExercises } = useCompletedExercises();
+  const { data: curUser } = useMe();
+  const { data: completedExercises } = useCompletedExercises(curUser?._id);
   const { selectedName, selectedApparatus } = useProgress();
 
   const chartExercises = useMemo<CompletedExercise[]>(
     () =>
-      completedExercises.previous
+      (completedExercises?.previous ?? [])
         .filter(
           (e) =>
             e.name === selectedName &&

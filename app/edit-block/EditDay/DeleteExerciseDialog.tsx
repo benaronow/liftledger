@@ -1,13 +1,17 @@
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import { useEditBlock } from "../EditBlockProvider";
 import { IoArrowBack } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 
 export const DeleteExerciseDialog = () => {
-  const { templateBlock, setTemplateBlock, editingWeekIdx } = useBlock();
-  const { editingDayIdx, deletingExerciseIdx, setDeletingExerciseIdx } =
-    useEditBlock();
+  const {
+    templateBlock,
+    setTemplateBlock,
+    editingWeekIdx,
+    editingDayIdx,
+    deletingExerciseIdx,
+    setDeletingExerciseIdx,
+  } = useEditBlock();
 
   const handleRemoveExercise = () => {
     if (templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises.length > 1)

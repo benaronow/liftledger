@@ -7,16 +7,13 @@ import { Block } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
-import { useUser } from "@/app/layoutContainer/UserProvider";
-import { useBlock } from "@/app/layoutContainer/BlockProvider";
-import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
+import { useMe, useUserBlock } from "@liftledger/api-client";
 import { ActionButton } from "../components/ActionButton";
 
 export const History = () => {
   const router = useRouter();
-  const { curUser } = useUser();
-  const { curBlock, setTemplateBlock, setEditingWeekIdx } = useBlock();
-  const { getNewSetsFromLatest } = useCompletedExercises();
+  const { data: curUser } = useMe();
+  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
   const isTabletOrLarger = useMediaQuery("(min-width: 600px)");
 
   useEffect(() => {
@@ -30,44 +27,6 @@ export const History = () => {
     const finalDay = finalWeek[finalWeek.length - 1];
 
     return finalDay.completedDate;
-  };
-
-  const getTemplateFromBlock = (block: Block) => ({
-    name: block.name,
-    startDate: new Date(),
-    length: block.length,
-    primaryGym: block.primaryGym,
-    weeks: [
-      block.weeks[block.length - 1].map((day) => {
-        return {
-          name: day.name,
-          gym: block.primaryGym,
-          exercises: day.exercises
-            .filter((ex) => !ex.addedOn)
-            .map((exercise) => {
-              return {
-                name: exercise.name,
-                apparatus: exercise.apparatus,
-                gym: block.primaryGym,
-                sets: getNewSetsFromLatest({
-                  ...exercise,
-                  gym: block.primaryGym,
-                }),
-                weightType: exercise.weightType,
-              };
-            }),
-          completedDate: undefined,
-        };
-      }),
-    ],
-    curDayIdx: 0,
-    curWeekIdx: 0,
-  });
-
-  const handleCreateFromTemplate = (block: Block) => {
-    setTemplateBlock(getTemplateFromBlock(block));
-    setEditingWeekIdx(0);
-    router.push("/edit-block");
   };
 
   const completedBlocks = curUser?.blocks
@@ -103,7 +62,9 @@ export const History = () => {
             height={35}
             width={35}
             icon={<MdControlPointDuplicate size={28} />}
-            onClick={() => handleCreateFromTemplate(block)}
+            onClick={() =>
+              router.push(`/edit-block?duplicateFrom=${block._id}`)
+            }
           />
         </div>
       );

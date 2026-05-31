@@ -1,24 +1,27 @@
 import { Day } from "@/lib/types";
 import dayjs, { Dayjs } from "dayjs";
-import { useRouter } from "next/navigation";
 import React, { ChangeEvent, useEffect } from "react";
 import { AddButton } from "@/app/components/AddButton";
 import { DayInfo } from "./DayInfo";
-import { EMPTY_BLOCK, useBlock } from "@/app/layoutContainer/BlockProvider";
-import { useUser } from "@/app/layoutContainer/UserProvider";
+import {
+  getNewSetsFromLatest,
+  useCompletedExercises,
+  useMe,
+  useUpdateUser,
+  useUserBlock,
+} from "@liftledger/api-client";
 import { DeleteDayDialog } from "./DeleteDayDialog";
-import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
 import { SearchableSelect } from "@/app/components/SearchableSelect";
 import { useEditBlock } from "../EditBlockProvider";
 import { LabeledTextInput, LabeledDateInput } from "@/app/components/inputs";
 
 export const EditWeek = () => {
-  const router = useRouter();
-  const { curUser, updateUser } = useUser();
-  const { curBlock, templateBlock, setTemplateBlock, editingWeekIdx } =
-    useBlock();
-  const { getNewSetsFromLatest } = useCompletedExercises();
-  const { templateErrors } = useEditBlock();
+  const { data: curUser } = useMe();
+  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
+  const { data: completedExercises } = useCompletedExercises(curUser?._id);
+  const { trigger: triggerUpdateUser } = useUpdateUser();
+  const { templateBlock, setTemplateBlock, editingWeekIdx, templateErrors } =
+    useEditBlock();
 
   useEffect(() => {
     if (templateBlock.primaryGym === undefined && curUser?.gyms?.length) {
@@ -40,12 +43,6 @@ export const EditWeek = () => {
       });
     }
   }, [templateBlock, curUser?.gyms, editingWeekIdx, setTemplateBlock]);
-
-  useEffect(() => {
-    if (curBlock && templateBlock === EMPTY_BLOCK) {
-      router.push("/dashboard");
-    }
-  }, [curBlock, templateBlock, router]);
 
   const handleBlockNameInput = (e: ChangeEvent<HTMLInputElement>) => {
     setTemplateBlock({ ...templateBlock, name: e.target.value });
@@ -80,7 +77,10 @@ export const EditWeek = () => {
             exercises: day.exercises.map((exercise) => ({
               ...exercise,
               gym,
-              sets: getNewSetsFromLatest({ ...exercise, gym }),
+              sets: getNewSetsFromLatest(completedExercises, {
+                ...exercise,
+                gym,
+              }),
             })),
           };
         });
@@ -91,7 +91,7 @@ export const EditWeek = () => {
   const handleAddGym = async (gym: string) => {
     if (!curUser) return;
 
-    updateUser({
+    triggerUpdateUser({
       ...curUser,
       gyms: [...(curUser?.gyms || []), gym],
     });
