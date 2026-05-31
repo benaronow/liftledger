@@ -224,7 +224,7 @@ const meRoutes = async (app: FastifyInstance) => {
           { auth0Id: req.user.sub },
           { $set: { email } },
           { new: true },
-        );
+        ).populate([{ path: "blocks", model: BlockModel }]);
       } catch (dbErr) {
         console.error(
           "Failed to update MongoDB email after Auth0 success — reverting Auth0:",

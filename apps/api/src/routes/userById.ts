@@ -61,7 +61,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
           { _id: id },
           { $set: update },
           { new: true },
-        );
+        ).populate([{ path: "blocks", model: BlockModel }]);
         if (!updatedUser)
           return reply.code(404).send({ error: "User not found" });
         return updatedUser;
@@ -177,7 +177,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
           { _id: id },
           { $set: { curBlock: newBlock }, $addToSet: { blocks: newBlock } },
           { new: true },
-        );
+        ).populate([{ path: "blocks", model: BlockModel }]);
         if (!updatedUser) {
           await deleteOrphanedBlock();
           return reply.code(404).send({ error: "User not found" });
@@ -241,7 +241,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
           { _id: id },
           { $unset: { curBlock: "" } },
           { new: true },
-        );
+        ).populate([{ path: "blocks", model: BlockModel }]);
         if (!updatedUser) {
           await revertBlock();
           return reply.code(404).send({ error: "User not found" });

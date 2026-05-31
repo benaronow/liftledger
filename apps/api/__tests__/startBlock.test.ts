@@ -69,7 +69,8 @@ describe("POST /users/:id/startBlock", () => {
     expect(res.statusCode).toBe(200);
     expect(data._id.toString()).toBe(uid);
     expect(data.curBlock).toBeDefined();
-    expect(data.blocks.map((b: string) => b.toString())).toContain(
+    // `blocks` is populated post-startBlock; assert via _id on each entry.
+    expect(data.blocks.map((b: { _id: string }) => b._id.toString())).toContain(
       data.curBlock.toString(),
     );
 
