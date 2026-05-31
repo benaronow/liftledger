@@ -13,16 +13,20 @@ export const AddExerciseDialog = () => {
   const { addExerciseIdx, setAddExerciseIdx, exercises } = useCompleteDay();
   const [addingExercise, setAddingExercise] = useState(false);
 
+  const curGym = useMemo(
+    () => curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym || "",
+    [curBlock],
+  );
   const defaultNewExercise: Exercise = useMemo(
     () => ({
       name: "",
       apparatus: "",
-      gym: curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym || "",
+      gym: curGym,
       weightType: "",
       sets: [],
       addedOn: true,
     }),
-    [curBlock],
+    [curGym],
   );
   const [newExercise, setNewExercise] = useState<Exercise>(defaultNewExercise);
   useEffect(
