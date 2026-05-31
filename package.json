@@ -16,7 +16,10 @@
     "api:dev": "yarn workspace @liftledger/api dev",
     "api:build": "yarn workspace @liftledger/api build",
     "api:start": "yarn workspace @liftledger/api start",
-    "api:test": "yarn workspace @liftledger/api test"
+    "api:test": "yarn workspace @liftledger/api test",
+    "web:dev": "yarn workspace @liftledger/web dev",
+    "web:build": "yarn workspace @liftledger/web build",
+    "web:typecheck": "yarn workspace @liftledger/web typecheck"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
