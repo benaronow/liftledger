@@ -29,7 +29,7 @@ export const LayoutContainer = ({
     router.prefetch(RouteType.Profile);
     router.prefetch(RouteType.Progress);
     router.prefetch(RouteType.Workout);
-  }, []);
+  }, [router]);
 
   return (
     <UserProvider session={session}>

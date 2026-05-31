@@ -81,7 +81,7 @@ export const ExerciseOptionsProvider = ({
         customExerciseNames: [...(curUser.customExerciseNames ?? []), value],
       });
     },
-    [curUser],
+    [curUser, allExerciseNameOptions, updateUser],
   );
 
   const addCustomExerciseApparatus = useCallback(
@@ -102,7 +102,7 @@ export const ExerciseOptionsProvider = ({
         ],
       });
     },
-    [curUser],
+    [curUser, allExerciseApparatusOptions, updateUser],
   );
 
   const getAvailableExerciseNameOptions = useCallback(
@@ -119,7 +119,7 @@ export const ExerciseOptionsProvider = ({
           ),
       );
     },
-    [curUser],
+    [allExerciseNameOptions],
   );
 
   const getAvailableExerciseApparatusOptions = useCallback(
@@ -136,7 +136,7 @@ export const ExerciseOptionsProvider = ({
           ),
       );
     },
-    [curUser],
+    [allExerciseApparatusOptions],
   );
 
   return (

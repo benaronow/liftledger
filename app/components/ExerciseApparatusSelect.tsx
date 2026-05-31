@@ -38,7 +38,12 @@ export const ExerciseApparatusSelect = ({
             reservedExercises,
           ).includes(o),
       ),
-    [availableApparatusOptions, allExerciseApparatusOptions],
+    [
+      allExerciseApparatusOptions,
+      curExercise,
+      reservedExercises,
+      getAvailableExerciseApparatusOptions,
+    ],
   );
 
   return (

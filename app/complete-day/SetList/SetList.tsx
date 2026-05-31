@@ -31,7 +31,7 @@ export const SetList = ({
         top: el.offsetTop - 65,
         behavior: "smooth",
       });
-  }, []);
+  }, [exercise.name, exercise.apparatus, isCurrentExercise, containerRef]);
 
   const nextSetIdx = useMemo(() => {
     if (!isCurrentExercise) return -1;
@@ -42,17 +42,14 @@ export const SetList = ({
     return -1;
   }, [exercise, isCurrentExercise]);
 
-  const getBackground = useCallback(
-    (set: Set, nextSet: boolean) =>
-      set.completed
-        ? COLORS.primary
-        : set.skipped
-          ? COLORS.primaryDark
-          : nextSet
-            ? COLORS.secondary
-            : COLORS.primaryDisabled,
-    [nextSetIdx],
-  );
+  const getBackground = (set: Set, nextSet: boolean) =>
+    set.completed
+      ? COLORS.primary
+      : set.skipped
+        ? COLORS.primaryDark
+        : nextSet
+          ? COLORS.secondary
+          : COLORS.primaryDisabled;
 
   const getDiffs = useCallback(
     (setIdx: number) => {

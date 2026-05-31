@@ -33,7 +33,7 @@ const IndexPage = () => {
     }
 
     createNewUser();
-  }, [session, attemptedLogin, curUser, createNewUser]);
+  }, [session, attemptedLogin, curUser, createNewUser, router]);
 
   return <LogoSpinner />;
 };

@@ -25,11 +25,11 @@ export const EditBlock = () => {
     if (!curBlock) return;
 
     setTemplateBlock(curBlock);
-  }, [curBlock]);
+  }, [curBlock, setTemplateBlock]);
 
   useEffect(() => {
     if (isTabletOrLarger) router.push("/dashboard");
-  }, [isTabletOrLarger]);
+  }, [isTabletOrLarger, router]);
 
   useEffect(() => {
     pageContainerRef.current?.scrollTo({ top: 0 });

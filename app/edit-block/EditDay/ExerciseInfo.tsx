@@ -26,7 +26,7 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
   const { editingDayIdx, setDeletingExerciseIdx } = useEditBlock();
   const curDayExercises = useMemo(
     () => templateBlock.weeks[editingWeekIdx][editingDayIdx].exercises,
-    [templateBlock],
+    [templateBlock, editingWeekIdx, editingDayIdx],
   );
 
   const visibleExerciseCount = useMemo(
@@ -52,25 +52,28 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
     });
   };
 
-  const updateExercise = (exerciseUpdate: Exercise) => {
-    setTemplateBlock({
-      ...templateBlock,
-      weeks: templateBlock.weeks.map((week, wIdx) =>
-        wIdx === editingWeekIdx
-          ? week.map((day, dIdx) =>
-              dIdx === editingDayIdx
-                ? {
-                    ...day,
-                    exercises: day.exercises.map((exercise, idx) =>
-                      eIdx === idx ? exerciseUpdate : exercise,
-                    ),
-                  }
-                : day,
-            )
-          : week,
-      ),
-    });
-  };
+  const updateExercise = useCallback(
+    (exerciseUpdate: Exercise) => {
+      setTemplateBlock({
+        ...templateBlock,
+        weeks: templateBlock.weeks.map((week, wIdx) =>
+          wIdx === editingWeekIdx
+            ? week.map((day, dIdx) =>
+                dIdx === editingDayIdx
+                  ? {
+                      ...day,
+                      exercises: day.exercises.map((exercise, idx) =>
+                        eIdx === idx ? exerciseUpdate : exercise,
+                      ),
+                    }
+                  : day,
+              )
+            : week,
+        ),
+      });
+    },
+    [templateBlock, setTemplateBlock, editingWeekIdx, editingDayIdx, eIdx],
+  );
 
   const handleNumberInput = (
     e: ChangeEvent<HTMLInputElement>,

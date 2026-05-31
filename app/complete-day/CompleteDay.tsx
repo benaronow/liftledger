@@ -30,7 +30,7 @@ export const CompleteDay = () => {
 
   useEffect(() => {
     if (!exercises.length) router.push("/dashboard");
-  }, [exercises]);
+  }, [exercises, router]);
 
   if (!exercises.length) return <LogoSpinner />;
 

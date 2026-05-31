@@ -21,7 +21,7 @@ export const History = () => {
 
   useEffect(() => {
     if (isTabletOrLarger) router.push("/dashboard");
-  }, [isTabletOrLarger]);
+  }, [isTabletOrLarger, router]);
 
   const getCompletedDate = (block: Block) => {
     if (block.endDate) return block.endDate;

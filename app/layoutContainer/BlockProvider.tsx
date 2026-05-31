@@ -85,7 +85,7 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
   };
 
   const getCurBlock = useCallback(async () => {
-    if (!curUser || !curUser.curBlock) {
+    if (!curUser?.curBlock) {
       setCurBlock(undefined);
       return;
     }
@@ -103,7 +103,7 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
     } finally {
       setCurBlockLoading(false);
     }
-  }, [curUser?._id, curUser?.curBlock]);
+  }, [curUser?.curBlock]);
 
   useEffect(() => {
     getCurBlock().catch((e) => console.error(e));
@@ -111,7 +111,7 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
 
   const createBlock = useCallback(
     async (block: Block) => {
-      if (!curUser || !curUser._id) return;
+      if (!curUser?._id) return;
 
       setCurBlockLoading(true);
 
@@ -135,7 +135,7 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
 
   const updateBlock = useCallback(
     async (block: Block) => {
-      if (!curUser || !curUser._id) return;
+      if (!curUser?._id) return;
 
       setCurBlockLoading(true);
 
