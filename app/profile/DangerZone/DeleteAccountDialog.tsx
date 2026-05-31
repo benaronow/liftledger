@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Spinner } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
 import { IoArrowBack } from "react-icons/io5";
@@ -14,7 +13,6 @@ interface Props {
 }
 
 export const DeleteAccountDialog = ({ open, onClose }: Props) => {
-  const router = useRouter();
   const { curUser, deleteCurrentUser } = useUser();
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
@@ -28,7 +26,7 @@ export const DeleteAccountDialog = ({ open, onClose }: Props) => {
     setDeleting(true);
     try {
       await deleteCurrentUser();
-      router.push("/auth/logout");
+      // deleteCurrentUser triggers Auth0 logout, which redirects away from this page.
     } catch (e: unknown) {
       setError((e as Error).message ?? "Failed to delete account");
       setDeleting(false);

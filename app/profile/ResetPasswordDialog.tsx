@@ -28,7 +28,7 @@ export const ResetPasswordDialog = ({ open, onClose }: Props) => {
     setError("");
     setSending(true);
     try {
-      await api.post("/api/users/me/password-reset", {});
+      await api.post("/users/me/password-reset", {});
       setSent(true);
     } catch (e: unknown) {
       const error = (e as AxiosError<{ error?: string }>)?.response?.data

@@ -47,4 +47,10 @@ export const env = {
       .map((s) => s.trim())
       .filter(Boolean);
   },
+  get SSL_CRT_FILE() {
+    return optional("SSL_CRT_FILE");
+  },
+  get SSL_KEY_FILE() {
+    return optional("SSL_KEY_FILE");
+  },
 };

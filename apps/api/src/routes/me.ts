@@ -198,6 +198,26 @@ const meRoutes = async (app: FastifyInstance) => {
           .send({ error: error.message ?? "Failed to update email" });
       }
 
+      // Fire-and-forget: send a verification link to the new address. We
+      // don't block the response on this or treat its failure as fatal — the
+      // email change itself already succeeded.
+      void fetch(
+        `https://${env.AUTH0_TENANT_DOMAIN}/api/v2/jobs/verification-email`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: req.user.sub,
+            client_id: env.AUTH0_CLIENT_ID,
+          }),
+        },
+      ).catch((err) =>
+        console.error("Failed to send verification email:", err),
+      );
+
       let updatedUser;
       try {
         updatedUser = await UserModel.findOneAndUpdate(

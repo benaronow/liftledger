@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { useUser } from "@/app/layoutContainer/UserProvider";
-import { useRouter } from "next/navigation";
 import { LogoSpinner } from "@/app/components/LogoSpinner";
 import { FirstNameInput } from "./FirstNameInput";
 import { LastNameInput } from "./LastNameInput";
@@ -14,16 +14,16 @@ import { ResetPasswordButton } from "./ResetPasswordButton";
 import { COLORS } from "@/lib/colors";
 
 export const Profile = () => {
-  const { session, curUser } = useUser();
-  const router = useRouter();
+  const { auth0User, curUser } = useUser();
+  const { logout } = useAuth0();
 
   const isConnectionUser = useMemo(
-    () => session?.user.sub?.startsWith("auth0|") ?? false,
-    [session?.user.sub],
+    () => auth0User?.sub?.startsWith("auth0|") ?? false,
+    [auth0User?.sub],
   );
 
   const handleLogout = () => {
-    router.push("/auth/logout");
+    logout({ logoutParams: { returnTo: window.location.origin } });
   };
 
   if (!curUser) return <LogoSpinner />;
@@ -39,9 +39,9 @@ export const Profile = () => {
           background: `linear-gradient(90deg, transparent 0%, ${COLORS.container} 30%, ${COLORS.container} 70%, transparent 100%)`,
         }}
       >
-        {session?.user.picture && (
+        {auth0User?.picture && (
           <img
-            src={session.user.picture}
+            src={auth0User.picture}
             alt=""
             style={{
               height: "80px",

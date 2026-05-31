@@ -4,7 +4,13 @@ import { env } from "./env";
 
 const main = async () => {
   await connectMongo(env.MONGODB_URI);
-  const app = await build({ logger: true });
+
+  const https =
+    env.SSL_CRT_FILE && env.SSL_KEY_FILE
+      ? { keyPath: env.SSL_KEY_FILE, certPath: env.SSL_CRT_FILE }
+      : undefined;
+
+  const app = await build({ logger: true, https });
   await app.listen({ port: env.PORT, host: "0.0.0.0" });
 };
 

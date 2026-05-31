@@ -1,7 +1,7 @@
 "use client";
 
 import { Block, User } from "@/lib/types";
-import { SessionData } from "@auth0/nextjs-auth0/types";
+import { useAuth0 } from "@auth0/auth0-react";
 import {
   createContext,
   PropsWithChildren,
@@ -13,10 +13,17 @@ import {
 import api from "@/lib/config";
 import { AxiosError } from "axios";
 
-export const USER_API_URL = "/api/users";
+export const USER_API_URL = "/users";
+
+interface Auth0SessionUser {
+  sub: string;
+  email?: string;
+  email_verified?: boolean;
+  picture?: string;
+}
 
 interface UserContextType {
-  session: SessionData | null;
+  auth0User: Auth0SessionUser | null;
   attemptedLogin: boolean;
   curUser?: User;
   curUserLoading: boolean;
@@ -31,7 +38,7 @@ interface UserContextType {
 }
 
 const defaultUserContext: UserContextType = {
-  session: null,
+  auth0User: null,
   attemptedLogin: false,
   curUserLoading: true,
   getUser: async () => {},
@@ -46,14 +53,17 @@ const defaultUserContext: UserContextType = {
 
 export const UserContext = createContext(defaultUserContext);
 
-interface UserProviderProps {
-  session: SessionData | null;
-}
+export const UserProvider = ({ children }: PropsWithChildren) => {
+  const { user, logout } = useAuth0();
+  const auth0User: Auth0SessionUser | null = user?.sub
+    ? {
+        sub: user.sub,
+        email: user.email,
+        email_verified: user.email_verified,
+        picture: user.picture,
+      }
+    : null;
 
-export const UserProvider = ({
-  children,
-  session,
-}: PropsWithChildren<UserProviderProps>) => {
   const [attemptedLogin, setAttemptedLogin] = useState(false);
   const [curUser, setCurUser] = useState<User>();
   const [curUserLoading, setCurUserLoading] = useState(false);
@@ -97,10 +107,9 @@ export const UserProvider = ({
   }, [setCurUserLoading, setCurUser, setAttemptedLogin]);
 
   useEffect(() => {
-    if (!session?.user.sub || curUser) return;
-
+    if (!auth0User?.sub || curUser) return;
     getCurrentUser().catch((e) => console.error(e));
-  }, [session, curUser, getCurrentUser]);
+  }, [auth0User?.sub, curUser, getCurrentUser]);
 
   const createUser = useCallback(
     async (user: Partial<User>) => {
@@ -146,6 +155,7 @@ export const UserProvider = ({
     try {
       await api.delete(`${USER_API_URL}/me`);
       setCurUser(undefined);
+      logout({ logoutParams: { returnTo: window.location.origin } });
     } catch (e: unknown) {
       const error = (e as AxiosError<{ error?: string }>)?.response?.data
         ?.error;
@@ -153,7 +163,7 @@ export const UserProvider = ({
     } finally {
       setCurUserLoading(false);
     }
-  }, [setCurUserLoading, setCurUser]);
+  }, [setCurUserLoading, setCurUser, logout]);
 
   const updateEmail = useCallback(
     async (email: string) => {
@@ -219,7 +229,7 @@ export const UserProvider = ({
   return (
     <UserContext.Provider
       value={{
-        session,
+        auth0User,
         attemptedLogin,
         curUser,
         curUserLoading,

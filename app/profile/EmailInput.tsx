@@ -5,6 +5,7 @@ import { ActionButton } from "../components/ActionButton";
 import { Spinner } from "react-bootstrap";
 import { FaSave } from "react-icons/fa";
 import { COLORS } from "@/lib/colors";
+import { VerifyEmailSentDialog } from "./VerifyEmailSentDialog";
 
 type Props = {
   isConnectionUser: boolean;
@@ -16,6 +17,7 @@ export const EmailInput = ({ isConnectionUser }: Props) => {
   const [savingEmail, setSavingEmail] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [focused, setFocused] = useState(false);
+  const [verifySentFor, setVerifySentFor] = useState<string | null>(null);
 
   useEffect(() => {
     if (curUser) {
@@ -34,6 +36,7 @@ export const EmailInput = ({ isConnectionUser }: Props) => {
     setSavingEmail(true);
     try {
       await updateEmail(email);
+      setVerifySentFor(email);
     } catch (e: unknown) {
       setEmailError((e as Error).message);
     } finally {
@@ -77,19 +80,25 @@ export const EmailInput = ({ isConnectionUser }: Props) => {
   }, [emailEdited, email, savingEmail, handleSaveEmail, focused]);
 
   return (
-    <LabeledTextInput
-      label="Email"
-      placeholder="Enter email..."
-      value={email}
-      onChange={(e) => {
-        setEmail(e.target.value);
-        setEmailError("");
-      }}
-      disabled={!isConnectionUser}
-      error={emailError}
-      renderEnd={isConnectionUser ? renderEnd : undefined}
-      onFocus={() => setFocused(true)}
-      onBlur={handleBlur}
-    />
+    <>
+      <LabeledTextInput
+        label="Email"
+        placeholder="Enter email..."
+        value={email}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          setEmailError("");
+        }}
+        disabled={!isConnectionUser}
+        error={emailError}
+        renderEnd={isConnectionUser ? renderEnd : undefined}
+        onFocus={() => setFocused(true)}
+        onBlur={handleBlur}
+      />
+      <VerifyEmailSentDialog
+        open={verifySentFor !== null}
+        email={verifySentFor ?? ""}
+      />
+    </>
   );
 };

@@ -3,15 +3,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/globals.css";
 import "react-datepicker/dist/react-datepicker.css";
 import { LayoutContainer } from "./layoutContainer";
-import { auth0 } from "@/lib/auth0";
+import { Providers } from "./layoutContainer/Providers";
 
 interface Props {
   readonly children: ReactNode;
 }
 
-const RootLayout = async ({ children }: Props) => {
-  const session = await auth0.getSession();
-
+const RootLayout = ({ children }: Props) => {
   return (
     <html lang="en">
       <head>
@@ -76,7 +74,9 @@ const RootLayout = async ({ children }: Props) => {
         />
       </head>
       <body>
-        <LayoutContainer session={session}>{children}</LayoutContainer>
+        <Providers>
+          <LayoutContainer>{children}</LayoutContainer>
+        </Providers>
       </body>
     </html>
   );

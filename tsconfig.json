@@ -29,7 +29,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/api/auth/[...auth0]",
     ".next/dev/types/**/*.ts"
   ],
   "exclude": ["node_modules", "apps", "packages"]

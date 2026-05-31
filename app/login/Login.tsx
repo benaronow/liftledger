@@ -1,11 +1,11 @@
 "use client";
 
 import { ActionButton } from "@/app/components/ActionButton";
-import { useRouter } from "next/navigation";
+import { useAuth0 } from "@auth0/auth0-react";
 import { BiLogIn } from "react-icons/bi";
 
 export const Login = () => {
-  const router = useRouter();
+  const { loginWithRedirect } = useAuth0();
 
   return (
     <div
@@ -26,7 +26,7 @@ export const Login = () => {
         label="Log in"
         icon={<BiLogIn fontSize={24} />}
         onClick={() => {
-          router.push("/auth/login");
+          loginWithRedirect();
         }}
         width="auto"
       />

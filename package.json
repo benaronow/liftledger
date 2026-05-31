@@ -19,12 +19,12 @@
     "api:test": "yarn workspace @liftledger/api test"
   },
   "dependencies": {
-    "@auth0/nextjs-auth0": "^4.14.0",
+    "@auth0/auth0-react": "^2.2.4",
     "@liftledger/shared": "*",
+    "@tanstack/react-query": "^5.62.0",
     "axios": "^1.7.9",
     "bootstrap": "5.3.8",
     "dayjs": "^1.11.13",
-    "mongoose": "^9.1.2",
     "next": "^16.1.1",
     "react": "^19.2.1",
     "react-bootstrap": "^2.10.10",

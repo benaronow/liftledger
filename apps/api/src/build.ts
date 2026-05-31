@@ -1,4 +1,10 @@
-import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import fs from "node:fs";
+import Fastify, {
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+  FastifyServerOptions,
+} from "fastify";
 import cors from "@fastify/cors";
 import fjwt from "@fastify/jwt";
 import buildGetJwks from "get-jwks";
@@ -10,14 +16,23 @@ export interface BuildOpts {
   // Tests use this; production never does.
   testAuth?: { sub: string };
   logger?: boolean;
+  https?: { keyPath: string; certPath: string };
 }
 
 export const build = async (opts: BuildOpts = {}): Promise<FastifyInstance> => {
-  const app = Fastify({ logger: opts.logger ?? false });
+  const fastifyOpts: FastifyServerOptions = { logger: opts.logger ?? false };
+  if (opts.https) {
+    (fastifyOpts as FastifyServerOptions & { https: object }).https = {
+      key: fs.readFileSync(opts.https.keyPath),
+      cert: fs.readFileSync(opts.https.certPath),
+    };
+  }
+  const app = Fastify(fastifyOpts);
 
   await app.register(cors, {
     origin: env.CORS_ORIGINS,
     credentials: true,
+    methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   });
 
   if (opts.testAuth) {

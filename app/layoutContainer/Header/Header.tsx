@@ -9,7 +9,7 @@ import styles from "./header.module.css";
 export const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { session } = useUser();
+  const { auth0User } = useUser();
   const { curBlock } = useBlock();
 
   const getTitle = () => {
@@ -25,7 +25,7 @@ export const Header = () => {
 
   return (
     <>
-      {pathname !== "/" && session && (
+      {pathname !== "/" && auth0User && (
         <div
           className={`${styles.containerAnimate} d-flex align-items-center`}
           style={{
@@ -73,9 +73,9 @@ export const Header = () => {
                 router.push("/profile");
               }}
             >
-              {session?.user.picture && (
+              {auth0User?.picture && (
                 <img
-                  src={session.user.picture}
+                  src={auth0User.picture}
                   alt=""
                   style={{
                     height: "32px",

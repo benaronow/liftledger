@@ -1,6 +1,8 @@
 "use client";
 
 import { PropsWithChildren, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import styles from "./LayoutContainer.module.css";
@@ -9,19 +11,13 @@ import { BlockProvider } from "./BlockProvider";
 import { ExerciseOptionsProvider } from "./ExerciseOptionsProvider";
 import { CompletedExercisesProvider } from "./CompletedExercisesProvider";
 import { TimerProvider } from "./TimerProvider";
-import { SessionData } from "@auth0/nextjs-auth0/types";
-import { useRouter } from "next/navigation";
 import { RouteType } from "@/lib/types";
+import { LogoSpinner } from "../components/LogoSpinner";
 
-interface Props {
-  session: SessionData | null;
-}
-
-export const LayoutContainer = ({
-  children,
-  session,
-}: PropsWithChildren<Props>) => {
+export const LayoutContainer = ({ children }: PropsWithChildren) => {
   const router = useRouter();
+  const pathname = usePathname();
+  const { isAuthenticated, isLoading } = useAuth0();
 
   useEffect(() => {
     router.prefetch(RouteType.Add);
@@ -31,8 +27,20 @@ export const LayoutContainer = ({
     router.prefetch(RouteType.Workout);
   }, [router]);
 
+  useEffect(() => {
+    if (isLoading) return;
+    if (!isAuthenticated && pathname !== RouteType.Login) {
+      router.push(RouteType.Login);
+    }
+  }, [isAuthenticated, isLoading, pathname, router]);
+
+  // Show a spinner during Auth0 bootstrap, and while we're redirecting an
+  // unauthenticated visit toward /login. Login page itself renders normally.
+  const showSpinner =
+    isLoading || (!isAuthenticated && pathname !== RouteType.Login);
+
   return (
-    <UserProvider session={session}>
+    <UserProvider>
       <BlockProvider>
         <ExerciseOptionsProvider>
           <CompletedExercisesProvider>
@@ -41,7 +49,9 @@ export const LayoutContainer = ({
                 <header className={styles.header}>
                   <Header />
                 </header>
-                <div className={styles.content}>{children}</div>
+                <div className={styles.content}>
+                  {showSpinner ? <LogoSpinner /> : children}
+                </div>
                 <footer className={styles.footer}>
                   <Footer />
                 </footer>
