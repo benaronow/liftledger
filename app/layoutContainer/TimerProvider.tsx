@@ -7,11 +7,18 @@ import {
   SetStateAction,
   useCallback,
   useContext,
-  useEffect,
+  useMemo,
   useState,
 } from "react";
-import api from "@/lib/config";
-import { USER_API_URL, useUser } from "./UserProvider";
+import {
+  useClearTimerEnd,
+  useSetTimerEnd,
+  useTimerEnd,
+  useTimerPresets,
+  useUpdateTimerPresets,
+} from "@liftledger/api-client";
+import type { TimerPresets } from "@liftledger/shared";
+import { useUser } from "./UserProvider";
 import { Timer } from "@/app/components/Timer";
 
 interface TimerContextType {
@@ -41,66 +48,57 @@ const defaultTimerContext: TimerContextType = {
 
 export const TimerContext = createContext(defaultTimerContext);
 
+const toDate = (value: Date | string | undefined): Date | undefined => {
+  if (!value) return undefined;
+  return value instanceof Date ? value : new Date(value);
+};
+
 export const TimerProvider = ({ children }: PropsWithChildren<object>) => {
   const { curUser } = useUser();
-  const [timerEnd, setTimerEnd] = useState<Date>();
-  const [timerPresets, setTimerPresets] = useState<{ [key: number]: number }>(
-    {},
-  );
+  const { data: timerEndData } = useTimerEnd(curUser?._id);
+  const { data: timerPresetsData } = useTimerPresets(curUser?._id);
   const [timerOpen, setTimerOpen] = useState(true);
   const [timerDialogOpen, setTimerDialogOpen] = useState(false);
 
-  const getTimerEnd = useCallback(async () => {
-    if (!curUser?._id) return;
+  const timerEnd = useMemo(
+    () => toDate(timerEndData?.timerEnd),
+    [timerEndData?.timerEnd],
+  );
+  const timerPresets = useMemo<{ [key: number]: number }>(
+    () => timerPresetsData?.timerPresets ?? {},
+    [timerPresetsData?.timerPresets],
+  );
 
-    const res = await api.get(`${USER_API_URL}/${curUser._id}/timerEnd`);
-    const result: { timerEnd: Date } = res.data;
-    if (result) setTimerEnd(result.timerEnd);
-  }, [curUser?._id]);
-
-  const getTimerPresets = useCallback(async () => {
-    if (!curUser?._id) return;
-
-    const res = await api.get(`${USER_API_URL}/${curUser._id}/timerPresets`);
-    const result: { timerPresets: { [key: number]: number } } = res.data;
-    if (result) setTimerPresets(result.timerPresets);
-  }, [curUser?._id]);
-
-  useEffect(() => {
-    if (curUser?._id) {
-      getTimerEnd();
-      getTimerPresets();
-    }
-  }, [curUser, getTimerEnd, getTimerPresets]);
+  const { trigger: triggerSetTimerEnd } = useSetTimerEnd();
+  const { trigger: triggerClearTimerEnd } = useClearTimerEnd();
+  const { trigger: triggerUpdateTimerPresets } = useUpdateTimerPresets();
 
   const setTimer = useCallback(
     async (timerEnd: Date | undefined) => {
       if (!curUser?._id) return;
-
-      await api.put(`${USER_API_URL}/${curUser._id}/timerEnd`, timerEnd);
-      setTimerEnd(timerEnd);
+      if (timerEnd === undefined) {
+        await triggerClearTimerEnd(curUser._id);
+      } else {
+        await triggerSetTimerEnd({ userId: curUser._id, timerEnd });
+      }
     },
-    [curUser?._id],
+    [curUser?._id, triggerClearTimerEnd, triggerSetTimerEnd],
   );
 
   const unsetTimer = useCallback(async () => {
     if (!curUser?._id) return;
-
-    await api.delete(`${USER_API_URL}/${curUser._id}/timerEnd`);
-    setTimerEnd(undefined);
-  }, [curUser?._id]);
+    await triggerClearTimerEnd(curUser._id);
+  }, [curUser?._id, triggerClearTimerEnd]);
 
   const updateTimerPresets = useCallback(
     async (timerPresets: { [key: number]: number }) => {
       if (!curUser?._id) return;
-
-      await api.put(
-        `${USER_API_URL}/${curUser._id}/timerPresets`,
-        timerPresets,
-      );
-      setTimerPresets(timerPresets);
+      await triggerUpdateTimerPresets({
+        userId: curUser._id,
+        timerPresets: timerPresets as unknown as TimerPresets,
+      });
     },
-    [curUser?._id],
+    [curUser?._id, triggerUpdateTimerPresets],
   );
 
   return (

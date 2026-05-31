@@ -3,17 +3,21 @@
 import { Block, User } from "@/lib/types";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
+  useCreateUser,
+  useDeleteMe,
+  useMe,
+  useQuitBlock,
+  useStartBlock,
+  useUpdateMyEmail,
+  useUpdateUser,
+} from "@liftledger/api-client";
+import {
   createContext,
   PropsWithChildren,
   useCallback,
   useContext,
-  useEffect,
-  useState,
 } from "react";
-import api from "@/lib/config";
 import { AxiosError } from "axios";
-
-export const USER_API_URL = "/users";
 
 interface Auth0SessionUser {
   sub: string;
@@ -27,8 +31,6 @@ interface UserContextType {
   attemptedLogin: boolean;
   curUser?: User;
   curUserLoading: boolean;
-  getUser: (id: string) => Promise<void>;
-  getCurrentUser: () => Promise<void>;
   createUser: (user: Partial<User>) => Promise<void>;
   updateUser: (user: User) => Promise<void>;
   deleteCurrentUser: () => Promise<void>;
@@ -41,8 +43,6 @@ const defaultUserContext: UserContextType = {
   auth0User: null,
   attemptedLogin: false,
   curUserLoading: true,
-  getUser: async () => {},
-  getCurrentUser: async () => {},
   createUser: async () => {},
   updateUser: async () => {},
   deleteCurrentUser: async () => {},
@@ -53,8 +53,13 @@ const defaultUserContext: UserContextType = {
 
 export const UserContext = createContext(defaultUserContext);
 
+const errorMessage = (e: unknown, fallback: string) => {
+  const msg = (e as AxiosError<{ error?: string }>)?.response?.data?.error;
+  return new Error(msg ?? fallback);
+};
+
 export const UserProvider = ({ children }: PropsWithChildren) => {
-  const { user, logout } = useAuth0();
+  const { user, isAuthenticated, logout } = useAuth0();
   const auth0User: Auth0SessionUser | null = user?.sub
     ? {
         sub: user.sub,
@@ -64,167 +69,88 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
       }
     : null;
 
-  const [attemptedLogin, setAttemptedLogin] = useState(false);
-  const [curUser, setCurUser] = useState<User>();
-  const [curUserLoading, setCurUserLoading] = useState(false);
+  const {
+    data: curUser,
+    error,
+    isLoading,
+  } = useMe(isAuthenticated, {
+    shouldRetryOnError: (err) =>
+      (err as AxiosError)?.response?.status !== 404,
+  });
 
-  const getUser = useCallback(
-    async (id: string) => {
-      setCurUserLoading(true);
+  const attemptedLogin =
+    !isLoading && (curUser !== undefined || error !== undefined);
+  const curUserLoading = isAuthenticated && isLoading;
 
-      try {
-        const res = await api.get(`${USER_API_URL}/${id}`);
-        const result: User = res.data;
-        if (result) setCurUser(result);
-      } catch (e: unknown) {
-        const error = (e as AxiosError<{ error?: string }>)?.response?.data
-          ?.error;
-        throw new Error(error ?? "Failed to get user");
-      } finally {
-        setCurUserLoading(false);
-      }
-    },
-    [setCurUserLoading, setCurUser],
-  );
-
-  const getCurrentUser = useCallback(async () => {
-    setCurUserLoading(true);
-
-    try {
-      const res = await api.get(`${USER_API_URL}/me`);
-      const result: User = res.data;
-      if (result) setCurUser(result);
-    } catch (e: unknown) {
-      const status = (e as AxiosError)?.response?.status;
-      if (status === 404) return;
-      const error = (e as AxiosError<{ error?: string }>)?.response?.data
-        ?.error;
-      throw new Error(error ?? "Failed to get current user");
-    } finally {
-      setAttemptedLogin(true);
-      setCurUserLoading(false);
-    }
-  }, [setCurUserLoading, setCurUser, setAttemptedLogin]);
-
-  useEffect(() => {
-    if (!auth0User?.sub || curUser) return;
-    getCurrentUser().catch((e) => console.error(e));
-  }, [auth0User?.sub, curUser, getCurrentUser]);
+  const { trigger: triggerCreateUser } = useCreateUser();
+  const { trigger: triggerUpdateUser } = useUpdateUser();
+  const { trigger: triggerDeleteMe } = useDeleteMe();
+  const { trigger: triggerUpdateEmail } = useUpdateMyEmail();
+  const { trigger: triggerStartBlock } = useStartBlock();
+  const { trigger: triggerQuitBlock } = useQuitBlock();
 
   const createUser = useCallback(
     async (user: Partial<User>) => {
-      setCurUserLoading(true);
-
       try {
-        const res = await api.post(`${USER_API_URL}`, user);
-        const result: User = res.data;
-        if (result) setCurUser(result);
-      } catch (e: unknown) {
-        const error = (e as AxiosError<{ error?: string }>)?.response?.data
-          ?.error;
-        throw new Error(error ?? "Failed to create user");
-      } finally {
-        setCurUserLoading(false);
+        await triggerCreateUser(user);
+      } catch (e) {
+        throw errorMessage(e, "Failed to create user");
       }
     },
-    [setCurUserLoading, setCurUser],
+    [triggerCreateUser],
   );
 
   const updateUser = useCallback(
     async (user: User) => {
-      setCurUserLoading(true);
-
       try {
-        const res = await api.put(`${USER_API_URL}/${user._id}`, user);
-        const result: User = res.data;
-        if (result) setCurUser(result);
-      } catch (e: unknown) {
-        const error = (e as AxiosError<{ error?: string }>)?.response?.data
-          ?.error;
-        throw new Error(error ?? "Failed to update user");
-      } finally {
-        setCurUserLoading(false);
+        await triggerUpdateUser(user);
+      } catch (e) {
+        throw errorMessage(e, "Failed to update user");
       }
     },
-    [setCurUserLoading, setCurUser],
+    [triggerUpdateUser],
   );
 
   const deleteCurrentUser = useCallback(async () => {
-    setCurUserLoading(true);
-
     try {
-      await api.delete(`${USER_API_URL}/me`);
-      setCurUser(undefined);
+      await triggerDeleteMe();
       logout({ logoutParams: { returnTo: window.location.origin } });
-    } catch (e: unknown) {
-      const error = (e as AxiosError<{ error?: string }>)?.response?.data
-        ?.error;
-      throw new Error(error ?? "Failed to delete user");
-    } finally {
-      setCurUserLoading(false);
+    } catch (e) {
+      throw errorMessage(e, "Failed to delete user");
     }
-  }, [setCurUserLoading, setCurUser, logout]);
+  }, [triggerDeleteMe, logout]);
 
   const updateEmail = useCallback(
     async (email: string) => {
-      setCurUserLoading(true);
-
       try {
-        const res = await api.patch(`${USER_API_URL}/me/email`, { email });
-        const result: User = res.data;
-        if (result) setCurUser(result);
-      } catch (e: unknown) {
-        const error = (e as AxiosError<{ error?: string }>)?.response?.data
-          ?.error;
-        throw new Error(error ?? "Failed to update email");
-      } finally {
-        setCurUserLoading(false);
+        await triggerUpdateEmail(email);
+      } catch (e) {
+        throw errorMessage(e, "Failed to update email");
       }
     },
-    [setCurUser],
+    [triggerUpdateEmail],
   );
 
   const startBlock = useCallback(
     async (block: Block) => {
       if (!curUser?._id) return;
-
-      setCurUserLoading(true);
-
       try {
-        const res = await api.post(
-          `${USER_API_URL}/${curUser._id}/startBlock`,
-          { block },
-        );
-        const result: User = res.data;
-        if (result) setCurUser(result);
-      } catch (e: unknown) {
-        const error = (e as AxiosError<{ error?: string }>)?.response?.data
-          ?.error;
-        throw new Error(error ?? "Failed to start block");
-      } finally {
-        setCurUserLoading(false);
+        await triggerStartBlock({ userId: curUser._id, block });
+      } catch (e) {
+        throw errorMessage(e, "Failed to start block");
       }
     },
-    [curUser?._id],
+    [curUser?._id, triggerStartBlock],
   );
 
   const quitBlock = useCallback(async () => {
     if (!curUser?._id || !curUser?.curBlock) return;
-
-    setCurUserLoading(true);
-
     try {
-      const res = await api.post(`${USER_API_URL}/${curUser._id}/quitBlock`);
-      const result: User = res.data;
-      if (result) setCurUser(result);
-    } catch (e: unknown) {
-      const error = (e as AxiosError<{ error?: string }>)?.response?.data
-        ?.error;
-      throw new Error(error ?? "Failed to quit block");
-    } finally {
-      setCurUserLoading(false);
+      await triggerQuitBlock(curUser._id);
+    } catch (e) {
+      throw errorMessage(e, "Failed to quit block");
     }
-  }, [curUser, setCurUserLoading, setCurUser]);
+  }, [curUser?._id, curUser?.curBlock, triggerQuitBlock]);
 
   return (
     <UserContext.Provider
@@ -233,8 +159,6 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
         attemptedLogin,
         curUser,
         curUserLoading,
-        getUser,
-        getCurrentUser,
         createUser,
         updateUser,
         deleteCurrentUser,
@@ -249,3 +173,5 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
 };
 
 export const useUser = () => useContext(UserContext);
+
+export const USER_API_URL = "/users";

@@ -2,8 +2,6 @@ import { useCallback, useState } from "react";
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
 import { useCompleteDay } from "./CompleteDayProvider";
 import { useBlock } from "@/app/layoutContainer/BlockProvider";
-import { useCompletedExercises } from "@/app/layoutContainer/CompletedExercisesProvider";
-import { useUser } from "@/app/layoutContainer/UserProvider";
 import { useRouter } from "next/navigation";
 import { Block } from "@/lib/types";
 import { IoArrowBack } from "react-icons/io5";
@@ -12,9 +10,7 @@ import { Spinner } from "react-bootstrap";
 
 export const FinishDayDialog = () => {
   const router = useRouter();
-  const { curUser } = useUser();
   const { curBlock, updateBlock } = useBlock();
-  const { getCompletedExercises } = useCompletedExercises();
   const { finishDayDialogOpen, setFinishDayDialogOpen } = useCompleteDay();
   const [finishing, setFinishing] = useState(false);
 
@@ -34,11 +30,12 @@ export const FinishDayDialog = () => {
       ),
     };
 
+    // updateBlock invalidates the completedExercises cache via the api-client
+    // mutation, so the SWR-backed provider refetches automatically.
     await updateBlock(newBlock);
-    getCompletedExercises(curUser?._id || "");
     setFinishing(false);
     router.push("/dashboard");
-  }, [curBlock, updateBlock, router, curUser, getCompletedExercises]);
+  }, [curBlock, updateBlock, router]);
 
   const actions: DialogAction[] = [
     {

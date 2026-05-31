@@ -5,7 +5,7 @@ import { Spinner } from "react-bootstrap";
 import { FaPaperPlane } from "react-icons/fa";
 import { IoArrowBack } from "react-icons/io5";
 import { ActionDialog, DialogAction } from "@/app/components/ActionDialog";
-import api from "@/lib/config";
+import { useRequestPasswordReset } from "@liftledger/api-client";
 import { AxiosError } from "axios";
 
 interface Props {
@@ -14,7 +14,8 @@ interface Props {
 }
 
 export const ResetPasswordDialog = ({ open, onClose }: Props) => {
-  const [sending, setSending] = useState(false);
+  const { trigger: requestPasswordReset, isMutating: sending } =
+    useRequestPasswordReset();
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
 
@@ -26,16 +27,13 @@ export const ResetPasswordDialog = ({ open, onClose }: Props) => {
 
   const handleSend = async () => {
     setError("");
-    setSending(true);
     try {
-      await api.post("/users/me/password-reset", {});
+      await requestPasswordReset();
       setSent(true);
     } catch (e: unknown) {
       const error = (e as AxiosError<{ error?: string }>)?.response?.data
         ?.error;
       setError(error ?? "Failed to send reset email");
-    } finally {
-      setSending(false);
     }
   };
 

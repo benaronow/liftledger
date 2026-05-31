@@ -8,11 +8,10 @@ import {
   SetStateAction,
   useCallback,
   useContext,
-  useEffect,
   useState,
 } from "react";
-import { USER_API_URL, useUser } from "./UserProvider";
-import api from "@/lib/config";
+import { useUser } from "./UserProvider";
+import { useUpdateUserBlock, useUserBlock } from "@liftledger/api-client";
 import { AxiosError } from "axios";
 
 export const EMPTY_BLOCK: Block = {
@@ -70,76 +69,31 @@ const defaultBlockContext: BlockContextType = {
 export const BlockContext = createContext(defaultBlockContext);
 
 export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
-  const { curUser, getCurrentUser } = useUser();
-  const [curBlock, setCurBlock] = useState<Block>();
-  const [curBlockLoading, setCurBlockLoading] = useState(false);
+  const { curUser } = useUser();
+  const { data: curBlock, isLoading: curBlockLoading } = useUserBlock(
+    curUser?._id,
+    curUser?.curBlock,
+  );
   const [templateBlock, setTemplateBlock] = useState<Block>(EMPTY_BLOCK);
   const [editingWeekIdx, setEditingWeekIdx] = useState(0);
+  const { trigger: triggerUpdateUserBlock } = useUpdateUserBlock();
 
   const unsetTemplateBlock = () => {
     setTemplateBlock(EMPTY_BLOCK);
   };
 
-  const getCurBlock = useCallback(async () => {
-    if (!curUser?._id || !curUser?.curBlock) {
-      setCurBlock(undefined);
-      return;
-    }
-
-    setCurBlockLoading(true);
-
-    try {
-      const res = await api.get(
-        `${USER_API_URL}/${curUser._id}/blocks/${curUser.curBlock}`,
-      );
-      const result: Block = res.data;
-      if (result) setCurBlock(result);
-    } catch (e: unknown) {
-      const error = (e as AxiosError<{ error?: string }>)?.response?.data
-        ?.error;
-      throw new Error(error ?? "Failed to fetch block");
-    } finally {
-      setCurBlockLoading(false);
-    }
-  }, [curUser?._id, curUser?.curBlock]);
-
-  useEffect(() => {
-    getCurBlock().catch((e) => console.error(e));
-  }, [curUser?._id, curUser?.curBlock, getCurBlock]);
-
   const updateBlock = useCallback(
     async (block: Block) => {
-      if (!curUser?._id) return;
-
-      setCurBlockLoading(true);
-
+      if (!curUser?._id || !block._id) return;
       try {
-        const res = await api.put(
-          `${USER_API_URL}/${curUser._id}/blocks/${block._id}`,
-          { block },
-        );
-        const result: { block: Block; done: boolean } = res.data;
-
-        if (result.done) {
-          setCurBlock(undefined);
-
-          try {
-            await getCurrentUser();
-          } catch (e) {
-            console.error(e);
-          }
-        } else if (result.block) {
-          setCurBlock(result.block);
-        }
+        await triggerUpdateUserBlock({ userId: curUser._id, block });
       } catch (e: unknown) {
         const error = (e as AxiosError<{ error?: string }>)?.response?.data
           ?.error;
         throw new Error(error ?? "Failed to update block");
-      } finally {
-        setCurBlockLoading(false);
       }
     },
-    [curUser?._id, getCurrentUser],
+    [curUser?._id, triggerUpdateUserBlock],
   );
 
   return (

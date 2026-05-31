@@ -6,11 +6,10 @@ import {
   PropsWithChildren,
   useCallback,
   useContext,
-  useEffect,
-  useState,
+  useMemo,
 } from "react";
-import { USER_API_URL, useUser } from "./UserProvider";
-import api from "@/lib/config";
+import { useUser } from "./UserProvider";
+import { useCompletedExercises as useCompletedExercisesQuery } from "@liftledger/api-client";
 
 interface CompletedExercisesContextType {
   completedExercises: {
@@ -18,7 +17,6 @@ interface CompletedExercisesContextType {
     previous: CompletedExercise[];
   };
   completedExercisesLoading: boolean;
-  getCompletedExercises: (userId: string) => Promise<void>;
   findLatestOccurrence: (
     checkerFunc: (e: Exercise) => boolean,
     options?: { includeCurrentDay: boolean },
@@ -31,10 +29,11 @@ interface CompletedExercisesContextType {
   ) => Exercise;
 }
 
+const EMPTY = { current: [], previous: [] };
+
 const defaultCompletedExercisesContext: CompletedExercisesContextType = {
-  completedExercises: { current: [], previous: [] },
+  completedExercises: EMPTY,
   completedExercisesLoading: false,
-  getCompletedExercises: async () => {},
   findLatestOccurrence: () => undefined,
   getNewSetsFromLatest: () => [],
   getUpdatedExercise: () => ({}) as Exercise,
@@ -48,27 +47,10 @@ export const CompletedExercisesProvider = ({
   children,
 }: PropsWithChildren<object>) => {
   const { curUser } = useUser();
-  const [completedExercises, setCompletedExercises] = useState<{
-    current: Exercise[];
-    previous: CompletedExercise[];
-  }>({ current: [], previous: [] });
-  const [completedExercisesLoading, setCompletedExercisesLoading] =
-    useState(false);
+  const { data, isLoading } = useCompletedExercisesQuery(curUser?._id);
 
-  const getCompletedExercises = async (userId: string) => {
-    setCompletedExercisesLoading(true);
-    const res = await api.get(`${USER_API_URL}/${userId}/completedExercises`);
-    const result: {
-      current: Exercise[];
-      previous: CompletedExercise[];
-    } = res.data;
-    if (result) setCompletedExercises(result);
-    setCompletedExercisesLoading(false);
-  };
-
-  useEffect(() => {
-    if (curUser?._id) getCompletedExercises(curUser._id);
-  }, [curUser]);
+  const completedExercises = useMemo(() => data ?? EMPTY, [data]);
+  const completedExercisesLoading = !!curUser?._id && isLoading;
 
   const findLatestOccurrence = useCallback(
     (
@@ -158,7 +140,6 @@ export const CompletedExercisesProvider = ({
       value={{
         completedExercises,
         completedExercisesLoading,
-        getCompletedExercises,
         findLatestOccurrence,
         getNewSetsFromLatest,
         getUpdatedExercise,
