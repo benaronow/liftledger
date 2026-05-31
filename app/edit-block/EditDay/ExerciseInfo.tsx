@@ -1,4 +1,4 @@
-import { ArrowBackIosNew } from "@mui/icons-material";
+import { MdArrowBackIosNew } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
 import { ChangeEvent, useCallback, useMemo } from "react";
 import { Exercise, Set } from "@/lib/types";
@@ -100,8 +100,8 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
   const infoActions: InfoAction[] = [
     {
       icon: (
-        <ArrowBackIosNew
-          fontSize="medium"
+        <MdArrowBackIosNew
+          size={24}
           style={{ transform: "rotate(90deg)" }}
         />
       ),
@@ -111,8 +111,8 @@ export const ExerciseInfo = ({ exercise, eIdx }: Props) => {
     },
     {
       icon: (
-        <ArrowBackIosNew
-          fontSize="medium"
+        <MdArrowBackIosNew
+          size={24}
           style={{ transform: "rotate(270deg)" }}
         />
       ),

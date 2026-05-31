@@ -1,8 +1,8 @@
 "use client";
 
-import { useMediaQuery, useTheme } from "@mui/material";
 import dayjs from "dayjs";
-import { ControlPointDuplicate } from "@mui/icons-material";
+import { MdControlPointDuplicate } from "react-icons/md";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { Block } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -17,8 +17,7 @@ export const History = () => {
   const { curUser } = useUser();
   const { curBlock, setTemplateBlock, setEditingWeekIdx } = useBlock();
   const { getNewSetsFromLatest } = useCompletedExercises();
-  const theme = useTheme();
-  const isTabletOrLarger = useMediaQuery(theme.breakpoints.up("sm"));
+  const isTabletOrLarger = useMediaQuery("(min-width: 600px)");
 
   useEffect(() => {
     if (isTabletOrLarger) router.push("/dashboard");
@@ -103,7 +102,7 @@ export const History = () => {
             roundedSide="end"
             height={35}
             width={35}
-            icon={<ControlPointDuplicate />}
+            icon={<MdControlPointDuplicate size={28} />}
             onClick={() => handleCreateFromTemplate(block)}
           />
         </div>
