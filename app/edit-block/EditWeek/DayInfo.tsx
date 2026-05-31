@@ -1,5 +1,5 @@
 import { Day } from "@/lib/types";
-import { ArrowBackIosNew, ControlPointDuplicate } from "@mui/icons-material";
+import { MdArrowBackIosNew, MdControlPointDuplicate } from "react-icons/md";
 import { BiSolidEdit } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
 import { useBlock } from "@/app/layoutContainer/BlockProvider";
@@ -51,8 +51,8 @@ export const DayInfo = ({ day, dIdx, hasErrors }: Props) => {
   const infoActions: InfoAction[] = [
     {
       icon: (
-        <ArrowBackIosNew
-          fontSize="medium"
+        <MdArrowBackIosNew
+          size={24}
           style={{ transform: "rotate(90deg)" }}
         />
       ),
@@ -62,8 +62,8 @@ export const DayInfo = ({ day, dIdx, hasErrors }: Props) => {
     },
     {
       icon: (
-        <ArrowBackIosNew
-          fontSize="medium"
+        <MdArrowBackIosNew
+          size={24}
           style={{ transform: "rotate(270deg)" }}
         />
       ),
@@ -79,7 +79,7 @@ export const DayInfo = ({ day, dIdx, hasErrors }: Props) => {
       variant: "primary",
     },
     {
-      icon: <ControlPointDuplicate fontSize="medium" />,
+      icon: <MdControlPointDuplicate size={24} />,
       disabled: templateBlock.weeks[editingWeekIdx].length > 6,
       onClick: () => handleDuplicateDay(dIdx),
       variant: "primary",

@@ -1,4 +1,4 @@
-import { ArrowBackIosNew } from "@mui/icons-material";
+import { MdArrowBackIosNew } from "react-icons/md";
 import { FaSave, FaStopCircle } from "react-icons/fa";
 import { ActionsFooter, FooterAction } from "../components/ActionsFooter";
 import { useEditBlock } from "./EditBlockProvider";
@@ -18,7 +18,7 @@ export const EditBlockFooter = () => {
     editingDayIdx !== -1
       ? [
           {
-            icon: <ArrowBackIosNew style={{ fontSize: "20px" }} />,
+            icon: <MdArrowBackIosNew style={{ fontSize: "20px" }} />,
             label: "Return to week",
             onClick: () => setEditingDayIdx(-1),
             variant: "primary",

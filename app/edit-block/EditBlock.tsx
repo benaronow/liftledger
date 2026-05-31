@@ -1,7 +1,7 @@
 "use client";
 
-import { useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useRef } from "react";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { EditDay } from "./EditDay";
 import { EditWeek } from "./EditWeek";
 import { useRouter } from "next/navigation";
@@ -16,8 +16,7 @@ import { EditBlockFooter } from "./EditBlockFooter";
 export const EditBlock = () => {
   const router = useRouter();
   const { curUser } = useUser();
-  const theme = useTheme();
-  const isTabletOrLarger = useMediaQuery(theme.breakpoints.up("sm"));
+  const isTabletOrLarger = useMediaQuery("(min-width: 600px)");
   const { curBlock, curBlockLoading, setTemplateBlock } = useBlock();
   const { editingDayIdx } = useEditBlock();
   const pageContainerRef = useRef<HTMLDivElement>(null);
@@ -26,11 +25,11 @@ export const EditBlock = () => {
     if (!curBlock) return;
 
     setTemplateBlock(curBlock);
-  }, [curBlock]);
+  }, [curBlock, setTemplateBlock]);
 
   useEffect(() => {
     if (isTabletOrLarger) router.push("/dashboard");
-  }, [isTabletOrLarger]);
+  }, [isTabletOrLarger, router]);
 
   useEffect(() => {
     pageContainerRef.current?.scrollTo({ top: 0 });

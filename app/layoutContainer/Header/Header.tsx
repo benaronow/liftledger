@@ -5,7 +5,6 @@ import { RouteType } from "@/lib/types";
 import { useUser } from "@/app/layoutContainer/UserProvider";
 import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import styles from "./header.module.css";
-import { Avatar } from "@mui/material";
 
 export const Header = () => {
   const router = useRouter();
@@ -74,10 +73,18 @@ export const Header = () => {
                 router.push("/profile");
               }}
             >
-              <Avatar
-                sx={{ height: "32px", width: "32px" }}
-                src={session?.user.picture}
-              />
+              {session?.user.picture && (
+                <img
+                  src={session.user.picture}
+                  alt=""
+                  style={{
+                    height: "32px",
+                    width: "32px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>

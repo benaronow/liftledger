@@ -1,6 +1,6 @@
 import { DialogAction, ActionDialog } from "@/app/components/ActionDialog";
 import { EditExercise } from "./EditExercise";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Block, Day, Exercise } from "@/lib/types";
 import { useBlock } from "@/app/layoutContainer/BlockProvider";
 import { FaSave } from "react-icons/fa";
@@ -13,16 +13,26 @@ export const AddExerciseDialog = () => {
   const { addExerciseIdx, setAddExerciseIdx, exercises } = useCompleteDay();
   const [addingExercise, setAddingExercise] = useState(false);
 
-  const defaultNewExercise: Exercise = {
-    name: "",
-    apparatus: "",
-    gym: curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym || "",
-    weightType: "",
-    sets: [],
-    addedOn: true,
-  };
+  const curGym = useMemo(
+    () => curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym || "",
+    [curBlock],
+  );
+  const defaultNewExercise: Exercise = useMemo(
+    () => ({
+      name: "",
+      apparatus: "",
+      gym: curGym,
+      weightType: "",
+      sets: [],
+      addedOn: true,
+    }),
+    [curGym],
+  );
   const [newExercise, setNewExercise] = useState<Exercise>(defaultNewExercise);
-  useEffect(() => setNewExercise(defaultNewExercise), [addExerciseIdx]);
+  useEffect(
+    () => setNewExercise(defaultNewExercise),
+    [addExerciseIdx, defaultNewExercise],
+  );
 
   const saveExercises = async (exercises: Exercise[]) => {
     if (!curBlock) return;

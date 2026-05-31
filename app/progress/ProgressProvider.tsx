@@ -47,7 +47,7 @@ export const ProgressProvider = ({ children }: PropsWithChildren) => {
     }
 
     setSelectedName(allExerciseNameOptions[0]);
-  }, [completedExercises, allExerciseNameOptions]);
+  }, [completedExercises, allExerciseNameOptions, selectedName]);
 
   useEffect(() => {
     if (!selectedName) return;
@@ -68,6 +68,7 @@ export const ProgressProvider = ({ children }: PropsWithChildren) => {
     setSelectedApparatus(allExerciseApparatusOptions[0]);
   }, [
     selectedName,
+    selectedApparatus,
     allExerciseApparatusOptions,
     findLatestOccurrence,
     completedExercises,

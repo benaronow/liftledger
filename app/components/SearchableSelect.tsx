@@ -58,7 +58,7 @@ export const SearchableSelect = ({
       inputValue.trim() !== "" &&
       !isUnavailable &&
       !options.some((o) => o.toLowerCase() === inputValue.trim().toLowerCase()),
-    [inputValue, options],
+    [inputValue, options, isUnavailable],
   );
 
   const showAddOrUnavailable = canAddCustom && (isCustom || isUnavailable);

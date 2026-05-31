@@ -11,7 +11,6 @@ import {
 } from "react";
 import { USER_API_URL, useUser } from "./UserProvider";
 import api from "@/lib/config";
-import { useBlock } from "./BlockProvider";
 
 interface CompletedExercisesContextType {
   completedExercises: {
@@ -49,7 +48,6 @@ export const CompletedExercisesProvider = ({
   children,
 }: PropsWithChildren<object>) => {
   const { curUser } = useUser();
-  const { curBlock } = useBlock();
   const [completedExercises, setCompletedExercises] = useState<{
     current: Exercise[];
     previous: CompletedExercise[];
@@ -86,7 +84,7 @@ export const CompletedExercisesProvider = ({
         if (checkerFunc(exercise)) return exercise;
       }
     },
-    [completedExercises, curBlock],
+    [completedExercises],
   );
 
   const getNewSetsFromLatest = useCallback(

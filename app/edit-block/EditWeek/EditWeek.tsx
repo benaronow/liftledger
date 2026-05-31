@@ -39,13 +39,13 @@ export const EditWeek = () => {
         ),
       });
     }
-  }, [templateBlock]);
+  }, [templateBlock, curUser?.gyms, editingWeekIdx, setTemplateBlock]);
 
   useEffect(() => {
     if (curBlock && templateBlock === EMPTY_BLOCK) {
       router.push("/dashboard");
     }
-  }, [curBlock, templateBlock]);
+  }, [curBlock, templateBlock, router]);
 
   const handleBlockNameInput = (e: ChangeEvent<HTMLInputElement>) => {
     setTemplateBlock({ ...templateBlock, name: e.target.value });

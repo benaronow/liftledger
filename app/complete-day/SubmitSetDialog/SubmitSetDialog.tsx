@@ -35,7 +35,7 @@ export const SubmitSetDialog = () => {
           }
         : exercise,
     );
-  }, [exercise]);
+  }, [exercise, setIdx]);
 
   const saveExercises = async (updatedExercises: Exercise[]) => {
     if (curBlock) {

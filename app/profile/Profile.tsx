@@ -1,6 +1,5 @@
 "use client";
 
-import { Avatar } from "@mui/material";
 import { useMemo } from "react";
 import { useUser } from "@/app/layoutContainer/UserProvider";
 import { useRouter } from "next/navigation";
@@ -40,10 +39,19 @@ export const Profile = () => {
           background: `linear-gradient(90deg, transparent 0%, ${COLORS.container} 30%, ${COLORS.container} 70%, transparent 100%)`,
         }}
       >
-        <Avatar
-          sx={{ height: "80px", width: "80px", border: `3px solid white` }}
-          src={session?.user.picture}
-        />
+        {session?.user.picture && (
+          <img
+            src={session.user.picture}
+            alt=""
+            style={{
+              height: "80px",
+              width: "80px",
+              borderRadius: "50%",
+              border: "3px solid white",
+              objectFit: "cover",
+            }}
+          />
+        )}
       </div>
       <div
         className="d-flex flex-column align-items-center w-100 rounded gap-3 p-3"

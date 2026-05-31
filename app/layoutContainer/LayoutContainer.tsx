@@ -4,7 +4,6 @@ import { PropsWithChildren, useEffect } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import styles from "./LayoutContainer.module.css";
-import { MUIProviders } from "./MUIProviders";
 import { UserProvider } from "./UserProvider";
 import { BlockProvider } from "./BlockProvider";
 import { ExerciseOptionsProvider } from "./ExerciseOptionsProvider";
@@ -30,29 +29,27 @@ export const LayoutContainer = ({
     router.prefetch(RouteType.Profile);
     router.prefetch(RouteType.Progress);
     router.prefetch(RouteType.Workout);
-  }, []);
+  }, [router]);
 
   return (
-    <MUIProviders>
-      <UserProvider session={session}>
-        <BlockProvider>
-          <ExerciseOptionsProvider>
-            <CompletedExercisesProvider>
-              <TimerProvider>
-                <section className={styles.container}>
-                  <header className={styles.header}>
-                    <Header />
-                  </header>
-                  <div className={styles.content}>{children}</div>
-                  <footer className={styles.footer}>
-                    <Footer />
-                  </footer>
-                </section>
-              </TimerProvider>
-            </CompletedExercisesProvider>
-          </ExerciseOptionsProvider>
-        </BlockProvider>
-      </UserProvider>
-    </MUIProviders>
+    <UserProvider session={session}>
+      <BlockProvider>
+        <ExerciseOptionsProvider>
+          <CompletedExercisesProvider>
+            <TimerProvider>
+              <section className={styles.container}>
+                <header className={styles.header}>
+                  <Header />
+                </header>
+                <div className={styles.content}>{children}</div>
+                <footer className={styles.footer}>
+                  <Footer />
+                </footer>
+              </section>
+            </TimerProvider>
+          </CompletedExercisesProvider>
+        </ExerciseOptionsProvider>
+      </BlockProvider>
+    </UserProvider>
   );
 };
