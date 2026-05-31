@@ -15,7 +15,7 @@ interface Props {
 
 export const DeleteAccountDialog = ({ open, onClose }: Props) => {
   const router = useRouter();
-  const { curUser, deleteUser } = useUser();
+  const { curUser, deleteCurrentUser } = useUser();
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
 
@@ -27,7 +27,7 @@ export const DeleteAccountDialog = ({ open, onClose }: Props) => {
     setError("");
     setDeleting(true);
     try {
-      await deleteUser(curUser._id);
+      await deleteCurrentUser();
       router.push("/auth/logout");
     } catch (e: unknown) {
       setError((e as Error).message ?? "Failed to delete account");

@@ -11,11 +11,9 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useUser } from "./UserProvider";
+import { USER_API_URL, useUser } from "./UserProvider";
 import api from "@/lib/config";
 import { AxiosError } from "axios";
-
-const BLOCK_API_URL = "/api/block";
 
 export const EMPTY_BLOCK: Block = {
   name: "",
@@ -56,7 +54,6 @@ interface BlockContextType {
   unsetTemplateBlock: () => void;
   editingWeekIdx: number;
   setEditingWeekIdx: Dispatch<SetStateAction<number>>;
-  createBlock: (block: Block) => Promise<void>;
   updateBlock: (block: Block) => Promise<void>;
 }
 
@@ -67,7 +64,6 @@ const defaultBlockContext: BlockContextType = {
   unsetTemplateBlock: () => {},
   editingWeekIdx: 0,
   setEditingWeekIdx: () => {},
-  createBlock: async () => {},
   updateBlock: async () => {},
 };
 
@@ -85,7 +81,7 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
   };
 
   const getCurBlock = useCallback(async () => {
-    if (!curUser?.curBlock) {
+    if (!curUser?._id || !curUser?.curBlock) {
       setCurBlock(undefined);
       return;
     }
@@ -93,7 +89,9 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
     setCurBlockLoading(true);
 
     try {
-      const res = await api.get(`${BLOCK_API_URL}/${curUser.curBlock}`);
+      const res = await api.get(
+        `${USER_API_URL}/${curUser._id}/blocks/${curUser.curBlock}`,
+      );
       const result: Block = res.data;
       if (result) setCurBlock(result);
     } catch (e: unknown) {
@@ -103,35 +101,11 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
     } finally {
       setCurBlockLoading(false);
     }
-  }, [curUser?.curBlock]);
+  }, [curUser?._id, curUser?.curBlock]);
 
   useEffect(() => {
     getCurBlock().catch((e) => console.error(e));
-  }, [getCurBlock]);
-
-  const createBlock = useCallback(
-    async (block: Block) => {
-      if (!curUser?._id) return;
-
-      setCurBlockLoading(true);
-
-      try {
-        const res = await api.post(`${BLOCK_API_URL}`, {
-          uid: curUser._id,
-          block,
-        });
-        const result: Block = res.data;
-        if (result) setCurBlock(result);
-      } catch (e: unknown) {
-        const error = (e as AxiosError<{ error?: string }>)?.response?.data
-          ?.error;
-        throw new Error(error ?? "Failed to create block");
-      } finally {
-        setCurBlockLoading(false);
-      }
-    },
-    [curUser?._id],
-  );
+  }, [curUser?._id, curUser?.curBlock, getCurBlock]);
 
   const updateBlock = useCallback(
     async (block: Block) => {
@@ -140,10 +114,10 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
       setCurBlockLoading(true);
 
       try {
-        const res = await api.put(`${BLOCK_API_URL}/${block._id}`, {
-          uid: curUser._id,
-          block,
-        });
+        const res = await api.put(
+          `${USER_API_URL}/${curUser._id}/blocks/${block._id}`,
+          { block },
+        );
         const result: { block: Block; done: boolean } = res.data;
 
         if (result.done) {
@@ -178,7 +152,6 @@ export const BlockProvider = ({ children }: PropsWithChildren<object>) => {
         unsetTemplateBlock,
         editingWeekIdx,
         setEditingWeekIdx,
-        createBlock,
         updateBlock,
       }}
     >

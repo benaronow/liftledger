@@ -1,24 +1,39 @@
-import { connectDB } from "@/lib/connectDB";
+import { authorizeCaller } from "@/lib/auth";
 import BlockModel from "@/lib/models/block";
 import UserModel from "@/lib/models/user";
-import { Block, Day, Exercise, GetParams, Set } from "@/lib/types";
+import { Block, Day, Exercise, Set } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = async (req: NextRequest, { params }: GetParams) => {
-  await connectDB();
+interface BlockParams {
+  params: Promise<{ id: string; blockId: string }>;
+}
 
-  const block = await BlockModel.findOne({ _id: (await params).id });
+export const GET = async (req: NextRequest, { params }: BlockParams) => {
+  const { id: uid, blockId } = await params;
+  const auth = await authorizeCaller(uid);
+  if (!auth.ok) return auth.response;
 
-  return NextResponse.json(block);
+  try {
+    const block = await BlockModel.findOne({ _id: blockId });
+    if (!block)
+      return NextResponse.json({ error: "Block not found" }, { status: 404 });
+
+    return NextResponse.json(block);
+  } catch (error) {
+    console.error("Failed to fetch block:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch block" },
+      { status: 500 },
+    );
+  }
 };
 
-export const PUT = async (req: NextRequest, { params }: GetParams) => {
-  await connectDB();
+export const PUT = async (req: NextRequest, { params }: BlockParams) => {
+  const { id: uid, blockId } = await params;
+  const auth = await authorizeCaller(uid);
+  if (!auth.ok) return auth.response;
 
-  const {
-    uid,
-    block,
-  }: { uid: string; block: Block; completedExercises: Exercise[] } =
+  const { block }: { block: Block; completedExercises: Exercise[] } =
     await req.json();
 
   const curDay: Day = block.weeks[block.curWeekIdx][block.curDayIdx];
@@ -91,18 +106,38 @@ export const PUT = async (req: NextRequest, { params }: GetParams) => {
           curDayIdx: block.curDayIdx + (curDay.completedDate ? 1 : 0),
         };
 
-  const newBlock = await BlockModel.findOneAndUpdate(
-    { _id: (await params).id },
-    { $set: blockToSet },
-    { new: true },
-  );
-
-  if (newBlock && isCurBlockDone)
-    await UserModel.findOneAndUpdate(
-      { _id: uid },
-      { $unset: { curBlock: "" } },
+  let newBlock;
+  try {
+    newBlock = await BlockModel.findOneAndUpdate(
+      { _id: blockId },
+      { $set: blockToSet },
       { new: true },
     );
+  } catch (error) {
+    console.error("Failed to update block:", error);
+    return NextResponse.json(
+      { error: "Failed to update block" },
+      { status: 500 },
+    );
+  }
+  if (!newBlock)
+    return NextResponse.json({ error: "Block not found" }, { status: 404 });
+
+  if (isCurBlockDone) {
+    try {
+      await UserModel.findOneAndUpdate(
+        { _id: uid },
+        { $unset: { curBlock: "" } },
+        { new: true },
+      );
+    } catch (error) {
+      console.error("Failed to clear curBlock on user:", error);
+      return NextResponse.json(
+        { error: "Failed to finish block" },
+        { status: 500 },
+      );
+    }
+  }
 
   return NextResponse.json({ block: newBlock, done: isCurBlockDone });
 };

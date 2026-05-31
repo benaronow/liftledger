@@ -6,14 +6,15 @@ import { IoArrowBack } from "react-icons/io5";
 import { FaSave } from "react-icons/fa";
 import { Spinner } from "react-bootstrap";
 import { useEditBlock } from "./EditBlockProvider";
+import { useUser } from "../layoutContainer/UserProvider";
 
 export const SaveBlockDialog = () => {
   const router = useRouter();
+  const { startBlock } = useUser();
   const {
     curBlock,
     templateBlock,
     unsetTemplateBlock,
-    createBlock,
     updateBlock,
     setEditingWeekIdx,
   } = useBlock();
@@ -26,7 +27,7 @@ export const SaveBlockDialog = () => {
     if (curBlock) {
       await updateBlock(templateBlock);
     } else {
-      await createBlock(templateBlock);
+      await startBlock(templateBlock);
     }
 
     unsetTemplateBlock();
