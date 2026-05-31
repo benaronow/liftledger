@@ -15,7 +15,15 @@ vi.mock("@/lib/connectDB", () => ({
   connectDB: vi.fn().mockResolvedValue(undefined),
 }));
 
-import { GET, PUT } from "@/app/api/block/[id]/route";
+vi.mock("@/lib/auth0", () => ({
+  auth0: {
+    getSession: vi.fn().mockResolvedValue({
+      user: { sub: "auth0|test-user" },
+    }),
+  },
+}));
+
+import { GET, PUT } from "@/app/api/users/[id]/blocks/[blockId]/route";
 import UserModel from "@/lib/models/user";
 import BlockModel from "@/lib/models/block";
 import { Block } from "@/lib/types";
@@ -61,29 +69,32 @@ const makeBlock = (overrides: Partial<Block> = {}): Partial<Block> => ({
   ...overrides,
 });
 
-const getRequest = (id: string) =>
-  new NextRequest(`http://localhost/api/block/${id}`);
+const getRequest = (uid: string, blockId: string) =>
+  new NextRequest(`http://localhost/api/users/${uid}/blocks/${blockId}`);
 
-const putRequest = (id: string, body: object) =>
-  new NextRequest(`http://localhost/api/block/${id}`, {
+const putRequest = (uid: string, blockId: string, body: object) =>
+  new NextRequest(`http://localhost/api/users/${uid}/blocks/${blockId}`, {
     method: "PUT",
     body: JSON.stringify(body),
     headers: { "Content-Type": "application/json" },
   });
 
-const makeParams = (id: string) => ({ params: Promise.resolve({ id }) });
+const makeParams = (id: string, blockId: string) => ({
+  params: Promise.resolve({ id, blockId }),
+});
 
 beforeAll(startDb);
 afterAll(stopDb);
 afterEach(clearDb);
 
-describe("GET /api/block/[id]", () => {
+describe("GET /api/users/[id]/blocks/[blockId]", () => {
   it("returns the block by id", async () => {
+    const user = await UserModel.create(makeUser());
     const block = await BlockModel.create(makeBlock());
 
     const res = await GET(
-      getRequest(block._id.toString()),
-      makeParams(block._id.toString()),
+      getRequest(user._id.toString(), block._id.toString()),
+      makeParams(user._id.toString(), block._id.toString()),
     );
     const data = await res.json();
 
@@ -92,26 +103,30 @@ describe("GET /api/block/[id]", () => {
     expect(data.name).toBe("Test Block");
   });
 
-  it("returns null for a non-existent id", async () => {
+  it("returns 404 for a non-existent block id", async () => {
+    const user = await UserModel.create(makeUser());
     const fakeId = "000000000000000000000000";
-    const res = await GET(getRequest(fakeId), makeParams(fakeId));
+    const res = await GET(
+      getRequest(user._id.toString(), fakeId),
+      makeParams(user._id.toString(), fakeId),
+    );
     const data = await res.json();
 
-    expect(data).toBeNull();
+    expect(res.status).toBe(404);
+    expect(data).toEqual({ error: "Block not found" });
   });
 });
 
-describe("PUT /api/block/[id] — day progression", () => {
+describe("PUT /api/users/[id]/blocks/[blockId] — day progression", () => {
   it("does not advance curDayIdx when curDay has no completedDate", async () => {
     const block = await BlockModel.create(makeBlock({ curDayIdx: 0 }));
     const user = await UserModel.create(makeUser());
 
     const res = await PUT(
-      putRequest(block._id.toString(), {
-        uid: user._id.toString(),
+      putRequest(user._id.toString(), block._id.toString(), {
         block: { ...block.toObject(), curDayIdx: 0 },
       }),
-      makeParams(block._id.toString()),
+      makeParams(user._id.toString(), block._id.toString()),
     );
     const { block: updated } = await res.json();
 
@@ -126,11 +141,10 @@ describe("PUT /api/block/[id] — day progression", () => {
 
     const blockObj = block.toObject();
     const res = await PUT(
-      putRequest(block._id.toString(), {
-        uid: user._id.toString(),
+      putRequest(user._id.toString(), block._id.toString(), {
         block: blockObj,
       }),
-      makeParams(block._id.toString()),
+      makeParams(user._id.toString(), block._id.toString()),
     );
     const { block: updated } = await res.json();
 
@@ -138,7 +152,7 @@ describe("PUT /api/block/[id] — day progression", () => {
   });
 });
 
-describe("PUT /api/block/[id] — week progression", () => {
+describe("PUT /api/users/[id]/blocks/[blockId] — week progression", () => {
   it("creates next week and advances curWeekIdx when last day of week is complete", async () => {
     const block = await BlockModel.create(
       makeBlock({
@@ -151,11 +165,10 @@ describe("PUT /api/block/[id] — week progression", () => {
     const user = await UserModel.create(makeUser());
 
     const res = await PUT(
-      putRequest(block._id.toString(), {
-        uid: user._id.toString(),
+      putRequest(user._id.toString(), block._id.toString(), {
         block: block.toObject(),
       }),
-      makeParams(block._id.toString()),
+      makeParams(user._id.toString(), block._id.toString()),
     );
     const { block: updated, done } = await res.json();
 
@@ -172,11 +185,10 @@ describe("PUT /api/block/[id] — week progression", () => {
     const user = await UserModel.create(makeUser());
 
     const res = await PUT(
-      putRequest(block._id.toString(), {
-        uid: user._id.toString(),
+      putRequest(user._id.toString(), block._id.toString(), {
         block: block.toObject(),
       }),
-      makeParams(block._id.toString()),
+      makeParams(user._id.toString(), block._id.toString()),
     );
     const { block: updated } = await res.json();
 
@@ -187,7 +199,7 @@ describe("PUT /api/block/[id] — week progression", () => {
   });
 });
 
-describe("PUT /api/block/[id] — block completion", () => {
+describe("PUT /api/users/[id]/blocks/[blockId] — block completion", () => {
   it("returns done=true when last week's last day is complete", async () => {
     const block = await BlockModel.create(
       makeBlock({ weeks: [[makeDay(new Date())]], curWeekIdx: 0, length: 1 }),
@@ -196,11 +208,10 @@ describe("PUT /api/block/[id] — block completion", () => {
     await UserModel.findByIdAndUpdate(user._id, { curBlock: block._id });
 
     const res = await PUT(
-      putRequest(block._id.toString(), {
-        uid: user._id.toString(),
+      putRequest(user._id.toString(), block._id.toString(), {
         block: block.toObject(),
       }),
-      makeParams(block._id.toString()),
+      makeParams(user._id.toString(), block._id.toString()),
     );
     const { done } = await res.json();
 
@@ -214,11 +225,10 @@ describe("PUT /api/block/[id] — block completion", () => {
     const user = await UserModel.create({ ...makeUser(), curBlock: block._id });
 
     await PUT(
-      putRequest(block._id.toString(), {
-        uid: user._id.toString(),
+      putRequest(user._id.toString(), block._id.toString(), {
         block: block.toObject(),
       }),
-      makeParams(block._id.toString()),
+      makeParams(user._id.toString(), block._id.toString()),
     );
 
     const updated = await UserModel.findById(user._id);

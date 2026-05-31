@@ -15,7 +15,15 @@ vi.mock("@/lib/connectDB", () => ({
   connectDB: vi.fn().mockResolvedValue(undefined),
 }));
 
-import { POST } from "@/app/api/block/route";
+vi.mock("@/lib/auth0", () => ({
+  auth0: {
+    getSession: vi.fn().mockResolvedValue({
+      user: { sub: "auth0|test-user" },
+    }),
+  },
+}));
+
+import { POST } from "@/app/api/users/[id]/startBlock/route";
 import UserModel from "@/lib/models/user";
 import BlockModel from "@/lib/models/block";
 
@@ -58,55 +66,67 @@ const makeBlock = () => ({
   curDayIdx: 0,
 });
 
-const postRequest = (body: object) =>
-  new NextRequest("http://localhost/api/block", {
+const postRequest = (uid: string, body: object) =>
+  new NextRequest(`http://localhost/api/users/${uid}/startBlock`, {
     method: "POST",
     body: JSON.stringify(body),
     headers: { "Content-Type": "application/json" },
   });
 
+const makeParams = (id: string) => ({ params: Promise.resolve({ id }) });
+
 beforeAll(startDb);
 afterAll(stopDb);
 afterEach(clearDb);
 
-describe("POST /api/block", () => {
-  it("creates a block document and returns it", async () => {
+describe("POST /api/users/[id]/startBlock", () => {
+  it("returns the updated user with curBlock set and the block in blocks", async () => {
     const user = await UserModel.create(makeUser());
-    const block = makeBlock();
+    const uid = user._id.toString();
 
-    const res = await POST(postRequest({ uid: user._id.toString(), block }));
+    const res = await POST(
+      postRequest(uid, { block: makeBlock() }),
+      makeParams(uid),
+    );
     const data = await res.json();
 
     expect(res.status).toBe(200);
-    expect(data.name).toBe("Test Block");
-    expect(data._id).toBeDefined();
+    expect(data._id.toString()).toBe(uid);
+    expect(data.curBlock).toBeDefined();
+    expect(data.blocks.map((b: string) => b.toString())).toContain(
+      data.curBlock.toString(),
+    );
   });
 
   it("persists the block in the database", async () => {
     const user = await UserModel.create(makeUser());
+    const uid = user._id.toString();
 
     const res = await POST(
-      postRequest({ uid: user._id.toString(), block: makeBlock() }),
+      postRequest(uid, { block: makeBlock() }),
+      makeParams(uid),
     );
     const data = await res.json();
 
-    const found = await BlockModel.findById(data._id);
+    const found = await BlockModel.findById(data.curBlock);
     expect(found).not.toBeNull();
     expect(found!.name).toBe("Test Block");
   });
 
   it("sets curBlock on the user and adds to blocks array", async () => {
     const user = await UserModel.create(makeUser());
+    const uid = user._id.toString();
 
     const res = await POST(
-      postRequest({ uid: user._id.toString(), block: makeBlock() }),
+      postRequest(uid, { block: makeBlock() }),
+      makeParams(uid),
     );
     const data = await res.json();
 
     const updated = await UserModel.findById(user._id);
-    expect(updated!.curBlock!.toString()).toBe(data._id.toString());
+    expect(updated!.curBlock!.toString()).toBe(data.curBlock.toString());
     expect(updated!.blocks.map((b) => b.toString())).toContain(
-      data._id.toString(),
+      data.curBlock.toString(),
     );
   });
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@/lib/types";
+import { Block, User } from "@/lib/types";
 import { SessionData } from "@auth0/nextjs-auth0/types";
 import {
   createContext,
@@ -13,7 +13,7 @@ import {
 import api from "@/lib/config";
 import { AxiosError } from "axios";
 
-export const USER_API_URL = "/api/user";
+export const USER_API_URL = "/api/users";
 
 interface UserContextType {
   session: SessionData | null;
@@ -24,8 +24,9 @@ interface UserContextType {
   getCurrentUser: () => Promise<void>;
   createUser: (user: Partial<User>) => Promise<void>;
   updateUser: (user: User) => Promise<void>;
-  deleteUser: (id: string) => Promise<void>;
+  deleteCurrentUser: () => Promise<void>;
   updateEmail: (email: string) => Promise<void>;
+  startBlock: (block: Block) => Promise<void>;
   quitBlock: () => Promise<void>;
 }
 
@@ -37,8 +38,9 @@ const defaultUserContext: UserContextType = {
   getCurrentUser: async () => {},
   createUser: async () => {},
   updateUser: async () => {},
-  deleteUser: async () => {},
+  deleteCurrentUser: async () => {},
   updateEmail: async () => {},
+  startBlock: async () => {},
   quitBlock: async () => {},
 };
 
@@ -138,30 +140,27 @@ export const UserProvider = ({
     [setCurUserLoading, setCurUser],
   );
 
-  const deleteUser = useCallback(
-    async (id: string) => {
-      setCurUserLoading(true);
+  const deleteCurrentUser = useCallback(async () => {
+    setCurUserLoading(true);
 
-      try {
-        await api.delete("/api/auth0", { data: { id } });
-        setCurUser(undefined);
-      } catch (e: unknown) {
-        const error = (e as AxiosError<{ error?: string }>)?.response?.data
-          ?.error;
-        throw new Error(error ?? "Failed to delete user");
-      } finally {
-        setCurUserLoading(false);
-      }
-    },
-    [setCurUserLoading, setCurUser],
-  );
+    try {
+      await api.delete(`${USER_API_URL}/me`);
+      setCurUser(undefined);
+    } catch (e: unknown) {
+      const error = (e as AxiosError<{ error?: string }>)?.response?.data
+        ?.error;
+      throw new Error(error ?? "Failed to delete user");
+    } finally {
+      setCurUserLoading(false);
+    }
+  }, [setCurUserLoading, setCurUser]);
 
   const updateEmail = useCallback(
     async (email: string) => {
       setCurUserLoading(true);
 
       try {
-        const res = await api.patch("/api/auth0", { email });
+        const res = await api.patch(`${USER_API_URL}/me/email`, { email });
         const result: User = res.data;
         if (result) setCurUser(result);
       } catch (e: unknown) {
@@ -175,8 +174,32 @@ export const UserProvider = ({
     [setCurUser],
   );
 
+  const startBlock = useCallback(
+    async (block: Block) => {
+      if (!curUser?._id) return;
+
+      setCurUserLoading(true);
+
+      try {
+        const res = await api.post(
+          `${USER_API_URL}/${curUser._id}/startBlock`,
+          { block },
+        );
+        const result: User = res.data;
+        if (result) setCurUser(result);
+      } catch (e: unknown) {
+        const error = (e as AxiosError<{ error?: string }>)?.response?.data
+          ?.error;
+        throw new Error(error ?? "Failed to start block");
+      } finally {
+        setCurUserLoading(false);
+      }
+    },
+    [curUser?._id],
+  );
+
   const quitBlock = useCallback(async () => {
-    if (!curUser || !curUser._id || !curUser?.curBlock) return;
+    if (!curUser?._id || !curUser?.curBlock) return;
 
     setCurUserLoading(true);
 
@@ -204,8 +227,9 @@ export const UserProvider = ({
         getCurrentUser,
         createUser,
         updateUser,
-        deleteUser,
+        deleteCurrentUser,
         updateEmail,
+        startBlock,
         quitBlock,
       }}
     >
