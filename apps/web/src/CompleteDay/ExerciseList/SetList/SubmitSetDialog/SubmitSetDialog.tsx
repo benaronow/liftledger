@@ -96,11 +96,7 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
 
     const newBlock: Block = {
       ...curBlock,
-      weeks: curBlock.weeks.toSpliced(
-        curBlock.curWeekIdx,
-        1,
-        updatedLaterDays,
-      ),
+      weeks: curBlock.weeks.toSpliced(curBlock.curWeekIdx, 1, updatedLaterDays),
     };
 
     await triggerUpdateUserBlock({ userId: curUser._id, block: newBlock });
@@ -180,7 +176,7 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       onClick: () => handleSubmitSet({ skip: true }),
       disabled:
         skippingSet ||
-        exerciseState?.sets[setIdx].skipped ||
+        exerciseState?.sets[setIdx]?.skipped ||
         setIdx === exercise.sets.length,
       variant: "primaryInverted",
     },
