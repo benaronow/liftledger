@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router";
-import { RouteType } from "@liftledger/shared";
+import { RouteType } from "../../routeTypes";
 import { useEffect, useState } from "react";
 import { GiProgression } from "react-icons/gi";
 import { FaEdit, FaHistory } from "react-icons/fa";

@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMe, useCreateUser } from "@liftledger/api-client";
-import { RouteType } from "@liftledger/shared";
+import { RouteType } from "../routeTypes";
 
 export const useAuthentication = () => {
   const navigate = useNavigate();

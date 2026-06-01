@@ -1,8 +1,9 @@
 import { useMe, useBlock } from "@liftledger/api-client";
 import dayjs from "dayjs";
-import { Day, Exercise, RouteType, Set } from "@liftledger/shared";
+import { Day, Exercise, Set } from "@liftledger/shared";
 import { LogoSpinner } from "@/components/LogoSpinner";
 import { Link } from "react-router";
+import { RouteType } from "@/routeTypes";
 
 export const Dashboard = () => {
   const { data: curUser } = useMe();

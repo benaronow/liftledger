@@ -1,4 +1,4 @@
-import { Exercise } from "@liftledger/shared";
+import { Exercise, isSameExercise } from "@liftledger/shared";
 
 export const computeProgress = (
   setIdx: number,
@@ -9,12 +9,7 @@ export const computeProgress = (
   let prevReps: number | undefined;
 
   for (const e of history) {
-    if (
-      e.name === exercise.name &&
-      e.apparatus === exercise.apparatus &&
-      e.gym === exercise.gym &&
-      e.sets[setIdx]?.completed
-    ) {
+    if (isSameExercise(e, exercise) && e.sets[setIdx]?.completed) {
       prevWeight = e.sets[setIdx].weight;
       prevReps = e.sets[setIdx].reps;
       break;

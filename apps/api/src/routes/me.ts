@@ -6,29 +6,23 @@ import { getAuth0Token, RATE_LIMIT_MESSAGE } from "../auth0Management";
 import { env } from "../env";
 
 const meRoutes = async (app: FastifyInstance) => {
-  app.get(
-    "/users/me",
-    { preHandler: app.authenticate },
-    async (req, reply) => {
-      const auth = await authorizeMe(req, reply);
-      if (!auth.ok) return;
-      const { me } = auth;
+  app.get("/users/me", { preHandler: app.authenticate }, async (req, reply) => {
+    const auth = await authorizeMe(req, reply);
+    if (!auth.ok) return;
+    const { me } = auth;
 
-      try {
-        const user = await UserModel.findOne({ _id: me._id }).populate([
-          { path: "blocks", model: BlockModel },
-        ]);
-        if (!user) return reply.code(404).send({ error: "User not found" });
+    try {
+      const user = await UserModel.findOne({ _id: me._id }).populate([
+        { path: "blocks", model: BlockModel },
+      ]);
+      if (!user) return reply.code(404).send({ error: "User not found" });
 
-        return user;
-      } catch (error) {
-        console.error("Failed to fetch current user:", error);
-        return reply
-          .code(500)
-          .send({ error: "Failed to fetch current user" });
-      }
-    },
-  );
+      return user;
+    } catch (error) {
+      console.error("Failed to fetch current user:", error);
+      return reply.code(500).send({ error: "Failed to fetch current user" });
+    }
+  });
 
   app.delete(
     "/users/me",
@@ -56,9 +50,9 @@ const meRoutes = async (app: FastifyInstance) => {
         return reply.code(429).send({ error: RATE_LIMIT_MESSAGE });
 
       if (!deleteRes.ok) {
-        const error = (await deleteRes
-          .json()
-          .catch(() => ({}))) as { message?: string };
+        const error = (await deleteRes.json().catch(() => ({}))) as {
+          message?: string;
+        };
         return reply
           .code(deleteRes.status)
           .send({ error: error.message ?? "Failed to delete Auth0 account" });
@@ -190,33 +184,13 @@ const meRoutes = async (app: FastifyInstance) => {
         return reply.code(429).send({ error: RATE_LIMIT_MESSAGE });
 
       if (!emailUpdate.ok) {
-        const error = (await emailUpdate
-          .json()
-          .catch(() => ({}))) as { message?: string };
+        const error = (await emailUpdate.json().catch(() => ({}))) as {
+          message?: string;
+        };
         return reply
           .code(emailUpdate.status)
           .send({ error: error.message ?? "Failed to update email" });
       }
-
-      // Fire-and-forget: send a verification link to the new address. We
-      // don't block the response on this or treat its failure as fatal — the
-      // email change itself already succeeded.
-      void fetch(
-        `https://${env.AUTH0_TENANT_DOMAIN}/api/v2/jobs/verification-email`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user_id: req.user.sub,
-            client_id: env.AUTH0_CLIENT_ID,
-          }),
-        },
-      ).catch((err) =>
-        console.error("Failed to send verification email:", err),
-      );
 
       let updatedUser;
       try {
@@ -256,6 +230,25 @@ const meRoutes = async (app: FastifyInstance) => {
           .code(500)
           .send({ error: "Failed to update email in database" });
       }
+
+      // Fire-and-forget: send a verification link to the new address only
+      // after both Auth0 and MongoDB have been updated successfully.
+      void fetch(
+        `https://${env.AUTH0_TENANT_DOMAIN}/api/v2/jobs/verification-email`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: req.user.sub,
+            client_id: env.AUTH0_CLIENT_ID,
+          }),
+        },
+      ).catch((err) =>
+        console.error("Failed to send verification email:", err),
+      );
 
       return updatedUser;
     },

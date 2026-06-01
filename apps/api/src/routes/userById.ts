@@ -7,6 +7,7 @@ import type {
   Exercise,
   User,
 } from "@liftledger/shared";
+import { getCompletedDaysInBlock } from "@liftledger/shared";
 import { authorizeCaller } from "../auth";
 
 const UPDATABLE_FIELDS = [
@@ -95,22 +96,12 @@ const userByIdRoutes = async (app: FastifyInstance) => {
         const previousCompletedExercises: CompletedExercise[] = blocks
           .flatMap((block) => {
             if (block._id === curBlock?._id) {
-              return block.weeks
-                .filter((_, wIdx) => wIdx <= block.curWeekIdx)
-                .flatMap((week, wIdx) =>
-                  week
-                    .filter((_, dIdx) =>
-                      wIdx === block.curWeekIdx
-                        ? dIdx < block.curDayIdx
-                        : true,
-                    )
-                    .flatMap((day) =>
-                      day.exercises.map((exercise) => ({
-                        ...exercise,
-                        completedDate: day.completedDate!,
-                      })),
-                    ),
-                );
+              return getCompletedDaysInBlock(block).flatMap((day) =>
+                day.exercises.map((exercise) => ({
+                  ...exercise,
+                  completedDate: day.completedDate!,
+                })),
+              );
             }
 
             return block.weeks.flatMap((week) =>
@@ -270,9 +261,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
         return { timerPresets: user.timerPresets };
       } catch (error) {
         console.error("Failed to fetch timer presets:", error);
-        return reply
-          .code(500)
-          .send({ error: "Failed to fetch timer presets" });
+        return reply.code(500).send({ error: "Failed to fetch timer presets" });
       }
     },
   );

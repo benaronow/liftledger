@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router";
 import { useAuth0 } from "@auth0/auth0-react";
-import { RouteType } from "@liftledger/shared";
+import { RouteType } from "../../routeTypes";
 import { useMe, useBlock } from "@liftledger/api-client";
 import styles from "./header.module.css";
 

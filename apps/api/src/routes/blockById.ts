@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import UserModel from "@liftledger/shared/models/user";
 import BlockModel from "@liftledger/shared/models/block";
 import type { Block, Day, Exercise, Set } from "@liftledger/shared";
+import { isSameExercise } from "@liftledger/shared";
 import { authorizeCaller } from "../auth";
 
 type BlockParams = { id: string; blockId: string };
@@ -52,12 +53,7 @@ const blockByIdRoutes = async (app: FastifyInstance) => {
           for (let d = week.length - 1; d >= 0; d--) {
             const day = week[d];
             for (const e of day.exercises) {
-              if (
-                e.name === exercise.name &&
-                e.apparatus === exercise.apparatus &&
-                e.gym === block.primaryGym &&
-                idx < e.sets.length
-              ) {
+              if (isSameExercise(e, exercise) && idx < e.sets.length) {
                 return e.sets[idx];
               }
             }
@@ -118,8 +114,7 @@ const blockByIdRoutes = async (app: FastifyInstance) => {
         console.error("Failed to update block:", error);
         return reply.code(500).send({ error: "Failed to update block" });
       }
-      if (!newBlock)
-        return reply.code(404).send({ error: "Block not found" });
+      if (!newBlock) return reply.code(404).send({ error: "Block not found" });
 
       if (isCurBlockDone) {
         try {

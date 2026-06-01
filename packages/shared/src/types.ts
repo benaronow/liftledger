@@ -68,18 +68,3 @@ export interface User {
   customExerciseNames: string[];
   customExerciseApparatuses: string[];
 }
-
-export interface GetParams {
-  params: Promise<{ id: string }>;
-}
-
-export enum RouteType {
-  Welcome = "/welcome",
-  Progress = "/progress",
-  History = "/history",
-  Dashboard = "/dashboard",
-  Add = "/edit-block",
-  Profile = "/profile",
-  Settings = "/settings",
-  Workout = "/complete-day",
-}

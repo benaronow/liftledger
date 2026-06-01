@@ -1,15 +1,15 @@
-import { Exercise, Set } from "@liftledger/shared";
+import {
+  Exercise,
+  Set,
+  COLORS,
+  getCompletedDaysInBlock,
+} from "@liftledger/shared";
 import { RefObject, useCallback, useEffect, useMemo, useState } from "react";
-import { COLORS } from "@liftledger/shared";
 import { BiPlusCircle } from "react-icons/bi";
 import { FaTimes } from "react-icons/fa";
 import { ActionButton } from "@/components/ActionButton";
 import { ProgressIcon } from "./ProgressIcon";
-import {
-  isExerciseComplete,
-  useMe,
-  useBlock,
-} from "@liftledger/api-client";
+import { isExerciseComplete, useMe, useBlock } from "@liftledger/api-client";
 import { computeProgress } from "./computeProgress";
 import { SubmitSetDialog } from "./SubmitSetDialog/SubmitSetDialog";
 
@@ -33,15 +33,9 @@ export const SetList = ({
   // duplicated block's icons match against the source block's data.
   const intraBlockPrevious = useMemo<Exercise[]>(() => {
     if (!curBlock) return [];
-    const result: Exercise[] = [];
-    curBlock.weeks.forEach((week, wIdx) => {
-      if (wIdx > curBlock.curWeekIdx) return;
-      week.forEach((day, dIdx) => {
-        if (wIdx === curBlock.curWeekIdx && dIdx >= curBlock.curDayIdx) return;
-        day.exercises.forEach((ex) => result.push(ex));
-      });
-    });
-    return result.reverse();
+    return getCompletedDaysInBlock(curBlock)
+      .flatMap((day) => day.exercises)
+      .reverse();
   }, [curBlock]);
 
   useEffect(() => {
