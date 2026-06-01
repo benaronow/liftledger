@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Modal } from "react-bootstrap";
-import { COLORS } from "@/lib/colors";
+import { COLORS } from "@liftledger/shared";
 import { ActionButton, Variant } from "./ActionButton";
 
 export interface DialogAction {

@@ -74,10 +74,10 @@ export interface GetParams {
 }
 
 export enum RouteType {
-  Login = "/login",
+  Welcome = "/welcome",
   Progress = "/progress",
   History = "/history",
-  Home = "/dashboard",
+  Dashboard = "/dashboard",
   Add = "/edit-block",
   Profile = "/profile",
   Settings = "/settings",

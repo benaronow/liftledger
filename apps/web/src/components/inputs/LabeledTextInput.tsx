@@ -1,4 +1,4 @@
-import { COLORS } from "@/lib/colors";
+import { COLORS } from "@liftledger/shared";
 import { ChangeEvent, FocusEvent, JSX } from "react";
 import { LabeledInputContainer } from "./LabeledInputContainer";
 import styles from "./LabeledTextInput.module.css";

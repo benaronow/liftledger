@@ -1,5 +1,5 @@
-import { Exercise } from "@/lib/types";
-import { useExerciseOptions } from "@/lib/hooks/useExerciseOptions";
+import { Exercise } from "@liftledger/shared";
+import { useExerciseOptions } from "@liftledger/api-client";
 import { useMemo } from "react";
 import { SearchableSelect } from "./SearchableSelect";
 

@@ -1,4 +1,4 @@
-import { COLORS } from "@/lib/colors";
+import { COLORS } from "@liftledger/shared";
 import { ReactNode } from "react";
 
 export type Variant =

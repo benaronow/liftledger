@@ -50,6 +50,8 @@ export const DeleteAccountDialog = ({ open, onClose }: Props) => {
     },
   ];
 
+  if (!open) return null;
+
   return (
     <ActionDialog
       open={open}

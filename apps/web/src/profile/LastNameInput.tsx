@@ -4,7 +4,7 @@ import { LabeledTextInput } from "../components/inputs";
 import { FaSave } from "react-icons/fa";
 import { FocusEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useMe, useUpdateUser } from "@liftledger/api-client";
-import { COLORS } from "@/lib/colors";
+import { COLORS } from "@liftledger/shared";
 
 export const LastNameInput = () => {
   const { data: curUser } = useMe();

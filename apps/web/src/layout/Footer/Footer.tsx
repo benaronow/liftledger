@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router";
-import { RouteType } from "@/lib/types";
+import { RouteType } from "@liftledger/shared";
 import { useEffect, useState } from "react";
 import { GiProgression } from "react-icons/gi";
 import { FaEdit, FaHistory } from "react-icons/fa";
@@ -20,7 +20,7 @@ export const Footer = () => {
     { route: RouteType.Progress, icon: <GiProgression />, isHome: false },
     { route: RouteType.History, icon: <FaHistory />, isHome: false },
     {
-      route: RouteType.Home,
+      route: RouteType.Dashboard,
       icon: (
         <div
           style={{
@@ -65,7 +65,7 @@ export const Footer = () => {
               <Link
                 key={idx}
                 style={{
-                  width: button.route === RouteType.Home ? "60px" : "50px",
+                  width: button.route === RouteType.Dashboard ? "60px" : "50px",
                   fontSize: "28px",
                 }}
                 className={`${

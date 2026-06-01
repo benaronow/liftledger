@@ -1,4 +1,4 @@
-import { COLORS } from "@/lib/colors";
+import { COLORS } from "@liftledger/shared";
 import { ReactNode, useState } from "react";
 import { ActionButton, Variant } from "./ActionButton";
 import { IoClose, IoMenu } from "react-icons/io5";

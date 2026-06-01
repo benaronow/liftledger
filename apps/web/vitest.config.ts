@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    setupFiles: ["./__tests__/setup.ts"],
+    setupFiles: ["./vitest.setup.ts"],
     environment: "jsdom",
   },
   resolve: {

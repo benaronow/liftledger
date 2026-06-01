@@ -1,6 +1,6 @@
 import { useCompletedExercises, useMe } from "@liftledger/api-client";
-import { useProgress } from "../ProgressProvider";
-import { COLORS } from "@/lib/colors";
+import { useProgressSelection } from "../useProgressSelection";
+import { COLORS } from "@liftledger/shared";
 import dayjs from "dayjs";
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
 export const ExerciseTooltip = ({ active, payload, label }: Props) => {
   const { data: curUser } = useMe();
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
-  const { selectedName, selectedApparatus } = useProgress();
+  const { selectedName, selectedApparatus } = useProgressSelection();
 
   if (!active || !payload?.length || !label) return null;
 

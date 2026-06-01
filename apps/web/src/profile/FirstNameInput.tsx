@@ -4,7 +4,7 @@ import { LabeledTextInput } from "../components/inputs";
 import { ActionButton } from "../components/ActionButton";
 import { Spinner } from "react-bootstrap";
 import { FaSave } from "react-icons/fa";
-import { COLORS } from "@/lib/colors";
+import { COLORS } from "@liftledger/shared";
 
 export const FirstNameInput = () => {
   const { data: curUser } = useMe();

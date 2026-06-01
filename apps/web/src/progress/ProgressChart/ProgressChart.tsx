@@ -1,4 +1,4 @@
-import { COLORS } from "@/lib/colors";
+import { COLORS } from "@liftledger/shared";
 import {
   CartesianGrid,
   Legend,
@@ -12,16 +12,21 @@ import { GYM_COLORS } from "./gymColors";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import { useCompletedExercises, useMe } from "@liftledger/api-client";
-import { useProgress } from "../ProgressProvider";
 import "./progressChart.css";
 import { ExerciseTooltip } from "./ExerciseTooltip";
 import { NoDataPlaceholder } from "./NoDataPlaceholder";
-import { CompletedExercise, type Set } from "@/lib/types";
+import { CompletedExercise, type Set } from "@liftledger/shared";
+import { LogoSpinner } from "@/components/LogoSpinner/LogoSpinner";
 
-export const ProgressChart = () => {
-  const { data: curUser } = useMe();
-  const { data: completedExercises } = useCompletedExercises(curUser?._id);
-  const { selectedName, selectedApparatus } = useProgress();
+interface Props {
+  selectedName: string;
+  selectedApparatus: string;
+}
+
+export const ProgressChart = ({ selectedName, selectedApparatus }: Props) => {
+  const { data: curUser, isLoading: isUserLoading } = useMe();
+  const { data: completedExercises, isLoading: completedExercisesLoading } =
+    useCompletedExercises(curUser?._id);
 
   const chartExercises = useMemo<CompletedExercise[]>(
     () =>
@@ -65,57 +70,55 @@ export const ProgressChart = () => {
     return weights.length ? Math.min(...weights) - 5 : "auto";
   }, [chartData, chartGyms]);
 
+  if (isUserLoading || completedExercisesLoading) return <LogoSpinner />;
+
+  if (!chartExercises.length) return <NoDataPlaceholder />;
+
   return (
-    <>
-      {chartData.length > 0 ? (
-        <LineChart
-          data={chartData}
-          margin={{ top: 10, right: 10, left: -10, bottom: 10 }}
-          style={{ outline: "none" }}
-          responsive
-          width="100%"
-          height="100%"
-        >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke={COLORS.container}
-            style={{ outline: "none" }}
-          />
-          <XAxis
-            dataKey="date"
-            tick={{ fill: "white", fontSize: 11 }}
-            tickFormatter={(v) => dayjs(v).format("M/D")}
-            angle={-45}
-            textAnchor="end"
-            interval="preserveStartEnd"
-            height={55}
-          />
-          <YAxis
-            tick={{ fill: "white", fontSize: 12 }}
-            width={45}
-            domain={[yMin, "auto"]}
-          />
-          <Tooltip content={<ExerciseTooltip />} />
-          <Legend
-            layout="vertical"
-            wrapperStyle={{ fontSize: 18, fontWeight: "bold" }}
-          />
-          {chartGyms.map((gym, i) => (
-            <Line
-              key={gym}
-              dataKey={gym}
-              type="monotone"
-              stroke={GYM_COLORS[i % GYM_COLORS.length]}
-              strokeWidth={3}
-              dot={{ r: 4 }}
-              activeDot={{ r: 7 }}
-              connectNulls
-            />
-          ))}
-        </LineChart>
-      ) : (
-        <NoDataPlaceholder />
-      )}
-    </>
+    <LineChart
+      data={chartData}
+      margin={{ top: 10, right: 10, left: -10, bottom: 10 }}
+      style={{ outline: "none" }}
+      responsive
+      width="100%"
+      height="100%"
+    >
+      <CartesianGrid
+        strokeDasharray="3 3"
+        stroke={COLORS.container}
+        style={{ outline: "none" }}
+      />
+      <XAxis
+        dataKey="date"
+        tick={{ fill: "white", fontSize: 11 }}
+        tickFormatter={(v) => dayjs(v).format("M/D")}
+        angle={-45}
+        textAnchor="end"
+        interval="preserveStartEnd"
+        height={55}
+      />
+      <YAxis
+        tick={{ fill: "white", fontSize: 12 }}
+        width={45}
+        domain={[yMin, "auto"]}
+      />
+      <Tooltip content={<ExerciseTooltip />} />
+      <Legend
+        layout="vertical"
+        wrapperStyle={{ fontSize: 18, fontWeight: "bold" }}
+      />
+      {chartGyms.map((gym, i) => (
+        <Line
+          key={gym}
+          dataKey={gym}
+          type="monotone"
+          stroke={GYM_COLORS[i % GYM_COLORS.length]}
+          strokeWidth={3}
+          dot={{ r: 4 }}
+          activeDot={{ r: 7 }}
+          connectNulls
+        />
+      ))}
+    </LineChart>
   );
 };

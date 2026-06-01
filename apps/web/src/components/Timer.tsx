@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useClearTimerEnd, useMe, useTimerEnd } from "@liftledger/api-client";
-import { COLORS } from "@/lib/colors";
+import { COLORS } from "@liftledger/shared";
 import { IoIosArrowForward, IoMdClose } from "react-icons/io";
 import { RiTimerLine } from "react-icons/ri";
 

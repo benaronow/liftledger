@@ -9,7 +9,7 @@ import { DangerZone } from "./DangerZone";
 import { ActionButton } from "../components/ActionButton";
 import { TbLogout2 } from "react-icons/tb";
 import { ResetPasswordButton } from "./ResetPasswordButton";
-import { COLORS } from "@/lib/colors";
+import { COLORS } from "@liftledger/shared";
 
 export const Profile = () => {
   const { user: auth0User, logout } = useAuth0();

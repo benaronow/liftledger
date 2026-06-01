@@ -1,4 +1,4 @@
-import { COLORS } from "@/lib/colors";
+import { COLORS } from "@liftledger/shared";
 import { GrFormAdd } from "react-icons/gr";
 
 interface Props {

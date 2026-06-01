@@ -1,6 +1,6 @@
 import { SearchableSelect } from "../components/SearchableSelect";
-import { useExerciseOptions } from "@/lib/hooks/useExerciseOptions";
-import { useProgress } from "./ProgressProvider";
+import { useExerciseOptions } from "@liftledger/api-client";
+import { useProgressSelection } from "./useProgressSelection";
 
 export const ExerciseSelector = () => {
   const { allExerciseNameOptions, allExerciseApparatusOptions } =
@@ -10,7 +10,7 @@ export const ExerciseSelector = () => {
     setSelectedName,
     selectedApparatus,
     setSelectedApparatus,
-  } = useProgress();
+  } = useProgressSelection();
 
   return (
     <div className="d-flex gap-2 mb-3">

@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router";
 import { useAuth0 } from "@auth0/auth0-react";
-import { RouteType } from "@/lib/types";
-import { useMe, useUserBlock } from "@liftledger/api-client";
+import { RouteType } from "@liftledger/shared";
+import { useMe, useBlock } from "@liftledger/api-client";
 import styles from "./header.module.css";
 
 export const Header = () => {
@@ -9,7 +9,7 @@ export const Header = () => {
   const { pathname } = useLocation();
   const { user: auth0User } = useAuth0();
   const { data: curUser } = useMe();
-  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
+  const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
 
   const getTitle = () => {
     if (pathname.includes(RouteType.Progress)) return "Progress";
@@ -22,72 +22,70 @@ export const Header = () => {
     return "Home";
   };
 
+  if (pathname === "/" || !auth0User || !curUser) return null;
+
   return (
-    <>
-      {pathname !== "/" && auth0User && (
-        <div
-          className={`${styles.containerAnimate} d-flex align-items-center`}
+    <div
+      className={`${styles.containerAnimate} d-flex align-items-center`}
+      style={{
+        background: "#131314",
+        height: "50px",
+        width: "100%",
+        zIndex: 10,
+        borderRadius: "0 0 20px 20px",
+      }}
+    >
+      <div
+        className="d-flex"
+        style={{ width: "50%", justifyContent: "flex-start" }}
+      >
+        <span
+          className="text-white text-nowrap"
           style={{
-            background: "#131314",
-            height: "50px",
-            width: "100%",
-            zIndex: 10,
-            borderRadius: "0 0 20px 20px",
+            fontSize: "25px",
+            fontFamily: "Mina",
+            fontWeight: 700,
+            marginLeft: "15px",
+            height: "35px",
+            borderRadius: "17.5px",
           }}
         >
-          <div
-            className="d-flex"
-            style={{ width: "50%", justifyContent: "flex-start" }}
-          >
-            <span
-              className="text-white text-nowrap"
+          {getTitle()}
+        </span>
+      </div>
+      <div
+        className="d-flex align-items-center"
+        style={{ width: "50%", justifyContent: "flex-end" }}
+      >
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{
+            marginRight: "10px",
+            height: "32px",
+            width: "32px",
+            borderRadius: "16px",
+            background: "white",
+            color: "#6d6e71",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            navigate("/profile");
+          }}
+        >
+          {auth0User?.picture && (
+            <img
+              src={auth0User.picture}
+              alt=""
               style={{
-                fontSize: "25px",
-                fontFamily: "Mina",
-                fontWeight: 700,
-                marginLeft: "15px",
-                height: "35px",
-                borderRadius: "17.5px",
-              }}
-            >
-              {getTitle()}
-            </span>
-          </div>
-          <div
-            className="d-flex align-items-center"
-            style={{ width: "50%", justifyContent: "flex-end" }}
-          >
-            <div
-              className="d-flex justify-content-center align-items-center"
-              style={{
-                marginRight: "10px",
                 height: "32px",
                 width: "32px",
-                borderRadius: "16px",
-                background: "white",
-                color: "#6d6e71",
-                cursor: "pointer",
+                borderRadius: "50%",
+                objectFit: "cover",
               }}
-              onClick={() => {
-                navigate("/profile");
-              }}
-            >
-              {auth0User?.picture && (
-                <img
-                  src={auth0User.picture}
-                  alt=""
-                  style={{
-                    height: "32px",
-                    width: "32px",
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                  }}
-                />
-              )}
-            </div>
-          </div>
+            />
+          )}
         </div>
-      )}
-    </>
+      </div>
+    </div>
   );
 };

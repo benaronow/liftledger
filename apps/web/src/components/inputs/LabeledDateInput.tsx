@@ -1,4 +1,4 @@
-import { COLORS } from "@/lib/colors";
+import { COLORS } from "@liftledger/shared";
 import dayjs, { Dayjs } from "dayjs";
 import { JSX } from "react";
 import DatePicker from "react-datepicker";

@@ -1,4 +1,4 @@
-import { COLORS } from "@/lib/colors";
+import { COLORS } from "@liftledger/shared";
 
 export const GYM_COLORS = [
   COLORS.primary,

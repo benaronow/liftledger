@@ -1,17 +1,20 @@
 import dayjs from "dayjs";
 import { MdControlPointDuplicate } from "react-icons/md";
-import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
-import { Block } from "@/lib/types";
+import { useMediaQuery } from "@/useMediaQuery";
+import { Block, COLORS } from "@liftledger/shared";
 import { useNavigate } from "react-router";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { LogoSpinner } from "@/components/LogoSpinner";
-import { useMe, useUserBlock } from "@liftledger/api-client";
+import { useMe, useBlock } from "@liftledger/api-client";
 import { ActionButton } from "../components/ActionButton";
 
 export const History = () => {
   const navigate = useNavigate();
-  const { data: curUser } = useMe();
-  const { data: curBlock } = useUserBlock(curUser?._id, curUser?.curBlock);
+  const { data: curUser, isLoading: isUserLoading } = useMe();
+  const { data: curBlock, isLoading: isBlockLoading } = useBlock(
+    curUser?._id,
+    curUser?.curBlock,
+  );
   const isTabletOrLarger = useMediaQuery("(min-width: 600px)");
 
   useEffect(() => {
@@ -27,48 +30,52 @@ export const History = () => {
     return finalDay.completedDate;
   };
 
-  const completedBlocks = curUser?.blocks
-    .filter((block) => block._id !== curBlock?._id)
-    .map((block, idx) => {
-      return (
-        <div
-          key={idx}
-          className="d-flex align-items-center w-100 text-white text-nowrap justify-content-between rounded"
-          style={{
-            fontFamily: "League+Spartan",
-            fontSize: "14px",
-            marginBottom: "15px",
-            background: "#131314",
-            borderRadius: "5px",
-            boxShadow: "0px 5px 10px #131314",
-            height: "35px",
-            paddingLeft: "10px",
-          }}
-        >
-          <span className="overflow-hidden text-nowrap text-truncate">
-            <span className="fw-bold" style={{ marginRight: "5px" }}>{`${
-              idx + 1
-            }. ${block.name}`}</span>
-            <span>{`(${dayjs(block.startDate).format("M/DD/YY")} -  ${
-              getCompletedDate(block)
-                ? dayjs(getCompletedDate(block)).format("M/DD/YY")
-                : "N/A"
-            })`}</span>
-          </span>
-          <ActionButton
-            roundedSide="end"
-            height={35}
-            width={35}
-            icon={<MdControlPointDuplicate size={28} />}
-            onClick={() =>
-              navigate(`/edit-block?duplicateFrom=${block._id}`)
-            }
-          />
-        </div>
-      );
-    });
+  const completedBlocks = useMemo(
+    () =>
+      curUser?.blocks
+        .filter((block) => block._id !== curBlock?._id)
+        .map((block, idx) => {
+          return (
+            <div
+              key={idx}
+              className="d-flex align-items-center w-100 text-white text-nowrap justify-content-between rounded"
+              style={{
+                fontFamily: "League+Spartan",
+                fontSize: "14px",
+                marginBottom: "15px",
+                background: COLORS.dark,
+                borderRadius: "5px",
+                boxShadow: `0px 5px 5px ${COLORS.dark}`,
+                height: "35px",
+                paddingLeft: "10px",
+              }}
+            >
+              <span className="overflow-hidden text-nowrap text-truncate">
+                <span className="fw-bold" style={{ marginRight: "5px" }}>{`${
+                  idx + 1
+                }. ${block.name}`}</span>
+                <span>{`(${dayjs(block.startDate).format("M/DD/YY")} -  ${
+                  getCompletedDate(block)
+                    ? dayjs(getCompletedDate(block)).format("M/DD/YY")
+                    : "N/A"
+                })`}</span>
+              </span>
+              <ActionButton
+                roundedSide="end"
+                height={35}
+                width={35}
+                icon={<MdControlPointDuplicate size={28} />}
+                onClick={() =>
+                  navigate(`/edit-block?duplicateFrom=${block._id}`)
+                }
+              />
+            </div>
+          );
+        }),
+    [curUser, curBlock, navigate],
+  );
 
-  if (!curUser) return <LogoSpinner />;
+  if (isUserLoading || isBlockLoading) return <LogoSpinner />;
 
   return (
     <div

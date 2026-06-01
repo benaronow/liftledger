@@ -1,12 +1,12 @@
-import { useMe, useUserBlock } from "@liftledger/api-client";
+import { useMe, useBlock } from "@liftledger/api-client";
 import dayjs from "dayjs";
-import { Day, Exercise, RouteType, Set } from "@/lib/types";
+import { Day, Exercise, RouteType, Set } from "@liftledger/shared";
 import { LogoSpinner } from "@/components/LogoSpinner";
 import { Link } from "react-router";
 
 export const Dashboard = () => {
   const { data: curUser } = useMe();
-  const { data: curBlock, isLoading: curBlockLoading } = useUserBlock(
+  const { data: curBlock, isLoading: curBlockLoading } = useBlock(
     curUser?._id,
     curUser?.curBlock,
   );

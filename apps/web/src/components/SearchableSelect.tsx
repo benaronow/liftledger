@@ -1,4 +1,4 @@
-import { COLORS } from "@/lib/colors";
+import { COLORS } from "@liftledger/shared";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import { LabeledInputContainer } from "./inputs";

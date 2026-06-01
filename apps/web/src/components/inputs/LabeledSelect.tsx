@@ -1,4 +1,4 @@
-import { COLORS } from "@/lib/colors";
+import { COLORS } from "@liftledger/shared";
 import { ChangeEvent, JSX } from "react";
 import { FormSelect } from "react-bootstrap";
 import { LabeledInputContainer } from "./LabeledInputContainer";
