@@ -1,19 +1,14 @@
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
-import { initApiClient, setTokenGetter } from "@liftledger/api-client";
+import { initApiClient } from "@liftledger/api-client";
 import { PropsWithChildren } from "react";
 import { SWRConfig } from "swr";
 
-let apiClientReady = false;
-const ensureApiClient = () => {
-  if (apiClientReady) return;
-  initApiClient({ baseURL: import.meta.env.VITE_API_URL });
-  apiClientReady = true;
-};
-ensureApiClient();
-
-const AxiosTokenBridge = ({ children }: PropsWithChildren) => {
-  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
-  setTokenGetter(isAuthenticated ? () => getAccessTokenSilently() : null);
+const ApiClientProvider = ({ children }: PropsWithChildren) => {
+  const { getAccessTokenSilently } = useAuth0();
+  initApiClient({
+    baseURL: import.meta.env.VITE_API_URL,
+    getToken: () => getAccessTokenSilently(),
+  });
   return <>{children}</>;
 };
 
@@ -38,7 +33,7 @@ export const AppProviders = ({ children }: PropsWithChildren) => {
           dedupingInterval: 10_000,
         }}
       >
-        <AxiosTokenBridge>{children}</AxiosTokenBridge>
+        <ApiClientProvider>{children}</ApiClientProvider>
       </SWRConfig>
     </Auth0Provider>
   );

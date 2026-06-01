@@ -1,4 +1,4 @@
-export { initApiClient, setTokenGetter, getApiClient } from "./client";
+export { initApiClient, getApiClient } from "./client";
 export type { InitApiClientOptions } from "./client";
 export { fetcher } from "./fetcher";
 export * from "./api";

@@ -3,23 +3,23 @@ import axios, { AxiosInstance } from "axios";
 type TokenGetter = () => Promise<string>;
 
 let client: AxiosInstance | null = null;
-let tokenGetter: TokenGetter | null = null;
 
 export interface InitApiClientOptions {
   baseURL: string;
   getToken?: TokenGetter;
 }
 
-// Called once at app startup. Each platform (web, mobile) initializes with its
-// own baseURL and (later) a token getter wired to that platform's Auth0 SDK.
+// Called once at app startup (idempotent — subsequent calls are no-ops).
+// Each platform (web, mobile) initializes with its own baseURL and a token
+// getter wired to that platform's Auth0 SDK.
 export const initApiClient = ({ baseURL, getToken }: InitApiClientOptions) => {
+  if (client) return;
   client = axios.create({ baseURL });
-  if (getToken) tokenGetter = getToken;
 
   client.interceptors.request.use(async (config) => {
-    if (tokenGetter) {
+    if (getToken) {
       try {
-        const token = await tokenGetter();
+        const token = await getToken();
         config.headers.set("Authorization", `Bearer ${token}`);
       } catch {
         // Auth0 throws when there's no active session — let the request go out
@@ -28,13 +28,6 @@ export const initApiClient = ({ baseURL, getToken }: InitApiClientOptions) => {
     }
     return config;
   });
-};
-
-// Wires the token-getter after init. Token availability is async (Auth0 SDK
-// bootstraps after mount) so this is typically called from an effect inside
-// the platform's Auth0Provider subtree.
-export const setTokenGetter = (getter: TokenGetter | null) => {
-  tokenGetter = getter;
 };
 
 export const getApiClient = (): AxiosInstance => {
