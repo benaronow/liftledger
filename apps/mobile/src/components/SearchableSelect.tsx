@@ -4,7 +4,9 @@ import { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -116,8 +118,14 @@ export const SearchableSelect = ({
         animationType="fade"
         onRequestClose={close}
       >
-        <Pressable style={styles.backdrop} onPress={close}>
-          <Pressable style={styles.sheet} onPress={() => {}}>
+        {/* The sheet is bottom-anchored, so the keyboard would otherwise cover
+            it (and its search box) entirely — lift it above the keyboard. */}
+        <KeyboardAvoidingView
+          style={styles.fill}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+          <Pressable style={styles.backdrop} onPress={close}>
+            <Pressable style={styles.sheet} onPress={() => {}}>
             <TextInput
               style={styles.search}
               value={query}
@@ -165,8 +173,9 @@ export const SearchableSelect = ({
                 ) : null
               }
             />
+            </Pressable>
           </Pressable>
-        </Pressable>
+        </KeyboardAvoidingView>
       </Modal>
     </LabeledInputContainer>
   );
@@ -183,6 +192,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
   },
   value: { flex: 1, fontSize: FONT.base, color: "black" },
+  fill: { flex: 1 },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",

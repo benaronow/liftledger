@@ -31,7 +31,7 @@ export const LogoSpinner = () => {
   return (
     <View style={styles.container}>
       <Animated.Image
-        source={require("../../assets/icon.png")}
+        source={require("../../assets/logo.png")}
         style={[styles.logo, { opacity, transform: [{ rotate }] }]}
       />
     </View>

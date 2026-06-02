@@ -26,7 +26,13 @@ export const ProfileScreen = () => {
   if (!curUser) return <LogoSpinner />;
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+      // Scroll a focused name/email field above the keyboard.
+      automaticallyAdjustKeyboardInsets
+    >
       <View style={styles.avatarBand}>
         {auth0User?.picture && (
           <Image

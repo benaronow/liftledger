@@ -37,32 +37,37 @@ export const SaveBlockDialog = ({ open, onClose }: Props) => {
   const handleSave = async () => {
     if (!curUser?._id) return;
 
-    if (curBlock) {
-      const res = await triggerUpdateUserBlock({
-        userId: curUser._id,
-        block: templateBlock,
-      });
-      // The block id is unchanged, so this tab stays mounted (no remount). Sync
-      // the editor to the server's saved copy rather than blanking it — web got
-      // this free by unmounting the route on navigate.
-      if (res?.block) {
-        setTemplateBlock(res.block);
-        setEditingWeekIdx(res.block.curWeekIdx ?? 0);
+    try {
+      if (curBlock) {
+        const res = await triggerUpdateUserBlock({
+          userId: curUser._id,
+          block: templateBlock,
+        });
+        // The block id is unchanged, so this tab stays mounted (no remount).
+        // Sync the editor to the server's saved copy rather than blanking it —
+        // web got this free by unmounting the route on navigate.
+        if (res?.block) {
+          setTemplateBlock(res.block);
+          setEditingWeekIdx(res.block.curWeekIdx ?? 0);
+        }
+      } else {
+        // Starting a block sets curUser.curBlock, which changes the screen's
+        // remount key and re-reads the new block, so just clear local state.
+        await triggerStartBlock({ userId: curUser._id, block: templateBlock });
+        unsetTemplateBlock();
+        setEditingWeekIdx(0);
       }
-    } else {
-      // Starting a block sets curUser.curBlock, which changes the screen's
-      // remount key and re-reads the new block, so just clear local state.
-      await triggerStartBlock({ userId: curUser._id, block: templateBlock });
-      unsetTemplateBlock();
-      setEditingWeekIdx(0);
-    }
 
-    // Close the dialog ourselves — its Modal would otherwise stay up over the
-    // Dashboard we're about to navigate to.
-    onClose();
-    // Drop any lingering ?duplicateFrom so a later visit starts from curBlock.
-    navigation.setParams({ duplicateFrom: undefined });
-    navigation.navigate("Dashboard");
+      // Close the dialog ourselves — its Modal would otherwise stay up over the
+      // Dashboard we're about to navigate to.
+      onClose();
+      // Drop any lingering ?duplicateFrom so a later visit starts from curBlock.
+      navigation.setParams({ duplicateFrom: undefined });
+      navigation.navigate("Dashboard");
+    } catch {
+      // Save failed — keep the editor and dialog as-is for retry. The spinner
+      // clears via the mutation hooks' isMutating.
+    }
   };
 
   const actions: DialogAction[] = [

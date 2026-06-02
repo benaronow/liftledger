@@ -1,7 +1,9 @@
 import { COLORS } from "@liftledger/shared";
 import { ReactNode } from "react";
 import {
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -42,45 +44,55 @@ export const ActionDialog = ({
     animationType="fade"
     onRequestClose={saving ? undefined : onClose}
   >
-    <Pressable
-      style={styles.backdrop}
-      onPress={saving ? undefined : onClose}
+    {/* Lift the centered card above the keyboard when a body input is focused
+        (EditSet reps/weight/note, EditExercise selects, etc.). On iOS "padding"
+        shrinks the centering area so the card re-centers higher; Android's IME
+        resize handles this on its own. */}
+    <KeyboardAvoidingView
+      style={styles.fill}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      {/* Stop card taps from bubbling to the backdrop's dismiss handler. */}
-      <Pressable style={styles.card} onPress={() => {}}>
-        <View style={styles.header}>
-          <Text style={styles.title}>{title}</Text>
-        </View>
-        <View
-          style={[
-            styles.body,
-            actions.length === 0 && styles.bodyRoundedBottom,
-          ]}
-        >
-          {children}
-        </View>
-        {actions.length !== 0 && (
-          <View style={styles.footer}>
-            {actions.map((action, idx) => (
-              // Each action takes an equal share of the footer row.
-              <View key={idx} style={styles.footerCell}>
-                <ActionButton
-                  icon={action.icon}
-                  onPress={action.onPress}
-                  disabled={action.disabled}
-                  variant={action.variant}
-                  height={55}
-                />
-              </View>
-            ))}
+      <Pressable
+        style={styles.backdrop}
+        onPress={saving ? undefined : onClose}
+      >
+        {/* Stop card taps from bubbling to the backdrop's dismiss handler. */}
+        <Pressable style={styles.card} onPress={() => {}}>
+          <View style={styles.header}>
+            <Text style={styles.title}>{title}</Text>
           </View>
-        )}
+          <View
+            style={[
+              styles.body,
+              actions.length === 0 && styles.bodyRoundedBottom,
+            ]}
+          >
+            {children}
+          </View>
+          {actions.length !== 0 && (
+            <View style={styles.footer}>
+              {actions.map((action, idx) => (
+                // Each action takes an equal share of the footer row.
+                <View key={idx} style={styles.footerCell}>
+                  <ActionButton
+                    icon={action.icon}
+                    onPress={action.onPress}
+                    disabled={action.disabled}
+                    variant={action.variant}
+                    height={55}
+                  />
+                </View>
+              ))}
+            </View>
+          )}
+        </Pressable>
       </Pressable>
-    </Pressable>
+    </KeyboardAvoidingView>
   </Modal>
 );
 
 const styles = StyleSheet.create({
+  fill: { flex: 1 },
   backdrop: {
     flex: 1,
     alignItems: "center",

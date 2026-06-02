@@ -1,3 +1,1 @@
-import { Placeholder } from "../components/Placeholder";
-
-export const CompleteDayScreen = () => <Placeholder title="Workout" />;
+export { CompleteDay as CompleteDayScreen } from "../features/completeDay";

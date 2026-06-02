@@ -61,6 +61,9 @@ export const EditBlock = () => {
           style={styles.scroll}
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
+          // Scroll a focused field (block name, day name, weeks) above the
+          // keyboard instead of letting the keyboard cover the lower form.
+          automaticallyAdjustKeyboardInsets
         >
           <EditorView />
         </ScrollView>

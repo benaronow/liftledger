@@ -8,6 +8,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth0 } from "react-native-auth0";
 import { AvatarButton } from "../components/AvatarButton";
 import { LogoSpinner } from "../components/LogoSpinner";
+import { Timer } from "../components/Timer";
 import { ProfileScreen } from "../features/profile/ProfileScreen";
 import { CompleteDayScreen } from "../screens/CompleteDayScreen";
 import { LoginScreen } from "../screens/LoginScreen";
@@ -42,39 +43,45 @@ export const RootNavigator = () => {
 
   return (
     <NavigationContainer>
-      {/* Floating Timer overlay is mounted here in M5, above the navigator. */}
       {user ? (
-        <Stack.Navigator
-          screenOptions={{
-            headerStyle: { backgroundColor: COLORS.dark },
-            headerTintColor: "white",
-            // Arrow-only back control (no "Tabs"/previous-title label).
-            headerBackButtonDisplayMode: "minimal",
-          }}
-        >
-          {/* The stack renders the header for every screen — one header
-              implementation app-wide, so heights match exactly. */}
-          <Stack.Screen
-            name="Tabs"
-            component={TabNavigator}
-            options={({ navigation, route }) => ({
-              title: tabTitle(route),
-              headerRight: () => (
-                <AvatarButton onPress={() => navigation.navigate("Profile")} />
-              ),
-            })}
-          />
-          <Stack.Screen
-            name="CompleteDay"
-            component={CompleteDayScreen}
-            options={{ title: "Workout" }}
-          />
-          <Stack.Screen
-            name="Profile"
-            component={ProfileScreen}
-            options={{ title: "Profile" }}
-          />
-        </Stack.Navigator>
+        // Floating Timer is a sibling of the navigator so it overlays every
+        // authed screen (web mounted it in the global layout).
+        <>
+          <Stack.Navigator
+            screenOptions={{
+              headerStyle: { backgroundColor: COLORS.dark },
+              headerTintColor: "white",
+              // Arrow-only back control (no "Tabs"/previous-title label).
+              headerBackButtonDisplayMode: "minimal",
+            }}
+          >
+            {/* The stack renders the header for every screen — one header
+                implementation app-wide, so heights match exactly. */}
+            <Stack.Screen
+              name="Tabs"
+              component={TabNavigator}
+              options={({ navigation, route }) => ({
+                title: tabTitle(route),
+                headerRight: () => (
+                  <AvatarButton
+                    onPress={() => navigation.navigate("Profile")}
+                  />
+                ),
+              })}
+            />
+            <Stack.Screen
+              name="CompleteDay"
+              component={CompleteDayScreen}
+              options={{ title: "Workout" }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{ title: "Profile" }}
+            />
+          </Stack.Navigator>
+          <Timer />
+        </>
       ) : (
         // Unauth gate (Phase 4): the only screen until Auth0 reports a user.
         <AuthStack.Navigator>

@@ -53,7 +53,7 @@ export const TabNavigator = () => (
         title: "Home",
         tabBarIcon: () => (
           <Image
-            source={require("../../assets/icon.png")}
+            source={require("../../assets/logo.png")}
             style={styles.logo}
           />
         ),
