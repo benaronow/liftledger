@@ -16,7 +16,10 @@
     "api:dev": "yarn workspace @liftledger/api dev",
     "api:build": "yarn workspace @liftledger/api build",
     "api:start": "yarn workspace @liftledger/api start",
-    "api:test": "yarn workspace @liftledger/api test"
+    "api:test": "yarn workspace @liftledger/api test",
+    "mobile:start": "yarn workspace @liftledger/mobile start",
+    "mobile:ios": "yarn workspace @liftledger/mobile ios",
+    "mobile:typecheck": "yarn workspace @liftledger/mobile typecheck"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
