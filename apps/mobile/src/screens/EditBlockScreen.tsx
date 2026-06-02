@@ -1,3 +1,1 @@
-import { Placeholder } from "../components/Placeholder";
-
-export const EditBlockScreen = () => <Placeholder title="Edit Block" />;
+export { EditBlock as EditBlockScreen } from "../features/editBlock";
