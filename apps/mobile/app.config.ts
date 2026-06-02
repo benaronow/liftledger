@@ -32,5 +32,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         domain: AUTH0_DOMAIN,
       },
     ],
+    "@react-native-community/datetimepicker",
   ],
 });
