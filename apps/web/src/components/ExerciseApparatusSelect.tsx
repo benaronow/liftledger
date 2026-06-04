@@ -1,0 +1,61 @@
+import { Exercise } from "@liftledger/shared";
+import { useExerciseOptions } from "@liftledger/api-client";
+import { useMemo } from "react";
+import { SearchableSelect } from "./SearchableSelect";
+
+interface Props {
+  curExercise: Exercise;
+  reservedExercises: Exercise[];
+  onSelect: (value: string) => void;
+  label?: string;
+  className?: string;
+}
+
+export const ExerciseApparatusSelect = ({
+  curExercise,
+  reservedExercises,
+  onSelect,
+  label,
+  className,
+}: Props) => {
+  const {
+    addCustomExerciseApparatus,
+    allExerciseApparatusOptions,
+    getAvailableExerciseApparatusOptions,
+  } = useExerciseOptions();
+
+  const availableApparatusOptions = useMemo(
+    () => getAvailableExerciseApparatusOptions(curExercise, reservedExercises),
+    [getAvailableExerciseApparatusOptions, curExercise, reservedExercises],
+  );
+
+  const unavailableApparatusOptions = useMemo(
+    () =>
+      allExerciseApparatusOptions.filter(
+        (o) =>
+          !getAvailableExerciseApparatusOptions(
+            curExercise,
+            reservedExercises,
+          ).includes(o),
+      ),
+    [
+      allExerciseApparatusOptions,
+      curExercise,
+      reservedExercises,
+      getAvailableExerciseApparatusOptions,
+    ],
+  );
+
+  return (
+    <SearchableSelect
+      label={label}
+      value={curExercise.apparatus}
+      options={availableApparatusOptions}
+      unavailableOptions={unavailableApparatusOptions}
+      onSelect={onSelect}
+      onAddCustom={addCustomExerciseApparatus}
+      canAddCustom
+      className={className}
+    />
+  );
+};
