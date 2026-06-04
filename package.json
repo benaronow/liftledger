@@ -16,6 +16,7 @@
     "api:dev": "yarn workspace @liftledger/api dev",
     "api:build": "yarn workspace @liftledger/api build",
     "api:start": "yarn workspace @liftledger/api start",
+    "api:start:local": "yarn workspace @liftledger/api start:local",
     "api:test": "yarn workspace @liftledger/api test",
     "mobile:start": "yarn workspace @liftledger/mobile start",
     "mobile:ios": "yarn workspace @liftledger/mobile ios",
