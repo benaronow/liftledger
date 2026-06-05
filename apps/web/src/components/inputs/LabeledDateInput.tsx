@@ -1,8 +1,9 @@
-import { COLORS } from "@liftledger/shared";
+import { DARK_COLORS } from "@liftledger/shared";
 import dayjs, { Dayjs } from "dayjs";
 import { JSX } from "react";
 import DatePicker from "react-datepicker";
 import { LabeledInputContainer } from "./LabeledInputContainer";
+import { useTheme } from "@/providers/ThemeProvider";
 
 type Props = {
   className?: string;
@@ -31,6 +32,7 @@ export const LabeledDateInput = ({
   renderEnd,
   onBlur,
 }: Props) => {
+  const { colors } = useTheme();
   return (
     <LabeledInputContainer
       className={className}
@@ -50,8 +52,8 @@ export const LabeledDateInput = ({
             className="w-100 px-2 py-1 border-0 rounded"
             style={{
               fontSize: "16px",
-              outlineColor: COLORS.primary,
-              background: disabled ? COLORS.textDisabled : "white",
+              outlineColor: DARK_COLORS.primary,
+              background: disabled ? colors.textDisabled : "white",
               height: height ?? 35,
               width: width ?? "100%",
             }}

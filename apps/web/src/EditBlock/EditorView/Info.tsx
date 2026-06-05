@@ -1,7 +1,8 @@
-import { COLORS } from "@liftledger/shared";
+import { DARK_COLORS } from "@liftledger/shared";
 import { PropsWithChildren } from "react";
 import { ActionButton, Variant } from "@/components/ActionButton";
 import { GoAlertFill } from "react-icons/go";
+import { useTheme } from "@/providers/ThemeProvider";
 
 export interface InfoAction {
   icon: React.ReactNode;
@@ -23,6 +24,7 @@ export const Info = ({
   disabledMessage,
   children,
 }: PropsWithChildren<Props>) => {
+  const { colors } = useTheme();
   return (
     <div
       className="w-100 rounded position-relative overflow-hidden"
@@ -46,7 +48,7 @@ export const Info = ({
           >
             <GoAlertFill
               style={{
-                color: COLORS.danger,
+                color: DARK_COLORS.danger,
                 fontSize: "30px",
                 transform: "translateY(-2px)",
               }}
@@ -58,19 +60,19 @@ export const Info = ({
       <div className="d-flex flex-column w-100 position-relative">
         <div
           className="w-100 d-flex align-items-center justify-content-center p-1"
-          style={{ background: COLORS.dark }}
+          style={{ background: colors.dark }}
         >
           <strong className="text-white fs-6">{title}</strong>
         </div>
         <div
           className="d-flex flex-column w-100 gap-2 p-2"
-          style={{ background: COLORS.container }}
+          style={{ background: colors.container }}
         >
           {children}
         </div>
         <div
           className="d-flex w-100 align-items-center gap-2 p-2"
-          style={{ background: COLORS.dark }}
+          style={{ background: colors.dark }}
         >
           {actions?.map((action, idx) => (
             <ActionButton

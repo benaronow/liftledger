@@ -1,15 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "@liftledger/shared";
 import { ReactNode, useState } from "react";
 import {
   FlatList,
   Modal,
   Pressable,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "../../providers/ThemeProvider";
 import { FONT, RADIUS, SPACING } from "../../theme";
 import { LabeledInputContainer } from "./LabeledInputContainer";
 
@@ -42,6 +41,7 @@ export const LabeledSelect = ({
 }: Props) => {
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
+  const { colors } = useTheme();
 
   const select = (option: string) => {
     onChange?.(option);
@@ -53,23 +53,26 @@ export const LabeledSelect = ({
   return (
     <LabeledInputContainer label={label} error={error} renderEnd={renderEnd}>
       <Pressable
-        style={[
-          styles.field,
-          {
-            height: height ?? 35,
-            backgroundColor: disabled ? COLORS.textDisabled : "white",
-            ...(renderEnd
-              ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
-              : null),
-          },
-        ]}
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingHorizontal: SPACING.sm,
+          borderRadius: RADIUS.md,
+          height: height ?? 35,
+          backgroundColor: disabled ? colors.textDisabled : "white",
+          ...(renderEnd
+            ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
+            : null),
+        }}
         onPress={disabled ? undefined : () => setOpen(true)}
         disabled={disabled}
       >
-        <Text style={styles.value} numberOfLines={1}>
+        <Text style={{ flex: 1, fontSize: FONT.base, color: "black" }} numberOfLines={1}>
           {value || EMPTY_LABEL}
         </Text>
-        <Ionicons name="chevron-down" size={16} color={COLORS.container} />
+        <Ionicons name="chevron-down" size={16} color={colors.container} />
       </Pressable>
 
       <Modal
@@ -78,9 +81,33 @@ export const LabeledSelect = ({
         animationType="fade"
         onRequestClose={() => setOpen(false)}
       >
-        <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
-          <Pressable style={styles.sheet} onPress={() => {}}>
-            {label && <Text style={styles.sheetTitle}>{label}</Text>}
+        <Pressable
+          style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.5)" }}
+          onPress={() => setOpen(false)}
+        >
+          <Pressable
+            style={{
+              borderTopLeftRadius: RADIUS.xl,
+              borderTopRightRadius: RADIUS.xl,
+              paddingVertical: SPACING.md,
+              maxHeight: "60%",
+              backgroundColor: colors.container,
+            }}
+            onPress={() => {}}
+          >
+            {label && (
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: FONT.base,
+                  fontWeight: "700",
+                  paddingHorizontal: SPACING.lg,
+                  paddingBottom: SPACING.sm,
+                }}
+              >
+                {label}
+              </Text>
+            )}
             <FlatList
               data={listOptions}
               keyExtractor={(item) => item || "__empty__"}
@@ -88,12 +115,22 @@ export const LabeledSelect = ({
               // screen curve, as part of the scroll content.
               contentContainerStyle={{ paddingBottom: insets.bottom + SPACING.md }}
               renderItem={({ item }) => (
-                <Pressable style={styles.option} onPress={() => select(item)}>
+                <Pressable
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    paddingVertical: SPACING.md,
+                    paddingHorizontal: SPACING.lg,
+                  }}
+                  onPress={() => select(item)}
+                >
                   <Text
-                    style={[
-                      styles.optionText,
-                      item === value && styles.optionTextSelected,
-                    ]}
+                    style={{
+                      fontSize: FONT.base,
+                      color: "white",
+                      ...(item === value ? { fontWeight: "700", color: "#0096FF" } : null),
+                    }}
                   >
                     {item || EMPTY_LABEL}
                   </Text>
@@ -101,7 +138,7 @@ export const LabeledSelect = ({
                     <Ionicons
                       name="checkmark"
                       size={18}
-                      color={COLORS.primary}
+                      color={colors.primary}
                     />
                   )}
                 </Pressable>
@@ -114,42 +151,3 @@ export const LabeledSelect = ({
   );
 };
 
-const styles = StyleSheet.create({
-  field: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: SPACING.sm,
-    borderRadius: RADIUS.md,
-  },
-  value: { flex: 1, fontSize: FONT.base, color: "black" },
-  backdrop: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  sheet: {
-    backgroundColor: COLORS.container,
-    borderTopLeftRadius: RADIUS.xl,
-    borderTopRightRadius: RADIUS.xl,
-    paddingVertical: SPACING.md,
-    maxHeight: "60%",
-  },
-  sheetTitle: {
-    color: "white",
-    fontSize: FONT.base,
-    fontWeight: "700",
-    paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.sm,
-  },
-  option: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.lg,
-  },
-  optionText: { fontSize: FONT.base, color: "white" },
-  optionTextSelected: { fontWeight: "700", color: COLORS.primary },
-});

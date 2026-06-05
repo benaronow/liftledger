@@ -3,6 +3,7 @@ import { PropsWithChildren } from "react";
 import { Auth0Provider, useAuth0 } from "react-native-auth0";
 import { SWRConfig } from "swr";
 import { env } from "../config/env";
+import { ThemeProvider } from "./ThemeProvider";
 
 // Mirror of apps/web/src/AppProviders.tsx. The only platform-specific seam:
 // getToken pulls the access token from react-native-auth0's credentials
@@ -25,7 +26,9 @@ export const MobileAppProviders = ({ children }: PropsWithChildren) => (
         dedupingInterval: 10_000,
       }}
     >
-      <ApiClientProvider>{children}</ApiClientProvider>
+      <ApiClientProvider>
+        <ThemeProvider>{children}</ThemeProvider>
+      </ApiClientProvider>
     </SWRConfig>
   </Auth0Provider>
 );

@@ -1,4 +1,4 @@
-import { COLORS } from "@liftledger/shared";
+import { DARK_COLORS } from "@liftledger/shared";
 import { useMemo } from "react";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { FaGripLines } from "react-icons/fa";
@@ -13,10 +13,10 @@ interface Props {
 
 export const ProgressIcon = ({ sign, isSetComplete, isSetSkipped }: Props) => {
   const background = useMemo(() => {
-    if (!isSetComplete && !isSetSkipped) return COLORS.container;
-    if (sign === undefined || isSetSkipped) return COLORS.background;
-    if (sign === 0) return COLORS.warning;
-    return sign > 0 ? COLORS.success : COLORS.danger;
+    if (!isSetComplete && !isSetSkipped) return DARK_COLORS.container;
+    if (sign === undefined || isSetSkipped) return DARK_COLORS.background;
+    if (sign === 0) return DARK_COLORS.warning;
+    return sign > 0 ? DARK_COLORS.success : DARK_COLORS.danger;
   }, [sign, isSetComplete, isSetSkipped]);
 
   const Icon = useMemo(() => {

@@ -3,6 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { RouteType } from "../../routeTypes";
 import { useMe, useBlock } from "@liftledger/api-client";
 import styles from "./header.module.css";
+import { useTheme } from "../../providers/ThemeProvider";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ export const Header = () => {
   const { user: auth0User } = useAuth0();
   const { data: curUser } = useMe();
   const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
+  const { colors } = useTheme();
 
   const getTitle = () => {
     if (pathname.includes(RouteType.Progress)) return "Progress";
@@ -28,7 +30,7 @@ export const Header = () => {
     <div
       className={`${styles.containerAnimate} d-flex align-items-center`}
       style={{
-        background: "#131314",
+        background: colors.dark,
         height: "50px",
         width: "100%",
         zIndex: 10,

@@ -1,6 +1,7 @@
-import { COLORS } from "@liftledger/shared";
+import { useTheme } from "@/providers/ThemeProvider";
 
 export const NoDataPlaceholder = () => {
+  const { colors } = useTheme();
   return (
     <div className="d-flex flex-column flex-grow-1 gap-2 justify-content-center align-items-center">
       <svg
@@ -8,7 +9,7 @@ export const NoDataPlaceholder = () => {
         height="96"
         viewBox="0 0 24 24"
         fill="none"
-        stroke={COLORS.textDisabled}
+        stroke={colors.textDisabled}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -19,7 +20,7 @@ export const NoDataPlaceholder = () => {
         <line x1="6" y1="20" x2="6" y2="14" />
         <line x1="2" y1="20" x2="22" y2="20" />
       </svg>
-      <span style={{ fontSize: 18, color: COLORS.textDisabled }}>
+      <span style={{ fontSize: 18, color: colors.textDisabled }}>
         No data for this exercise
       </span>
     </div>

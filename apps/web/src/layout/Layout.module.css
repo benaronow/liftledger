@@ -2,7 +2,7 @@
 .container {
   min-height: 100dvh;
   max-height: 100dvh;
-  background: #3c3c3e;
+  background: var(--color-background);
   position: relative;
 }
 

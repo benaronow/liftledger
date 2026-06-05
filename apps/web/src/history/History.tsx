@@ -1,12 +1,13 @@
 import dayjs from "dayjs";
 import { MdControlPointDuplicate } from "react-icons/md";
 import { useMediaQuery } from "@/useMediaQuery";
-import { Block, COLORS } from "@liftledger/shared";
+import { Block } from "@liftledger/shared";
 import { useNavigate } from "react-router";
 import { useEffect, useMemo } from "react";
 import { LogoSpinner } from "@/components/LogoSpinner";
 import { useMe, useBlock } from "@liftledger/api-client";
 import { ActionButton } from "../components/ActionButton";
+import { useTheme } from "../providers/ThemeProvider";
 
 export const History = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export const History = () => {
     curUser?.curBlock,
   );
   const isTabletOrLarger = useMediaQuery("(min-width: 600px)");
+  const { colors } = useTheme();
 
   useEffect(() => {
     if (isTabletOrLarger) navigate("/dashboard");
@@ -43,9 +45,9 @@ export const History = () => {
                 fontFamily: "League+Spartan",
                 fontSize: "14px",
                 marginBottom: "15px",
-                background: COLORS.dark,
+                background: colors.dark,
                 borderRadius: "5px",
-                boxShadow: `0px 5px 5px ${COLORS.dark}`,
+                boxShadow: `0px 5px 5px ${colors.dark}`,
                 height: "35px",
                 paddingLeft: "10px",
               }}
@@ -91,10 +93,10 @@ export const History = () => {
             fontFamily: "League+Spartan",
             fontSize: "14px",
             marginBottom: "15px",
-            background: "#58585b",
+            background: colors.container,
             borderRadius: "5px",
-            border: "solid 5px #58585b",
-            boxShadow: "0px 5px 10px #131314",
+            border: `solid 5px ${colors.container}`,
+            boxShadow: `0px 5px 10px ${colors.dark}`,
           }}
         >
           <span

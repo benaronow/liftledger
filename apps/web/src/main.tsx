@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router";
 import { router } from "./routes";
-import { AppProviders } from "./AppProviders";
+import { AppProviders } from "./providers/AppProviders";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "./styles/globals.css";

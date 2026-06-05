@@ -1,14 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "@liftledger/shared";
 import { ReactNode, useState } from "react";
 import {
   LayoutAnimation,
   Platform,
-  StyleSheet,
   UIManager,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "../providers/ThemeProvider";
 import { RADIUS, SPACING } from "../theme";
 import { ActionButton, Variant } from "./ActionButton";
 
@@ -42,6 +41,7 @@ export const ActionsFooter = ({
 }) => {
   const insets = useSafeAreaInsets();
   const [expanded, setExpanded] = useState(false);
+  const { colors } = useTheme();
   const primary = actions[0];
   const secondary = actions.slice(1);
   const hasSecondary = secondary.length > 0;
@@ -51,14 +51,36 @@ export const ActionsFooter = ({
     setExpanded((prev) => !prev);
   };
 
-  const sideColor = primary.disabled ? COLORS.primaryDisabled : COLORS.primary;
+  const sideColor = primary.disabled ? colors.primaryDisabled : colors.primary;
 
   return (
-    <View style={styles.footer}>
+    <View
+      style={{
+        borderTopLeftRadius: RADIUS.xl,
+        borderTopRightRadius: RADIUS.xl,
+        overflow: "hidden",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: -4 },
+        shadowOpacity: 0.5,
+        shadowRadius: 15,
+        elevation: 12,
+        backgroundColor: colors.primary,
+      }}
+    >
       {hasSecondary && expanded && (
-        <View style={styles.secondaryPanel}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-around",
+            gap: SPACING.sm,
+            paddingHorizontal: SPACING.md,
+            paddingVertical: SPACING.sm,
+            backgroundColor: colors.container,
+          }}
+        >
           {secondary.map((action, idx) => (
-            <View key={idx} style={styles.secondaryCell}>
+            <View key={idx} style={{ flex: 1 }}>
               <ActionButton
                 icon={action.icon}
                 label={action.label}
@@ -74,7 +96,7 @@ export const ActionsFooter = ({
           ))}
         </View>
       )}
-      <View style={styles.primaryRow}>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
         {hasSecondary && (
           <ActionButton
             icon={
@@ -91,7 +113,7 @@ export const ActionsFooter = ({
             roundedSide="0"
           />
         )}
-        <View style={styles.primaryCell}>
+        <View style={{ flex: 1 }}>
           <ActionButton
             icon={primary.icon}
             label={primary.label}
@@ -105,41 +127,14 @@ export const ActionsFooter = ({
         {/* Mirror the menu toggle's width on the right so the primary label
             stays centered in the bar. */}
         {hasSecondary && (
-          <View style={[styles.spacer, { backgroundColor: sideColor }]} />
+          <View style={{ width: 50, height: 50, backgroundColor: sideColor }} />
         )}
       </View>
       {/* Fill the home-indicator area on tab-less screens. Dark (not bar blue)
           so it never seams against a disabled primary button above it. */}
       {safeAreaBottom && insets.bottom > 0 && (
-        <View style={{ height: insets.bottom, backgroundColor: COLORS.dark }} />
+        <View style={{ height: insets.bottom, backgroundColor: colors.dark }} />
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  footer: {
-    borderTopLeftRadius: RADIUS.xl,
-    borderTopRightRadius: RADIUS.xl,
-    overflow: "hidden",
-    backgroundColor: COLORS.primary,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 15,
-    elevation: 12,
-  },
-  secondaryPanel: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    gap: SPACING.sm,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    backgroundColor: COLORS.container,
-  },
-  secondaryCell: { flex: 1 },
-  primaryRow: { flexDirection: "row", alignItems: "center" },
-  primaryCell: { flex: 1 },
-  spacer: { width: 50, height: 50 },
-});

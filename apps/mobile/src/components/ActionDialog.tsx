@@ -1,16 +1,15 @@
-import { COLORS } from "@liftledger/shared";
 import { ReactNode } from "react";
 import {
   KeyboardAvoidingView,
   Modal,
   Platform,
   Pressable,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
 import { FONT, RADIUS, SPACING } from "../theme";
 import { ActionButton, Variant } from "./ActionButton";
+import { useTheme } from "../providers/ThemeProvider";
 
 export interface DialogAction {
   icon: ReactNode;
@@ -37,43 +36,75 @@ export const ActionDialog = ({
   title,
   actions,
   saving,
-}: Props) => (
+}: Props) => {
+  const { colors } = useTheme();
+  return (
   <Modal
     visible={open}
     transparent
     animationType="fade"
     onRequestClose={saving ? undefined : onClose}
   >
-    {/* Lift the centered card above the keyboard when a body input is focused
-        (EditSet reps/weight/note, EditExercise selects, etc.). On iOS "padding"
-        shrinks the centering area so the card re-centers higher; Android's IME
-        resize handles this on its own. */}
     <KeyboardAvoidingView
-      style={styles.fill}
+      style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <Pressable
-        style={styles.backdrop}
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(0,0,0,0.5)",
+          paddingHorizontal: SPACING.xl,
+        }}
         onPress={saving ? undefined : onClose}
       >
-        {/* Stop card taps from bubbling to the backdrop's dismiss handler. */}
-        <Pressable style={styles.card} onPress={() => {}}>
-          <View style={styles.header}>
-            <Text style={styles.title}>{title}</Text>
+        <Pressable
+          style={{
+            width: "100%",
+            maxWidth: 420,
+            borderRadius: RADIUS.md,
+            overflow: "hidden",
+          }}
+          onPress={() => {}}
+        >
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              padding: SPACING.sm,
+              backgroundColor: colors.dark,
+            }}
+          >
+            <Text style={{ fontSize: FONT.lg, fontWeight: "600", color: colors.text }}>{title}</Text>
           </View>
           <View
-            style={[
-              styles.body,
-              actions.length === 0 && styles.bodyRoundedBottom,
-            ]}
+            style={{
+              alignItems: "center",
+              padding: SPACING.sm,
+              gap: SPACING.sm,
+              backgroundColor: colors.container,
+              ...(actions.length === 0 && {
+                borderBottomLeftRadius: RADIUS.md,
+                borderBottomRightRadius: RADIUS.md,
+              }),
+            }}
           >
             {children}
           </View>
           {actions.length !== 0 && (
-            <View style={styles.footer}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: SPACING.sm,
+                padding: SPACING.sm,
+                backgroundColor: colors.dark,
+              }}
+            >
               {actions.map((action, idx) => (
-                // Each action takes an equal share of the footer row.
-                <View key={idx} style={styles.footerCell}>
+                <View key={idx} style={{ flex: 1 }}>
                   <ActionButton
                     icon={action.icon}
                     onPress={action.onPress}
@@ -89,48 +120,5 @@ export const ActionDialog = ({
       </Pressable>
     </KeyboardAvoidingView>
   </Modal>
-);
-
-const styles = StyleSheet.create({
-  fill: { flex: 1 },
-  backdrop: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-    paddingHorizontal: SPACING.xl,
-  },
-  card: {
-    width: "100%",
-    maxWidth: 420,
-    borderRadius: RADIUS.md,
-    overflow: "hidden",
-  },
-  header: {
-    alignItems: "center",
-    justifyContent: "center",
-    padding: SPACING.sm,
-    backgroundColor: COLORS.dark,
-  },
-  title: { color: "white", fontSize: FONT.lg, fontWeight: "600" },
-  body: {
-    alignItems: "center",
-    padding: SPACING.sm,
-    gap: SPACING.sm,
-    backgroundColor: COLORS.container,
-  },
-  bodyRoundedBottom: {
-    borderBottomLeftRadius: RADIUS.md,
-    borderBottomRightRadius: RADIUS.md,
-  },
-  footer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: SPACING.sm,
-    padding: SPACING.sm,
-    backgroundColor: COLORS.dark,
-  },
-  footerCell: { flex: 1 },
-});
-
+  );
+};

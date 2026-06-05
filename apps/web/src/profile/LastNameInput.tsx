@@ -4,7 +4,7 @@ import { LabeledTextInput } from "../components/inputs";
 import { FaSave } from "react-icons/fa";
 import { FocusEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useMe, useUpdateUser } from "@liftledger/api-client";
-import { COLORS } from "@liftledger/shared";
+import { DARK_COLORS } from "@liftledger/shared";
 
 export const LastNameInput = () => {
   const { data: curUser } = useMe();
@@ -47,7 +47,7 @@ export const LastNameInput = () => {
   const renderEnd = useCallback(() => {
     const disabled = !lastNameEdited || lastName.trim() === "";
     const outline = focused
-      ? `solid 2px ${disabled ? COLORS.primaryDisabled : COLORS.primary}`
+      ? `solid 2px ${disabled ? DARK_COLORS.primaryDisabled : DARK_COLORS.primary}`
       : undefined;
 
     return (

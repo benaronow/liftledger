@@ -1,4 +1,3 @@
-import { COLORS } from "@liftledger/shared";
 import {
   getFocusedRouteNameFromRoute,
   NavigationContainer,
@@ -9,17 +8,16 @@ import { useAuth0 } from "react-native-auth0";
 import { AvatarButton } from "../components/AvatarButton";
 import { LogoSpinner } from "../components/LogoSpinner";
 import { Timer } from "../components/Timer";
-import { ProfileScreen } from "../features/profile/ProfileScreen";
-import { CompleteDayScreen } from "../screens/CompleteDayScreen";
-import { LoginScreen } from "../screens/LoginScreen";
+import { Profile } from "../Profile";
+import { useTheme } from "../providers/ThemeProvider";
+import { CompleteDay } from "../CompleteDay";
+import { Welcome } from "../Welcome";
 import { TabNavigator } from "./TabNavigator";
 import type { RootStackParamList } from "./types";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator();
 
-// The stack header title for the Tabs screen tracks the focused tab (web's
-// per-route header titles). Dashboard reads as "Home" to match web.
 const tabTitle = (route: RouteProp<RootStackParamList, "Tabs">): string => {
   switch (getFocusedRouteNameFromRoute(route) ?? "Dashboard") {
     case "Progress":
@@ -38,25 +36,22 @@ const tabTitle = (route: RouteProp<RootStackParamList, "Tabs">): string => {
 
 export const RootNavigator = () => {
   const { user, isLoading } = useAuth0();
+  const { colors, scheme } = useTheme();
 
   if (isLoading) return <LogoSpinner />;
 
   return (
     <NavigationContainer>
       {user ? (
-        // Floating Timer is a sibling of the navigator so it overlays every
-        // authed screen (web mounted it in the global layout).
         <>
           <Stack.Navigator
             screenOptions={{
-              headerStyle: { backgroundColor: COLORS.dark },
-              headerTintColor: "white",
-              // Arrow-only back control (no "Tabs"/previous-title label).
+              headerStyle: { backgroundColor: colors.dark },
+              headerShadowVisible: false,
+              headerTintColor: scheme === "dark" ? "white" : "black",
               headerBackButtonDisplayMode: "minimal",
             }}
           >
-            {/* The stack renders the header for every screen — one header
-                implementation app-wide, so heights match exactly. */}
             <Stack.Screen
               name="Tabs"
               component={TabNavigator}
@@ -71,23 +66,22 @@ export const RootNavigator = () => {
             />
             <Stack.Screen
               name="CompleteDay"
-              component={CompleteDayScreen}
+              component={CompleteDay}
               options={{ title: "Workout" }}
             />
             <Stack.Screen
               name="Profile"
-              component={ProfileScreen}
+              component={Profile}
               options={{ title: "Profile" }}
             />
           </Stack.Navigator>
           <Timer />
         </>
       ) : (
-        // Unauth gate (Phase 4): the only screen until Auth0 reports a user.
         <AuthStack.Navigator>
           <AuthStack.Screen
-            name="Login"
-            component={LoginScreen}
+            name="Welcome"
+            component={Welcome}
             options={{ headerShown: false }}
           />
         </AuthStack.Navigator>

@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Image, Pressable, StyleSheet } from "react-native";
+import { Image, Pressable } from "react-native";
 import { useAuth0 } from "react-native-auth0";
 
 interface Props {
@@ -12,25 +12,23 @@ export const AvatarButton = ({ onPress }: Props) => {
   const { user } = useAuth0();
 
   return (
-    <Pressable style={styles.button} onPress={onPress}>
+    <Pressable
+      style={{
+        height: 32,
+        width: 32,
+        borderRadius: 16,
+        backgroundColor: "white",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+      }}
+      onPress={onPress}
+    >
       {user?.picture ? (
-        <Image source={{ uri: user.picture }} style={styles.image} />
+        <Image source={{ uri: user.picture }} style={{ height: 32, width: 32, borderRadius: 16 }} />
       ) : (
         <Ionicons name="person" size={18} color="#6d6e71" />
       )}
     </Pressable>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    height: 32,
-    width: 32,
-    borderRadius: 16,
-    backgroundColor: "white",
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  image: { height: 32, width: 32, borderRadius: 16 },
-});

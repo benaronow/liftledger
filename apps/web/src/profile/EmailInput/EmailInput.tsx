@@ -4,7 +4,7 @@ import { LabeledTextInput } from "../../components/inputs";
 import { ActionButton } from "../../components/ActionButton";
 import { Spinner } from "react-bootstrap";
 import { FaSave } from "react-icons/fa";
-import { COLORS } from "@liftledger/shared";
+import { DARK_COLORS } from "@liftledger/shared";
 import { VerifyEmailSentDialog } from "./VerifyEmailSentDialog";
 
 type Props = {
@@ -54,7 +54,7 @@ export const EmailInput = ({ isConnectionUser }: Props) => {
   const renderEnd = useCallback(() => {
     const disabled = !emailEdited || email.trim() === "";
     const outline = focused
-      ? `solid 2px ${disabled ? COLORS.primaryDisabled : COLORS.primary}`
+      ? `solid 2px ${disabled ? DARK_COLORS.primaryDisabled : DARK_COLORS.primary}`
       : undefined;
 
     return (

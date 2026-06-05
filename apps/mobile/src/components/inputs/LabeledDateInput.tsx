@@ -1,15 +1,14 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { COLORS } from "@liftledger/shared";
 import dayjs, { Dayjs } from "dayjs";
 import { ReactNode, useState } from "react";
 import {
   Modal,
   Platform,
   Pressable,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
+import { useTheme } from "../../providers/ThemeProvider";
 import { FONT, RADIUS, SPACING } from "../../theme";
 import { ActionButton } from "../ActionButton";
 import { LabeledInputContainer } from "./LabeledInputContainer";
@@ -38,6 +37,7 @@ export const LabeledDateInput = ({
 }: Props) => {
   const [open, setOpen] = useState(false);
   const selected = value && value.isValid() ? value.toDate() : new Date();
+  const { colors } = useTheme();
 
   const openPicker = () => {
     if (disabled) return;
@@ -47,20 +47,21 @@ export const LabeledDateInput = ({
   return (
     <LabeledInputContainer label={label} error={error} renderEnd={renderEnd}>
       <Pressable
-        style={[
-          styles.field,
-          {
-            height: height ?? 35,
-            backgroundColor: disabled ? COLORS.textDisabled : "white",
-            ...(renderEnd
-              ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
-              : null),
-          },
-        ]}
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          paddingHorizontal: SPACING.sm,
+          borderRadius: RADIUS.md,
+          height: height ?? 35,
+          backgroundColor: disabled ? colors.textDisabled : "white",
+          ...(renderEnd
+            ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
+            : null),
+        }}
         onPress={openPicker}
         disabled={disabled}
       >
-        <Text style={styles.value}>
+        <Text style={{ fontSize: FONT.base, color: "black" }}>
           {value && value.isValid() ? value.format("MM/DD/YYYY") : ""}
         </Text>
       </Pressable>
@@ -68,15 +69,26 @@ export const LabeledDateInput = ({
       {open &&
         (Platform.OS === "ios" ? (
           <Modal visible transparent animationType="fade">
-            <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
-              <Pressable style={styles.sheet} onPress={() => {}}>
+            <Pressable
+              style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.5)" }}
+              onPress={() => setOpen(false)}
+            >
+              <Pressable
+                style={{
+                  borderTopLeftRadius: RADIUS.xl,
+                  borderTopRightRadius: RADIUS.xl,
+                  padding: SPACING.md,
+                  backgroundColor: colors.container,
+                }}
+                onPress={() => {}}
+              >
                 <DateTimePicker
                   value={selected}
                   mode="date"
                   display="spinner"
                   onChange={(_, date) => date && onChange?.(dayjs(date))}
                 />
-                <View style={styles.sheetActions}>
+                <View style={{ paddingHorizontal: SPACING.md }}>
                   <ActionButton
                     label="Done"
                     icon={null}
@@ -101,24 +113,3 @@ export const LabeledDateInput = ({
   );
 };
 
-const styles = StyleSheet.create({
-  field: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: SPACING.sm,
-    borderRadius: RADIUS.md,
-  },
-  value: { fontSize: FONT.base, color: "black" },
-  backdrop: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  sheet: {
-    backgroundColor: COLORS.container,
-    borderTopLeftRadius: RADIUS.xl,
-    borderTopRightRadius: RADIUS.xl,
-    padding: SPACING.md,
-  },
-  sheetActions: { paddingHorizontal: SPACING.md },
-});

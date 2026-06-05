@@ -1,12 +1,12 @@
 import { AddButton } from "@/components/AddButton";
-import { COLORS } from "@liftledger/shared";
-import { Exercise } from "@liftledger/shared";
+import { DARK_COLORS, Exercise } from "@liftledger/shared";
 import { FaTrash } from "react-icons/fa";
 import { SetList } from "./SetList";
 import { AddExerciseDialog } from "./AddExerciseDialog";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
 import { useState } from "react";
 import { isExerciseComplete, useCurrentDay } from "@liftledger/api-client";
+import { useTheme } from "@/providers/ThemeProvider";
 
 interface Props {
   exercises: Exercise[];
@@ -18,6 +18,7 @@ export const ExerciseList = ({ exercises, isEditing, containerRef }: Props) => {
   const { currentExIdx } = useCurrentDay();
   const [addExerciseIdx, setAddExerciseIdx] = useState<number>();
   const [deletingIdx, setDeletingIdx] = useState<number>();
+  const { colors } = useTheme();
 
   return (
     <>
@@ -33,14 +34,14 @@ export const ExerciseList = ({ exercises, isEditing, containerRef }: Props) => {
               className={`d-flex flex-column align-items-center w-100 rounded overflow-hidden mb-${
                 idx === exercises.length - 1 ? "3" : "4"
               }`}
-              style={{ boxShadow: "0px 5px 10px #131314" }}
+              style={{ boxShadow: `0px 5px 10px ${colors.dark}` }}
             >
               <div
                 className="w-100 d-flex align-items-center justify-content-center px-2 position-relative"
                 style={{
                   background: isExerciseComplete(exercise)
                     ? COLORS.success
-                    : COLORS.dark,
+                    : colors.dark,
                 }}
               >
                 {exercise.addedOn && (
@@ -48,7 +49,7 @@ export const ExerciseList = ({ exercises, isEditing, containerRef }: Props) => {
                     className="position-absolute top-0 end-0 px-2 py-1 fw-semibold"
                     style={{
                       fontSize: "10px",
-                      background: COLORS.container,
+                      background: DARK_COLORS.container,
                       color: "white",
                       borderBottomLeftRadius: 6,
                       letterSpacing: "0.05em",

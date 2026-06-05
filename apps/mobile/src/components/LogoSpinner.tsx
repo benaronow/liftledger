@@ -1,6 +1,6 @@
-import { COLORS } from "@liftledger/shared";
 import { useEffect, useRef } from "react";
-import { Animated, Easing, StyleSheet, View } from "react-native";
+import { Animated, Easing, View } from "react-native";
+import { useTheme } from "../providers/ThemeProvider";
 
 // Full-screen spinning logo, mirroring web's LogoSpinner (spin + fade-in).
 export const LogoSpinner = () => {
@@ -28,22 +28,21 @@ export const LogoSpinner = () => {
     outputRange: ["0deg", "360deg"],
   });
 
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: colors.background,
+      }}
+    >
       <Animated.Image
         source={require("../../assets/logo.png")}
-        style={[styles.logo, { opacity, transform: [{ rotate }] }]}
+        style={{ height: 50, width: 50, opacity, transform: [{ rotate }] }}
       />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.background,
-  },
-  logo: { height: 50, width: 50 },
-});

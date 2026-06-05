@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import { Layout } from "./Layout";
-import { Welcome } from "./Login";
+import { Welcome } from "./Welcome";
 import { Dashboard } from "./Dashboard";
 import { History } from "./History";
 import { Progress } from "./Progress";

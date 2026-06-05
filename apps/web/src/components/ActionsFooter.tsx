@@ -1,7 +1,8 @@
-import { COLORS } from "@liftledger/shared";
+import { DARK_COLORS } from "@liftledger/shared";
 import { ReactNode, useState } from "react";
 import { ActionButton, Variant } from "./ActionButton";
 import { IoClose, IoMenu } from "react-icons/io5";
+import { useTheme } from "@/providers/ThemeProvider";
 
 export interface FooterAction {
   icon: ReactNode;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export const ActionsFooter = ({ actions }: Props) => {
+  const { colors } = useTheme();
   const [expanded, setExpanded] = useState(false);
 
   const primaryAction = actions[0];
@@ -27,7 +29,7 @@ export const ActionsFooter = ({ actions }: Props) => {
       style={{
         bottom: 0,
         zIndex: 2,
-        background: COLORS.primary,
+        background: DARK_COLORS.primary,
         borderRadius: "20px 20px 0 0",
         overflow: "hidden",
         boxShadow: "0px -4px 15px rgba(0,0,0,0.5)",
@@ -39,7 +41,7 @@ export const ActionsFooter = ({ actions }: Props) => {
             maxHeight: expanded ? "75px" : "0px",
             overflow: "hidden",
             transition: "max-height 0.2s ease",
-            background: COLORS.container,
+            background: colors.container,
           }}
         >
           <div className="d-flex align-items-center justify-content-around px-3 py-2 gap-2">

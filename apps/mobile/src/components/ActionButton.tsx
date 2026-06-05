@@ -3,7 +3,6 @@ import { ReactNode } from "react";
 import {
   Pressable,
   StyleProp,
-  StyleSheet,
   Text,
   ViewStyle,
 } from "react-native";
@@ -104,34 +103,27 @@ export const ActionButton = ({
       onPress={disabled ? undefined : onPress}
       disabled={disabled}
       style={[
-        styles.button,
-        roundedStyle(roundedSide),
         {
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: SPACING.sm,
+          paddingHorizontal: SPACING.sm,
+          paddingVertical: SPACING.xs,
           backgroundColor: background,
           height: height ?? 35,
           // Full-width by default (web parity); callers in a row wrap in a flex
           // cell or pass an explicit width.
           width: width ?? "100%",
+          ...roundedStyle(roundedSide),
         },
         style,
       ]}
     >
       {label && (
-        <Text style={[styles.label, { color: foreground }]}>{label}</Text>
+        <Text style={{ fontWeight: "700", fontSize: FONT.base, color: foreground }}>{label}</Text>
       )}
       {icon}
     </Pressable>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: SPACING.sm,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.xs,
-  },
-  label: { fontWeight: "700", fontSize: FONT.base },
-});

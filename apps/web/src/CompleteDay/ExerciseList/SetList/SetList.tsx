@@ -1,7 +1,7 @@
 import {
   Exercise,
   Set,
-  COLORS,
+  DARK_COLORS,
   getCompletedDaysInBlock,
 } from "@liftledger/shared";
 import { RefObject, useCallback, useEffect, useMemo, useState } from "react";
@@ -12,6 +12,7 @@ import { ProgressIcon } from "./ProgressIcon";
 import { isExerciseComplete, useMe, useBlock } from "@liftledger/api-client";
 import { computeProgress } from "./computeProgress";
 import { SubmitSetDialog } from "./SubmitSetDialog/SubmitSetDialog";
+import { useTheme } from "@/providers/ThemeProvider";
 
 interface Props {
   exercise: Exercise;
@@ -27,6 +28,7 @@ export const SetList = ({
   const { data: curUser } = useMe();
   const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
   const [editingSetIdx, setEditingSetIdx] = useState<number>();
+  const { colors } = useTheme();
 
   // Progress icons compare against history *within this block only*. Using
   // completedExercises.previous (which spans all blocks) was making a freshly
@@ -59,12 +61,12 @@ export const SetList = ({
 
   const getBackground = (set: Set, nextSet: boolean) =>
     set.completed
-      ? COLORS.primary
+      ? DARK_COLORS.primary
       : set.skipped
-        ? COLORS.primaryDark
+        ? DARK_COLORS.primaryDark
         : nextSet
-          ? COLORS.secondary
-          : COLORS.primaryDisabled;
+          ? DARK_COLORS.secondary
+          : DARK_COLORS.primaryDisabled;
 
   const getDiffs = useCallback(
     (setIdx: number) => {
@@ -119,7 +121,7 @@ export const SetList = ({
     <div
       className="d-flex flex-column w-100 text-white p-2 gap-2"
       style={{
-        background: COLORS.container,
+        background: colors.container,
       }}
     >
       {exercise.sets.map((set, i) => (
