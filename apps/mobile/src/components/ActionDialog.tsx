@@ -4,6 +4,7 @@ import {
   Modal,
   Platform,
   Pressable,
+  StyleSheet,
   Text,
   View,
 } from "react-native";
@@ -37,7 +38,9 @@ export const ActionDialog = ({
   actions,
   saving,
 }: Props) => {
-  const { colors } = useTheme();
+  const { colors, scheme } = useTheme();
+  const dividerColor =
+    scheme === "dark" ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)";
   return (
   <Modal
     visible={open}
@@ -54,69 +57,81 @@ export const ActionDialog = ({
           flex: 1,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "rgba(0,0,0,0.5)",
+          backgroundColor: "rgba(0,0,0,0.6)",
           paddingHorizontal: SPACING.xl,
         }}
         onPress={saving ? undefined : onClose}
       >
-        <Pressable
+        <View
           style={{
             width: "100%",
-            maxWidth: 420,
-            borderRadius: RADIUS.md,
-            overflow: "hidden",
+            maxWidth: 320,
+            borderRadius: RADIUS.xl,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: 0.35,
+            shadowRadius: 16,
+            elevation: 12,
           }}
-          onPress={() => {}}
         >
-          <View
+          <Pressable
             style={{
-              alignItems: "center",
-              justifyContent: "center",
-              padding: SPACING.sm,
-              backgroundColor: colors.dark,
+              borderRadius: RADIUS.xl,
+              overflow: "hidden",
+              backgroundColor: colors.background,
             }}
+            onPress={() => {}}
           >
-            <Text style={{ fontSize: FONT.lg, fontWeight: "600", color: colors.text }}>{title}</Text>
-          </View>
-          <View
-            style={{
-              alignItems: "center",
-              padding: SPACING.sm,
-              gap: SPACING.sm,
-              backgroundColor: colors.container,
-              ...(actions.length === 0 && {
-                borderBottomLeftRadius: RADIUS.md,
-                borderBottomRightRadius: RADIUS.md,
-              }),
-            }}
-          >
-            {children}
-          </View>
-          {actions.length !== 0 && (
             <View
               style={{
-                flexDirection: "row",
                 alignItems: "center",
-                justifyContent: "space-between",
-                gap: SPACING.sm,
-                padding: SPACING.sm,
-                backgroundColor: colors.dark,
+                padding: SPACING.lg,
+                gap: SPACING.md,
               }}
             >
-              {actions.map((action, idx) => (
-                <View key={idx} style={{ flex: 1 }}>
-                  <ActionButton
-                    icon={action.icon}
-                    onPress={action.onPress}
-                    disabled={action.disabled}
-                    variant={action.variant}
-                    height={55}
-                  />
-                </View>
-              ))}
+              <Text
+                style={{
+                  fontSize: FONT.lg,
+                  fontWeight: "700",
+                  color: colors.text,
+                  textAlign: "center",
+                }}
+              >
+                {title}
+              </Text>
+              <View style={{ width: "100%", alignItems: "center", gap: SPACING.sm }}>
+                {children}
+              </View>
             </View>
-          )}
-        </Pressable>
+            {actions.length !== 0 && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: SPACING.sm,
+                  paddingHorizontal: SPACING.lg,
+                  paddingBottom: SPACING.lg,
+                  paddingTop: SPACING.md,
+                  borderTopWidth: StyleSheet.hairlineWidth,
+                  borderTopColor: dividerColor,
+                }}
+              >
+                {actions.map((action, idx) => (
+                  <View key={idx} style={{ flex: 1 }}>
+                    <ActionButton
+                      icon={action.icon}
+                      onPress={action.onPress}
+                      disabled={action.disabled}
+                      variant={action.variant}
+                      height={44}
+                    />
+                  </View>
+                ))}
+              </View>
+            )}
+          </Pressable>
+        </View>
       </Pressable>
     </KeyboardAvoidingView>
   </Modal>

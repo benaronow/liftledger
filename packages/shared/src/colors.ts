@@ -22,7 +22,7 @@ export const DARK_COLORS: ColorPalette = {
   primary: "#0096FF",
   primaryDark: "#004b7f",
   primaryDisabled: "#317baf",
-  secondary: "#BA209E",
+  secondary: "#ff40ed",
   dark: "#131314",
   container: "#58585b",
   text: "#ffffff",

@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { KeyboardTypeOptions, TextInput } from "react-native";
 import { useTheme } from "../../providers/ThemeProvider";
 import { FONT, RADIUS, SPACING } from "../../theme";
@@ -32,6 +32,12 @@ export const LabeledTextInput = ({
   onBlur,
 }: Props) => {
   const { colors } = useTheme();
+  const [focused, setFocused] = useState(false);
+  const borderColor = error
+    ? colors.danger
+    : focused
+    ? colors.primary
+    : colors.textDisabled;
   return (
   <LabeledInputContainer label={label} error={error} renderEnd={renderEnd}>
     <TextInput
@@ -41,6 +47,8 @@ export const LabeledTextInput = ({
         paddingHorizontal: SPACING.sm,
         paddingVertical: SPACING.xs,
         borderRadius: RADIUS.md,
+        borderWidth: 2,
+        borderColor,
         color: "black",
         height: height ?? 35,
         backgroundColor: editable ? "white" : colors.textDisabled,
@@ -50,9 +58,14 @@ export const LabeledTextInput = ({
       }}
       value={value}
       onChangeText={onChangeText}
-      onBlur={onBlur}
+      onFocus={() => setFocused(true)}
+      onBlur={() => {
+        setFocused(false);
+        onBlur?.();
+      }}
       placeholder={placeholder}
       placeholderTextColor={colors.textDisabled}
+      selectionColor={colors.primary}
       editable={editable}
       secureTextEntry={secureTextEntry}
       keyboardType={keyboardType}

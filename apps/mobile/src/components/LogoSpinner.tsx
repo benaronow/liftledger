@@ -12,7 +12,9 @@ export const LogoSpinner = () => {
       Animated.timing(spin, {
         toValue: 1,
         duration: 1000,
-        easing: Easing.linear,
+        // Matches web's CSS `ease` (cubic-bezier(0.25, 0.1, 0.25, 1)) applied
+        // per iteration — accelerates then decelerates on each rotation.
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
         useNativeDriver: true,
       }),
     ).start();
@@ -40,6 +42,7 @@ export const LogoSpinner = () => {
       }}
     >
       <Animated.Image
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         source={require("../../assets/logo.png")}
         style={{ height: 50, width: 50, opacity, transform: [{ rotate }] }}
       />

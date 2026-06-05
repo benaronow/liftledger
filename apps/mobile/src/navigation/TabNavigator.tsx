@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Image } from "react-native";
 import { useTheme } from "../providers/ThemeProvider";
 import { Progress } from "../Progress";
 import { Dashboard } from "../Dashboard/Dashboard";
@@ -19,9 +18,14 @@ export const TabNavigator = () => {
       initialRouteName="Dashboard"
       screenOptions={{
         headerShown: false,
-        tabBarShowLabel: false,
-        tabBarStyle: { borderTopWidth: 0, backgroundColor: colors.dark },
-        tabBarActiveTintColor: colors.primary,
+        tabBarShowLabel: true,
+        tabBarLabelStyle: { fontSize: 10 },
+        tabBarStyle: {
+          borderTopWidth: 0,
+          backgroundColor: colors.dark,
+          paddingHorizontal: 10,
+        },
+        tabBarActiveTintColor: colors.secondary,
         tabBarInactiveTintColor: colors.textDisabled,
       }}
     >
@@ -50,12 +54,8 @@ export const TabNavigator = () => {
         component={Dashboard}
         options={{
           title: "Home",
-          tabBarIcon: () => (
-            <Image
-              // eslint-disable-next-line @typescript-eslint/no-require-imports
-              source={require("../../assets/logo.png")}
-              style={{ height: 32, width: 32 }}
-            />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home" size={size} color={color} />
           ),
         }}
       />
