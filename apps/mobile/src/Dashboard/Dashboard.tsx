@@ -2,16 +2,19 @@ import { useBlock, useMe } from "@liftledger/api-client";
 import { Day, Exercise, Set } from "@liftledger/shared";
 import { useNavigation } from "@react-navigation/native";
 import dayjs from "dayjs";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Text, TouchableRipple, useTheme } from "../paper";
 import { LogoSpinner } from "../components/LogoSpinner";
-import type { TabNav } from "../navigation/types";
-import { useTheme } from "../providers/ThemeProvider";
+import { floatingTabBarClearance } from "../RootNavigator/TabNavigator/FloatingTabBar";
+import type { TabNav } from "../RootNavigator/types";
 import { FONT, RADIUS, SPACING } from "../theme";
 
 export const Dashboard = () => {
   const navigation = useNavigation<TabNav<"Dashboard">>();
   const { data: curUser } = useMe();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const { data: curBlock, isLoading: curBlockLoading } = useBlock(
     curUser?._id,
     curUser?.curBlock,
@@ -110,6 +113,7 @@ export const Dashboard = () => {
         justifyContent: "space-evenly",
         paddingVertical: SPACING.lg,
         paddingHorizontal: SPACING.lg,
+        paddingBottom: floatingTabBarClearance(insets.bottom),
       }}
     >
       <View style={{ alignItems: "center", marginBottom: SPACING.sm }}>
@@ -178,7 +182,7 @@ export const Dashboard = () => {
               </Text>
             </View>
           ))}
-          <Pressable
+          <TouchableRipple
             style={{
               width: "100%",
               height: 60,
@@ -201,7 +205,7 @@ export const Dashboard = () => {
             >
               Lift!
             </Text>
-          </Pressable>
+          </TouchableRipple>
         </>
       )}
     </ScrollView>

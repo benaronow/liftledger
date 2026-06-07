@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useBlock, useMe } from "@liftledger/api-client";
 import { useState } from "react";
 import { ActionsFooter, FooterAction } from "../../components/ActionsFooter";
@@ -17,7 +17,7 @@ export const EditBlockFooter = () => {
     editingDayIdx !== -1
       ? [
           {
-            icon: <Ionicons name="chevron-back" size={20} color="white" />,
+            icon: <MaterialCommunityIcons name="chevron-left" size={20} color="white" />,
             label: "Return to week",
             onPress: () => setEditingDayIdx(-1),
             variant: "primary",
@@ -25,7 +25,7 @@ export const EditBlockFooter = () => {
         ]
       : [
           {
-            icon: <Ionicons name="save" size={18} color="white" />,
+            icon: <MaterialCommunityIcons name="content-save" size={18} color="white" />,
             label: "Save",
             onPress: () => setSaveDialogOpen(true),
             disabled: templateErrors.length > 0,
@@ -34,7 +34,7 @@ export const EditBlockFooter = () => {
           ...(curBlock
             ? [
                 {
-                  icon: <Ionicons name="stop-circle" size={20} color="white" />,
+                  icon: <MaterialCommunityIcons name="stop-circle" size={20} color="white" />,
                   label: "Quit Block",
                   onPress: () => setQuitDialogOpen(true),
                   variant: "danger",

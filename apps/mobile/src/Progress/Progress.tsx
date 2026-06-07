@@ -5,8 +5,10 @@ import {
 } from "@liftledger/api-client";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LogoSpinner } from "../components/LogoSpinner";
-import { useTheme } from "../providers/ThemeProvider";
+import { floatingTabBarClearance } from "../RootNavigator/TabNavigator/FloatingTabBar";
+import { Surface, useTheme } from "../paper";
 import { SPACING } from "../theme";
 import { ExerciseSelector } from "./ExerciseSelector";
 import { ProgressChart } from "./ProgressChart";
@@ -14,6 +16,7 @@ import { ProgressChart } from "./ProgressChart";
 export const Progress = () => {
   const { data: curUser, isLoading: isUserLoading } = useMe();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const { data: completedExercises, isLoading: completedExercisesLoading } =
     useCompletedExercises(curUser?._id);
   const { allExerciseNameOptions, allExerciseApparatusOptions } =
@@ -70,20 +73,45 @@ export const Progress = () => {
     <View
       style={{
         flex: 1,
-        paddingVertical: SPACING.lg,
+        paddingBottom: floatingTabBarClearance(insets.bottom),
         backgroundColor: colors.background,
       }}
     >
-      <ExerciseSelector
-        selectedName={selectedName}
-        selectedApparatus={selectedApparatus}
-        setSelectedName={setSelectedName}
-        setSelectedApparatus={setSelectedApparatus}
-      />
-      <ProgressChart
-        selectedName={selectedName}
-        selectedApparatus={selectedApparatus}
-      />
+      <View
+        style={{
+          flexDirection: "column",
+          backgroundColor: colors.dark,
+          marginBottom: SPACING.lg,
+        }}
+      >
+        <ExerciseSelector
+          selectedName={selectedName}
+          selectedApparatus={selectedApparatus}
+          setSelectedName={setSelectedName}
+          setSelectedApparatus={setSelectedApparatus}
+        />
+      </View>
+      <View
+        style={{
+          flex: 1,
+          paddingHorizontal: SPACING.lg,
+          marginBottom: SPACING.sm,
+        }}
+      >
+        <Surface
+          style={{
+            flex: 1,
+            paddingTop: SPACING.lg,
+            paddingBottom: SPACING.sm,
+            borderRadius: 12,
+          }}
+        >
+          <ProgressChart
+            selectedName={selectedName}
+            selectedApparatus={selectedApparatus}
+          />
+        </Surface>
+      </View>
     </View>
   );
 };

@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   getNewSetsFromLatest,
   getUpdatedExercise,
@@ -120,19 +120,19 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
 
   const infoActions: InfoAction[] = [
     {
-      icon: <Ionicons name="chevron-up" size={22} color="white" />,
+      icon: <MaterialCommunityIcons name="chevron-up" size={22} color="white" />,
       disabled: eIdx === 0,
       onPress: () => handleMoveExercise("up"),
       variant: "primary",
     },
     {
-      icon: <Ionicons name="chevron-down" size={22} color="white" />,
+      icon: <MaterialCommunityIcons name="chevron-down" size={22} color="white" />,
       disabled: eIdx === visibleExerciseCount - 1,
       onPress: () => handleMoveExercise("down"),
       variant: "primary",
     },
     {
-      icon: <Ionicons name="trash" size={20} color="white" />,
+      icon: <MaterialCommunityIcons name="delete" size={20} color="white" />,
       disabled: curDayExercises.length === 1,
       onPress: () => onRequestDelete(eIdx),
       variant: "danger",

@@ -1,11 +1,7 @@
-import { COLORS } from "@liftledger/shared";
 import { ReactNode } from "react";
-import {
-  Pressable,
-  StyleProp,
-  Text,
-  ViewStyle,
-} from "react-native";
+import { StyleProp, View, ViewStyle } from "react-native";
+import { Text, TouchableRipple, useTheme } from "../paper";
+import type { AppColors } from "../paperTheme";
 import { FONT, RADIUS, SPACING } from "../theme";
 
 export type Variant =
@@ -15,33 +11,33 @@ export type Variant =
   | "dangerInverted";
 
 // Mirrors web's ActionButton variant table. Returns both the fill and the
-// foreground color so callers can tint their (vector) icon to match the label —
-// web got this free via CSS color inheritance; RN icons need the color passed.
+// foreground color so callers can tint their (vector) icon to match the label.
 export const variantColors = (
   variant: Variant | undefined,
   disabled: boolean | undefined,
+  colors: AppColors,
 ): { background: string; foreground: string } => {
   switch (variant) {
     case "primaryInverted":
       return {
-        background: disabled ? COLORS.textDisabled : "white",
-        foreground: disabled ? COLORS.primaryDisabled : COLORS.primary,
+        background: disabled ? colors.textDisabled : "white",
+        foreground: disabled ? colors.primaryDisabled : colors.primary,
       };
     case "danger":
       return {
-        background: disabled ? COLORS.dangerDisabled : COLORS.danger,
-        foreground: disabled ? COLORS.textDisabled : "white",
+        background: disabled ? colors.dangerDisabled : colors.danger,
+        foreground: disabled ? colors.textDisabled : "white",
       };
     case "dangerInverted":
       return {
-        background: disabled ? COLORS.textDisabled : "white",
-        foreground: disabled ? COLORS.dangerDisabled : COLORS.danger,
+        background: disabled ? colors.textDisabled : "white",
+        foreground: disabled ? colors.dangerDisabled : colors.danger,
       };
     case "primary":
     default:
       return {
-        background: disabled ? COLORS.primaryDisabled : COLORS.primary,
-        foreground: disabled ? COLORS.textDisabled : "white",
+        background: disabled ? colors.primaryDisabled : colors.primary,
+        foreground: disabled ? colors.textDisabled : "white",
       };
   }
 };
@@ -75,6 +71,8 @@ const roundedStyle = (
 
 interface Props {
   label?: string;
+  // A rendered icon node (MaterialCommunityIcons or an ActivityIndicator while
+  // a button's action is in flight). Tint it to the variant foreground.
   icon: ReactNode;
   onPress: () => void;
   height?: number;
@@ -85,6 +83,9 @@ interface Props {
   style?: StyleProp<ViewStyle>;
 }
 
+// Paper TouchableRipple gives Material press feedback; the colored rectangular
+// fill + variant table are kept so every existing call site (full-width CTAs,
+// icon-only footer buttons, grouped input adornments) renders unchanged.
 export const ActionButton = ({
   label,
   icon,
@@ -96,20 +97,16 @@ export const ActionButton = ({
   roundedSide,
   style,
 }: Props) => {
-  const { background, foreground } = variantColors(variant, disabled);
+  const { colors } = useTheme();
+  const { background, foreground } = variantColors(variant, disabled, colors);
 
   return (
-    <Pressable
+    <TouchableRipple
       onPress={disabled ? undefined : onPress}
       disabled={disabled}
       style={[
         {
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: SPACING.sm,
-          paddingHorizontal: SPACING.sm,
-          paddingVertical: SPACING.xs,
+          overflow: "hidden",
           backgroundColor: background,
           height: height ?? 35,
           // Full-width by default (web parity); callers in a row wrap in a flex
@@ -120,10 +117,24 @@ export const ActionButton = ({
         style,
       ]}
     >
-      {label && (
-        <Text style={{ fontWeight: "700", fontSize: FONT.base, color: foreground }}>{label}</Text>
-      )}
-      {icon}
-    </Pressable>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: SPACING.sm,
+          paddingHorizontal: SPACING.sm,
+          paddingVertical: SPACING.xs,
+        }}
+      >
+        {label && (
+          <Text style={{ fontWeight: "700", fontSize: FONT.base, color: foreground }}>
+            {label}
+          </Text>
+        )}
+        {icon}
+      </View>
+    </TouchableRipple>
   );
 };

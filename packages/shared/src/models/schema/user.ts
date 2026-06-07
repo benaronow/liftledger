@@ -4,8 +4,8 @@ const userSchema: Schema = new Schema(
   {
     auth0Id: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
-    firstName: { type: String },
-    lastName: { type: String },
+    fullName: { type: String, required: true },
+    birthday: { type: Date, required: true },
     blocks: { type: [{ type: Schema.Types.ObjectId, ref: "Block" }] },
     curBlock: { type: Schema.Types.ObjectId, ref: "Block" },
     timerEnd: { type: Date },

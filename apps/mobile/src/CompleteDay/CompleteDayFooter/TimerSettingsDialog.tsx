@@ -1,4 +1,4 @@
-import { ActionDialog } from "../../components/ActionDialog";
+import { Dialog } from "../../paper";
 import { TimerSettings } from "../TimerSettings";
 
 interface Props {
@@ -10,8 +10,8 @@ export const TimerSettingsDialog = ({ open, onClose }: Props) => {
   if (!open) return null;
 
   return (
-    <ActionDialog open onClose={onClose} title="Start Timer" actions={[]}>
+    <Dialog visible={open} onDismiss={onClose}>
       <TimerSettings onTimerStarted={onClose} />
-    </ActionDialog>
+    </Dialog>
   );
 };

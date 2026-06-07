@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
 import { ActionsFooter, FooterAction } from "../../components/ActionsFooter";
 import { useCurrentDay, useMe, useTimerEnd } from "@liftledger/api-client";
@@ -30,28 +30,28 @@ export const CompleteDayFooter = ({
   const defaultFooterActions: FooterAction[] = useMemo(
     () => [
       {
-        icon: <Ionicons name="checkmark" size={20} color="white" />,
+        icon: <MaterialCommunityIcons name="check" size={20} color="white" />,
         label: "Finish",
         onPress: () => setFinishDayDialogOpen(true),
         disabled: !isDayComplete,
         variant: "primary",
       },
       {
-        icon: <Ionicons name="business" size={20} color="white" />,
+        icon: <MaterialCommunityIcons name="office-building" size={20} color="white" />,
         label: "Gym",
         onPress: () => setEditGymDialogOpen(true),
         disabled: isDayStarted,
         variant: "primary",
       },
       {
-        icon: <Ionicons name="timer-outline" size={20} color="white" />,
+        icon: <MaterialCommunityIcons name="timer-outline" size={20} color="white" />,
         label: "Timer",
         onPress: () => setTimerDialogOpen(true),
         disabled: !!timerEndData?.timerEnd,
         variant: "primary",
       },
       {
-        icon: <Ionicons name="create" size={20} color="white" />,
+        icon: <MaterialCommunityIcons name="pencil" size={20} color="white" />,
         label: "Edit",
         onPress: () => setIsEditing(true),
         variant: "primary",
@@ -62,7 +62,7 @@ export const CompleteDayFooter = ({
 
   const editingFooterActions: FooterAction[] = [
     {
-      icon: <Ionicons name="close" size={20} color="white" />,
+      icon: <MaterialCommunityIcons name="close" size={20} color="white" />,
       label: "Stop Editing",
       onPress: () => setIsEditing(false),
       variant: "primary",

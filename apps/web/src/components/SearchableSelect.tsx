@@ -110,7 +110,7 @@ export const SearchableSelect = ({
           className="w-100 rounded px-2 py-1 border-0"
           style={{
             fontSize: "16px",
-            outlineColor: COLORS.primary,
+            outlineColor: colors.primary,
             background: "white",
             height: 35,
           }}

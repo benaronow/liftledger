@@ -1,6 +1,6 @@
 import { Exercise } from "@liftledger/shared";
 import { Dispatch, SetStateAction, useMemo } from "react";
-import { Text } from "react-native";
+import { Text } from "../../../../paper";
 import {
   findLatestOccurrence,
   useCompletedExercises,

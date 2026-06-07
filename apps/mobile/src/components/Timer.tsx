@@ -1,9 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useClearTimerEnd, useMe, useTimerEnd } from "@liftledger/api-client";
 import { useEffect, useMemo, useState } from "react";
-import { Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "../providers/ThemeProvider";
+import { Surface, Text, TouchableRipple, useTheme } from "../paper";
 import { FONT, RADIUS, SPACING } from "../theme";
 
 const buttonStyle = {
@@ -55,7 +54,8 @@ export const Timer = () => {
   if (!timerEnd) return null;
 
   return (
-    <View
+    <Surface
+      elevation={3}
       style={{
         position: "absolute",
         right: SPACING.md,
@@ -65,18 +65,13 @@ export const Timer = () => {
         height: 50,
         borderRadius: RADIUS.md,
         zIndex: 100,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.9,
-        shadowRadius: 15,
-        elevation: 12,
         top: insets.top + 50,
         backgroundColor: colors.container,
-        shadowColor: colors.dark,
       }}
     >
       {open ? (
         <>
-          <Pressable
+          <TouchableRipple
             style={{
               ...buttonStyle,
               borderTopLeftRadius: RADIUS.md,
@@ -85,10 +80,12 @@ export const Timer = () => {
             }}
             onPress={() => setOpen(false)}
           >
-            <Ionicons name="chevron-forward" size={28} color="white" />
-          </Pressable>
-          <Text style={{ color: "white", fontWeight: "700", fontSize: FONT.lg }}>{timeString}</Text>
-          <Pressable
+            <MaterialCommunityIcons name="chevron-right" size={28} color="white" />
+          </TouchableRipple>
+          <Text style={{ color: "white", fontWeight: "700", fontSize: FONT.lg }}>
+            {timeString}
+          </Text>
+          <TouchableRipple
             style={{
               ...buttonStyle,
               borderTopRightRadius: RADIUS.md,
@@ -97,11 +94,11 @@ export const Timer = () => {
             }}
             onPress={() => curUser?._id && triggerClearTimerEnd(curUser._id)}
           >
-            <Ionicons name="close" size={28} color="white" />
-          </Pressable>
+            <MaterialCommunityIcons name="close" size={28} color="white" />
+          </TouchableRipple>
         </>
       ) : (
-        <Pressable
+        <TouchableRipple
           style={{
             ...buttonStyle,
             borderRadius: RADIUS.md,
@@ -110,9 +107,9 @@ export const Timer = () => {
           }}
           onPress={() => setOpen(true)}
         >
-          <Ionicons name="timer-outline" size={28} color="white" />
-        </Pressable>
+          <MaterialCommunityIcons name="timer-outline" size={28} color="white" />
+        </TouchableRipple>
       )}
-    </View>
+    </Surface>
   );
 };

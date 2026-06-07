@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { TimerPresets } from "@liftledger/shared";
 import {
   useMe,
@@ -7,7 +7,8 @@ import {
   useUpdateTimerPresets,
 } from "@liftledger/api-client";
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { Text } from "../paper";
 import { ActionButton } from "../components/ActionButton";
 import { LabeledSelect } from "../components/inputs";
 import { SPACING } from "../theme";
@@ -115,8 +116,8 @@ export const TimerSettings = ({ onTimerStarted }: Props) => {
             )}
             <ActionButton
               icon={
-                <Ionicons
-                  name={isEditing ? "save" : "create"}
+                <MaterialCommunityIcons
+                  name={isEditing ? "content-save" : "pencil"}
                   size={18}
                   color="white"
                 />

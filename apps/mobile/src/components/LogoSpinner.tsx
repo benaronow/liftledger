@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Animated, Easing, View } from "react-native";
-import { useTheme } from "../providers/ThemeProvider";
+import { useTheme } from "../paper";
 
 // Full-screen spinning logo, mirroring web's LogoSpinner (spin + fade-in).
 export const LogoSpinner = () => {

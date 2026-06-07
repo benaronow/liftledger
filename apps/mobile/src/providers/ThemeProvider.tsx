@@ -1,9 +1,5 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  ColorPalette,
-  DARK_COLORS,
-  LIGHT_COLORS,
-} from "@liftledger/shared";
 import {
   createContext,
   PropsWithChildren,
@@ -13,11 +9,15 @@ import {
   useState,
 } from "react";
 import { useColorScheme } from "react-native";
+import { PaperProvider } from "react-native-paper";
+import { AppDarkTheme, AppLightTheme } from "../paperTheme";
 
 export type ThemePreference = "light" | "dark" | "system";
 
-interface ThemeContextValue {
-  colors: ColorPalette;
+// Color access app-wide goes through Paper's `useTheme()`. This context only
+// owns what Paper doesn't: the user's light/dark/system preference (persisted)
+// and the resolved scheme, which decides which Paper theme to provide.
+interface ThemePreferenceValue {
   /** The currently rendered scheme ("light" or "dark") */
   scheme: "light" | "dark";
   /** The stored user preference */
@@ -27,8 +27,7 @@ interface ThemeContextValue {
 
 const STORAGE_KEY = "@liftledger/theme";
 
-const ThemeContext = createContext<ThemeContextValue>({
-  colors: DARK_COLORS,
+const ThemePreferenceContext = createContext<ThemePreferenceValue>({
   scheme: "dark",
   preference: "system",
   setPreference: () => undefined,
@@ -55,13 +54,22 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   const scheme = preference === "system" ? systemScheme : preference;
-  const colors = scheme === "light" ? LIGHT_COLORS : DARK_COLORS;
+  const theme = scheme === "light" ? AppLightTheme : AppDarkTheme;
 
   return (
-    <ThemeContext.Provider value={{ colors, scheme, preference, setPreference }}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemePreferenceContext.Provider value={{ scheme, preference, setPreference }}>
+      <PaperProvider
+        theme={theme}
+        settings={{
+          // Paper's default icon set is MaterialCommunityIcons; source it from
+          // @expo/vector-icons so Expo bundles the font.
+          icon: (props) => <MaterialCommunityIcons {...props} />,
+        }}
+      >
+        {children}
+      </PaperProvider>
+    </ThemePreferenceContext.Provider>
   );
 };
 
-export const useTheme = () => useContext(ThemeContext);
+export const useThemePreference = () => useContext(ThemePreferenceContext);

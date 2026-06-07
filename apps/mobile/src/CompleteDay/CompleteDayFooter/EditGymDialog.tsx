@@ -1,7 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "@liftledger/shared";
 import { useState } from "react";
-import { ActivityIndicator } from "react-native";
 import {
   getNewSetsFromLatest,
   useBlock,
@@ -10,7 +7,7 @@ import {
   useUpdateUser,
   useUpdateUserBlock,
 } from "@liftledger/api-client";
-import { ActionDialog, DialogAction } from "../../components/ActionDialog";
+import { ConfirmationDialog } from "../../components/ConfirmationDialog";
 import { SearchableSelect } from "../../components/SearchableSelect";
 
 interface Props {
@@ -81,47 +78,28 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
     }
   };
 
-  const editGymActions: DialogAction[] = [
-    {
-      icon: <Ionicons name="arrow-back" size={26} color={COLORS.primary} />,
-      onPress: onClose,
-      variant: "primaryInverted",
-      disabled: editingGym,
-    },
-    {
-      icon: editingGym ? (
-        <ActivityIndicator color="white" />
-      ) : (
-        <Ionicons name="save" size={24} color="white" />
-      ),
-      onPress: () => handleEditGym(gymName),
-      disabled:
-        gymName ===
-          curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym ||
-        editingGym,
-      variant: "primary",
-    },
-  ];
-
   if (!open) return null;
 
   return (
-    <ActionDialog
-      open
+    <ConfirmationDialog
+      open={open}
       onClose={onClose}
       title="Change Gym"
-      actions={editGymActions}
-      saving={editingGym}
+      onConfirm={() => handleEditGym(gymName)}
+      confirming={editingGym}
+      confirmationDisabled={
+        gymName === curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym
+      }
     >
       <SearchableSelect
-        label="Session Gym:"
+        label="Session Gym"
         value={gymName}
         options={curUser?.gyms || []}
         onSelect={setGymName}
         onAddCustom={handleAddGym}
         canAddCustom
-        placeholder="Please select a gym"
+        placeholder="Select a gym..."
       />
-    </ActionDialog>
+    </ConfirmationDialog>
   );
 };

@@ -1,11 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "@liftledger/shared";
 import { useMe, useQuitBlock } from "@liftledger/api-client";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
-import { ActionDialog, DialogAction } from "../../components/ActionDialog";
-import type { TabNav } from "../../navigation/types";
+import { View } from "react-native";
+import { Text, useTheme } from "../../paper";
+import { ConfirmationDialog } from "../../components/ConfirmationDialog";
+import type { TabNav } from "../../RootNavigator/types";
 import { FONT, SPACING } from "../../theme";
 import { useTemplate } from "../TemplateProvider";
 
@@ -15,6 +14,7 @@ interface Props {
 }
 
 export const QuitBlockDialog = ({ open, onClose }: Props) => {
+  const { colors } = useTheme();
   const navigation = useNavigation<TabNav<"EditBlock">>();
   const { data: curUser } = useMe();
   const { trigger: triggerQuitBlock, isMutating: quitting } = useQuitBlock();
@@ -36,51 +36,32 @@ export const QuitBlockDialog = ({ open, onClose }: Props) => {
     }
   };
 
-  const actions: DialogAction[] = [
-    {
-      icon: <Ionicons name="arrow-back" size={26} color={COLORS.danger} />,
-      onPress: onClose,
-      variant: "dangerInverted",
-      disabled: quitting,
-    },
-    {
-      icon: quitting ? (
-        <ActivityIndicator color="white" />
-      ) : (
-        <Ionicons name="stop-circle" size={26} color="white" />
-      ),
-      onPress: handleQuit,
-      variant: "danger",
-      disabled: quitting,
-    },
-  ];
-
   if (!open) return null;
 
   return (
-    <ActionDialog
+    <ConfirmationDialog
       open={open}
       onClose={onClose}
       title="Quit Block"
-      actions={actions}
-      saving={quitting}
+      onConfirm={handleQuit}
+      confirming={quitting}
     >
       <View style={{ width: "100%", gap: SPACING.md }}>
-        <Text style={{ color: "white", fontSize: FONT.base }}>
+        <Text style={{ color: colors.text, fontSize: FONT.base }}>
           Are you sure you want to quit this block?
         </Text>
         <Text
-          style={{ color: "white", fontSize: FONT.base, fontWeight: "700" }}
+          style={{ color: colors.text, fontSize: FONT.base, fontWeight: "700" }}
         >
           The block will be saved to your history with the weeks completed so
           far.
         </Text>
         {!!error && (
-          <Text style={{ color: COLORS.danger, fontSize: FONT.sm }}>
+          <Text style={{ color: colors.danger, fontSize: FONT.sm }}>
             {error}
           </Text>
         )}
       </View>
-    </ActionDialog>
+    </ConfirmationDialog>
   );
 };

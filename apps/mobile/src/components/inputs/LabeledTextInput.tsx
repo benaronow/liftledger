@@ -1,7 +1,7 @@
-import { ReactNode, useState } from "react";
-import { KeyboardTypeOptions, TextInput } from "react-native";
-import { useTheme } from "../../providers/ThemeProvider";
-import { FONT, RADIUS, SPACING } from "../../theme";
+import { ReactNode } from "react";
+import { KeyboardTypeOptions } from "react-native";
+import { TextInput, useTheme } from "../../paper";
+import { FONT, RADIUS } from "../../theme";
 import { LabeledInputContainer } from "./LabeledInputContainer";
 
 interface Props {
@@ -18,6 +18,9 @@ interface Props {
   onBlur?: () => void;
 }
 
+// The label/error chrome lives in LabeledInputContainer, so the Paper TextInput
+// runs label-less. Kept as a compact white field (parity with the pre-Paper UI);
+// Paper handles the focus/error outline coloring.
 export const LabeledTextInput = ({
   label,
   error,
@@ -32,46 +35,41 @@ export const LabeledTextInput = ({
   onBlur,
 }: Props) => {
   const { colors } = useTheme();
-  const [focused, setFocused] = useState(false);
-  const borderColor = error
-    ? colors.danger
-    : focused
-    ? colors.primary
-    : colors.textDisabled;
   return (
-  <LabeledInputContainer label={label} error={error} renderEnd={renderEnd}>
-    <TextInput
-      style={{
-        flex: 1,
-        fontSize: FONT.base,
-        paddingHorizontal: SPACING.sm,
-        paddingVertical: SPACING.xs,
-        borderRadius: RADIUS.md,
-        borderWidth: 2,
-        borderColor,
-        color: "black",
-        height: height ?? 35,
-        backgroundColor: editable ? "white" : colors.textDisabled,
-        ...(renderEnd
-          ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
-          : null),
-      }}
-      value={value}
-      onChangeText={onChangeText}
-      onFocus={() => setFocused(true)}
-      onBlur={() => {
-        setFocused(false);
-        onBlur?.();
-      }}
-      placeholder={placeholder}
-      placeholderTextColor={colors.textDisabled}
-      selectionColor={colors.primary}
-      editable={editable}
-      secureTextEntry={secureTextEntry}
-      keyboardType={keyboardType}
-      autoCapitalize="none"
-    />
-  </LabeledInputContainer>
+    <LabeledInputContainer label={label} error={error} renderEnd={renderEnd}>
+      <TextInput
+        mode="outlined"
+        label="First name"
+        dense
+        style={{
+          flex: 1,
+          height: height ?? 35,
+          fontSize: FONT.base,
+          backgroundColor: editable ? "white" : colors.textDisabled,
+        }}
+        contentStyle={{ paddingVertical: 0 }}
+        outlineStyle={{
+          borderRadius: RADIUS.md,
+          borderWidth: 2,
+          ...(renderEnd
+            ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
+            : null),
+        }}
+        textColor="black"
+        outlineColor={colors.textDisabled}
+        activeOutlineColor={colors.primary}
+        placeholder={placeholder}
+        placeholderTextColor={colors.textDisabled}
+        selectionColor={colors.primary}
+        value={value}
+        onChangeText={onChangeText}
+        onBlur={onBlur}
+        editable={editable}
+        error={!!error}
+        secureTextEntry={secureTextEntry}
+        keyboardType={keyboardType}
+        autoCapitalize="none"
+      />
+    </LabeledInputContainer>
   );
 };
-

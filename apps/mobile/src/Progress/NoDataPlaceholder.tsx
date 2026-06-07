@@ -1,6 +1,6 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Text, View } from "react-native";
-import { useTheme } from "../providers/ThemeProvider";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { View } from "react-native";
+import { Text, useTheme } from "../paper";
 import { FONT, SPACING } from "../theme";
 
 export const NoDataPlaceholder = () => {
@@ -14,8 +14,8 @@ export const NoDataPlaceholder = () => {
         gap: SPACING.sm,
       }}
     >
-      <Ionicons
-        name="bar-chart-outline"
+      <MaterialCommunityIcons
+        name="chart-bar"
         size={96}
         color={colors.textDisabled}
         style={{ opacity: 0.5 }}

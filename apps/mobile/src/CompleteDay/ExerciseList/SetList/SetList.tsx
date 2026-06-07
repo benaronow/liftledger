@@ -1,15 +1,14 @@
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
-  DARK_COLORS,
   Exercise,
   Set,
   getCompletedDaysInBlock,
 } from "@liftledger/shared";
 import { isExerciseComplete, useBlock, useMe } from "@liftledger/api-client";
 import { useCallback, useMemo, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { View } from "react-native";
+import { Text, TouchableRipple, useTheme } from "../../../paper";
 import { ActionButton } from "../../../components/ActionButton";
-import { useTheme } from "../../../providers/ThemeProvider";
 import { FONT, RADIUS, SPACING } from "../../../theme";
 import { computeProgress } from "./computeProgress";
 import { ProgressIcon } from "./ProgressIcon";
@@ -109,13 +108,13 @@ export const SetList = ({ exercise, isCurrentExercise }: Props) => {
         width: "100%",
         padding: SPACING.sm,
         gap: SPACING.sm,
-        backgroundColor: DARK_COLORS.container,
+        backgroundColor: colors.container,
       }}
     >
       {exercise.sets.map((set, i) => {
         const diffs = getDiffs(i);
         return (
-          <Pressable
+          <TouchableRipple
             key={i}
             style={{
               flexDirection: "row",
@@ -132,51 +131,53 @@ export const SetList = ({ exercise, isCurrentExercise }: Props) => {
                 : undefined
             }
           >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: SPACING.sm }}>
-              <Text style={{ color: "white", fontWeight: "700", fontSize: FONT.sm }}>
-                {`${set.reps} rep${set.reps !== 1 ? "s" : ""}`}
-                {set.completed
-                  ? ` (${getProgressString(diffs.repDiff)})`
-                  : ""}
-              </Text>
-              <Ionicons name="close" size={12} color="white" />
-              <Text style={{ color: "white", fontWeight: "700", fontSize: FONT.sm }}>
-                {`${set.weight}${exercise.weightType}`}
-                {set.completed
-                  ? ` (${getProgressString(diffs.weightDiff)})`
-                  : ""}
-              </Text>
-            </View>
-            <View
-              style={{
-                minWidth: 40,
-                height: 40,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: SPACING.sm }}>
+                <Text style={{ color: "white", fontWeight: "700", fontSize: FONT.sm }}>
+                  {`${set.reps} rep${set.reps !== 1 ? "s" : ""}`}
+                  {set.completed
+                    ? ` (${getProgressString(diffs.repDiff)})`
+                    : ""}
+                </Text>
+                <MaterialCommunityIcons name="close" size={12} color="white" />
+                <Text style={{ color: "white", fontWeight: "700", fontSize: FONT.sm }}>
+                  {`${set.weight}${exercise.weightType}`}
+                  {set.completed
+                    ? ` (${getProgressString(diffs.weightDiff)})`
+                    : ""}
+                </Text>
+              </View>
               <View
                 style={{
-                  position: "absolute",
-                  left: 0,
-                  width: 1,
-                  height: 30,
-                  backgroundColor: "white",
+                  minWidth: 40,
+                  height: 40,
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
-              />
-              <ProgressIcon
-                sign={getProgressSign(i)}
-                isSetComplete={set.completed}
-                isSetSkipped={set.skipped}
-              />
+              >
+                <View
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    width: 1,
+                    height: 30,
+                    backgroundColor: "white",
+                  }}
+                />
+                <ProgressIcon
+                  sign={getProgressSign(i)}
+                  isSetComplete={set.completed}
+                  isSetSkipped={set.skipped}
+                />
+              </View>
             </View>
-          </Pressable>
+          </TouchableRipple>
         );
       })}
       <ActionButton
         label="Add set"
         height={40}
-        icon={<Ionicons name="add-circle-outline" size={20} color="white" />}
+        icon={<MaterialCommunityIcons name="plus-circle-outline" size={20} color="white" />}
         onPress={() => setEditingSetIdx(exercise.sets.length)}
         disabled={!isExerciseComplete(exercise) || exerciseHasSkippedSets}
       />

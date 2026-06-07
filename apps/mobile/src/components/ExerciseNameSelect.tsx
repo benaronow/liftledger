@@ -10,9 +10,6 @@ interface Props {
   label?: string;
 }
 
-// Name picker for an exercise: offers every name option, but flags the ones
-// already taken by a sibling exercise (same apparatus) as unavailable. Mirrors
-// web's ExerciseNameSelect.
 export const ExerciseNameSelect = ({
   curExercise,
   reservedExercises,

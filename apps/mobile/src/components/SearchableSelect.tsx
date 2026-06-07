@@ -1,27 +1,28 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
   Modal,
   Platform,
-  Pressable,
-  Text,
-  TextInput,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "../providers/ThemeProvider";
-import { FONT, RADIUS, SPACING } from "../theme";
-import { LabeledInputContainer } from "./inputs/LabeledInputContainer";
-import { DARK_COLORS } from "../../../../packages/shared/src/colors";
+import {
+  ActivityIndicator,
+  Button,
+  List,
+  Searchbar,
+  Text,
+  TextInput,
+  useTheme,
+} from "../paper";
+import { FONT, SPACING } from "../theme";
+import { TextInput as RNTextInput } from "react-native";
 
 interface Props {
   label?: string;
   value: string;
   options: string[];
-  // Options that exist but can't be picked here (shown as a disabled "… is
-  // unavailable" row when typed) — used by EditBlock's exercise pickers.
   unavailableOptions?: string[];
   onSelect: (value: string) => void;
   onAddCustom?: (value: string) => Promise<void>;
@@ -30,8 +31,6 @@ interface Props {
   placeholder?: string;
 }
 
-// Native replacement for web's SearchableSelect: a tappable field that opens a
-// modal with a search box + filtered list, optionally allowing a custom entry.
 export const SearchableSelect = ({
   label,
   value,
@@ -99,129 +98,127 @@ export const SearchableSelect = ({
     close();
   };
 
-  return (
-    <LabeledInputContainer label={label}>
-      <Pressable
-        style={{
-          flex: 1,
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          height: 35,
-          paddingHorizontal: SPACING.sm,
-          borderRadius: RADIUS.md,
-          backgroundColor: disabled ? colors.textDisabled : "white",
-        }}
-        onPress={disabled ? undefined : () => setOpen(true)}
-        disabled={disabled}
-      >
-        <Text style={{ flex: 1, fontSize: FONT.base, color: "black" }} numberOfLines={1}>
-          {value || placeholder || ""}
-        </Text>
-        <Ionicons name="chevron-down" size={16} color={colors.container} />
-      </Pressable>
+  const inputRef = useRef<RNTextInput | null>(null);
 
+  return (
+    <>
+      <TextInput
+        ref={inputRef}
+        style={{ height: 45 }}
+        outlineStyle={{ borderRadius: 8 }}
+        label={label}
+        mode="outlined"
+        value={value}
+        editable={false}
+        disabled={disabled}
+        onFocus={() => inputRef.current?.blur()}
+        render={({ style, onLayout }) => (
+          <Text
+            style={style}
+            onLayout={onLayout}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            onPress={disabled ? undefined : () => setOpen(true)}
+          >
+            {value}
+          </Text>
+        )}
+      />
       <Modal
         visible={open}
-        transparent
-        animationType="fade"
         onRequestClose={close}
+        animationType="slide"
+        presentationStyle="pageSheet"
       >
-        {/* The sheet is bottom-anchored, so the keyboard would otherwise cover
-            it (and its search box) entirely — lift it above the keyboard. */}
         <KeyboardAvoidingView
-          style={{ flex: 1 }}
+          style={{ flex: 1, backgroundColor: colors.dark }}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <Pressable
+          <View
             style={{
               flex: 1,
-              justifyContent: "flex-end",
-              backgroundColor: "rgba(0,0,0,0.5)",
+              paddingTop:
+                (Platform.OS === "android" ? insets.top : 0) + SPACING.md,
             }}
-            onPress={close}
           >
-            <Pressable
+            <View
               style={{
-                borderTopLeftRadius: RADIUS.xl,
-                borderTopRightRadius: RADIUS.xl,
-                paddingTop: SPACING.md,
-                maxHeight: "60%",
-                backgroundColor: colors.dark,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingLeft: SPACING.lg,
+                paddingRight: SPACING.sm,
+                marginBottom: SPACING.sm,
               }}
-              onPress={() => {}}
             >
-              <TextInput
+              <Text
                 style={{
-                  backgroundColor: "white",
-                  marginHorizontal: SPACING.md,
-                  marginBottom: SPACING.sm,
-                  paddingHorizontal: SPACING.sm,
-                  height: 40,
-                  borderRadius: RADIUS.md,
-                  fontSize: FONT.base,
-                  color: "black",
+                  color: colors.text,
+                  fontSize: FONT.lg,
+                  fontWeight: "600",
                 }}
-                value={query}
-                onChangeText={setQuery}
-                placeholder={placeholder ?? "Search..."}
-                placeholderTextColor={colors.textDisabled}
-                autoFocus
-                autoCapitalize="none"
-              />
-              <FlatList
-                data={filteredOptions}
-                keyboardShouldPersistTaps="handled"
-                keyExtractor={(item) => item}
-                // Trailing space so the last option clears the home indicator /
-                // screen curve, as part of the scroll content.
-                contentContainerStyle={{
-                  paddingBottom: insets.bottom + SPACING.md,
-                }}
-                renderItem={({ item }) => (
-                  <Pressable
-                    style={{
-                      paddingVertical: SPACING.md,
-                      paddingHorizontal: SPACING.lg,
-                      backgroundColor:
-                        item === value ? colors.primary : colors.dark,
-                    }}
-                    onPress={() => handleSelect(item)}
-                  >
-                    <Text style={{ fontSize: FONT.sm, color: "white" }}>{item}</Text>
-                  </Pressable>
-                )}
-                ListFooterComponent={
-                  showAddOrUnavailable ? (
-                    <Pressable
-                      style={{
-                        paddingVertical: SPACING.md,
-                        paddingHorizontal: SPACING.lg,
-                        alignItems: "flex-start",
-                      }}
-                      onPress={isUnavailable ? undefined : handleAddCustom}
-                      disabled={isUnavailable}
-                    >
-                      {addingCustom ? (
+              >
+                {label ?? "Select"}
+              </Text>
+              <Button onPress={close} textColor={colors.primary}>
+                Done
+              </Button>
+            </View>
+            <Searchbar
+              style={{ marginHorizontal: SPACING.md, marginBottom: SPACING.sm }}
+              inputStyle={{ color: "black" }}
+              placeholderTextColor={colors.textDisabled}
+              value={query}
+              onChangeText={setQuery}
+              placeholder={placeholder ?? "Search..."}
+              autoFocus
+              autoCapitalize="none"
+            />
+            <FlatList
+              style={{ flex: 1 }}
+              data={filteredOptions}
+              keyboardShouldPersistTaps="handled"
+              keyExtractor={(item) => item}
+              contentContainerStyle={{
+                paddingBottom: insets.bottom + SPACING.md,
+              }}
+              renderItem={({ item }) => (
+                <List.Item
+                  title={item}
+                  titleStyle={{ color: colors.text }}
+                  style={{
+                    backgroundColor:
+                      item === value ? colors.primary : colors.dark,
+                  }}
+                  onPress={() => handleSelect(item)}
+                />
+              )}
+              ListFooterComponent={
+                showAddOrUnavailable ? (
+                  <List.Item
+                    title={
+                      addingCustom ? (
                         <ActivityIndicator
                           color={colors.primary}
                           size="small"
                         />
+                      ) : isUnavailable ? (
+                        `"${trimmed}" is unavailable`
                       ) : (
-                        <Text style={{ fontSize: FONT.sm, color: DARK_COLORS.primary }}>
-                          {isUnavailable
-                            ? `"${trimmed}" is unavailable`
-                            : `Add "${trimmed}"`}
-                        </Text>
-                      )}
-                    </Pressable>
-                  ) : null
-                }
-              />
-            </Pressable>
-          </Pressable>
+                        `Add "${trimmed}"`
+                      )
+                    }
+                    titleStyle={{ color: colors.primary, fontSize: FONT.sm }}
+                    onPress={isUnavailable ? undefined : handleAddCustom}
+                    disabled={isUnavailable}
+                  />
+                ) : null
+              }
+            />
+          </View>
         </KeyboardAvoidingView>
       </Modal>
-    </LabeledInputContainer>
+      {/* </LabeledInputContainer> */}
+    </>
   );
 };

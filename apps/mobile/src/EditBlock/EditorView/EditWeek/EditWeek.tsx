@@ -160,7 +160,7 @@ export const EditWeek = () => {
           keyboardType="number-pad"
         />
         <SearchableSelect
-          label="Primary Gym:"
+          label="Primary Gym"
           value={templateBlock.primaryGym ?? ""}
           options={curUser?.gyms || []}
           onSelect={setPrimaryGym}

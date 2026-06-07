@@ -1,7 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useBlock, useMe } from "@liftledger/api-client";
-import { COLORS, Day } from "@liftledger/shared";
-import { Text } from "react-native";
+import { Day } from "@liftledger/shared";
+import { Text, useTheme } from "../../../paper";
 import { FONT } from "../../../theme";
 import { Info, InfoAction } from "../Info";
 import { useTemplate } from "../../TemplateProvider";
@@ -14,6 +14,7 @@ interface Props {
 }
 
 export const DayInfo = ({ day, dIdx, hasErrors, onRequestDelete }: Props) => {
+  const { colors } = useTheme();
   const { data: curUser } = useMe();
   const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
   const { templateBlock, setTemplateBlock, editingWeekIdx, setEditingDayIdx } =
@@ -57,30 +58,30 @@ export const DayInfo = ({ day, dIdx, hasErrors, onRequestDelete }: Props) => {
 
   const infoActions: InfoAction[] = [
     {
-      icon: <Ionicons name="chevron-up" size={22} color="white" />,
+      icon: <MaterialCommunityIcons name="chevron-up" size={22} color="white" />,
       disabled: dIdx === curBlock?.curDayIdx || dIdx === 0,
       onPress: () => handleMoveDay(day, dIdx, "up"),
       variant: "primary",
     },
     {
-      icon: <Ionicons name="chevron-down" size={22} color="white" />,
+      icon: <MaterialCommunityIcons name="chevron-down" size={22} color="white" />,
       disabled: dIdx === week.length - 1,
       onPress: () => handleMoveDay(day, dIdx, "down"),
       variant: "primary",
     },
     {
-      icon: <Ionicons name="create" size={22} color="white" />,
+      icon: <MaterialCommunityIcons name="pencil" size={22} color="white" />,
       onPress: () => setEditingDayIdx(dIdx),
       variant: "primary",
     },
     {
-      icon: <Ionicons name="duplicate" size={22} color="white" />,
+      icon: <MaterialCommunityIcons name="content-copy" size={22} color="white" />,
       disabled: week.length > 6,
       onPress: () => handleDuplicateDay(dIdx),
       variant: "primary",
     },
     {
-      icon: <Ionicons name="trash" size={20} color="white" />,
+      icon: <MaterialCommunityIcons name="delete" size={20} color="white" />,
       disabled: week.length === 1,
       onPress: () => onRequestDelete(dIdx),
       variant: "danger",
@@ -108,30 +109,30 @@ export const DayInfo = ({ day, dIdx, hasErrors, onRequestDelete }: Props) => {
       actions={infoActions}
       disabledMessage={disabledMessage}
     >
-      <Text style={boldStyle}>{`Name: ${day.name} [${exerciseCount}]`}</Text>
+      <Text style={boldStyle(colors.text)}>{`Name: ${day.name} [${exerciseCount}]`}</Text>
       {hasListedExercises &&
         day.exercises
           .filter((ex) => !ex.addedOn)
           .map((ex, i) => (
-            <Text style={lineStyle} key={ex._id ?? i}>
+            <Text style={lineStyle(colors.text)} key={ex._id ?? i}>
               {`${i + 1}. ${ex.name} [${ex.sets.filter((s) => !s.addedOn).length}]`}
             </Text>
           ))}
       {hasErrors && (
-        <Text style={errorStyle}>Must add at least one exercise.</Text>
+        <Text style={errorStyle(colors.danger)}>Must add at least one exercise.</Text>
       )}
     </Info>
   );
 };
 
-const boldStyle = {
-  color: "white",
+const boldStyle = (textColor: string) => ({
+  color: textColor,
   fontSize: FONT.sm,
   fontWeight: "700" as const,
-};
-const lineStyle = { color: "white", fontSize: FONT.sm };
-const errorStyle = {
-  color: COLORS.danger,
+});
+const lineStyle = (textColor: string) => ({ color: textColor, fontSize: FONT.sm });
+const errorStyle = (dangerColor: string) => ({
+  color: dangerColor,
   fontSize: FONT.sm,
   fontWeight: "700" as const,
-};
+});

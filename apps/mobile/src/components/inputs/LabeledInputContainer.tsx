@@ -1,7 +1,7 @@
-import { COLORS } from "@liftledger/shared";
 import { ReactNode } from "react";
-import { StyleProp, Text, View, ViewStyle } from "react-native";
-import { FONT, SPACING } from "../../theme";
+import { StyleProp, View, ViewStyle } from "react-native";
+import { HelperText, Text } from "../../paper";
+import { SPACING } from "../../theme";
 
 interface Props {
   children: ReactNode;
@@ -21,11 +21,19 @@ export const LabeledInputContainer = ({
   style,
 }: Props) => (
   <View style={[{ width: "100%", gap: SPACING.xs, alignItems: "flex-start" }, style]}>
-    {label && <Text style={{ fontSize: FONT.sm, fontWeight: "600", color: "white" }}>{label}</Text>}
+    {label && (
+      <Text variant="labelLarge" style={{ fontWeight: "600" }}>
+        {label}
+      </Text>
+    )}
     <View style={{ flexDirection: "row", width: "100%", alignItems: "center" }}>
       {children}
       {renderEnd?.()}
     </View>
-    {error && <Text style={{ fontSize: FONT.xs, color: COLORS.danger }}>{error}</Text>}
+    {error ? (
+      <HelperText type="error" visible padding="none" style={{ paddingTop: 0 }}>
+        {error}
+      </HelperText>
+    ) : null}
   </View>
 );

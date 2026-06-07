@@ -17,8 +17,6 @@ export const EditorView = () => {
         alignItems: "center",
       }}
       keyboardShouldPersistTaps="handled"
-      // Scroll a focused field (block name, day name, weeks) above the
-      // keyboard instead of letting the keyboard cover the lower form.
       automaticallyAdjustKeyboardInsets
     >
       {editingDayIdx === -1 ? <EditWeek /> : <EditDay />}

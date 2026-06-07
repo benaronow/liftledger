@@ -10,8 +10,6 @@ interface Props {
   setSelectedApparatus: (apparatus: string) => void;
 }
 
-const cellStyle = { flex: 1 };
-
 export const ExerciseSelector = ({
   selectedName,
   selectedApparatus,
@@ -22,21 +20,30 @@ export const ExerciseSelector = ({
     useExerciseOptions();
 
   return (
-    <View style={{ flexDirection: "row", gap: SPACING.sm, paddingHorizontal: SPACING.lg, marginBottom: SPACING.md }}>
-      <View style={cellStyle}>
+    <View
+      style={{
+        flexDirection: "row",
+        gap: SPACING.sm,
+        paddingHorizontal: SPACING.lg,
+        marginBottom: SPACING.md,
+      }}
+    >
+      <View style={{ flex: 1 }}>
         <SearchableSelect
+          label="Exercise"
           value={selectedName}
           options={allExerciseNameOptions}
           onSelect={setSelectedName}
-          placeholder="Exercise"
+          placeholder="Enter exercise..."
         />
       </View>
-      <View style={cellStyle}>
+      <View style={{ flex: 1 }}>
         <SearchableSelect
+          label="Apparatus"
           value={selectedApparatus}
           options={allExerciseApparatusOptions}
           onSelect={setSelectedApparatus}
-          placeholder="Apparatus"
+          placeholder="Enter apparatus..."
         />
       </View>
     </View>

@@ -1,9 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
-import { DARK_COLORS } from "@liftledger/shared";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ReactNode } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { Surface, Text, useTheme } from "../../paper";
 import { ActionButton, Variant } from "../../components/ActionButton";
-import { useTheme } from "../../providers/ThemeProvider";
 import { FONT, RADIUS, SPACING } from "../../theme";
 
 export interface InfoAction {
@@ -26,86 +25,90 @@ interface Props {
 export const Info = ({ title, actions, disabledMessage, children }: Props) => {
   const { colors } = useTheme();
   return (
-  <View
+  <Surface
+    elevation={1}
     style={{
       width: "100%",
       borderRadius: RADIUS.md,
-      overflow: "hidden",
       marginBottom: SPACING.md,
     }}
   >
-    <View
-      style={{
-        alignItems: "center",
-        justifyContent: "center",
-        padding: SPACING.xs,
-        backgroundColor: colors.dark,
-      }}
-    >
-      <Text style={{ color: "white", fontSize: FONT.base, fontWeight: "700" }}>{title}</Text>
-    </View>
-    <View style={{ gap: SPACING.sm, padding: SPACING.sm, backgroundColor: colors.container }}>{children}</View>
-    {actions && actions.length > 0 && (
+    {/* overflow:hidden lives here, not on the Surface — clipping the Surface
+        directly suppresses its shadow. */}
+    <View style={{ borderRadius: RADIUS.md, overflow: "hidden" }}>
       <View
         style={{
-          flexDirection: "row",
           alignItems: "center",
-          gap: SPACING.sm,
-          padding: SPACING.sm,
+          justifyContent: "center",
+          padding: SPACING.xs,
           backgroundColor: colors.dark,
         }}
       >
-        {actions.map((action, idx) => (
-          <View key={idx} style={{ flex: 1 }}>
-            <ActionButton
-              icon={action.icon}
-              onPress={action.onPress}
-              disabled={action.disabled}
-              variant={action.variant}
-              height={40}
-            />
-          </View>
-        ))}
+        <Text style={{ color: colors.text, fontSize: FONT.base, fontWeight: "700" }}>{title}</Text>
       </View>
-    )}
-    {!!disabledMessage && (
-      <View
-        style={{
-          position: "absolute",
-          inset: 0,
-          zIndex: 2,
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: SPACING.md,
-          padding: SPACING.lg,
-          backgroundColor: "rgba(0,0,0,0.8)",
-        }}
-      >
+      <View style={{ gap: SPACING.sm, padding: SPACING.sm, backgroundColor: colors.container }}>{children}</View>
+      {actions && actions.length > 0 && (
         <View
           style={{
-            height: 40,
-            width: 40,
-            borderRadius: 20,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: SPACING.sm,
+            padding: SPACING.sm,
+            backgroundColor: colors.dark,
+          }}
+        >
+          {actions.map((action, idx) => (
+            <View key={idx} style={{ flex: 1 }}>
+              <ActionButton
+                icon={action.icon}
+                onPress={action.onPress}
+                disabled={action.disabled}
+                variant={action.variant}
+                height={40}
+              />
+            </View>
+          ))}
+        </View>
+      )}
+      {!!disabledMessage && (
+        <View
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 2,
+            flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "white",
+            gap: SPACING.md,
+            padding: SPACING.lg,
+            backgroundColor: "rgba(0,0,0,0.8)",
           }}
         >
-          <Ionicons name="warning" size={26} color={DARK_COLORS.danger} />
+          <View
+            style={{
+              height: 40,
+              width: 40,
+              borderRadius: 20,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "white",
+            }}
+          >
+            <MaterialCommunityIcons name="alert" size={26} color={colors.danger} />
+          </View>
+          <Text
+            style={{
+              flex: 1,
+              color: "white",
+              fontWeight: "700",
+              fontSize: FONT.sm,
+            }}
+          >
+            {disabledMessage}
+          </Text>
         </View>
-        <Text
-          style={{
-            flex: 1,
-            color: "white",
-            fontWeight: "700",
-            fontSize: FONT.sm,
-          }}
-        >
-          {disabledMessage}
-        </Text>
-      </View>
-    )}
-  </View>
+      )}
+    </View>
+  </Surface>
   );
 };

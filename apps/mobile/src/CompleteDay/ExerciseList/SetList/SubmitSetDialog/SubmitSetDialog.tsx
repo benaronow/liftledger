@@ -1,7 +1,5 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Block, COLORS, Day, Exercise, Set } from "@liftledger/shared";
+import { Block, Day, Exercise, Set } from "@liftledger/shared";
 import { useEffect, useState } from "react";
-import { ActivityIndicator } from "react-native";
 import {
   findLatestOccurrence,
   useBlock,
@@ -10,9 +8,10 @@ import {
   useMe,
   useUpdateUserBlock,
 } from "@liftledger/api-client";
-import { ActionDialog, DialogAction } from "../../../../components/ActionDialog";
+import { ConfirmationDialog } from "../../../../components/ConfirmationDialog";
 import { TimerSettings } from "../../../TimerSettings";
 import { EditSet } from "./EditSet";
+import { useSnackbar } from "../../../../providers/SnackbarProvider";
 
 interface Props {
   exercise: Exercise | undefined;
@@ -25,6 +24,7 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
   const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
   const { trigger: triggerUpdateUserBlock } = useUpdateUserBlock();
+  const { showSnackbar } = useSnackbar();
 
   const { exercises } = useCurrentDay();
   const [submittingSet, setSubmittingSet] = useState(false);
@@ -150,8 +150,7 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       await saveExercises(updatedExercises);
       setSubmitted(true);
     } catch {
-      // Save failed — leave the dialog open so the user can retry instead of
-      // stranding them on a spinner.
+      showSnackbar("Error submitting set. Please try again.");
     } finally {
       setSkippingSet(false);
       setSubmittingSet(false);
@@ -160,39 +159,19 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
 
   if (!exercise || setIdx === undefined) return null;
 
-  const editActions: DialogAction[] = [
-    {
-      icon: submittingSet ? (
-        <ActivityIndicator color="white" />
-      ) : (
-        <Ionicons name="save" size={24} color="white" />
-      ),
-      onPress: () => handleSubmitSet(),
-      variant: "primary",
-      disabled: submittingSet,
-    },
-    {
-      icon: skippingSet ? (
-        <ActivityIndicator color={COLORS.primary} />
-      ) : (
-        <Ionicons name="play-skip-forward" size={26} color={COLORS.primary} />
-      ),
-      onPress: () => handleSubmitSet({ skip: true }),
-      disabled:
-        skippingSet ||
-        exerciseState?.sets[setIdx]?.skipped ||
-        setIdx === exercise.sets.length,
-      variant: "primaryInverted",
-    },
-  ];
-
   return (
-    <ActionDialog
+    <ConfirmationDialog
       open
       onClose={handleClose}
       title={submitted ? "Start Timer" : "Submit Set"}
-      actions={submitted ? [] : editActions}
-      saving={submittingSet || skippingSet}
+      onConfirm={handleSubmitSet}
+      confirming={submittingSet || skippingSet}
+      secondaryAction="Skip Set"
+      onSecondaryAction={() => handleSubmitSet({ skip: true })}
+      secondaryActionDisabled={
+        exerciseState?.sets[setIdx]?.skipped || setIdx === exercise.sets.length
+      }
+      hideActions={submitted}
     >
       {submitted ? (
         <TimerSettings onTimerStarted={handleClose} />
@@ -203,6 +182,6 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
           setIdx={setIdx}
         />
       )}
-    </ActionDialog>
+    </ConfirmationDialog>
   );
 };

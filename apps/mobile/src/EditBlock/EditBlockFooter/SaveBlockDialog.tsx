@@ -1,5 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "@liftledger/shared";
 import {
   useBlock,
   useMe,
@@ -7,9 +5,11 @@ import {
   useUpdateUserBlock,
 } from "@liftledger/api-client";
 import { useNavigation } from "@react-navigation/native";
-import { ActivityIndicator, Text, View } from "react-native";
-import { ActionDialog, DialogAction } from "../../components/ActionDialog";
-import type { TabNav } from "../../navigation/types";
+import { View } from "react-native";
+import { Text, useTheme } from "../../paper";
+import { useSnackbar } from "../../providers/SnackbarProvider";
+import { ConfirmationDialog } from "../../components/ConfirmationDialog";
+import type { TabNav } from "../../RootNavigator/types";
 import { FONT, SPACING } from "../../theme";
 import { useTemplate } from "../TemplateProvider";
 
@@ -19,6 +19,7 @@ interface Props {
 }
 
 export const SaveBlockDialog = ({ open, onClose }: Props) => {
+  const { colors } = useTheme();
   const navigation = useNavigation<TabNav<"EditBlock">>();
   const { data: curUser } = useMe();
   const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
@@ -26,6 +27,7 @@ export const SaveBlockDialog = ({ open, onClose }: Props) => {
   const { trigger: triggerUpdateUserBlock, isMutating: updating } =
     useUpdateUserBlock();
   const saving = starting || updating;
+  const { showSnackbar } = useSnackbar();
 
   const {
     templateBlock,
@@ -65,52 +67,32 @@ export const SaveBlockDialog = ({ open, onClose }: Props) => {
       navigation.setParams({ duplicateFrom: undefined });
       navigation.navigate("Dashboard");
     } catch {
-      // Save failed — keep the editor and dialog as-is for retry. The spinner
-      // clears via the mutation hooks' isMutating.
+      showSnackbar("Error saving block. Please try again.");
     }
   };
-
-  const actions: DialogAction[] = [
-    {
-      icon: <Ionicons name="arrow-back" size={26} color={COLORS.primary} />,
-      onPress: onClose,
-      variant: "primaryInverted",
-      disabled: saving,
-    },
-    {
-      icon: saving ? (
-        <ActivityIndicator color="white" />
-      ) : (
-        <Ionicons name="save" size={22} color="white" />
-      ),
-      onPress: handleSave,
-      variant: "primary",
-      disabled: saving,
-    },
-  ];
 
   if (!open) return null;
 
   return (
-    <ActionDialog
+    <ConfirmationDialog
       open={open}
       onClose={onClose}
       title="Save Block"
-      actions={actions}
-      saving={saving}
+      onConfirm={handleSave}
+      confirming={saving}
     >
       <View style={{ width: "100%", gap: SPACING.md }}>
-        <Text style={{ color: "white", fontSize: FONT.base }}>
+        <Text style={{ color: colors.text, fontSize: FONT.base }}>
           Are you sure you want to save this block?
         </Text>
         <Text
-          style={{ color: "white", fontSize: FONT.base, fontWeight: "700" }}
+          style={{ color: colors.text, fontSize: FONT.base, fontWeight: "700" }}
         >
           {curBlock
             ? "This will overwrite your current block."
             : "This will become your active training block."}
         </Text>
       </View>
-    </ActionDialog>
+    </ConfirmationDialog>
   );
 };

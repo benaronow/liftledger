@@ -1,14 +1,13 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Block, COLORS, Day, Exercise } from "@liftledger/shared";
+import { Block, Day, Exercise } from "@liftledger/shared";
 import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator } from "react-native";
+import { useSnackbar } from "../../../providers/SnackbarProvider";
 import {
   useBlock,
   useCurrentDay,
   useMe,
   useUpdateUserBlock,
 } from "@liftledger/api-client";
-import { ActionDialog, DialogAction } from "../../../components/ActionDialog";
+import { ConfirmationDialog } from "../../../components/ConfirmationDialog";
 import { EditExercise } from "./EditExercise";
 
 interface Props {
@@ -22,6 +21,7 @@ export const AddExerciseDialog = ({ addExerciseIdx, onClose }: Props) => {
   const { trigger: triggerUpdateUserBlock, isMutating: addingExercise } =
     useUpdateUserBlock();
   const { exercises } = useCurrentDay();
+  const { showSnackbar } = useSnackbar();
 
   const curGym = useMemo(
     () => curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym || "",
@@ -71,47 +71,30 @@ export const AddExerciseDialog = ({ addExerciseIdx, onClose }: Props) => {
     );
     try {
       await saveExercises(updatedExercises);
-      onClose();
     } catch {
-      // Save failed — keep the dialog open so the user can retry. The spinner
-      // clears on its own via useUpdateUserBlock's isMutating.
+      showSnackbar("Failed to add exercise. Please try again.");
+    } finally {
+      onClose();
     }
   };
-
-  const editActions: DialogAction[] = [
-    {
-      icon: <Ionicons name="arrow-back" size={26} color={COLORS.primary} />,
-      onPress: onClose,
-      variant: "primaryInverted",
-      disabled: addingExercise,
-    },
-    {
-      icon: addingExercise ? (
-        <ActivityIndicator color="white" />
-      ) : (
-        <Ionicons name="save" size={24} color="white" />
-      ),
-      onPress: handleAddExercise,
-      disabled:
-        addingExercise ||
-        newExercise.name === "" ||
-        newExercise.apparatus === "" ||
-        newExercise.weightType === "",
-      variant: "primary",
-    },
-  ];
 
   if (addExerciseIdx === undefined) return null;
 
   return (
-    <ActionDialog
+    <ConfirmationDialog
       open
       onClose={onClose}
       title="Add Exercise"
-      actions={editActions}
-      saving={addingExercise}
+      onConfirm={handleAddExercise}
+      confirming={addingExercise}
+      confirmationDisabled={
+        addingExercise ||
+        newExercise.name === "" ||
+        newExercise.apparatus === "" ||
+        newExercise.weightType === ""
+      }
     >
       <EditExercise newExercise={newExercise} setNewExercise={setNewExercise} />
-    </ActionDialog>
+    </ConfirmationDialog>
   );
 };

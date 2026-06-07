@@ -1,9 +1,11 @@
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { View } from "react-native";
 import { useAuth0 } from "react-native-auth0";
+import { ActivityIndicator, Text, TouchableRipple, useTheme } from "../paper";
 import { env } from "../config/env";
 
 export const Welcome = () => {
   const { authorize, isLoading, error } = useAuth0();
+  const { colors } = useTheme();
 
   const onLogin = () =>
     authorize({
@@ -22,9 +24,9 @@ export const Welcome = () => {
       }}
     >
       <Text style={{ fontSize: 32, fontWeight: "700" }}>LiftLedger</Text>
-      <Pressable
+      <TouchableRipple
         style={{
-          backgroundColor: "#0d6efd",
+          backgroundColor: colors.primary,
           paddingVertical: 14,
           paddingHorizontal: 48,
           borderRadius: 8,
@@ -35,15 +37,15 @@ export const Welcome = () => {
         disabled={isLoading}
       >
         {isLoading ? (
-          <ActivityIndicator color="#fff" />
+          <ActivityIndicator color="white" />
         ) : (
-          <Text style={{ color: "#fff", fontSize: 16, fontWeight: "600" }}>
+          <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
             Log in
           </Text>
         )}
-      </Pressable>
+      </TouchableRipple>
       {error && (
-        <Text style={{ color: "#dc3545", textAlign: "center" }}>
+        <Text style={{ color: colors.danger, textAlign: "center" }}>
           {error.message}
         </Text>
       )}

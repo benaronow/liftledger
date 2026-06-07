@@ -4,8 +4,8 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { LogoSpinner } from "../components/LogoSpinner";
-import type { RootStackParamList } from "../navigation/types";
-import { useTheme } from "../providers/ThemeProvider";
+import type { RootStackParamList } from "../RootNavigator/types";
+import { useTheme } from "../paper";
 import { SPACING } from "../theme";
 import { CompleteDayFooter } from "./CompleteDayFooter/CompleteDayFooter";
 import { ExerciseList } from "./ExerciseList/ExerciseList";
@@ -106,4 +106,3 @@ export const CompleteDay = () => {
     </View>
   );
 };
-

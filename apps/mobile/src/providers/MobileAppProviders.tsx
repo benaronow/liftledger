@@ -3,6 +3,7 @@ import { PropsWithChildren } from "react";
 import { Auth0Provider, useAuth0 } from "react-native-auth0";
 import { SWRConfig } from "swr";
 import { env } from "../config/env";
+import { SnackbarProvider } from "./SnackbarProvider";
 import { ThemeProvider } from "./ThemeProvider";
 
 // Mirror of apps/web/src/AppProviders.tsx. The only platform-specific seam:
@@ -27,7 +28,9 @@ export const MobileAppProviders = ({ children }: PropsWithChildren) => (
       }}
     >
       <ApiClientProvider>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <SnackbarProvider>{children}</SnackbarProvider>
+        </ThemeProvider>
       </ApiClientProvider>
     </SWRConfig>
   </Auth0Provider>

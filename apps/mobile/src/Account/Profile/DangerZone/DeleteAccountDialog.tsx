@@ -1,12 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useDeleteMe, useMe } from "@liftledger/api-client";
-import { COLORS } from "@liftledger/shared";
 import { useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { View } from "react-native";
 import { useAuth0 } from "react-native-auth0";
-import { variantColors } from "../components/ActionButton";
-import { ActionDialog, DialogAction } from "../components/ActionDialog";
-import { FONT, SPACING } from "../theme";
+import { Text, useTheme } from "../../../paper";
+import { ConfirmationDialog } from "../../../components/ConfirmationDialog";
+import { FONT, SPACING } from "../../../theme";
 
 interface Props {
   open: boolean;
@@ -18,6 +16,7 @@ export const DeleteAccountDialog = ({ open, onClose }: Props) => {
   const { data: curUser } = useMe();
   const { trigger: triggerDeleteMe, isMutating: deleting } = useDeleteMe();
   const [error, setError] = useState("");
+  const { colors } = useTheme();
 
   const handleDelete = async () => {
     if (!curUser?._id) {
@@ -33,57 +32,41 @@ export const DeleteAccountDialog = ({ open, onClose }: Props) => {
     }
   };
 
-  const actions: DialogAction[] = [
-    {
-      icon: (
-        <Ionicons
-          name="arrow-back"
-          size={28}
-          color={variantColors("dangerInverted", deleting).foreground}
-        />
-      ),
-      onPress: onClose,
-      variant: "dangerInverted",
-      disabled: deleting,
-    },
-    {
-      icon: deleting ? (
-        <ActivityIndicator color="white" />
-      ) : (
-        <Ionicons name="trash" size={24} color="white" />
-      ),
-      onPress: handleDelete,
-      variant: "danger",
-      disabled: deleting,
-    },
-  ];
-
   if (!open) return null;
 
   return (
-    <ActionDialog
+    <ConfirmationDialog
       open={open}
       onClose={onClose}
       title="Delete Account"
-      actions={actions}
-      saving={deleting}
+      onConfirm={handleDelete}
+      confirming={deleting}
     >
       <View style={{ gap: SPACING.sm, width: "100%" }}>
-        <Text style={{ color: "white", fontSize: FONT.base }}>
+        <Text
+          style={{
+            color: colors.text,
+            fontSize: FONT.base,
+          }}
+        >
           Are you sure you want to delete your account?
         </Text>
         <Text
-          style={{ color: "white", fontSize: FONT.base, fontWeight: "700" }}
+          style={{
+            color: colors.text,
+            fontSize: FONT.base,
+            fontWeight: "700",
+          }}
         >
           This action is permanent and cannot be undone. All your data will be
           lost.
         </Text>
         {error !== "" && (
-          <Text style={{ color: COLORS.danger, fontSize: FONT.sm }}>
+          <Text style={{ color: colors.danger, fontSize: FONT.sm }}>
             {error}
           </Text>
         )}
       </View>
-    </ActionDialog>
+    </ConfirmationDialog>
   );
 };

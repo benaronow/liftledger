@@ -1,10 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
-import { DARK_COLORS, Exercise } from "@liftledger/shared";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Exercise } from "@liftledger/shared";
 import { isExerciseComplete, useCurrentDay } from "@liftledger/api-client";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { View } from "react-native";
+import { Text, TouchableRipple, useTheme } from "../../paper";
 import { AddButton } from "../../components/AddButton";
-import { useTheme } from "../../providers/ThemeProvider";
 import { FONT, RADIUS, SPACING } from "../../theme";
 import { SetList } from "./SetList/SetList";
 import { AddExerciseDialog } from "./AddExerciseDialog/AddExerciseDialog";
@@ -70,7 +70,7 @@ export const ExerciseList = ({ exercises, isEditing, onCardLayout }: Props) => {
                     fontWeight: "600",
                     letterSpacing: 0.5,
                     color: "white",
-                    backgroundColor: DARK_COLORS.container,
+                    backgroundColor: colors.container,
                     borderBottomLeftRadius: RADIUS.sm,
                     overflow: "hidden",
                   }}
@@ -79,7 +79,7 @@ export const ExerciseList = ({ exercises, isEditing, onCardLayout }: Props) => {
                 </Text>
               )}
               {isEditing && exercise.addedOn && (
-                <Pressable
+                <TouchableRipple
                   style={{
                     position: "absolute",
                     left: SPACING.sm,
@@ -88,12 +88,12 @@ export const ExerciseList = ({ exercises, isEditing, onCardLayout }: Props) => {
                     borderRadius: RADIUS.sm,
                     alignItems: "center",
                     justifyContent: "center",
-                    backgroundColor: DARK_COLORS.danger,
+                    backgroundColor: colors.danger,
                   }}
                   onPress={() => setDeletingIdx(idx)}
                 >
-                  <Ionicons name="trash" size={14} color="white" />
-                </Pressable>
+                  <MaterialCommunityIcons name="delete" size={14} color="white" />
+                </TouchableRipple>
               )}
               <View style={{ width: "100%", alignItems: "center", padding: SPACING.sm }}>
                 <Text style={{ color: "white", fontWeight: "600", fontSize: FONT.base }}>{exercise.name}</Text>

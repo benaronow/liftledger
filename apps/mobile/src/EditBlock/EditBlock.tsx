@@ -2,9 +2,11 @@ import { useCompletedExercises, useBlock, useMe } from "@liftledger/api-client";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useMemo } from "react";
 import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LogoSpinner } from "../components/LogoSpinner";
-import type { TabParamList } from "../navigation/types";
-import { useTheme } from "../providers/ThemeProvider";
+import { floatingTabBarClearance } from "../RootNavigator/TabNavigator/FloatingTabBar";
+import type { TabParamList } from "../RootNavigator/types";
+import { useTheme } from "../paper";
 import { EditBlockFooter } from "./EditBlockFooter/EditBlockFooter";
 import { EditorView } from "./EditorView";
 import { EMPTY_BLOCK } from "./emptyBlock";
@@ -17,6 +19,7 @@ export const EditBlock = () => {
 
   const { data: curUser } = useMe();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const { isLoading: curBlockLoading, data: curBlock } = useBlock(
     curUser?._id,
     curUser?.curBlock,
@@ -52,7 +55,15 @@ export const EditBlock = () => {
       initialTemplate={initialTemplate}
       initialWeekIdx={initialWeekIdx}
     >
-      <View style={{ flex: 1, backgroundColor: colors.background }}>
+      {/* Lift the editor + its action footer above the floating tab pill so
+          the pill never covers the Save/Quit buttons. */}
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.background,
+          paddingBottom: floatingTabBarClearance(insets.bottom),
+        }}
+      >
         <EditorView />
         <EditBlockFooter />
       </View>

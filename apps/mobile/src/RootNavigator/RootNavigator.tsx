@@ -1,15 +1,19 @@
 import {
+  DarkTheme as NavDarkTheme,
+  DefaultTheme as NavLightTheme,
   getFocusedRouteNameFromRoute,
   NavigationContainer,
   type RouteProp,
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth0 } from "react-native-auth0";
-import { AvatarButton } from "../components/AvatarButton";
+import { useTheme } from "../paper";
+import { AvatarButton } from "./AvatarButton";
+import { LogoutButton } from "../components/LogoutButton";
 import { LogoSpinner } from "../components/LogoSpinner";
 import { Timer } from "../components/Timer";
-import { Profile } from "../Profile";
-import { useTheme } from "../providers/ThemeProvider";
+import { Account } from "../Account";
+import { useThemePreference } from "../providers/ThemeProvider";
 import { CompleteDay } from "../CompleteDay";
 import { Welcome } from "../Welcome";
 import { TabNavigator } from "./TabNavigator";
@@ -22,12 +26,8 @@ const tabTitle = (route: RouteProp<RootStackParamList, "Tabs">): string => {
   switch (getFocusedRouteNameFromRoute(route) ?? "Dashboard") {
     case "Progress":
       return "Progress";
-    case "History":
-      return "History";
     case "EditBlock":
       return "Edit Block";
-    case "Settings":
-      return "Settings";
     case "Dashboard":
     default:
       return "Home";
@@ -36,12 +36,27 @@ const tabTitle = (route: RouteProp<RootStackParamList, "Tabs">): string => {
 
 export const RootNavigator = () => {
   const { user, isLoading } = useAuth0();
-  const { colors, scheme } = useTheme();
+  const { colors } = useTheme();
+  const { scheme } = useThemePreference();
 
   if (isLoading) return <LogoSpinner />;
 
+  const baseNavTheme = scheme === "dark" ? NavDarkTheme : NavLightTheme;
+  const navTheme = {
+    ...baseNavTheme,
+    colors: {
+      ...baseNavTheme.colors,
+      primary: colors.primary,
+      background: colors.background,
+      card: colors.dark,
+      text: colors.text,
+      border: colors.dark,
+      notification: colors.secondary,
+    },
+  };
+
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={navTheme}>
       {user ? (
         <>
           <Stack.Navigator
@@ -59,7 +74,7 @@ export const RootNavigator = () => {
                 title: tabTitle(route),
                 headerRight: () => (
                   <AvatarButton
-                    onPress={() => navigation.navigate("Profile")}
+                    onPress={() => navigation.navigate("Account")}
                   />
                 ),
               })}
@@ -70,9 +85,12 @@ export const RootNavigator = () => {
               options={{ title: "Workout" }}
             />
             <Stack.Screen
-              name="Profile"
-              component={Profile}
-              options={{ title: "Profile" }}
+              name="Account"
+              component={Account}
+              options={{
+                title: "Account",
+                headerRight: () => <LogoutButton />,
+              }}
             />
           </Stack.Navigator>
           <Timer />

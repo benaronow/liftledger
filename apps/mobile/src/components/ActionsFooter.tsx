@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ReactNode, useState } from "react";
 import {
   LayoutAnimation,
@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "../providers/ThemeProvider";
+import { Surface, useTheme } from "../paper";
 import { RADIUS, SPACING } from "../theme";
 import { ActionButton, Variant } from "./ActionButton";
 
@@ -54,19 +54,23 @@ export const ActionsFooter = ({
   const sideColor = primary.disabled ? colors.primaryDisabled : colors.primary;
 
   return (
-    <View
+    <Surface
+      elevation={4}
       style={{
         borderTopLeftRadius: RADIUS.xl,
         borderTopRightRadius: RADIUS.xl,
-        overflow: "hidden",
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.5,
-        shadowRadius: 15,
-        elevation: 12,
         backgroundColor: colors.primary,
       }}
     >
+      {/* overflow:hidden lives here, not on the Surface — clipping the Surface
+          directly suppresses its shadow. */}
+      <View
+        style={{
+          borderTopLeftRadius: RADIUS.xl,
+          borderTopRightRadius: RADIUS.xl,
+          overflow: "hidden",
+        }}
+      >
       {hasSecondary && expanded && (
         <View
           style={{
@@ -100,7 +104,7 @@ export const ActionsFooter = ({
         {hasSecondary && (
           <ActionButton
             icon={
-              <Ionicons
+              <MaterialCommunityIcons
                 name={expanded ? "close" : "menu"}
                 size={22}
                 color="white"
@@ -135,6 +139,7 @@ export const ActionsFooter = ({
       {safeAreaBottom && insets.bottom > 0 && (
         <View style={{ height: insets.bottom, backgroundColor: colors.dark }} />
       )}
-    </View>
+      </View>
+    </Surface>
   );
 };

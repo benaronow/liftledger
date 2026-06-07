@@ -1,11 +1,11 @@
 import { useCompletedExercises, useMe } from "@liftledger/api-client";
-import { DARK_COLORS, type CompletedExercise, type Set } from "@liftledger/shared";
+import { type CompletedExercise, type Set } from "@liftledger/shared";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
-import { LayoutChangeEvent, Text, View } from "react-native";
+import { LayoutChangeEvent, View } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
 import { LogoSpinner } from "../components/LogoSpinner";
-import { useTheme } from "../providers/ThemeProvider";
+import { Text, useTheme } from "../paper";
 import { FONT, SPACING } from "../theme";
 import { ExerciseTooltip } from "./ExerciseTooltip";
 import { GYM_COLORS } from "./gymColors";
@@ -36,8 +36,6 @@ const INITIAL_SPACING = 12;
 const END_SPACING = 12;
 const POINTER_RADIUS = 6;
 
-const axisTextStyle = { color: "white", fontSize: 11 } as const;
-
 export const ProgressChart = ({ selectedName, selectedApparatus }: Props) => {
   const { data: curUser, isLoading: isUserLoading } = useMe();
   const { data: completedExercises, isLoading: completedExercisesLoading } =
@@ -62,21 +60,19 @@ export const ProgressChart = ({ selectedName, selectedApparatus }: Props) => {
   );
 
   const gyms = useMemo(
-    () => Array.from(new Set(chartExercises.map((e) => e.gym ?? "Gym Unknown"))),
+    () =>
+      Array.from(new Set(chartExercises.map((e) => e.gym ?? "Gym Unknown"))),
     [chartExercises],
   );
 
-  // One point per completed occurrence (NOT per unique day — multiple workouts
-  // can share a date), shared across the gym lines by index. Each gym's line
-  // carries a value at its own occurrences and, at other gyms' occurrences,
-  // carries the previous value forward with the point hidden — mirroring web's
-  // one-entry-per-occurrence data + recharts connectNulls.
   const dataSet = useMemo(
     () =>
       gyms.map((gym, gymIdx) => {
         const color = GYM_COLORS[gymIdx % GYM_COLORS.length];
         const maxWeight = (e: CompletedExercise) =>
-          Math.max(...e.sets.filter((s: Set) => s.completed).map((s) => s.weight));
+          Math.max(
+            ...e.sets.filter((s: Set) => s.completed).map((s) => s.weight),
+          );
 
         const firstForGym = chartExercises.find(
           (e) => (e.gym ?? "Gym Unknown") === gym,
@@ -84,19 +80,17 @@ export const ProgressChart = ({ selectedName, selectedApparatus }: Props) => {
         let lastValue = firstForGym ? maxWeight(firstForGym) : 0;
 
         const data: ChartPoint[] = chartExercises.map((e) => {
-          const label = dayjs(e.completedDate).format("M/D");
           if ((e.gym ?? "Gym Unknown") === gym) {
             lastValue = maxWeight(e);
             return {
               value: lastValue,
-              label,
               rawDate: fmtKey(e.completedDate),
               exercise: e,
               gym,
               color,
             };
           }
-          return { value: lastValue, label, hideDataPoint: true, gym, color };
+          return { value: lastValue, hideDataPoint: true, gym, color };
         });
 
         return { data, color, thickness: 3, dataPointsColor: color };
@@ -136,39 +130,14 @@ export const ProgressChart = ({ selectedName, selectedApparatus }: Props) => {
   // — the tooltip math below relies on knowing each point's x.
   const spacing = singlePoint
     ? 0
-    : (plotWidth - INITIAL_SPACING - END_SPACING) /
-      (chartExercises.length - 1);
+    : (plotWidth - INITIAL_SPACING - END_SPACING) / (chartExercises.length - 1);
   // A lone point can't be spread, so center it; otherwise inset from the edge.
   const firstSpacing = singlePoint ? plotWidth / 2 : INITIAL_SPACING;
   const pointerXAt = (index: number) => firstSpacing + index * spacing;
 
   return (
     <View style={{ flex: 1 }}>
-      <View
-        style={{
-          flexDirection: "row",
-          flexWrap: "wrap",
-          gap: SPACING.md,
-          paddingHorizontal: SPACING.lg,
-          paddingBottom: SPACING.sm,
-        }}
-      >
-        {gyms.map((gym, i) => (
-          <View key={gym} style={{ flexDirection: "row", alignItems: "center", gap: SPACING.xs }}>
-            <View
-              style={{
-                width: 12,
-                height: 12,
-                borderRadius: 6,
-                backgroundColor: GYM_COLORS[i % GYM_COLORS.length],
-              }}
-            />
-            <Text style={{ color: "white", fontSize: FONT.base, fontWeight: "700" }}>{gym}</Text>
-          </View>
-        ))}
-      </View>
-
-      <View style={{ flex: 1, paddingLeft: LEFT_PAD }} onLayout={onLayout}>
+      <View style={{ flex: 1 }} onLayout={onLayout}>
         {size.width > 0 && (
           <LineChart
             dataSet={dataSet}
@@ -182,18 +151,17 @@ export const ProgressChart = ({ selectedName, selectedApparatus }: Props) => {
             maxValue={maxValue || undefined}
             noOfSections={4}
             rulesType="dashed"
-            rulesColor={colors.container}
-            yAxisColor={colors.container}
-            xAxisColor={colors.container}
-            yAxisTextStyle={axisTextStyle}
-            xAxisLabelTextStyle={axisTextStyle}
+            rulesColor={colors.textDisabled}
+            yAxisColor={colors.textDisabled}
+            xAxisColor={colors.textDisabled}
+            yAxisTextStyle={{ color: colors.text, fontSize: 11 }}
             color={GYM_COLORS[0]}
             dataPointsRadius={4}
             pointerConfig={{
-              pointerColor: DARK_COLORS.primary,
+              pointerColor: colors.primary,
               radius: POINTER_RADIUS,
               showPointerStrip: true,
-              pointerStripColor: colors.container,
+              pointerStripColor: "white",
               pointerStripWidth: 2,
               // We keep gifted's vertical auto-adjust (flips above a low point),
               // but override the horizontal: it otherwise throws the label fully
@@ -244,6 +212,44 @@ export const ProgressChart = ({ selectedName, selectedApparatus }: Props) => {
             }}
           />
         )}
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          flexWrap: "wrap",
+          gap: SPACING.md,
+          paddingHorizontal: SPACING.lg,
+          paddingVertical: SPACING.md,
+        }}
+      >
+        {gyms.map((gym, i) => (
+          <View
+            key={gym}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: SPACING.xs,
+            }}
+          >
+            <View
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: 6,
+                backgroundColor: GYM_COLORS[i % GYM_COLORS.length],
+              }}
+            />
+            <Text
+              style={{
+                color: colors.text,
+                fontSize: FONT.base,
+                fontWeight: "700",
+              }}
+            >
+              {gym}
+            </Text>
+          </View>
+        ))}
       </View>
     </View>
   );

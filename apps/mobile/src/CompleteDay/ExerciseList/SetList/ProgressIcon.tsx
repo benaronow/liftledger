@@ -1,7 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMemo } from "react";
 import { View } from "react-native";
-import { useTheme } from "../../../providers/ThemeProvider";
+import { useTheme } from "../../../paper";
 
 interface Props {
   sign?: number;
@@ -23,15 +23,15 @@ export const ProgressIcon = ({ sign, isSetComplete, isSetSkipped }: Props) => {
 
   const icon = useMemo(() => {
     if (isSetSkipped)
-      return { name: "play-skip-forward" as const, size: 16 };
+      return { name: "skip-next" as const, size: 16 };
     if (!isSetComplete)
-      return { name: "ellipsis-horizontal" as const, size: 18 };
+      return { name: "dots-horizontal" as const, size: 18 };
     if (sign && sign > 0) return { name: "chevron-up" as const, size: 18 };
     if (sign && sign < 0) return { name: "chevron-down" as const, size: 18 };
     // Complete with history → "even" (no change); complete without → empty.
     return sign !== undefined
-      ? { name: "reorder-two" as const, size: 16 }
-      : { name: "ellipse-outline" as const, size: 14 };
+      ? { name: "equal" as const, size: 16 }
+      : { name: "circle-outline" as const, size: 14 };
   }, [sign, isSetComplete, isSetSkipped]);
 
   return (
@@ -45,7 +45,7 @@ export const ProgressIcon = ({ sign, isSetComplete, isSetSkipped }: Props) => {
         backgroundColor: background,
       }}
     >
-      <Ionicons name={icon.name} size={icon.size} color="white" />
+      <MaterialCommunityIcons name={icon.name} size={icon.size} color="white" />
     </View>
   );
 };

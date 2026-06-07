@@ -1,10 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useMe, useUpdateMyEmail } from "@liftledger/api-client";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator } from "react-native";
-import { ActionButton } from "../components/ActionButton";
-import { LabeledTextInput } from "../components/inputs";
 import { VerifyEmailSentDialog } from "./VerifyEmailSentDialog";
+import { ProfileTextInput } from "../../profileInputs";
 
 interface Props {
   // Only database-connection users can change their email; social logins can't.
@@ -39,42 +36,20 @@ export const EmailInput = ({ isConnectionUser }: Props) => {
     }
   }, [curUser, email, triggerUpdateEmail]);
 
-  const disabled = !edited || email.trim() === "";
+  const canSave = edited && email.trim() !== "";
 
   return (
     <>
-      <LabeledTextInput
+      <ProfileTextInput
         label="Email"
-        placeholder="Enter email..."
         value={email}
-        keyboardType="email-address"
-        editable={isConnectionUser}
-        onChangeText={(text) => {
-          setEmail(text);
-          setError("");
-        }}
         error={error}
-        renderEnd={
-          isConnectionUser
-            ? () => (
-                <ActionButton
-                  variant="primary"
-                  height={35}
-                  width={35}
-                  roundedSide="end"
-                  disabled={disabled}
-                  icon={
-                    saving ? (
-                      <ActivityIndicator color="white" size="small" />
-                    ) : (
-                      <Ionicons name="save" size={14} color="white" />
-                    )
-                  }
-                  onPress={handleSave}
-                />
-              )
-            : undefined
-        }
+        onChange={setEmail}
+        onSave={handleSave}
+        onRevert={() => setEmail(curUser?.email ?? "")}
+        canSave={canSave}
+        isSaving={saving}
+        disabled={!isConnectionUser}
       />
       <VerifyEmailSentDialog
         open={verifySentFor !== null}

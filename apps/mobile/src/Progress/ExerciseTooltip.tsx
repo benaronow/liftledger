@@ -1,11 +1,10 @@
-import { DARK_COLORS } from "@liftledger/shared";
 import dayjs from "dayjs";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { Text, useTheme } from "../paper";
 import { FONT, RADIUS, SPACING } from "../theme";
 import type { ChartPoint } from "./types";
+import { useThemePreference } from "../providers/ThemeProvider";
 
-// Rendered by the chart's pointer: one focused point per gym line at the touched
-// date. Mirrors web's tooltip — date header, then each gym's sets.
 export const ExerciseTooltip = ({
   items,
   width,
@@ -13,10 +12,10 @@ export const ExerciseTooltip = ({
 }: {
   items: ChartPoint[];
   width: number;
-  // Horizontal correction applied by the chart to center the box over the point
-  // and clamp it within the plot.
   translateX: number;
 }) => {
+  const { colors } = useTheme();
+  const { scheme } = useThemePreference();
   const present = items.filter((item) => item.exercise);
   if (present.length === 0) return null;
 
@@ -25,7 +24,7 @@ export const ExerciseTooltip = ({
   return (
     <View
       style={{
-        backgroundColor: DARK_COLORS.dark,
+        backgroundColor: scheme === "dark" ? colors.dark : colors.background,
         borderRadius: RADIUS.sm,
         paddingVertical: SPACING.xs,
         paddingHorizontal: SPACING.sm,
@@ -34,7 +33,14 @@ export const ExerciseTooltip = ({
       }}
     >
       {date && (
-        <Text style={{ color: "white", fontSize: 13, fontWeight: "700", marginBottom: 4 }}>
+        <Text
+          style={{
+            color: colors.text,
+            fontSize: 13,
+            fontWeight: "700",
+            marginBottom: 4,
+          }}
+        >
           {dayjs(date).format("M/D/YY")}
         </Text>
       )}
@@ -42,13 +48,23 @@ export const ExerciseTooltip = ({
         const exercise = item.exercise!;
         return (
           <View key={item.gym ?? idx} style={{ marginBottom: 4 }}>
-            <Text style={{ fontSize: FONT.sm, fontWeight: "700", marginBottom: 4, color: item.color ?? "white" }}>
+            <Text
+              style={{
+                fontSize: FONT.sm,
+                fontWeight: "700",
+                marginBottom: 4,
+                color: item.color ?? "white",
+              }}
+            >
               {item.gym}
             </Text>
             {exercise.sets.map((set, setIdx) => (
-              <Text key={setIdx} style={{ color: "white", fontSize: FONT.xs }}>
-                Set {setIdx + 1}: {set.weight} {exercise.weightType} × {set.reps}{" "}
-                reps
+              <Text
+                key={setIdx}
+                style={{ color: colors.text, fontSize: FONT.xs }}
+              >
+                Set {setIdx + 1}: {set.weight} {exercise.weightType} ×{" "}
+                {set.reps} reps
               </Text>
             ))}
           </View>

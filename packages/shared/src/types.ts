@@ -58,8 +58,8 @@ export interface User {
   _id?: string;
   email: string;
   auth0Id: string;
-  firstName?: string;
-  lastName?: string;
+  fullName: string;
+  birthday: string;
   blocks: Block[];
   curBlock?: string;
   timerEnd?: Date;
