@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useSearchParams } from "react-router";
 
-export const useProgressSelection = () => {
+export const useSearchParamProgressSelection = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedName = searchParams.get("name") ?? "";
   const selectedApparatus = searchParams.get("apparatus") ?? "";

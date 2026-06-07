@@ -1,23 +1,28 @@
 import { SearchableSelect } from "../components/SearchableSelect";
 import { useExerciseOptions } from "@liftledger/api-client";
-import { useProgressSelection } from "./useProgressSelection";
 
-export const ExerciseSelector = () => {
+interface Props {
+  selectedName: string;
+  selectedApparatus: string;
+  selectName: (name: string) => void;
+  setSelectedApparatus: (apparatus: string) => void;
+}
+
+export const ExerciseSelector = ({
+  selectedName,
+  selectedApparatus,
+  selectName,
+  setSelectedApparatus,
+}: Props) => {
   const { allExerciseNameOptions, allExerciseApparatusOptions } =
     useExerciseOptions();
-  const {
-    selectedName,
-    setSelectedName,
-    selectedApparatus,
-    setSelectedApparatus,
-  } = useProgressSelection();
 
   return (
     <div className="d-flex gap-2 mb-3">
       <SearchableSelect
         value={selectedName}
         options={allExerciseNameOptions}
-        onSelect={setSelectedName}
+        onSelect={selectName}
       />
       <SearchableSelect
         value={selectedApparatus}

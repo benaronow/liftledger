@@ -1,6 +1,5 @@
 import { useCompletedExercises, useMe } from "@liftledger/api-client";
-import { useProgressSelection } from "../useProgressSelection";
-import { DARK_COLORS } from "@liftledger/shared";
+import { useSearchParamProgressSelection } from "../useSearchParamProgressSelection";
 import { useTheme } from "@/providers/ThemeProvider";
 import dayjs from "dayjs";
 
@@ -13,7 +12,7 @@ type Props = {
 export const ExerciseTooltip = ({ active, payload, label }: Props) => {
   const { data: curUser } = useMe();
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
-  const { selectedName, selectedApparatus } = useProgressSelection();
+  const { selectedName, selectedApparatus } = useSearchParamProgressSelection();
   const { colors } = useTheme();
 
   if (!active || !payload?.length || !label) return null;

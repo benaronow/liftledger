@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { View } from "react-native";
-import { Text, useTheme } from "../paper";
-import { FONT, SPACING } from "../theme";
+import { Text, useTheme } from "../../paper";
+import { FONT, SPACING } from "../../theme";
 
 export const NoDataPlaceholder = () => {
   const { colors } = useTheme();

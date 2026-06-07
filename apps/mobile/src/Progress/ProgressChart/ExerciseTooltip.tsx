@@ -1,9 +1,9 @@
 import dayjs from "dayjs";
 import { View } from "react-native";
-import { Text, useTheme } from "../paper";
-import { FONT, RADIUS, SPACING } from "../theme";
+import { Text, useTheme } from "../../paper";
+import { FONT, RADIUS, SPACING } from "../../theme";
 import type { ChartPoint } from "./types";
-import { useThemePreference } from "../providers/ThemeProvider";
+import { useThemePreference } from "../../providers/ThemeProvider";
 
 export const ExerciseTooltip = ({
   items,
