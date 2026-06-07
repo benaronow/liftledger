@@ -360,6 +360,17 @@ const meRoutes = async (app: FastifyInstance) => {
       if (!trimmedUsername)
         return reply.code(400).send({ error: "Invalid username" });
 
+      // The DB is the single source of truth for usernames, so reject the
+      // change up front if another user has already taken this one.
+      const usernameTaken = await UserModel.exists({
+        username: trimmedUsername,
+        auth0Id: { $ne: req.user.sub },
+      });
+      if (usernameTaken)
+        return reply
+          .code(409)
+          .send({ error: "A user with this username already exists." });
+
       // Connected (social) accounts don't have an Auth0 database username, so
       // for them we only update MongoDB. Database accounts (auth0|) sync to
       // Auth0 first, then MongoDB, reverting Auth0 if the DB write fails.

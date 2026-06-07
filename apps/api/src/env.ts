@@ -38,6 +38,12 @@ export const env = {
   get AUTH0_CLIENT_ID() {
     return optional("AUTH0_CLIENT_ID");
   },
+  // Shared secret used by the Auth0 PreUserRegistration action to call the
+  // internal username-availability lookup. Optional so tests/local runs work
+  // without it; the internal route returns 503 when it's unset.
+  get INTERNAL_API_SECRET() {
+    return optional("INTERNAL_API_SECRET");
+  },
   get CORS_ORIGINS(): string[] {
     return optional(
       "CORS_ORIGINS",
