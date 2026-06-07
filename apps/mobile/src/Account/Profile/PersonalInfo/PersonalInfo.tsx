@@ -3,6 +3,7 @@ import { Text } from "../../../paper";
 import { FONT, RADIUS, SPACING } from "../../../theme";
 import { EmailInput } from "./EmailInput";
 import { NameInput } from "./NameInput";
+import { UsernameInput } from "./UsernameInput";
 import { ResetPasswordButton } from "./ResetPasswordButton";
 import { useTheme } from "../../../paper";
 import { useAuth0 } from "react-native-auth0";
@@ -43,6 +44,7 @@ export const PersonalInfo = () => {
         Personal Info
       </Text>
       <NameInput />
+      <UsernameInput />
       <BirthdayInput />
       <EmailInput isConnectionUser={isConnectionUser} />
       <ResetPasswordButton isConnectionUser={isConnectionUser} />

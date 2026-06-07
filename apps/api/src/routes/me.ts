@@ -253,6 +253,203 @@ const meRoutes = async (app: FastifyInstance) => {
       return updatedUser;
     },
   );
+
+  app.patch(
+    "/users/me/name",
+    { preHandler: app.authenticate },
+    async (req, reply) => {
+      const auth = await authorizeMe(req, reply);
+      if (!auth.ok) return;
+      const { me } = auth;
+
+      const { fullName } = (req.body ?? {}) as { fullName?: unknown };
+
+      const trimmedName =
+        typeof fullName === "string" ? fullName.trim() : undefined;
+      if (!trimmedName)
+        return reply.code(400).send({ error: "Invalid name" });
+
+      const tokenResult = await getAuth0Token();
+      if (!tokenResult.ok)
+        return reply
+          .code(tokenResult.status)
+          .send({ error: tokenResult.message });
+      const token = tokenResult.token;
+
+      const oldName = me.fullName;
+
+      const nameUpdate = await fetch(
+        `https://${env.AUTH0_TENANT_DOMAIN}/api/v2/users/${encodeURIComponent(req.user.sub)}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          // Auth0's Management API treats the root `name` as read-only for
+          // database-connection users (returns 400), so the editable name is
+          // synced into user_metadata instead.
+          body: JSON.stringify({ user_metadata: { full_name: trimmedName } }),
+        },
+      );
+
+      if (nameUpdate.status === 429)
+        return reply.code(429).send({ error: RATE_LIMIT_MESSAGE });
+
+      if (!nameUpdate.ok) {
+        const error = (await nameUpdate.json().catch(() => ({}))) as {
+          message?: string;
+        };
+        return reply
+          .code(nameUpdate.status)
+          .send({ error: error.message ?? "Failed to update name" });
+      }
+
+      let updatedUser;
+      try {
+        updatedUser = await UserModel.findOneAndUpdate(
+          { auth0Id: req.user.sub },
+          { $set: { fullName: trimmedName } },
+          { new: true },
+        ).populate([{ path: "blocks", model: BlockModel }]);
+      } catch (dbErr) {
+        console.error(
+          "Failed to update MongoDB name after Auth0 success — reverting Auth0:",
+          dbErr,
+        );
+
+        const revertRes = await fetch(
+          `https://${env.AUTH0_TENANT_DOMAIN}/api/v2/users/${encodeURIComponent(req.user.sub)}`,
+          {
+            method: "PATCH",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ user_metadata: { full_name: oldName } }),
+          },
+        );
+        if (!revertRes.ok) {
+          console.error(
+            "Failed to revert Auth0 name after MongoDB failure — accounts now out of sync for sub:",
+            req.user.sub,
+          );
+        }
+
+        return reply
+          .code(500)
+          .send({ error: "Failed to update name in database" });
+      }
+
+      return updatedUser;
+    },
+  );
+
+  app.patch(
+    "/users/me/username",
+    { preHandler: app.authenticate },
+    async (req, reply) => {
+      const auth = await authorizeMe(req, reply);
+      if (!auth.ok) return;
+      const { me } = auth;
+
+      const { username } = (req.body ?? {}) as { username?: unknown };
+
+      const trimmedUsername =
+        typeof username === "string" ? username.trim() : undefined;
+      if (!trimmedUsername)
+        return reply.code(400).send({ error: "Invalid username" });
+
+      // Connected (social) accounts don't have an Auth0 database username, so
+      // for them we only update MongoDB. Database accounts (auth0|) sync to
+      // Auth0 first, then MongoDB, reverting Auth0 if the DB write fails.
+      const isDatabaseUser = req.user.sub.startsWith("auth0|");
+      const oldUsername = me.username;
+
+      let token: string | undefined;
+      if (isDatabaseUser) {
+        const tokenResult = await getAuth0Token();
+        if (!tokenResult.ok)
+          return reply
+            .code(tokenResult.status)
+            .send({ error: tokenResult.message });
+        token = tokenResult.token;
+
+        const usernameUpdate = await fetch(
+          `https://${env.AUTH0_TENANT_DOMAIN}/api/v2/users/${encodeURIComponent(req.user.sub)}`,
+          {
+            method: "PATCH",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: trimmedUsername,
+              connection: "Username-Password-Authentication",
+            }),
+          },
+        );
+
+        if (usernameUpdate.status === 429)
+          return reply.code(429).send({ error: RATE_LIMIT_MESSAGE });
+
+        if (usernameUpdate.status === 409)
+          return reply
+            .code(409)
+            .send({ error: "A user with this username already exists." });
+
+        if (!usernameUpdate.ok) {
+          const error = (await usernameUpdate.json().catch(() => ({}))) as {
+            message?: string;
+          };
+          return reply
+            .code(usernameUpdate.status)
+            .send({ error: error.message ?? "Failed to update username" });
+        }
+      }
+
+      let updatedUser;
+      try {
+        updatedUser = await UserModel.findOneAndUpdate(
+          { auth0Id: req.user.sub },
+          { $set: { username: trimmedUsername } },
+          { new: true },
+        ).populate([{ path: "blocks", model: BlockModel }]);
+      } catch (dbErr) {
+        console.error("Failed to update MongoDB username:", dbErr);
+
+        // Only revert Auth0 if we actually changed it (database accounts).
+        if (isDatabaseUser && token) {
+          const revertRes = await fetch(
+            `https://${env.AUTH0_TENANT_DOMAIN}/api/v2/users/${encodeURIComponent(req.user.sub)}`,
+            {
+              method: "PATCH",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                username: oldUsername,
+                connection: "Username-Password-Authentication",
+              }),
+            },
+          );
+          if (!revertRes.ok) {
+            console.error(
+              "Failed to revert Auth0 username after MongoDB failure — accounts now out of sync for sub:",
+              req.user.sub,
+            );
+          }
+        }
+
+        return reply
+          .code(500)
+          .send({ error: "Failed to update username in database" });
+      }
+
+      return updatedUser;
+    },
+  );
 };
 
 export default meRoutes;

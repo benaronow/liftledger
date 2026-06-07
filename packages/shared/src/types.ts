@@ -58,6 +58,7 @@ export interface User {
   _id?: string;
   email: string;
   auth0Id: string;
+  username: string;
   fullName: string;
   birthday: string;
   blocks: Block[];

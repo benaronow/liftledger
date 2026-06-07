@@ -11,7 +11,6 @@ import { getCompletedDaysInBlock } from "@liftledger/shared";
 import { authorizeCaller } from "../auth";
 
 const UPDATABLE_FIELDS = [
-  "fullName",
   "birthday",
   "timerPresets",
   "gyms",

@@ -23,6 +23,30 @@ export const useUpdateMyEmail = () =>
     },
   );
 
+export const useUpdateMyName = () =>
+  useSWRMutation(
+    "mutation:updateMyName",
+    async (_key: string, { arg: fullName }: { arg: string }): Promise<User> => {
+      const res = await getApiClient().patch<User>("/users/me/name", {
+        fullName,
+      });
+      await mutate(meKey(), res.data, { revalidate: false });
+      return res.data;
+    },
+  );
+
+export const useUpdateMyUsername = () =>
+  useSWRMutation(
+    "mutation:updateMyUsername",
+    async (_key: string, { arg: username }: { arg: string }): Promise<User> => {
+      const res = await getApiClient().patch<User>("/users/me/username", {
+        username,
+      });
+      await mutate(meKey(), res.data, { revalidate: false });
+      return res.data;
+    },
+  );
+
 export const useDeleteMe = () =>
   useSWRMutation("mutation:deleteMe", async (): Promise<void> => {
     await getApiClient().delete("/users/me");

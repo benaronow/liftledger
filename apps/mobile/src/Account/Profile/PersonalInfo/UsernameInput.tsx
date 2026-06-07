@@ -1,19 +1,20 @@
-import { useMe, useUpdateMyName } from "@liftledger/api-client";
+import { useMe, useUpdateMyUsername } from "@liftledger/api-client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ProfileTextInput } from "../profileInputs";
 
-export const NameInput = () => {
+export const UsernameInput = () => {
   const { data: curUser } = useMe();
-  const { trigger: triggerUpdateName, isMutating: saving } = useUpdateMyName();
+  const { trigger: triggerUpdateUsername, isMutating: saving } =
+    useUpdateMyUsername();
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (curUser) setValue(curUser.fullName ?? "");
+    if (curUser) setValue(curUser.username ?? "");
   }, [curUser]);
 
   const edited = useMemo(
-    () => value !== (curUser?.fullName ?? ""),
+    () => value !== (curUser?.username ?? ""),
     [value, curUser],
   );
 
@@ -21,22 +22,22 @@ export const NameInput = () => {
     if (!curUser) return;
     setError("");
     try {
-      await triggerUpdateName(value);
+      await triggerUpdateUsername(value);
     } catch (e: unknown) {
       setError((e as Error).message);
     }
-  }, [curUser, value, triggerUpdateName]);
+  }, [curUser, value, triggerUpdateUsername]);
 
   const canSave = edited && value.trim() !== "";
 
   return (
     <ProfileTextInput
-      label="Full name"
+      label="Username"
       value={value}
       error={error}
       onChange={setValue}
       onSave={handleSave}
-      onRevert={() => setValue(curUser?.fullName ?? "")}
+      onRevert={() => setValue(curUser?.username ?? "")}
       canSave={canSave}
       isSaving={saving}
     />

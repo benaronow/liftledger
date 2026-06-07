@@ -4,6 +4,7 @@ const userSchema: Schema = new Schema(
   {
     auth0Id: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true },
     fullName: { type: String, required: true },
     birthday: { type: Date, required: true },
     blocks: { type: [{ type: Schema.Types.ObjectId, ref: "Block" }] },
