@@ -8,7 +8,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 export type TabParamList = {
   Progress: undefined;
   Dashboard: undefined;
-  EditProgram: { duplicateFrom?: string } | undefined;
+  Program: { duplicateFrom?: string } | undefined;
 };
 
 export type RootStackParamList = {

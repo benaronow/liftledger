@@ -1,4 +1,8 @@
-import { useCompletedExercises, useProgram, useMe } from "@liftledger/api-client";
+import {
+  useCompletedExercises,
+  useProgram,
+  useMe,
+} from "@liftledger/api-client";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useMemo } from "react";
 import { View } from "react-native";
@@ -7,13 +11,13 @@ import { LogoSpinner } from "../components/LogoSpinner";
 import { floatingTabBarClearance } from "../RootNavigator/TabNavigator/FloatingTabBar";
 import type { TabParamList } from "../RootNavigator/types";
 import { useTheme } from "../paper";
-import { EditProgramFooter } from "./EditProgramFooter/EditProgramFooter";
+import { ProgramFooter } from "./ProgramFooter";
 import { EditorView } from "./EditorView";
 import { EMPTY_PROGRAM } from "./emptyProgram";
 import { TemplateProvider } from "./TemplateProvider";
 import { templateFromProgram } from "./templateFromProgram";
 
-export const EditProgram = () => {
+export const Program = () => {
   const { params } = useRoute<RouteProp<TabParamList, "EditProgram">>();
   const duplicateFromId = params?.duplicateFrom;
 
@@ -65,7 +69,7 @@ export const EditProgram = () => {
         }}
       >
         <EditorView />
-        <EditProgramFooter />
+        <ProgramFooter />
       </View>
     </TemplateProvider>
   );

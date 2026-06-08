@@ -6,7 +6,7 @@ import { QuitProgramDialog } from "./QuitProgramDialog";
 import { SaveProgramDialog } from "./SaveProgramDialog";
 import { useTemplate } from "../TemplateProvider";
 
-export const EditProgramFooter = () => {
+export const ProgramFooter = () => {
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { editingDayIdx, setEditingDayIdx, templateErrors } = useTemplate();
@@ -17,7 +17,13 @@ export const EditProgramFooter = () => {
     editingDayIdx !== -1
       ? [
           {
-            icon: <MaterialCommunityIcons name="chevron-left" size={20} color="white" />,
+            icon: (
+              <MaterialCommunityIcons
+                name="chevron-left"
+                size={20}
+                color="white"
+              />
+            ),
             label: "Return to week",
             onPress: () => setEditingDayIdx(-1),
             variant: "primary",
@@ -25,7 +31,13 @@ export const EditProgramFooter = () => {
         ]
       : [
           {
-            icon: <MaterialCommunityIcons name="content-save" size={18} color="white" />,
+            icon: (
+              <MaterialCommunityIcons
+                name="content-save"
+                size={18}
+                color="white"
+              />
+            ),
             label: "Save",
             onPress: () => setSaveDialogOpen(true),
             disabled: templateErrors.length > 0,
@@ -34,7 +46,13 @@ export const EditProgramFooter = () => {
           ...(curProgram
             ? [
                 {
-                  icon: <MaterialCommunityIcons name="stop-circle" size={20} color="white" />,
+                  icon: (
+                    <MaterialCommunityIcons
+                      name="stop-circle"
+                      size={20}
+                      color="white"
+                    />
+                  ),
                   label: "Quit Program",
                   onPress: () => setQuitDialogOpen(true),
                   variant: "danger",

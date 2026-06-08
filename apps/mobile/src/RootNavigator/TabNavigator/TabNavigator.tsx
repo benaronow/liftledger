@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FloatingTabBar } from "./FloatingTabBar";
 import { Progress } from "../../Progress";
 import { Dashboard } from "../../Dashboard/Dashboard";
-import { EditProgram } from "../../EditProgram";
+import { Program } from "../../Program";
 import type { TabParamList } from "../types";
 
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -40,12 +40,12 @@ export const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="EditProgram"
-        component={EditProgram}
+        name="Program"
+        component={Program}
         options={{
-          title: "Edit Program",
+          title: "Program",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="pencil" size={size} color={color} />
+            <MaterialCommunityIcons name="dumbbell" size={size} color={color} />
           ),
         }}
       />
