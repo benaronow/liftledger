@@ -38,6 +38,12 @@ export const env = {
   get AUTH0_CLIENT_ID() {
     return optional("AUTH0_CLIENT_ID");
   },
+  // The native (Expo) Auth0 application. Used so mobile-originated verification
+  // emails are sent from the "LiftLedger - Mobile" client (matching sender +
+  // post-verification redirect) rather than the web client.
+  get AUTH0_MOBILE_CLIENT_ID() {
+    return optional("AUTH0_MOBILE_CLIENT_ID");
+  },
   // Shared secret used by the Auth0 PreUserRegistration action to call the
   // internal username-availability lookup. Optional so tests/local runs work
   // without it; the internal route returns 503 when it's unset.

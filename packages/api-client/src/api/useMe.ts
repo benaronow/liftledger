@@ -11,6 +11,26 @@ export const useMe = (
   config?: SWRConfiguration<User>,
 ) => useSWR<User>(enabled ? meKey() : null, fetcher, config);
 
+export interface Auth0Profile {
+  emailVerified: boolean;
+  username: string | null;
+}
+
+export const auth0ProfileKey = () => "/users/me/auth0";
+
+// Live Auth0 state for the current session — works before a DB user exists, so
+// it drives the onboarding email-verification gate and username prefill.
+export const useAuth0Profile = (
+  enabled: boolean = true,
+  config?: SWRConfiguration<Auth0Profile>,
+) =>
+  useSWR<Auth0Profile>(enabled ? auth0ProfileKey() : null, fetcher, config);
+
+export const useResendVerification = () =>
+  useSWRMutation("mutation:resendVerification", async (): Promise<void> => {
+    await getApiClient().post("/users/me/resend-verification", {});
+  });
+
 export const useUpdateMyEmail = () =>
   useSWRMutation(
     "mutation:updateMyEmail",
