@@ -25,7 +25,7 @@ const tabTitle = (route: RouteProp<RootStackParamList, "Tabs">): string => {
     case "Progress":
       return "Progress";
     case "Program":
-      return "Edit Program";
+      return "Program";
     case "Dashboard":
     default:
       return "Home";

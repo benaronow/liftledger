@@ -61,7 +61,13 @@ export const useExerciseSelection = ({
   // Seed once the data has loaded. Handles both a clean start (no name yet) and
   // a pre-set name with no apparatus (e.g. a shared/bookmarked web URL).
   useEffect(() => {
-    if (completedExercisesLoading || allExerciseNameOptions.length === 0) return;
+    // Wait for the data itself, not just the loading flag: while the user is
+    // still loading, `useCompletedExercises` runs with a null key (no user id),
+    // which SWR reports as `isLoading: false`. Gating on `completedExercises`
+    // being defined avoids seeding before the history has actually arrived. A
+    // user with no history gets a defined `{ current: [], previous: [] }` and
+    // still falls through to the alphabetical default below.
+    if (!completedExercises || allExerciseNameOptions.length === 0) return;
     if (selectedName && selectedApparatus) return;
 
     if (!selectedName) {
