@@ -1,10 +1,10 @@
 import { ActionDialog, DialogAction } from "@/components/ActionDialog";
-import { Block, Day, Exercise } from "@liftledger/shared";
+import { Program, Day, Exercise } from "@liftledger/shared";
 import {
   useCurrentDay,
   useMe,
-  useUpdateUserBlock,
-  useBlock,
+  useUpdateUserProgram,
+  useProgram,
 } from "@liftledger/api-client";
 import { IoArrowBack } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
@@ -17,26 +17,26 @@ interface Props {
 
 export const DeleteExerciseDialog = ({ deletingIdx, onClose }: Props) => {
   const { data: curUser } = useMe();
-  const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
-  const { trigger: triggerUpdateUserBlock, isMutating: deletingExercise } =
-    useUpdateUserBlock();
+  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
+  const { trigger: triggerUpdateUserProgram, isMutating: deletingExercise } =
+    useUpdateUserProgram();
   const { exercises } = useCurrentDay();
 
   const saveExercises = async (exercises: Exercise[]) => {
-    if (!curUser?._id || !curBlock) return;
-    const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].toSpliced(
-      curBlock.curDayIdx,
+    if (!curUser?._id || !curProgram) return;
+    const newDays: Day[] = curProgram.weeks[curProgram.curWeekIdx].toSpliced(
+      curProgram.curDayIdx,
       1,
       {
-        ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
+        ...curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx],
         exercises,
       },
     );
-    const newBlock: Block = {
-      ...curBlock,
-      weeks: curBlock.weeks.toSpliced(curBlock.curWeekIdx, 1, newDays),
+    const newProgram: Program = {
+      ...curProgram,
+      weeks: curProgram.weeks.toSpliced(curProgram.curWeekIdx, 1, newDays),
     };
-    await triggerUpdateUserBlock({ userId: curUser._id, block: newBlock });
+    await triggerUpdateUserProgram({ userId: curUser._id, program: newProgram });
   };
 
   const handleDeleteExercise = async () => {

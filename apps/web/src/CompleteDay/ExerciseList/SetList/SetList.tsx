@@ -2,14 +2,14 @@ import {
   Exercise,
   Set,
   DARK_COLORS,
-  getCompletedDaysInBlock,
+  getCompletedDaysInProgram,
 } from "@liftledger/shared";
 import { RefObject, useCallback, useEffect, useMemo, useState } from "react";
 import { BiPlusCircle } from "react-icons/bi";
 import { FaTimes } from "react-icons/fa";
 import { ActionButton } from "@/components/ActionButton";
 import { ProgressIcon } from "./ProgressIcon";
-import { isExerciseComplete, useMe, useBlock } from "@liftledger/api-client";
+import { isExerciseComplete, useMe, useProgram } from "@liftledger/api-client";
 import { computeProgress } from "./computeProgress";
 import { SubmitSetDialog } from "./SubmitSetDialog/SubmitSetDialog";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -26,19 +26,19 @@ export const SetList = ({
   containerRef,
 }: Props) => {
   const { data: curUser } = useMe();
-  const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
+  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const [editingSetIdx, setEditingSetIdx] = useState<number>();
   const { colors } = useTheme();
 
-  // Progress icons compare against history *within this block only*. Using
-  // completedExercises.previous (which spans all blocks) was making a freshly
-  // duplicated block's icons match against the source block's data.
-  const intraBlockPrevious = useMemo<Exercise[]>(() => {
-    if (!curBlock) return [];
-    return getCompletedDaysInBlock(curBlock)
+  // Progress icons compare against history *within this program only*. Using
+  // completedExercises.previous (which spans all programs) was making a freshly
+  // duplicated program's icons match against the source program's data.
+  const intraProgramPrevious = useMemo<Exercise[]>(() => {
+    if (!curProgram) return [];
+    return getCompletedDaysInProgram(curProgram)
       .flatMap((day) => day.exercises)
       .reverse();
-  }, [curBlock]);
+  }, [curProgram]);
 
   useEffect(() => {
     const el = document.getElementById(exercise.name + exercise.apparatus);
@@ -70,11 +70,11 @@ export const SetList = ({
 
   const getDiffs = useCallback(
     (setIdx: number) => {
-      // Same predicate as findLatestOccurrence, but scoped to intra-block
-      // history only — fresh duplicate blocks would otherwise show "+0/+0"
-      // diffs against the source block.
+      // Same predicate as findLatestOccurrence, but scoped to intra-program
+      // history only — fresh duplicate programs would otherwise show "+0/+0"
+      // diffs against the source program.
       let lastCompletedSet: Set | undefined;
-      for (const e of intraBlockPrevious) {
+      for (const e of intraProgramPrevious) {
         if (
           e.name === exercise.name &&
           e.apparatus === exercise.apparatus &&
@@ -99,7 +99,7 @@ export const SetList = ({
 
       return { repDiff: undefined, weightDiff: undefined };
     },
-    [exercise, intraBlockPrevious],
+    [exercise, intraProgramPrevious],
   );
 
   const getProgressString = (diff: number | undefined) => {
@@ -108,8 +108,8 @@ export const SetList = ({
   };
 
   const getProgressSign = useCallback(
-    (setIdx: number) => computeProgress(setIdx, exercise, intraBlockPrevious),
-    [exercise, intraBlockPrevious],
+    (setIdx: number) => computeProgress(setIdx, exercise, intraProgramPrevious),
+    [exercise, intraProgramPrevious],
   );
 
   const exerciseHasSkippedSets = useMemo(

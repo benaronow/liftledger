@@ -6,7 +6,7 @@ import {
   useCurrentDay,
   useMe,
 } from "@liftledger/api-client";
-import { ExerciseInfoName } from "@/EditBlock/EditorView/EditDay/ExerciseInfo";
+import { ExerciseInfoName } from "@/EditProgram/EditorView/EditDay/ExerciseInfo";
 import { WEIGHT_TYPES } from "@liftledger/shared";
 import { ExerciseNameSelect } from "@/components/ExerciseNameSelect";
 import { ExerciseApparatusSelect } from "@/components/ExerciseApparatusSelect";

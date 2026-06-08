@@ -1,11 +1,11 @@
 import { useState } from "react";
 import {
   getNewSetsFromLatest,
-  useBlock,
+  useProgram,
   useCompletedExercises,
   useMe,
   useUpdateUser,
-  useUpdateUserBlock,
+  useUpdateUserProgram,
 } from "@liftledger/api-client";
 import { ConfirmationDialog } from "../../components/ConfirmationDialog";
 import { SearchableSelect } from "../../components/SearchableSelect";
@@ -17,27 +17,27 @@ interface Props {
 
 export const EditGymDialog = ({ open, onClose }: Props) => {
   const { data: curUser } = useMe();
-  const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
+  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
   const { trigger: triggerUpdateUser } = useUpdateUser();
-  const { trigger: triggerUpdateUserBlock, isMutating: editingGym } =
-    useUpdateUserBlock();
+  const { trigger: triggerUpdateUserProgram, isMutating: editingGym } =
+    useUpdateUserProgram();
   const [gymName, setGymName] = useState<string>(
-    curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym ?? "",
+    curProgram?.weeks[curProgram.curWeekIdx][curProgram.curDayIdx].gym ?? "",
   );
 
   const handleEditGym = async (name: string) => {
-    if (!curUser?._id || !curBlock) return;
+    if (!curUser?._id || !curProgram) return;
 
     try {
-      await triggerUpdateUserBlock({
+      await triggerUpdateUserProgram({
         userId: curUser._id,
-        block: {
-          ...curBlock,
-          weeks: curBlock.weeks.map((week, wIdx) =>
-            wIdx === curBlock.curWeekIdx
+        program: {
+          ...curProgram,
+          weeks: curProgram.weeks.map((week, wIdx) =>
+            wIdx === curProgram.curWeekIdx
               ? week.map((day, dIdx) =>
-                  dIdx === curBlock.curDayIdx
+                  dIdx === curProgram.curDayIdx
                     ? {
                         ...day,
                         gym: name,
@@ -65,7 +65,7 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
       onClose();
     } catch {
       // Save failed — keep the dialog open for retry; the spinner clears via
-      // useUpdateUserBlock's isMutating.
+      // useUpdateUserProgram's isMutating.
     }
   };
 
@@ -88,7 +88,7 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
       onConfirm={() => handleEditGym(gymName)}
       confirming={editingGym}
       confirmationDisabled={
-        gymName === curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym
+        gymName === curProgram?.weeks[curProgram.curWeekIdx][curProgram.curDayIdx].gym
       }
     >
       <SearchableSelect

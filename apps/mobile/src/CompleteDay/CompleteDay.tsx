@@ -16,7 +16,7 @@ export const CompleteDay = () => {
   const { exercises, currentExIdx } = useCurrentDay();
   const { colors } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
-  // While finishing, the saved block advances to the next day underneath us.
+  // While finishing, the saved program advances to the next day underneath us.
   // Masking the list with a spinner during the save hides that swap until we
   // navigate away — and lets the Finish button keep its loading state.
   const [isFinishing, setIsFinishing] = useState(false);

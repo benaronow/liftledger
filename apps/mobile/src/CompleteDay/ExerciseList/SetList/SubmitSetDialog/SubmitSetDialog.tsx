@@ -1,12 +1,12 @@
-import { Block, Day, Exercise, Set } from "@liftledger/shared";
+import { Program, Day, Exercise, Set } from "@liftledger/shared";
 import { useEffect, useState } from "react";
 import {
   findLatestOccurrence,
-  useBlock,
+  useProgram,
   useCompletedExercises,
   useCurrentDay,
   useMe,
-  useUpdateUserBlock,
+  useUpdateUserProgram,
 } from "@liftledger/api-client";
 import { ConfirmationDialog } from "../../../../components/ConfirmationDialog";
 import { TimerSettings } from "../../../TimerSettings";
@@ -21,9 +21,9 @@ interface Props {
 
 export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
   const { data: curUser } = useMe();
-  const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
+  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
-  const { trigger: triggerUpdateUserBlock } = useUpdateUserBlock();
+  const { trigger: triggerUpdateUserProgram } = useUpdateUserProgram();
   const { showSnackbar } = useSnackbar();
 
   const { exercises } = useCurrentDay();
@@ -52,19 +52,19 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
   };
 
   const saveExercises = async (updatedExercises: Exercise[]) => {
-    if (!curUser?._id || !curBlock) return;
+    if (!curUser?._id || !curProgram) return;
 
-    const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].toSpliced(
-      curBlock.curDayIdx,
+    const newDays: Day[] = curProgram.weeks[curProgram.curWeekIdx].toSpliced(
+      curProgram.curDayIdx,
       1,
       {
-        ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
+        ...curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx],
         exercises: updatedExercises,
       },
     );
 
     const updatedLaterDays: Day[] = newDays.map((day: Day, idx) =>
-      idx <= curBlock.curDayIdx
+      idx <= curProgram.curDayIdx
         ? day
         : {
             ...day,
@@ -93,12 +93,12 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
           },
     );
 
-    const newBlock: Block = {
-      ...curBlock,
-      weeks: curBlock.weeks.toSpliced(curBlock.curWeekIdx, 1, updatedLaterDays),
+    const newProgram: Program = {
+      ...curProgram,
+      weeks: curProgram.weeks.toSpliced(curProgram.curWeekIdx, 1, updatedLaterDays),
     };
 
-    await triggerUpdateUserBlock({ userId: curUser._id, block: newBlock });
+    await triggerUpdateUserProgram({ userId: curUser._id, program: newProgram });
   };
 
   const handleSubmitSet = async (options?: { skip: boolean }) => {

@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import UserModel from "@liftledger/shared/models/user";
-import BlockModel from "@liftledger/shared/models/block";
+import ProgramModel from "@liftledger/shared/models/program";
 import { authorizeMe } from "../auth";
 import { getAuth0Token, RATE_LIMIT_MESSAGE } from "../auth0Management";
 import { env } from "../env";
@@ -13,7 +13,7 @@ const meRoutes = async (app: FastifyInstance) => {
 
     try {
       const user = await UserModel.findOne({ _id: me._id }).populate([
-        { path: "blocks", model: BlockModel },
+        { path: "programs", model: ProgramModel },
       ]);
       if (!user) return reply.code(404).send({ error: "User not found" });
 
@@ -288,7 +288,7 @@ const meRoutes = async (app: FastifyInstance) => {
           { auth0Id: req.user.sub },
           { $set: { email } },
           { new: true },
-        ).populate([{ path: "blocks", model: BlockModel }]);
+        ).populate([{ path: "programs", model: ProgramModel }]);
       } catch (dbErr) {
         console.error(
           "Failed to update MongoDB email after Auth0 success — reverting Auth0:",
@@ -401,7 +401,7 @@ const meRoutes = async (app: FastifyInstance) => {
           { auth0Id: req.user.sub },
           { $set: { fullName: trimmedName } },
           { new: true },
-        ).populate([{ path: "blocks", model: BlockModel }]);
+        ).populate([{ path: "programs", model: ProgramModel }]);
       } catch (dbErr) {
         console.error(
           "Failed to update MongoDB name after Auth0 success — reverting Auth0:",
@@ -515,7 +515,7 @@ const meRoutes = async (app: FastifyInstance) => {
           { auth0Id: req.user.sub },
           { $set: { username: trimmedUsername } },
           { new: true },
-        ).populate([{ path: "blocks", model: BlockModel }]);
+        ).populate([{ path: "programs", model: ProgramModel }]);
       } catch (dbErr) {
         console.error("Failed to update MongoDB username:", dbErr);
 

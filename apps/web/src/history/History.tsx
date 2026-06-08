@@ -1,20 +1,20 @@
 import dayjs from "dayjs";
 import { MdControlPointDuplicate } from "react-icons/md";
 import { useMediaQuery } from "@/useMediaQuery";
-import { Block } from "@liftledger/shared";
+import { Program } from "@liftledger/shared";
 import { useNavigate } from "react-router";
 import { useEffect, useMemo } from "react";
 import { LogoSpinner } from "@/components/LogoSpinner";
-import { useMe, useBlock } from "@liftledger/api-client";
+import { useMe, useProgram } from "@liftledger/api-client";
 import { ActionButton } from "../components/ActionButton";
 import { useTheme } from "../providers/ThemeProvider";
 
 export const History = () => {
   const navigate = useNavigate();
   const { data: curUser, isLoading: isUserLoading } = useMe();
-  const { data: curBlock, isLoading: isBlockLoading } = useBlock(
+  const { data: curProgram, isLoading: isProgramLoading } = useProgram(
     curUser?._id,
-    curUser?.curBlock,
+    curUser?.curProgram,
   );
   const isTabletOrLarger = useMediaQuery("(min-width: 600px)");
   const { colors } = useTheme();
@@ -23,20 +23,20 @@ export const History = () => {
     if (isTabletOrLarger) navigate("/dashboard");
   }, [isTabletOrLarger, navigate]);
 
-  const getCompletedDate = (block: Block) => {
-    if (block.endDate) return block.endDate;
+  const getCompletedDate = (program: Program) => {
+    if (program.endDate) return program.endDate;
 
-    const finalWeek = block.weeks[block.weeks.length - 1];
+    const finalWeek = program.weeks[program.weeks.length - 1];
     const finalDay = finalWeek[finalWeek.length - 1];
 
     return finalDay.completedDate;
   };
 
-  const completedBlocks = useMemo(
+  const completedPrograms = useMemo(
     () =>
-      curUser?.blocks
-        .filter((block) => block._id !== curBlock?._id)
-        .map((block, idx) => {
+      curUser?.programs
+        .filter((program) => program._id !== curProgram?._id)
+        .map((program, idx) => {
           return (
             <div
               key={idx}
@@ -55,10 +55,10 @@ export const History = () => {
               <span className="overflow-hidden text-nowrap text-truncate">
                 <span className="fw-bold" style={{ marginRight: "5px" }}>{`${
                   idx + 1
-                }. ${block.name}`}</span>
-                <span>{`(${dayjs(block.startDate).format("M/DD/YY")} -  ${
-                  getCompletedDate(block)
-                    ? dayjs(getCompletedDate(block)).format("M/DD/YY")
+                }. ${program.name}`}</span>
+                <span>{`(${dayjs(program.startDate).format("M/DD/YY")} -  ${
+                  getCompletedDate(program)
+                    ? dayjs(getCompletedDate(program)).format("M/DD/YY")
                     : "N/A"
                 })`}</span>
               </span>
@@ -68,24 +68,24 @@ export const History = () => {
                 width={35}
                 icon={<MdControlPointDuplicate size={28} />}
                 onClick={() =>
-                  navigate(`/edit-block?duplicateFrom=${block._id}`)
+                  navigate(`/edit-program?duplicateFrom=${program._id}`)
                 }
               />
             </div>
           );
         }),
-    [curUser, curBlock, navigate],
+    [curUser, curProgram, navigate],
   );
 
-  if (isUserLoading || isBlockLoading) return <LogoSpinner />;
+  if (isUserLoading || isProgramLoading) return <LogoSpinner />;
 
   return (
     <div
       className="d-flex flex-column align-items-center w-100 h-100 overflow-y-scroll"
       style={{ padding: "15px 0px" }}
     >
-      {completedBlocks && completedBlocks[0] ? (
-        completedBlocks
+      {completedPrograms && completedPrograms[0] ? (
+        completedPrograms
       ) : (
         <div
           className="d-flex align-items-center w-100 text-white text-nowrap justify-content-between"
@@ -108,7 +108,7 @@ export const History = () => {
               marginRight: "5px",
             }}
           >
-            No completed blocks yet
+            No completed programs yet
           </span>
         </div>
       )}

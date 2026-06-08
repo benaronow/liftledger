@@ -24,8 +24,8 @@ const tabTitle = (route: RouteProp<RootStackParamList, "Tabs">): string => {
   switch (getFocusedRouteNameFromRoute(route) ?? "Dashboard") {
     case "Progress":
       return "Progress";
-    case "EditBlock":
-      return "Edit Block";
+    case "EditProgram":
+      return "Edit Program";
     case "Dashboard":
     default:
       return "Home";

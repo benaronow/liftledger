@@ -1,10 +1,10 @@
-import { Block } from "@liftledger/shared";
+import { Program } from "@liftledger/shared";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useCallback } from "react";
 import { View } from "react-native";
 import { Text, useTheme } from "../../paper";
-import { useBlock, useMe, useUpdateUserBlock } from "@liftledger/api-client";
+import { useProgram, useMe, useUpdateUserProgram } from "@liftledger/api-client";
 import { ConfirmationDialog } from "../../components/ConfirmationDialog";
 import type { RootStackParamList } from "../../RootNavigator/types";
 import { FONT, SPACING } from "../../theme";
@@ -27,20 +27,20 @@ export const FinishDayDialog = ({
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data: curUser } = useMe();
-  const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
-  const { trigger: triggerUpdateUserBlock } = useUpdateUserBlock();
+  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
+  const { trigger: triggerUpdateUserProgram } = useUpdateUserProgram();
   const { showSnackbar } = useSnackbar();
 
   const handleFinishDay = useCallback(async () => {
-    if (!curUser?._id || !curBlock) return;
+    if (!curUser?._id || !curProgram) return;
 
-    const newBlock: Block = {
-      ...curBlock,
-      weeks: curBlock.weeks.toSpliced(
-        curBlock.curWeekIdx,
+    const newProgram: Program = {
+      ...curProgram,
+      weeks: curProgram.weeks.toSpliced(
+        curProgram.curWeekIdx,
         1,
-        curBlock.weeks[curBlock.curWeekIdx].toSpliced(curBlock.curDayIdx, 1, {
-          ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
+        curProgram.weeks[curProgram.curWeekIdx].toSpliced(curProgram.curDayIdx, 1, {
+          ...curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx],
           completedDate: new Date(),
         }),
       ),
@@ -48,7 +48,7 @@ export const FinishDayDialog = ({
 
     setFinishing(true);
     try {
-      await triggerUpdateUserBlock({ userId: curUser._id, block: newBlock });
+      await triggerUpdateUserProgram({ userId: curUser._id, program: newProgram });
       onClose();
       navigation.navigate("Tabs", { screen: "Dashboard" });
     } catch {
@@ -58,9 +58,9 @@ export const FinishDayDialog = ({
     }
   }, [
     curUser?._id,
-    curBlock,
+    curProgram,
     setFinishing,
-    triggerUpdateUserBlock,
+    triggerUpdateUserProgram,
     onClose,
     navigation,
     showSnackbar,

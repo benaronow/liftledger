@@ -1,13 +1,13 @@
 import type { FastifyInstance } from "fastify";
 import UserModel from "@liftledger/shared/models/user";
-import BlockModel from "@liftledger/shared/models/block";
+import ProgramModel from "@liftledger/shared/models/program";
 import type {
-  Block,
+  Program,
   CompletedExercise,
   Exercise,
   User,
 } from "@liftledger/shared";
-import { getCompletedDaysInBlock } from "@liftledger/shared";
+import { getCompletedDaysInProgram } from "@liftledger/shared";
 import { authorizeCaller } from "../auth";
 
 const UPDATABLE_FIELDS = [
@@ -61,7 +61,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
           { _id: id },
           { $set: update },
           { new: true },
-        ).populate([{ path: "blocks", model: BlockModel }]);
+        ).populate([{ path: "programs", model: ProgramModel }]);
         if (!updatedUser)
           return reply.code(404).send({ error: "User not found" });
         return updatedUser;
@@ -82,20 +82,20 @@ const userByIdRoutes = async (app: FastifyInstance) => {
 
       try {
         const user = await UserModel.findOne({ _id: id })
-          .populate([{ path: "blocks", model: BlockModel }])
+          .populate([{ path: "programs", model: ProgramModel }])
           .lean();
         if (!user) return reply.code(404).send({ error: "User not found" });
 
-        const blocks: Block[] = (user.blocks as unknown as Block[]) || [];
+        const programs: Program[] = (user.programs as unknown as Program[]) || [];
 
-        const curBlock = blocks.find(
-          (block) => String(block._id) === String(user.curBlock),
+        const curProgram = programs.find(
+          (program) => String(program._id) === String(user.curProgram),
         );
 
-        const previousCompletedExercises: CompletedExercise[] = blocks
-          .flatMap((block) => {
-            if (block._id === curBlock?._id) {
-              return getCompletedDaysInBlock(block).flatMap((day) =>
+        const previousCompletedExercises: CompletedExercise[] = programs
+          .flatMap((program) => {
+            if (program._id === curProgram?._id) {
+              return getCompletedDaysInProgram(program).flatMap((day) =>
                 day.exercises.map((exercise) => ({
                   ...exercise,
                   completedDate: day.completedDate!,
@@ -103,7 +103,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
               );
             }
 
-            return block.weeks.flatMap((week) =>
+            return program.weeks.flatMap((week) =>
               week.flatMap((day) =>
                 day.exercises.map((exercise) => ({
                   ...exercise,
@@ -114,8 +114,8 @@ const userByIdRoutes = async (app: FastifyInstance) => {
           })
           .reverse();
 
-        const currentCompletedExercises: Exercise[] = curBlock
-          ? curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].exercises
+        const currentCompletedExercises: Exercise[] = curProgram
+          ? curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx].exercises
               .slice()
               .reverse()
           : [];
@@ -133,30 +133,30 @@ const userByIdRoutes = async (app: FastifyInstance) => {
     },
   );
 
-  app.post<{ Params: IdParams; Body: { block: Block } }>(
-    "/users/:id/startBlock",
+  app.post<{ Params: IdParams; Body: { program: Program } }>(
+    "/users/:id/startProgram",
     { preHandler: app.authenticate },
     async (req, reply) => {
       const { id } = req.params;
       const auth = await authorizeCaller(req, reply, id);
       if (!auth.ok) return;
 
-      const { block } = req.body;
+      const { program } = req.body;
 
-      let newBlock;
+      let newProgram;
       try {
-        newBlock = await BlockModel.create(block);
+        newProgram = await ProgramModel.create(program);
       } catch (error) {
-        console.error("Failed to create block:", error);
-        return reply.code(500).send({ error: "Failed to create block" });
+        console.error("Failed to create program:", error);
+        return reply.code(500).send({ error: "Failed to create program" });
       }
 
-      const deleteOrphanedBlock = async () => {
+      const deleteOrphanedProgram = async () => {
         try {
-          await BlockModel.findOneAndDelete({ _id: newBlock._id });
+          await ProgramModel.findOneAndDelete({ _id: newProgram._id });
         } catch (revertErr) {
           console.error(
-            "Failed to delete orphaned block after user update failure:",
+            "Failed to delete orphaned program after user update failure:",
             revertErr,
           );
         }
@@ -165,24 +165,24 @@ const userByIdRoutes = async (app: FastifyInstance) => {
       try {
         const updatedUser = await UserModel.findOneAndUpdate(
           { _id: id },
-          { $set: { curBlock: newBlock }, $addToSet: { blocks: newBlock } },
+          { $set: { curProgram: newProgram }, $addToSet: { programs: newProgram } },
           { new: true },
-        ).populate([{ path: "blocks", model: BlockModel }]);
+        ).populate([{ path: "programs", model: ProgramModel }]);
         if (!updatedUser) {
-          await deleteOrphanedBlock();
+          await deleteOrphanedProgram();
           return reply.code(404).send({ error: "User not found" });
         }
         return updatedUser;
       } catch (error) {
-        await deleteOrphanedBlock();
-        console.error("Failed to start block:", error);
-        return reply.code(500).send({ error: "Failed to start block" });
+        await deleteOrphanedProgram();
+        console.error("Failed to start program:", error);
+        return reply.code(500).send({ error: "Failed to start program" });
       }
     },
   );
 
   app.post<{ Params: IdParams }>(
-    "/users/:id/quitBlock",
+    "/users/:id/quitProgram",
     { preHandler: app.authenticate },
     async (req, reply) => {
       const { id } = req.params;
@@ -192,35 +192,35 @@ const userByIdRoutes = async (app: FastifyInstance) => {
       const user = await UserModel.findOne({ _id: id });
       if (!user) return reply.code(404).send({ error: "User not found" });
 
-      const block = await BlockModel.findOne({ _id: user.curBlock });
-      if (!block)
+      const program = await ProgramModel.findOne({ _id: user.curProgram });
+      if (!program)
         return reply
           .code(400)
-          .send({ error: "User does not have a current block" });
+          .send({ error: "User does not have a current program" });
 
-      const weeks = block.weeks.slice(0, block.curWeekIdx + 1);
+      const weeks = program.weeks.slice(0, program.curWeekIdx + 1);
       const endDate = new Date();
 
       try {
-        await BlockModel.findOneAndUpdate(
-          { _id: user.curBlock },
+        await ProgramModel.findOneAndUpdate(
+          { _id: user.curProgram },
           { $set: { weeks, endDate } },
         );
       } catch (error) {
         return reply
           .code(500)
-          .send({ error: `Failed to update block: ${error}` });
+          .send({ error: `Failed to update program: ${error}` });
       }
 
-      const revertBlock = async () => {
+      const revertProgram = async () => {
         try {
-          await BlockModel.findOneAndUpdate(
-            { _id: user.curBlock },
-            { $set: { weeks: block.weeks }, $unset: { endDate: "" } },
+          await ProgramModel.findOneAndUpdate(
+            { _id: user.curProgram },
+            { $set: { weeks: program.weeks }, $unset: { endDate: "" } },
           );
         } catch (revertErr) {
           console.error(
-            "Failed to revert block update after user update failure:",
+            "Failed to revert program update after user update failure:",
             revertErr,
           );
         }
@@ -229,16 +229,16 @@ const userByIdRoutes = async (app: FastifyInstance) => {
       try {
         const updatedUser = await UserModel.findOneAndUpdate(
           { _id: id },
-          { $unset: { curBlock: "" } },
+          { $unset: { curProgram: "" } },
           { new: true },
-        ).populate([{ path: "blocks", model: BlockModel }]);
+        ).populate([{ path: "programs", model: ProgramModel }]);
         if (!updatedUser) {
-          await revertBlock();
+          await revertProgram();
           return reply.code(404).send({ error: "User not found" });
         }
         return updatedUser;
       } catch (error) {
-        await revertBlock();
+        await revertProgram();
         return reply
           .code(500)
           .send({ error: `Failed to update user: ${error}` });

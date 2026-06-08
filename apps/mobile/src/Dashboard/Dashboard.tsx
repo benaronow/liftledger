@@ -1,4 +1,4 @@
-import { useBlock, useMe } from "@liftledger/api-client";
+import { useProgram, useMe } from "@liftledger/api-client";
 import { Day, Exercise, Set } from "@liftledger/shared";
 import { useNavigation } from "@react-navigation/native";
 import dayjs from "dayjs";
@@ -15,9 +15,9 @@ export const Dashboard = () => {
   const { data: curUser } = useMe();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const { data: curBlock, isLoading: curBlockLoading } = useBlock(
+  const { data: curProgram, isLoading: curProgramLoading } = useProgram(
     curUser?._id,
-    curUser?.curBlock,
+    curUser?.curProgram,
   );
 
   const getExerciseCompleted = (exercise: Exercise) =>
@@ -26,9 +26,9 @@ export const Dashboard = () => {
       true,
     );
 
-  // Sum of completed reps×weight across the block, normalized to lbs.
+  // Sum of completed reps×weight across the program, normalized to lbs.
   const getTotalWeight = (type: "lbs" | "kgs") =>
-    `${curBlock?.weeks.reduce((accWeek: number, curWeek: Day[]) => {
+    `${curProgram?.weeks.reduce((accWeek: number, curWeek: Day[]) => {
       return (
         accWeek +
         curWeek.reduce((accDay: number, curDay: Day) => {
@@ -59,10 +59,10 @@ export const Dashboard = () => {
     }, 0)} lbs`;
 
   const getDaysSinceLast = () => {
-    if (!curBlock?.weeks[0][0].completedDate) return 0;
+    if (!curProgram?.weeks[0][0].completedDate) return 0;
 
     let lastWorkoutDate = new Date(0);
-    curBlock?.weeks.forEach((week) =>
+    curProgram?.weeks.forEach((week) =>
       week.forEach((day) =>
         day.exercises.forEach((exercise) => {
           const completionDate = day.completedDate
@@ -82,27 +82,27 @@ export const Dashboard = () => {
     return Math.floor(timeDifference / (1000 * 60 * 60 * 24));
   };
 
-  const curDayName = curBlock
-    ? curBlock.weeks[curBlock.curWeekIdx].find((day) => !day.completedDate)
+  const curDayName = curProgram
+    ? curProgram.weeks[curProgram.curWeekIdx].find((day) => !day.completedDate)
         ?.name || "Unavailable"
     : "Unavailable";
 
   const metricValueMap = [
     {
       metric: "Start Date",
-      value: dayjs(curBlock?.startDate).format("MM/DD/YYYY"),
+      value: dayjs(curProgram?.startDate).format("MM/DD/YYYY"),
     },
     {
-      metric: "Block Length:",
-      value: `${curBlock?.length} week${(curBlock?.length || 0) > 1 ? "s" : ""}`,
+      metric: "Program Length:",
+      value: `${curProgram?.length} week${(curProgram?.length || 0) > 1 ? "s" : ""}`,
     },
-    { metric: "Week:", value: `Week ${(curBlock?.curWeekIdx || 0) + 1}` },
+    { metric: "Week:", value: `Week ${(curProgram?.curWeekIdx || 0) + 1}` },
     { metric: "Day:", value: curDayName },
     { metric: "Days Since Last Workout:", value: getDaysSinceLast() },
     { metric: "Total Weight Lifted:", value: getTotalWeight("lbs") },
   ];
 
-  if (!curUser || curBlockLoading) return <LogoSpinner />;
+  if (!curUser || curProgramLoading) return <LogoSpinner />;
 
   return (
     <ScrollView
@@ -117,7 +117,7 @@ export const Dashboard = () => {
       }}
     >
       <View style={{ alignItems: "center", marginBottom: SPACING.sm }}>
-        {curUser && !curBlock ? (
+        {curUser && !curProgram ? (
           <Text
             style={{
               fontSize: FONT.base,
@@ -126,7 +126,7 @@ export const Dashboard = () => {
               color: colors.text,
             }}
           >
-            Create a training block to get started!
+            Create a training program to get started!
           </Text>
         ) : (
           <>
@@ -143,13 +143,13 @@ export const Dashboard = () => {
             <Text
               style={{ fontSize: 24, fontWeight: "900", color: colors.text }}
             >
-              {curBlock?.name}
+              {curProgram?.name}
             </Text>
           </>
         )}
       </View>
 
-      {curBlock && (
+      {curProgram && (
         <>
           {metricValueMap.map((pair, idx) => (
             <View
