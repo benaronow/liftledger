@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { TouchableRipple, useTheme } from "../paper";
-import { RADIUS } from "../theme";
-import { useThemePreference } from "../providers/ThemeProvider";
+import { TouchableRipple, useTheme } from "../../paper";
+import { RADIUS } from "../../theme";
+import { useThemePreference } from "../../providers/ThemeProvider";
 import { useLogout } from "./useLogout";
 
 export const LogoutButton = () => {

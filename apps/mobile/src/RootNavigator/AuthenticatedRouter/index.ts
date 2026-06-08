@@ -1,0 +1,1 @@
+export { AuthenticatedRouter } from "./AuthenticatedRouter";

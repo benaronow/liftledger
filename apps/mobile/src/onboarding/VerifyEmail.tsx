@@ -5,7 +5,7 @@ import { useResendVerification } from "@liftledger/api-client";
 import { Button, Text, useTheme } from "../paper";
 import { SPACING } from "../theme";
 import { useSnackbar } from "../providers/SnackbarProvider";
-import { useLogout } from "../components/useLogout";
+import { useLogout } from "../RootNavigator/AuthenticatedRouter/useLogout";
 
 interface Props {
   // Re-fetches the live Auth0 profile; the router re-renders once verified.

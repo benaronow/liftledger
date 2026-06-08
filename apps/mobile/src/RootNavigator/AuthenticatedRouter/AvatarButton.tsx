@@ -1,4 +1,4 @@
-import { Avatar, TouchableRipple } from "../paper";
+import { Avatar, TouchableRipple } from "../../paper";
 import { useAuth0 } from "react-native-auth0";
 
 interface Props {

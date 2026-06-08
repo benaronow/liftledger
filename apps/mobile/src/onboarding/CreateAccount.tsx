@@ -18,7 +18,7 @@ import {
 } from "../paper";
 import { SPACING } from "../theme";
 import { useSnackbar } from "../providers/SnackbarProvider";
-import { useLogout } from "../components/useLogout";
+import { useLogout } from "../RootNavigator/AuthenticatedRouter/useLogout";
 
 const DEFAULT_TIMER_PRESETS = { 0: 120, 1: 150, 2: 180, 3: 210, 4: 240 };
 
