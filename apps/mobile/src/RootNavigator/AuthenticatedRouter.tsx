@@ -24,7 +24,7 @@ const tabTitle = (route: RouteProp<RootStackParamList, "Tabs">): string => {
   switch (getFocusedRouteNameFromRoute(route) ?? "Dashboard") {
     case "Progress":
       return "Progress";
-    case "EditProgram":
+    case "Program":
       return "Edit Program";
     case "Dashboard":
     default:
@@ -45,11 +45,8 @@ export const AuthenticatedRouter = () => {
   // The ID token already carries email_verified; only consult the live Auth0
   // profile when the token says unverified (e.g. just-completed verification).
   const tokenVerified = user?.email_verified === true;
-  const {
-    data: profile,
-    isLoading: profileLoading,
-    mutate: refreshProfile,
-  } = useAuth0Profile(!tokenVerified);
+  const { data: profile, mutate: refreshProfile } =
+    useAuth0Profile(!tokenVerified);
   const emailVerified = tokenVerified || !!profile?.emailVerified;
 
   // Only look up the DB user once email is verified.
@@ -59,7 +56,13 @@ export const AuthenticatedRouter = () => {
     error: userError,
   } = useMe(emailVerified);
 
-  if (!tokenVerified && profileLoading) return <LogoSpinner />;
+  // Show the spinner until the live profile resolves. Gating on `!profile`
+  // (rather than SWR's isLoading) keeps the spinner up through transient errors
+  // and retries too — isLoading flips false the instant a request settles, so
+  // a momentary failure right after login (e.g. the access token isn't ready
+  // yet) would otherwise flash VerifyEmail before the retry succeeds. We only
+  // show VerifyEmail once we have a definitive "unverified" answer.
+  if (!tokenVerified && !profile) return <LogoSpinner />;
   if (!emailVerified) return <VerifyEmail onRefresh={refreshProfile} />;
 
   if (userLoading && !curUser && !userError) return <LogoSpinner />;

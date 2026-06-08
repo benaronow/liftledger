@@ -3,27 +3,40 @@ import {
   useProgram,
   useMe,
 } from "@liftledger/api-client";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { useMemo } from "react";
-import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  RouteProp,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
+import { useEffect, useMemo, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { LogoSpinner } from "../components/LogoSpinner";
-import { floatingTabBarClearance } from "../RootNavigator/TabNavigator/FloatingTabBar";
 import type { TabParamList } from "../RootNavigator/types";
 import { useTheme } from "../paper";
-import { ProgramFooter } from "./ProgramFooter";
+import { ProgramFAB } from "./ProgramFAB";
 import { EditorView } from "./EditorView";
 import { EMPTY_PROGRAM } from "./emptyProgram";
+import { ProgramTransitionProvider } from "./ProgramTransition";
 import { TemplateProvider } from "./TemplateProvider";
 import { templateFromProgram } from "./templateFromProgram";
 
 export const Program = () => {
-  const { params } = useRoute<RouteProp<TabParamList, "EditProgram">>();
+  const { params } = useRoute<RouteProp<TabParamList, "Program">>();
+  const navigation = useNavigation();
   const duplicateFromId = params?.duplicateFrom;
+
+  // Covers the editor with the spinner from "Save"/"Quit" confirmation until we
+  // navigate away, hiding the frame where the editor re-renders with the saved
+  // program (quit FAB appears) or the emptied template. Reset on blur — by then
+  // the tab has switched, so the screen is detached and the reset can't flash.
+  const [transitioning, setTransitioning] = useState(false);
+  useEffect(
+    () => navigation.addListener("blur", () => setTransitioning(false)),
+    [navigation],
+  );
 
   const { data: curUser } = useMe();
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
   const { isLoading: curProgramLoading, data: curProgram } = useProgram(
     curUser?._id,
     curUser?.curProgram,
@@ -51,26 +64,27 @@ export const Program = () => {
   const initialWeekIdx = duplicateFromId ? 0 : (curProgram?.curWeekIdx ?? 0);
 
   return (
-    // Re-key on the active program id + duplicate source so the editor
-    // re-initializes when the program changes (after save/quit) or a new
-    // duplicate arrives — but persists across plain tab switches.
-    <TemplateProvider
-      key={`${curUser.curProgram ?? "none"}:${duplicateFromId ?? "default"}`}
-      initialTemplate={initialTemplate}
-      initialWeekIdx={initialWeekIdx}
-    >
-      {/* Lift the editor + its action footer above the floating tab pill so
-          the pill never covers the Save/Quit buttons. */}
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: colors.background,
-          paddingBottom: floatingTabBarClearance(insets.bottom),
-        }}
-      >
-        <EditorView />
-        <ProgramFooter />
+    <ProgramTransitionProvider value={{ transitioning, setTransitioning }}>
+      <View style={{ flex: 1 }}>
+        <TemplateProvider
+          key={`${curUser.curProgram ?? "none"}:${duplicateFromId ?? "default"}`}
+          initialTemplate={initialTemplate}
+          initialWeekIdx={initialWeekIdx}
+        >
+          {/* Full-screen editor: content scrolls behind the floating tab pill
+              (the tab navigator's bottom blur eases that transition) and the
+              pinned FABs ride on top in the corner. */}
+          <View style={{ flex: 1, backgroundColor: colors.background }}>
+            <EditorView />
+            <ProgramFAB />
+          </View>
+        </TemplateProvider>
+        {transitioning && (
+          <View style={[StyleSheet.absoluteFill, { zIndex: 20 }]}>
+            <LogoSpinner />
+          </View>
+        )}
       </View>
-    </TemplateProvider>
+    </ProgramTransitionProvider>
   );
 };

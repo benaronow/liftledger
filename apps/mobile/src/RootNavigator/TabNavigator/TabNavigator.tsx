@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { BottomBlur } from "./BottomBlur";
 import { FloatingTabBar } from "./FloatingTabBar";
 import { Progress } from "../../Progress";
 import { Dashboard } from "../../Dashboard/Dashboard";
@@ -12,7 +13,12 @@ export const TabNavigator = () => {
   return (
     <Tab.Navigator
       initialRouteName="Dashboard"
-      tabBar={(props) => <FloatingTabBar {...props} />}
+      tabBar={(props) => (
+        <>
+          <BottomBlur />
+          <FloatingTabBar {...props} />
+        </>
+      )}
       screenOptions={{ headerShown: false }}
     >
       <Tab.Screen

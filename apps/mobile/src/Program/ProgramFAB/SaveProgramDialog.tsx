@@ -11,6 +11,7 @@ import { useSnackbar } from "../../providers/SnackbarProvider";
 import { ConfirmationDialog } from "../../components/ConfirmationDialog";
 import type { TabNav } from "../../RootNavigator/types";
 import { FONT, SPACING } from "../../theme";
+import { useProgramTransition } from "../ProgramTransition";
 import { useTemplate } from "../TemplateProvider";
 
 interface Props {
@@ -20,7 +21,7 @@ interface Props {
 
 export const SaveProgramDialog = ({ open, onClose }: Props) => {
   const { colors } = useTheme();
-  const navigation = useNavigation<TabNav<"EditProgram">>();
+  const navigation = useNavigation<TabNav<"Program">>();
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { trigger: triggerStartProgram, isMutating: starting } = useStartProgram();
@@ -28,6 +29,7 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
     useUpdateUserProgram();
   const saving = starting || updating;
   const { showSnackbar } = useSnackbar();
+  const { setTransitioning } = useProgramTransition();
 
   const {
     templateProgram,
@@ -39,6 +41,10 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
   const handleSave = async () => {
     if (!curUser?._id) return;
 
+    // Cover the editor before the save lands: the curUser update remounts the
+    // editor (quit FAB appears) before we navigate away. Reset on failure so we
+    // don't strand the spinner over a screen we're staying on.
+    setTransitioning(true);
     try {
       if (curProgram) {
         const res = await triggerUpdateUserProgram({
@@ -67,6 +73,7 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
       navigation.setParams({ duplicateFrom: undefined });
       navigation.navigate("Dashboard");
     } catch {
+      setTransitioning(false);
       showSnackbar("Error saving program. Please try again.");
     }
   };

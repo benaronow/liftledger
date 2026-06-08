@@ -59,10 +59,17 @@ export const CompletedProgram = ({ program, idx }: Props) => {
           <MaterialCommunityIcons name="content-copy" size={20} color="white" />
         }
         onPress={() =>
-          navigation.navigate("Tabs", {
-            screen: "EditProgram",
-            params: { duplicateFrom: program._id },
-          })
+          // `pop: true` returns to the existing Tabs screen instead of pushing
+          // a new one on top of Account (RN7 navigate no longer pops back by
+          // default), so the user lands back on the root tab navigation.
+          navigation.navigate(
+            "Tabs",
+            {
+              screen: "Program",
+              params: { duplicateFrom: program._id },
+            },
+            { pop: true },
+          )
         }
       />
     </View>
