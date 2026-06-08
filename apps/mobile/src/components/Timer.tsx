@@ -12,10 +12,6 @@ const buttonStyle = {
   justifyContent: "center" as const,
 };
 
-// Floating countdown that lives above the navigator so it persists across every
-// authed screen (web mounted it in the global layout). Opening the timer-
-// settings dialog is the responsibility of whichever screen wants to start a
-// timer (CompleteDayFooter, SubmitSetDialog) — they render their own dialog.
 export const Timer = () => {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -80,9 +76,15 @@ export const Timer = () => {
             }}
             onPress={() => setOpen(false)}
           >
-            <MaterialCommunityIcons name="chevron-right" size={28} color="white" />
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={28}
+              color="white"
+            />
           </TouchableRipple>
-          <Text style={{ color: "white", fontWeight: "700", fontSize: FONT.lg }}>
+          <Text
+            style={{ color: "white", fontWeight: "700", fontSize: FONT.lg }}
+          >
             {timeString}
           </Text>
           <TouchableRipple
@@ -107,7 +109,11 @@ export const Timer = () => {
           }}
           onPress={() => setOpen(true)}
         >
-          <MaterialCommunityIcons name="timer-outline" size={28} color="white" />
+          <MaterialCommunityIcons
+            name="timer-outline"
+            size={28}
+            color="white"
+          />
         </TouchableRipple>
       )}
     </Surface>
