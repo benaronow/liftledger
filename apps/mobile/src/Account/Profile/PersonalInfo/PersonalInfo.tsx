@@ -30,7 +30,7 @@ export const PersonalInfo = () => {
         gap: SPACING.md,
         paddingVertical: SPACING.md,
         paddingHorizontal: SPACING.md,
-        backgroundColor: colors.dark,
+        backgroundColor: colors.container,
       }}
     >
       <Text

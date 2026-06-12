@@ -51,6 +51,7 @@ export const ProfileTextInput = ({
           }}
           onFocus={onFocus}
           onBlur={onBlur}
+          autoCapitalize="none"
         />
       )}
     </ProfileInputContainer>

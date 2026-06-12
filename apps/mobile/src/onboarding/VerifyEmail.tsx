@@ -52,7 +52,7 @@ export const VerifyEmail = ({ onRefresh }: Props) => {
         justifyContent: "center",
         gap: SPACING.xl,
         padding: SPACING.xl,
-        backgroundColor: colors.background,
+        backgroundColor: colors.container,
       }}
     >
       <Text style={{ fontSize: 28, fontWeight: "700", textAlign: "center" }}>

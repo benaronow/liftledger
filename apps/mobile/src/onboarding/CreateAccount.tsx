@@ -16,6 +16,7 @@ import {
   TextInput,
   useTheme,
 } from "../paper";
+import { useThemePreference } from "../providers/ThemeProvider";
 import { SPACING } from "../theme";
 import { useSnackbar } from "../providers/SnackbarProvider";
 import { useLogout } from "../RootNavigator/AuthenticatedRouter/useLogout";
@@ -35,13 +36,14 @@ export const CreateAccount = () => {
   const { showSnackbar } = useSnackbar();
   const logout = useLogout();
   const { trigger: createUser, isMutating: creating } = useCreateUser();
+  const { scheme } = useThemePreference();
 
-  const isConnectionUser = useMemo(
+  const isNonConnectionUser = useMemo(
     () => user?.sub?.startsWith("auth0|") ?? false,
     [user?.sub],
   );
   const { data: profile, isLoading: profileLoading } =
-    useAuth0Profile(isConnectionUser);
+    useAuth0Profile(isNonConnectionUser);
 
   const email = user?.email ?? "";
   const [fullName, setFullName] = useState("");
@@ -50,8 +52,8 @@ export const CreateAccount = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (isConnectionUser && profile?.username) setUsername(profile.username);
-  }, [isConnectionUser, profile?.username]);
+    if (isNonConnectionUser && profile?.username) setUsername(profile.username);
+  }, [isNonConnectionUser, profile?.username]);
 
   const canSubmit =
     fullName.trim() !== "" &&
@@ -97,19 +99,9 @@ export const CreateAccount = () => {
     },
   };
 
-  // Paper hard-codes a disabled outlined-input's outline to 'transparent' in
-  // dark mode (TextInput/helpers getOutlinedOutlineInputColor), so the outline
-  // vanishes against the background. Forcing `dark: false` for just these
-  // read-only fields routes them through the light-mode branch, which honors
-  // our `surfaceDisabled` outline color while every other color stays themed.
-  const disabledInputTheme = {
-    dark: false,
-    colors: { surfaceDisabled: colors.textDisabled },
-  };
-
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: colors.background }}
+      style={{ flex: 1, backgroundColor: colors.container }}
       contentContainerStyle={{ flexGrow: 1 }}
       keyboardShouldPersistTaps="handled"
     >
@@ -127,60 +119,68 @@ export const CreateAccount = () => {
           >
             Finish your account
           </Text>
-
           <TextInput
+            style={{ height: 50 }}
+            outlineStyle={{ borderRadius: 8 }}
             mode="outlined"
-            label="Full name"
+            label="Full Name"
             value={fullName}
             onChangeText={setFullName}
-            autoCapitalize="words"
+            autoCapitalize="none"
           />
-
           <TextInput
+            style={{ height: 50 }}
+            outlineStyle={{ borderRadius: 8 }}
+            mode="outlined"
+            label="Email"
+            value={email}
+            disabled
+            theme={{
+              colors: {
+                surfaceDisabled: scheme === "dark" ? colors.dark : "white",
+              },
+            }}
+          />
+          <TextInput
+            style={{ height: 50 }}
+            outlineStyle={{ borderRadius: 8 }}
             mode="outlined"
             label="Username"
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
             autoCorrect={false}
-            disabled={isConnectionUser}
+            disabled={isNonConnectionUser}
             right={
-              isConnectionUser && profileLoading ? (
+              !isNonConnectionUser && profileLoading ? (
                 <TextInput.Icon icon={() => <ActivityIndicator size={18} />} />
               ) : undefined
             }
-            theme={disabledInputTheme}
+            theme={{
+              colors: {
+                surfaceDisabled: scheme === "dark" ? colors.dark : "white",
+              },
+            }}
           />
-
-          <TextInput
-            mode="outlined"
-            label="Email"
-            value={email}
-            disabled
-            theme={disabledInputTheme}
-          />
-
-          {/* Plain View wrapper: PaperProvider renders a flex:1 Portal.Host that
-          would otherwise stretch the date field to fill the column. */}
           <View>
             <PaperProvider theme={modalTheme}>
               <DatePickerInput
+                style={{ height: 50 }}
+                outlineStyle={{ borderRadius: 8 }}
+                mode="outlined"
                 locale="en"
                 label="Birthday"
                 value={birthday}
                 onChange={setBirthday}
                 inputMode="start"
-                mode="outlined"
               />
             </PaperProvider>
           </View>
-
           {error !== "" && (
             <Text style={{ color: colors.danger, textAlign: "center" }}>
               {error}
             </Text>
           )}
-
           <View style={{ gap: SPACING.sm, marginTop: SPACING.sm }}>
             <Button
               mode="contained"
