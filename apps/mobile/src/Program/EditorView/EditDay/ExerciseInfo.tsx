@@ -1,4 +1,3 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   getNewSetsFromLatest,
   getUpdatedExercise,
@@ -11,7 +10,8 @@ import { useCallback, useMemo } from "react";
 import { View } from "react-native";
 import { ExerciseApparatusSelect } from "../../../components/ExerciseApparatusSelect";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
-import { LabeledSelect, LabeledTextInput } from "../../../components/inputs";
+import { SearchableSelect } from "../../../components/SearchableSelect";
+import { TextInput } from "../../../paper";
 import { SPACING } from "../../../theme";
 import { Info, InfoAction } from "../Info";
 import { useTemplate } from "../../TemplateProvider";
@@ -120,19 +120,19 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
 
   const infoActions: InfoAction[] = [
     {
-      icon: <MaterialCommunityIcons name="chevron-up" size={22} color="white" />,
+      icon: "chevron-up",
       disabled: eIdx === 0,
       onPress: () => handleMoveExercise("up"),
       variant: "primary",
     },
     {
-      icon: <MaterialCommunityIcons name="chevron-down" size={22} color="white" />,
+      icon: "chevron-down",
       disabled: eIdx === visibleExerciseCount - 1,
       onPress: () => handleMoveExercise("down"),
       variant: "primary",
     },
     {
-      icon: <MaterialCommunityIcons name="delete" size={20} color="white" />,
+      icon: "delete",
       disabled: curDayExercises.length === 1,
       onPress: () => onRequestDelete(eIdx),
       variant: "danger",
@@ -144,58 +144,60 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
   return (
     <Info title={`Exercise ${eIdx + 1}`} actions={infoActions}>
       <ExerciseNameSelect
-        label="Exercise:"
+        label="Exercise"
         curExercise={exercise}
         reservedExercises={curDayExercises}
         onSelect={(value) => switchExercise(value, "name")}
       />
       <ExerciseApparatusSelect
-        label="Apparatus:"
+        label="Apparatus"
         curExercise={exercise}
         reservedExercises={curDayExercises}
         onSelect={(value) => switchExercise(value, "apparatus")}
       />
       <View style={rowStyle}>
-        <View style={cellStyle}>
-          <LabeledTextInput
-            label="Sets:"
-            value={String(setCount)}
-            keyboardType="number-pad"
-            onChangeText={(text) => handleNumberInput(text, "sets")}
-          />
-        </View>
+        <TextInput
+          style={{ flex: 1, height: 45 }}
+          outlineStyle={{ borderRadius: 8 }}
+          mode="outlined"
+          label="Sets"
+          value={String(setCount)}
+          keyboardType="number-pad"
+          onChangeText={(text) => handleNumberInput(text, "sets")}
+        />
         {!curProgram && (
-          <View style={cellStyle}>
-            <LabeledTextInput
-              label="Reps:"
-              value={String(exercise.sets[0]?.reps || 0)}
-              keyboardType="number-pad"
-              editable={!editDisabled}
-              onChangeText={(text) => handleNumberInput(text, "reps")}
-            />
-          </View>
+          <TextInput
+            style={{ flex: 1, height: 45 }}
+            outlineStyle={{ borderRadius: 8 }}
+            mode="outlined"
+            label="Reps"
+            value={String(exercise.sets[0]?.reps || 0)}
+            keyboardType="number-pad"
+            disabled={editDisabled}
+            onChangeText={(text) => handleNumberInput(text, "reps")}
+          />
         )}
       </View>
       {!curProgram && (
         <View style={rowStyle}>
+          <TextInput
+            style={{ flex: 1, height: 45 }}
+            outlineStyle={{ borderRadius: 8 }}
+            mode="outlined"
+            label="Weight"
+            value={
+              exercise.sets[0]?.weight ? String(exercise.sets[0].weight) : ""
+            }
+            keyboardType="decimal-pad"
+            disabled={editDisabled}
+            onChangeText={(text) => handleNumberInput(text, "weight")}
+          />
           <View style={cellStyle}>
-            <LabeledTextInput
-              label="Weight:"
-              value={
-                exercise.sets[0]?.weight ? String(exercise.sets[0].weight) : ""
-              }
-              keyboardType="decimal-pad"
-              editable={!editDisabled}
-              onChangeText={(text) => handleNumberInput(text, "weight")}
-            />
-          </View>
-          <View style={cellStyle}>
-            <LabeledSelect
-              label="Weight type:"
+            <SearchableSelect
+              label="Weight Type"
               value={exercise.weightType}
               options={WEIGHT_TYPES}
-              includeEmptyOption
-              onChange={(value) => switchExercise(value, "weightType")}
+              onSelect={(value) => switchExercise(value, "weightType")}
             />
           </View>
         </View>

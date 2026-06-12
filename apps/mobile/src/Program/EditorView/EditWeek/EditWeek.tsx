@@ -6,24 +6,36 @@ import {
   useUpdateUser,
 } from "@liftledger/api-client";
 import { Day } from "@liftledger/shared";
-import dayjs, { Dayjs } from "dayjs";
 import { Fragment, useEffect, useState } from "react";
 import { View } from "react-native";
-import { AddButton } from "../../../components/AddButton";
+import { DatePickerInput } from "react-native-paper-dates";
 import { SearchableSelect } from "../../../components/SearchableSelect";
-import { LabeledDateInput, LabeledTextInput } from "../../../components/inputs";
-import { SPACING } from "../../../theme";
+import {
+  PaperProvider,
+  Surface,
+  Text,
+  TextInput,
+  useTheme,
+} from "../../../paper";
+import { AddRow } from "../AddRow";
+import { FONT, RADIUS, SPACING } from "../../../theme";
 import { useTemplate } from "../../TemplateProvider";
 import { DayInfo } from "./DayInfo";
 import { DeleteDayDialog } from "./DeleteDayDialog";
 
 export const EditWeek = () => {
+  const theme = useTheme();
+  const { colors } = theme;
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
   const { trigger: triggerUpdateUser } = useUpdateUser();
-  const { templateProgram, setTemplateProgram, editingWeekIdx, templateErrors } =
-    useTemplate();
+  const {
+    templateProgram,
+    setTemplateProgram,
+    editingWeekIdx,
+    templateErrors,
+  } = useTemplate();
   const [deletingDayIdx, setDeletingDayIdx] = useState<number | undefined>(
     undefined,
   );
@@ -130,31 +142,78 @@ export const EditWeek = () => {
     });
   };
 
-  const handleDateInput = (value: Dayjs | null) => {
-    if (value)
-      setTemplateProgram({ ...templateProgram, startDate: value.toDate() });
+  const handleDateInput = (date: Date | undefined) => {
+    if (date) setTemplateProgram({ ...templateProgram, startDate: date });
+  };
+
+  const modalTheme = {
+    ...theme,
+    colors: {
+      ...colors,
+      surface: colors.background,
+      surfaceDisabled: colors.textDisabled,
+    },
   };
 
   return (
     <View style={{ width: "100%" }}>
-      <View
-        style={{ width: "100%", gap: SPACING.sm, marginBottom: SPACING.lg }}
+      <Surface
+        elevation={1}
+        style={{
+          width: "100%",
+          borderRadius: RADIUS.md,
+          gap: SPACING.md,
+          paddingVertical: SPACING.md,
+          paddingHorizontal: SPACING.md,
+          backgroundColor: colors.container,
+          marginBottom: SPACING.lg,
+        }}
       >
-        <LabeledTextInput
-          label="Name:"
+        <Text
+          style={{
+            color: colors.text,
+            fontSize: FONT.base,
+            fontWeight: "800",
+            alignSelf: "flex-start",
+          }}
+        >
+          Program Details
+        </Text>
+        <TextInput
+          style={{ height: 45 }}
+          outlineStyle={{ borderRadius: 8 }}
+          mode="outlined"
+          label="Name"
           value={templateProgram.name}
           onChangeText={(text) =>
             setTemplateProgram({ ...templateProgram, name: text })
           }
           placeholder="Enter program name..."
+          autoCapitalize="none"
         />
-        <LabeledDateInput
-          label="Start:"
-          value={dayjs(templateProgram.startDate)}
-          onChange={handleDateInput}
-        />
-        <LabeledTextInput
-          label="Weeks:"
+        <View>
+          <PaperProvider theme={modalTheme}>
+            <DatePickerInput
+              style={{ height: 45 }}
+              outlineStyle={{ borderRadius: 8 }}
+              mode="outlined"
+              locale="en"
+              label="Start Date"
+              value={
+                templateProgram.startDate
+                  ? new Date(templateProgram.startDate)
+                  : undefined
+              }
+              onChange={handleDateInput}
+              inputMode="start"
+            />
+          </PaperProvider>
+        </View>
+        <TextInput
+          style={{ height: 45 }}
+          outlineStyle={{ borderRadius: 8 }}
+          mode="outlined"
+          label="Weeks"
           value={String(templateProgram.length)}
           onChangeText={handleLengthInput}
           keyboardType="number-pad"
@@ -168,12 +227,12 @@ export const EditWeek = () => {
           canAddCustom
           placeholder="Enter gym..."
         />
-      </View>
+      </Surface>
 
       <View style={{ width: "100%", alignItems: "center" }}>
         {week.map((day, idx) => (
           <Fragment key={idx}>
-            {week.length < 7 && <AddButton onPress={() => handleAddDay(idx)} />}
+            {week.length < 7 && <AddRow onPress={() => handleAddDay(idx)} />}
             <DayInfo
               day={day}
               dIdx={idx}
@@ -183,7 +242,7 @@ export const EditWeek = () => {
           </Fragment>
         ))}
         {week.length < 7 && (
-          <AddButton onPress={() => handleAddDay(week.length)} />
+          <AddRow onPress={() => handleAddDay(week.length)} />
         )}
       </View>
 

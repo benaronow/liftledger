@@ -1,4 +1,3 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useProgram, useMe } from "@liftledger/api-client";
 import { Day } from "@liftledger/shared";
 import { Text, useTheme } from "../../../paper";
@@ -58,30 +57,30 @@ export const DayInfo = ({ day, dIdx, hasErrors, onRequestDelete }: Props) => {
 
   const infoActions: InfoAction[] = [
     {
-      icon: <MaterialCommunityIcons name="chevron-up" size={22} color="white" />,
+      icon: "chevron-up",
       disabled: dIdx === curProgram?.curDayIdx || dIdx === 0,
       onPress: () => handleMoveDay(day, dIdx, "up"),
       variant: "primary",
     },
     {
-      icon: <MaterialCommunityIcons name="chevron-down" size={22} color="white" />,
+      icon: "chevron-down",
       disabled: dIdx === week.length - 1,
       onPress: () => handleMoveDay(day, dIdx, "down"),
       variant: "primary",
     },
     {
-      icon: <MaterialCommunityIcons name="pencil" size={22} color="white" />,
+      icon: "pencil",
       onPress: () => setEditingDayIdx(dIdx),
       variant: "primary",
     },
     {
-      icon: <MaterialCommunityIcons name="content-copy" size={22} color="white" />,
+      icon: "content-copy",
       disabled: week.length > 6,
       onPress: () => handleDuplicateDay(dIdx),
       variant: "primary",
     },
     {
-      icon: <MaterialCommunityIcons name="delete" size={20} color="white" />,
+      icon: "delete",
       disabled: week.length === 1,
       onPress: () => onRequestDelete(dIdx),
       variant: "danger",
@@ -93,23 +92,16 @@ export const DayInfo = ({ day, dIdx, hasErrors, onRequestDelete }: Props) => {
       ? "Day complete, cannot be edited or moved until next week."
       : "";
 
-  const exerciseCount = day.exercises.reduce(
-    (acc, ex) =>
-      acc + (ex.addedOn ? 0 : ex.sets.filter((s) => !s.addedOn).length),
-    0,
-  );
-
   const hasListedExercises = day.exercises.some(
     (e) => e.name && e.apparatus && e.sets.length,
   );
 
   return (
     <Info
-      title={`Day ${dIdx + 1}`}
+      title={day.name}
       actions={infoActions}
       disabledMessage={disabledMessage}
     >
-      <Text style={boldStyle(colors.text)}>{`Name: ${day.name} [${exerciseCount}]`}</Text>
       {hasListedExercises &&
         day.exercises
           .filter((ex) => !ex.addedOn)
@@ -125,11 +117,6 @@ export const DayInfo = ({ day, dIdx, hasErrors, onRequestDelete }: Props) => {
   );
 };
 
-const boldStyle = (textColor: string) => ({
-  color: textColor,
-  fontSize: FONT.sm,
-  fontWeight: "700" as const,
-});
 const lineStyle = (textColor: string) => ({ color: textColor, fontSize: FONT.sm });
 const errorStyle = (dangerColor: string) => ({
   color: dangerColor,

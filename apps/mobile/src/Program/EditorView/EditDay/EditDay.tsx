@@ -2,9 +2,9 @@ import { useProgram, useMe } from "@liftledger/api-client";
 import { Exercise } from "@liftledger/shared";
 import { useState } from "react";
 import { View } from "react-native";
-import { AddButton } from "../../../components/AddButton";
-import { LabeledTextInput } from "../../../components/inputs";
+import { TextInput } from "../../../paper";
 import { SPACING } from "../../../theme";
+import { AddRow } from "../AddRow";
 import { useTemplate } from "../../TemplateProvider";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
 import { ExerciseInfo } from "./ExerciseInfo";
@@ -63,18 +63,19 @@ export const EditDay = () => {
   return (
     <View style={{ width: "100%", alignItems: "center" }}>
       <View style={{ width: "100%", marginBottom: SPACING.lg }}>
-        <LabeledTextInput
-          label="Name:"
+        <TextInput
+          style={{ height: 45 }}
+          outlineStyle={{ borderRadius: 8 }}
+          mode="outlined"
+          label="Day Name"
           value={day.name}
           onChangeText={handleDayNameInput}
+          autoCapitalize="none"
         />
       </View>
       {visibleExercises.map((exercise, idx) => (
-        <View
-          key={idx}
-          style={{ width: "100%", alignItems: "center", gap: SPACING.sm }}
-        >
-          <AddButton onPress={() => handleAddExercise(idx)} />
+        <View key={idx} style={{ width: "100%", alignItems: "center" }}>
+          <AddRow onPress={() => handleAddExercise(idx)} />
           <ExerciseInfo
             exercise={exercise}
             eIdx={idx}
@@ -82,7 +83,7 @@ export const EditDay = () => {
           />
         </View>
       ))}
-      <AddButton onPress={() => handleAddExercise(day.exercises.length)} />
+      <AddRow onPress={() => handleAddExercise(day.exercises.length)} />
 
       <DeleteExerciseDialog
         deletingExerciseIdx={deletingExerciseIdx}
