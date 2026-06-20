@@ -3,12 +3,12 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useCallback } from "react";
 import { View } from "react-native";
-import { Text, useTheme } from "../../paper";
+import { Text, useTheme } from "../paper";
 import { useProgram, useMe, useUpdateUserProgram } from "@liftledger/api-client";
-import { ConfirmationDialog } from "../../components/ConfirmationDialog";
-import type { RootStackParamList } from "../../RootNavigator/types";
-import { FONT, SPACING } from "../../theme";
-import { useSnackbar } from "../../providers/SnackbarProvider";
+import { ConfirmationDialog } from "../components/ConfirmationDialog";
+import type { RootStackParamList } from "../RootNavigator/types";
+import { FONT, SPACING } from "../theme";
+import { useSnackbar } from "../providers/SnackbarProvider";
 
 interface Props {
   open: boolean;
@@ -50,7 +50,9 @@ export const FinishDayDialog = ({
     try {
       await triggerUpdateUserProgram({ userId: curUser._id, program: newProgram });
       onClose();
-      navigation.navigate("Tabs", { screen: "Dashboard" });
+      // `pop: true` returns to the existing Tabs screen instead of pushing a new
+      // one on top of CompleteDay (RN7 navigate no longer pops back by default).
+      navigation.navigate("Tabs", { screen: "Dashboard" }, { pop: true });
     } catch {
       showSnackbar("Failed to finish day. Please try again.");
     } finally {

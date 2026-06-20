@@ -2,7 +2,7 @@ import { useProgram, useMe } from "@liftledger/api-client";
 import { View } from "react-native";
 import { Text, useTheme } from "../../paper";
 import { FONT } from "../../theme";
-import { FAB_EDGE, FAB_SIZE, FAB_TOP, titleRightInset } from "../layout";
+import { FAB_EDGE, FAB_SIZE, FAB_TOP, titleRightInset } from "../../layout";
 import { useTemplate } from "../TemplateProvider";
 
 export const EditorTitle = () => {

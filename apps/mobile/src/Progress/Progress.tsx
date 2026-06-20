@@ -1,9 +1,11 @@
 import { useExerciseSelection } from "@liftledger/api-client";
-import { useState } from "react";
+import { useRoute, type RouteProp } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LogoSpinner } from "../components/LogoSpinner";
 import { floatingTabBarClearance } from "../RootNavigator/TabNavigator/FloatingTabBar";
+import type { TabParamList } from "../RootNavigator/types";
 import { Surface, useTheme } from "../paper";
 import { SPACING } from "../theme";
 import { ExerciseSelector } from "./ExerciseSelector";
@@ -12,9 +14,22 @@ import { ProgressChart } from "./ProgressChart";
 export const Progress = () => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const { params } = useRoute<RouteProp<TabParamList, "Progress">>();
 
-  const [selectedName, setSelectedName] = useState("");
-  const [selectedApparatus, setSelectedApparatus] = useState("");
+  // Seed from route params when deep-linked (CompleteDay's "full progress"),
+  // otherwise useExerciseSelection seeds to the first exercise with history.
+  const [selectedName, setSelectedName] = useState(params?.name ?? "");
+  const [selectedApparatus, setSelectedApparatus] = useState(
+    params?.apparatus ?? "",
+  );
+
+  // Re-apply params when navigated here again while the tab is already mounted.
+  useEffect(() => {
+    if (params?.name) {
+      setSelectedName(params.name);
+      setSelectedApparatus(params.apparatus ?? "");
+    }
+  }, [params?.name, params?.apparatus]);
   const { selectName, isLoading } = useExerciseSelection({
     selectedName,
     selectedApparatus,

@@ -2,7 +2,7 @@ import { useProgram, useMe } from "@liftledger/api-client";
 import { Day } from "@liftledger/shared";
 import { Text, useTheme } from "../../../paper";
 import { FONT } from "../../../theme";
-import { Info, InfoAction } from "../Info";
+import { Info, InfoAction } from "../../../components/Info";
 import { useTemplate } from "../../TemplateProvider";
 
 interface Props {

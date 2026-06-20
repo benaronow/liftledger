@@ -1,7 +1,8 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { BottomBlur } from "./BottomBlur";
-import { FloatingTabBar } from "./FloatingTabBar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BottomBlur } from "../../components/BottomBlur";
+import { FloatingTabBar, floatingTabBarClearance } from "./FloatingTabBar";
 import { Progress } from "../../Progress";
 import { Dashboard } from "../../Dashboard/Dashboard";
 import { Program } from "../../Program";
@@ -10,12 +11,14 @@ import type { TabParamList } from "../types";
 const Tab = createBottomTabNavigator<TabParamList>();
 
 export const TabNavigator = () => {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       initialRouteName="Dashboard"
       tabBar={(props) => (
         <>
-          <BottomBlur />
+          <BottomBlur height={floatingTabBarClearance(insets.bottom) + 24} />
           <FloatingTabBar {...props} />
         </>
       )}

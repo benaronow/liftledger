@@ -77,7 +77,10 @@ export const AuthenticatedRouter = () => {
         <Stack.Screen
           name="CompleteDay"
           component={CompleteDay}
-          options={{ title: "Workout" }}
+          // Disable swipe-to-go-back: a horizontal drag on the progress chart
+          // (gifted-charts pointer) otherwise gets grabbed by the pop gesture and
+          // slides back to the dashboard. The header back button still works.
+          options={{ title: "Workout", gestureEnabled: false }}
         />
         <Stack.Screen
           name="Account"

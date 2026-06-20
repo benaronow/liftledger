@@ -5,15 +5,15 @@ import {
   useCompletedExercises,
   useMe,
 } from "@liftledger/api-client";
-import { Exercise, WEIGHT_TYPES } from "@liftledger/shared";
+import { Exercise } from "@liftledger/shared";
 import { useCallback, useMemo } from "react";
 import { View } from "react-native";
 import { ExerciseApparatusSelect } from "../../../components/ExerciseApparatusSelect";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
-import { SearchableSelect } from "../../../components/SearchableSelect";
+import { WeightTypeSelect } from "../../../components/WeightTypeSelect";
 import { TextInput } from "../../../paper";
 import { SPACING } from "../../../theme";
-import { Info, InfoAction } from "../Info";
+import { Info, InfoAction } from "../../../components/Info";
 import { useTemplate } from "../../TemplateProvider";
 import { moveExercise } from "./moveExercise";
 
@@ -193,10 +193,9 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
             onChangeText={(text) => handleNumberInput(text, "weight")}
           />
           <View style={cellStyle}>
-            <SearchableSelect
+            <WeightTypeSelect
               label="Weight Type"
               value={exercise.weightType}
-              options={WEIGHT_TYPES}
               onSelect={(value) => switchExercise(value, "weightType")}
             />
           </View>

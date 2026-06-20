@@ -1,12 +1,12 @@
-import { SPACING } from "../theme";
+import { SPACING } from "./theme";
 
-// Shared geometry for the Program screen's pinned top-right action buttons and
-// the scrolling page title (top-left, across from the FABs). The title is
-// rendered inside the scroll content but must line up with the pinned FABs when
-// scrolled to the top, so both the FAB cluster (ProgramFab) and the title
-// (ProgramTitle) derive their position from these constants. The screen sits
-// below the stack header, which already covers the status bar, so the top
-// offset is measured from the header — not the safe-area inset.
+// Shared geometry for screens with pinned top-right action buttons and a
+// scrolling page title (top-left, across from the FABs) — Program's editor and
+// CompleteDay's workout pages. The title is rendered inside the scroll content
+// but must line up with the pinned FABs when scrolled to the top, so both the
+// FAB cluster and the title derive their position from these constants. The
+// screens sit below the stack header, which already covers the status bar, so
+// the top offset is measured from the header — not the safe-area inset.
 
 // Paper's `size="small"` FAB renders at 40dp.
 export const FAB_SIZE = 40;

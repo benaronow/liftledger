@@ -4,25 +4,23 @@ import {
   Set,
   getCompletedDaysInProgram,
 } from "@liftledger/shared";
-import { isExerciseComplete, useProgram, useMe } from "@liftledger/api-client";
-import { useCallback, useMemo, useState } from "react";
+import { useProgram, useMe } from "@liftledger/api-client";
+import { useCallback, useMemo } from "react";
 import { View } from "react-native";
 import { Text, TouchableRipple, useTheme } from "../../../paper";
-import { ActionButton } from "../../../components/ActionButton";
 import { FONT, RADIUS, SPACING } from "../../../theme";
 import { computeProgress } from "./computeProgress";
 import { ProgressIcon } from "./ProgressIcon";
-import { SubmitSetDialog } from "./SubmitSetDialog/SubmitSetDialog";
 
 interface Props {
   exercise: Exercise;
   isCurrentExercise: boolean;
+  onEditSet: (setIdx: number) => void;
 }
 
-export const SetList = ({ exercise, isCurrentExercise }: Props) => {
+export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const [editingSetIdx, setEditingSetIdx] = useState<number>();
   const { colors } = useTheme();
 
   // Progress icons compare against history *within this program only*. Using
@@ -97,20 +95,8 @@ export const SetList = ({ exercise, isCurrentExercise }: Props) => {
     [exercise, intraProgramPrevious],
   );
 
-  const exerciseHasSkippedSets = useMemo(
-    () => exercise.sets.some((set) => set.skipped),
-    [exercise.sets],
-  );
-
   return (
-    <View
-      style={{
-        width: "100%",
-        padding: SPACING.sm,
-        gap: SPACING.sm,
-        backgroundColor: colors.container,
-      }}
-    >
+    <View style={{ width: "100%", gap: SPACING.sm }}>
       {exercise.sets.map((set, i) => {
         const diffs = getDiffs(i);
         return (
@@ -127,7 +113,7 @@ export const SetList = ({ exercise, isCurrentExercise }: Props) => {
             }}
             onPress={() =>
               set.completed || set.skipped || i <= nextSetIdx
-                ? setEditingSetIdx(i)
+                ? onEditSet(i)
                 : undefined
             }
           >
@@ -174,18 +160,6 @@ export const SetList = ({ exercise, isCurrentExercise }: Props) => {
           </TouchableRipple>
         );
       })}
-      <ActionButton
-        label="Add set"
-        height={40}
-        icon={<MaterialCommunityIcons name="plus-circle-outline" size={20} color="white" />}
-        onPress={() => setEditingSetIdx(exercise.sets.length)}
-        disabled={!isExerciseComplete(exercise) || exerciseHasSkippedSets}
-      />
-      <SubmitSetDialog
-        exercise={exercise}
-        setIdx={editingSetIdx}
-        onClose={() => setEditingSetIdx(undefined)}
-      />
     </View>
   );
 };

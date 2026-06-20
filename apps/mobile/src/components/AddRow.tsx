@@ -1,6 +1,6 @@
 import { View } from "react-native";
-import { Divider, IconButton, useTheme } from "../../paper";
-import { SPACING } from "../../theme";
+import { Divider, IconButton, useTheme } from "../paper";
+import { SPACING } from "../theme";
 
 interface Props {
   onPress: () => void;

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { View } from "react-native";
 import { TextInput } from "../../../paper";
 import { SPACING } from "../../../theme";
-import { AddRow } from "../AddRow";
+import { AddRow } from "../../../components/AddRow";
 import { useTemplate } from "../../TemplateProvider";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
 import { ExerciseInfo } from "./ExerciseInfo";

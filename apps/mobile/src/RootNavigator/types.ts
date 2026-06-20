@@ -6,7 +6,9 @@ import type {
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 export type TabParamList = {
-  Progress: undefined;
+  // CompleteDay's "full progress" button deep-links here with a preset
+  // exercise/apparatus.
+  Progress: { name?: string; apparatus?: string } | undefined;
   Dashboard: undefined;
   Program: { duplicateFrom?: string } | undefined;
 };

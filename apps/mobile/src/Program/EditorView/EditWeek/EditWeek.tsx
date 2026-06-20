@@ -17,7 +17,7 @@ import {
   TextInput,
   useTheme,
 } from "../../../paper";
-import { AddRow } from "../AddRow";
+import { AddRow } from "../../../components/AddRow";
 import { FONT, RADIUS, SPACING } from "../../../theme";
 import { useTemplate } from "../../TemplateProvider";
 import { DayInfo } from "./DayInfo";

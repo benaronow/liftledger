@@ -1,8 +1,8 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ReactNode } from "react";
 import { View } from "react-native";
-import { IconButton, Surface, Text, useTheme } from "../../paper";
-import { FONT, RADIUS, SPACING } from "../../theme";
+import { IconButton, Surface, Text, useTheme } from "../paper";
+import { FONT, RADIUS, SPACING } from "../theme";
 
 export type InfoActionVariant = "primary" | "danger";
 
@@ -16,6 +16,9 @@ export interface InfoAction {
 interface Props {
   title: string;
   actions?: InfoAction[];
+  // A small icon button shown in the top-right of the title row (e.g. the
+  // "full progress" shortcut on CompleteDay's chart card).
+  titleAction?: { icon: string; onPress: () => void; accessibilityLabel?: string };
   disabledMessage?: string;
   children: ReactNode;
 }
@@ -23,7 +26,13 @@ interface Props {
 // A titled card with a body and a row of equal-width action buttons — the
 // repeating unit for days (EditWeek) and exercises (EditDay). When
 // disabledMessage is set, a dimming overlay covers the whole card.
-export const Info = ({ title, actions, disabledMessage, children }: Props) => {
+export const Info = ({
+  title,
+  actions,
+  titleAction,
+  disabledMessage,
+  children,
+}: Props) => {
   const { colors } = useTheme();
 
   const containerColor = (action: InfoAction) =>
@@ -65,6 +74,19 @@ export const Info = ({ title, actions, disabledMessage, children }: Props) => {
           >
             {title}
           </Text>
+          {/* Absolutely positioned so the title sits at the same spot as a
+              card with no action (e.g. "Sets") rather than centering against
+              the taller button. */}
+          {titleAction && (
+            <IconButton
+              style={{ position: "absolute", top: 0, right: 0, margin: 0 }}
+              icon={titleAction.icon}
+              size={20}
+              iconColor={colors.primary}
+              accessibilityLabel={titleAction.accessibilityLabel}
+              onPress={titleAction.onPress}
+            />
+          )}
           {children}
           {actions && actions.length > 0 && (
             <View

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   getNewSetsFromLatest,
   useProgram,
@@ -22,9 +22,16 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
   const { trigger: triggerUpdateUser } = useUpdateUser();
   const { trigger: triggerUpdateUserProgram, isMutating: editingGym } =
     useUpdateUserProgram();
-  const [gymName, setGymName] = useState<string>(
-    curProgram?.weeks[curProgram.curWeekIdx][curProgram.curDayIdx].gym ?? "",
-  );
+  const currentGym =
+    curProgram?.weeks[curProgram.curWeekIdx]?.[curProgram.curDayIdx]?.gym ?? "";
+  const [gymName, setGymName] = useState<string>(currentGym);
+
+  // Re-sync to the day's gym each time the dialog opens. The component stays
+  // mounted across opens, so the useState initializer only runs once — without
+  // this, a reopen would show a stale (or empty, after a prior save) selection.
+  useEffect(() => {
+    if (open) setGymName(currentGym);
+  }, [open, currentGym]);
 
   const handleEditGym = async (name: string) => {
     if (!curUser?._id || !curProgram) return;
@@ -61,7 +68,6 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
         },
       });
 
-      setGymName("");
       onClose();
     } catch {
       // Save failed — keep the dialog open for retry; the spinner clears via
@@ -87,9 +93,7 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
       title="Change Gym"
       onConfirm={() => handleEditGym(gymName)}
       confirming={editingGym}
-      confirmationDisabled={
-        gymName === curProgram?.weeks[curProgram.curWeekIdx][curProgram.curDayIdx].gym
-      }
+      confirmationDisabled={gymName === currentGym}
     >
       <SearchableSelect
         label="Session Gym"

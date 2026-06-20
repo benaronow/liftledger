@@ -41,7 +41,7 @@ const buildColors = (p: ColorPalette, base: MD3Theme): AppColors => ({
   outlineVariant: p.textDisabled,
   error: p.danger,
   onError: "white",
-  errorContainer: p.dangerDisabled,
+  errorContainer: p.dangerContainer,
   onErrorContainer: "white",
   elevation: {
     level0: "transparent",

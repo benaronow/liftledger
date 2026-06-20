@@ -2,8 +2,8 @@ import { useProgram, useMe } from "@liftledger/api-client";
 import { useState } from "react";
 import { View } from "react-native";
 import { FAB, useTheme } from "../../paper";
-import { RADIUS } from "../../theme";
-import { FAB_EDGE, FAB_GAP, FAB_SIZE, FAB_TOP } from "../layout";
+import { RADIUS, SPACING } from "../../theme";
+import { FAB_EDGE, FAB_GAP, FAB_SIZE, FAB_TOP } from "../../layout";
 import { useTemplate } from "../TemplateProvider";
 import { QuitProgramDialog } from "./QuitProgramDialog";
 import { SaveProgramDialog } from "./SaveProgramDialog";
@@ -23,7 +23,9 @@ export const ProgramFAB = () => {
       <View
         style={{
           position: "absolute",
-          top: FAB_TOP,
+          // Nudged down by the title's line leading so the buttons' tops line
+          // up with the editor title's glyph (matching CompleteDay's FAB).
+          top: FAB_TOP + SPACING.xs,
           right: FAB_EDGE,
           flexDirection: "row",
           gap: FAB_GAP,

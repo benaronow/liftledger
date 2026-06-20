@@ -1,4 +1,4 @@
-import { Exercise, WEIGHT_TYPES } from "@liftledger/shared";
+import { Exercise } from "@liftledger/shared";
 import { Dispatch, SetStateAction, useCallback } from "react";
 import { View } from "react-native";
 import {
@@ -9,7 +9,7 @@ import {
 } from "@liftledger/api-client";
 import { ExerciseApparatusSelect } from "../../../components/ExerciseApparatusSelect";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
-import { LabeledSelect } from "../../../components/inputs";
+import { WeightTypeSelect } from "../../../components/WeightTypeSelect";
 import { SPACING } from "../../../theme";
 
 type ExerciseInfoName = "name" | "apparatus" | "weightType";
@@ -47,12 +47,10 @@ export const EditExercise = ({ newExercise, setNewExercise }: Props) => {
         reservedExercises={exercises}
         onSelect={(value) => switchExercise(value, "apparatus")}
       />
-      <LabeledSelect
+      <WeightTypeSelect
         label="Weight Type:"
         value={newExercise.weightType}
-        options={WEIGHT_TYPES}
-        includeEmptyOption
-        onChange={(value) => switchExercise(value, "weightType")}
+        onSelect={(value) => switchExercise(value, "weightType")}
       />
     </View>
   );
