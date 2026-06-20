@@ -57,19 +57,19 @@ export const EditSet = ({ exerciseState, setExerciseState, setIdx }: Props) => {
         <Text style={{ width: "100%", color: "white", fontSize: FONT.sm, marginBottom: SPACING.xs }}>{`Previous note: ${latestPreviousSetNote}`}</Text>
       )}
       <LabeledTextInput
-        label="Reps:"
+        label="Reps"
         value={curSet?.reps ? String(curSet.reps) : ""}
         keyboardType="number-pad"
         onChangeText={(text) => handleChange(text, "reps")}
       />
       <LabeledTextInput
-        label="Weight:"
+        label="Weight"
         value={curSet?.weight ? String(curSet.weight) : ""}
         keyboardType="decimal-pad"
         onChangeText={(text) => handleChange(text, "weight")}
       />
       <LabeledTextInput
-        label="Note:"
+        label="Note"
         value={curSet?.note}
         onChangeText={(text) => handleChange(text, "note")}
       />

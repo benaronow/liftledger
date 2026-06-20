@@ -2,6 +2,7 @@ import { View } from "react-native";
 import { useAuth0 } from "react-native-auth0";
 import { ActivityIndicator, Text, TouchableRipple, useTheme } from "../paper";
 import { env } from "../config/env";
+import { FONT, RADIUS, SPACING } from "../theme";
 
 export const Welcome = () => {
   const { authorize, isLoading, error } = useAuth0();
@@ -19,17 +20,18 @@ export const Welcome = () => {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        gap: 24,
-        padding: 24,
+        gap: SPACING.xl,
+        padding: SPACING.xl,
       }}
     >
+      {/* One-off brand wordmark — larger than any FONT token by design. */}
       <Text style={{ fontSize: 32, fontWeight: "700" }}>LiftLedger</Text>
       <TouchableRipple
         style={{
           backgroundColor: colors.primary,
           paddingVertical: 14,
           paddingHorizontal: 48,
-          borderRadius: 8,
+          borderRadius: RADIUS.md,
           minWidth: 180,
           alignItems: "center",
         }}
@@ -39,7 +41,7 @@ export const Welcome = () => {
         {isLoading ? (
           <ActivityIndicator color="white" />
         ) : (
-          <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
+          <Text style={{ color: "white", fontSize: FONT.base, fontWeight: "600" }}>
             Log in
           </Text>
         )}

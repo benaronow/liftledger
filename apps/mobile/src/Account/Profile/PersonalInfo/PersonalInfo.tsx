@@ -9,11 +9,9 @@ import { useTheme } from "../../../paper";
 import { useAuth0 } from "react-native-auth0";
 import { useMemo } from "react";
 import { BirthdayInput } from "./BirthdayInput";
-import { useThemePreference } from "../../../providers/ThemeProvider";
 
 export const PersonalInfo = () => {
   const { user: auth0User } = useAuth0();
-  const { scheme } = useThemePreference();
   const { colors } = useTheme();
 
   const isConnectionUser = useMemo(
@@ -35,7 +33,7 @@ export const PersonalInfo = () => {
     >
       <Text
         style={{
-          color: scheme === "dark" ? "white" : "black",
+          color: colors.text,
           fontSize: FONT.base,
           fontWeight: "800",
           alignSelf: "flex-start",

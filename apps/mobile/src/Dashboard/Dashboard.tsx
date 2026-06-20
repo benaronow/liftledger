@@ -99,13 +99,13 @@ export const Dashboard = () => {
       value: dayjs(curProgram?.startDate).format("MM/DD/YYYY"),
     },
     {
-      metric: "Program Length:",
+      metric: "Program Length",
       value: `${curProgram?.length} week${(curProgram?.length || 0) > 1 ? "s" : ""}`,
     },
-    { metric: "Week:", value: `Week ${(curProgram?.curWeekIdx || 0) + 1}` },
-    { metric: "Day:", value: curDayName },
-    { metric: "Days Since Last Workout:", value: getDaysSinceLast() },
-    { metric: "Total Weight Lifted:", value: getTotalWeight() },
+    { metric: "Week", value: `Week ${(curProgram?.curWeekIdx || 0) + 1}` },
+    { metric: "Day", value: curDayName },
+    { metric: "Days Since Last Workout", value: getDaysSinceLast() },
+    { metric: "Total Weight Lifted", value: getTotalWeight() },
   ];
 
   if (!curUser || curProgramLoading) return <LogoSpinner />;

@@ -16,7 +16,7 @@ const THEME_OPTIONS: { label: string; value: ThemePreference; icon: Icon }[] = [
 
 export const Appearance = () => {
   const { colors } = useTheme();
-  const { scheme, preference, setPreference } = useThemePreference();
+  const { preference, setPreference } = useThemePreference();
 
   return (
     <Surface
@@ -32,7 +32,7 @@ export const Appearance = () => {
     >
       <Text
         style={{
-          color: scheme === "dark" ? "white" : "black",
+          color: colors.text,
           fontSize: FONT.base,
           fontWeight: "800",
           alignSelf: "flex-start",
