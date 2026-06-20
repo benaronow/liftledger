@@ -71,6 +71,7 @@ export const FinishDayDialog = ({
       open
       onClose={onClose}
       title="Finish Day"
+      icon="flag-checkered"
       onConfirm={handleFinishDay}
       confirming={finishing}
       description="Are you sure you want to finish today's workout?"

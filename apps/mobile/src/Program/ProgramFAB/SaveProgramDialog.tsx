@@ -79,6 +79,7 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
       open={open}
       onClose={onClose}
       title="Save Program"
+      icon="content-save-outline"
       onConfirm={handleSave}
       confirming={saving}
       description="Are you sure you want to save this program?"

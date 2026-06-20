@@ -171,6 +171,7 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       open
       onClose={handleClose}
       title={submitted ? "Start Timer" : "Submit Set"}
+      icon={submitted ? "timer-outline" : "check-bold"}
       onConfirm={handleSubmitSet}
       confirming={submittingSet || skippingSet}
       secondaryAction="Skip Set"

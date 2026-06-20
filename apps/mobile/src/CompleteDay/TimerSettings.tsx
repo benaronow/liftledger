@@ -1,4 +1,3 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { TimerPresets } from "@liftledger/shared";
 import {
   useMe,
@@ -8,10 +7,9 @@ import {
 } from "@liftledger/api-client";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
-import { Text } from "../paper";
-import { ActionButton } from "../components/ActionButton";
+import { Button, IconButton, Text, useTheme } from "../paper";
 import { LabeledSelect } from "../components/inputs";
-import { SPACING } from "../theme";
+import { FONT, RADIUS, SPACING } from "../theme";
 
 const TIME_OPTIONS = Array.from({ length: 60 }, (_, i) =>
   i.toString().padStart(2, "0"),
@@ -26,6 +24,7 @@ interface Props {
 }
 
 export const TimerSettings = ({ onTimerStarted }: Props) => {
+  const { colors } = useTheme();
   const { data: curUser } = useMe();
   const { data: timerPresetsData } = useTimerPresets(curUser?._id);
   const { trigger: triggerSetTimerEnd } = useSetTimerEnd();
@@ -98,26 +97,47 @@ export const TimerSettings = ({ onTimerStarted }: Props) => {
               </View>
             ) : (
               <View style={cellStyle}>
-                <ActionButton
-                  label={`${presetMins} : ${presetSecs}`}
-                  icon={null}
+                <Button
+                  mode="contained"
+                  buttonColor="white"
+                  textColor={colors.primary}
                   onPress={() => {
                     startTimer(preset);
                     onTimerStarted();
                   }}
-                  variant="primaryInverted"
-                  roundedSide="start"
-                />
+                  style={{
+                    borderTopLeftRadius: RADIUS.md,
+                    borderBottomLeftRadius: RADIUS.md,
+                    borderTopRightRadius: 0,
+                    borderBottomRightRadius: 0,
+                  }}
+                  contentStyle={{ height: 35 }}
+                  labelStyle={{
+                    fontWeight: "700",
+                    fontSize: FONT.base,
+                    marginVertical: 0,
+                    letterSpacing: 0,
+                  }}
+                >
+                  {`${presetMins} : ${presetSecs}`}
+                </Button>
               </View>
             )}
-            <ActionButton
-              icon={
-                <MaterialCommunityIcons
-                  name={isEditing ? "content-save" : "pencil"}
-                  size={18}
-                  color="white"
-                />
-              }
+            <IconButton
+              mode="contained"
+              icon={isEditing ? "content-save" : "pencil"}
+              size={18}
+              containerColor={colors.primary}
+              iconColor="white"
+              style={{
+                width: 40,
+                height: 35,
+                margin: 0,
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
+                borderTopRightRadius: RADIUS.md,
+                borderBottomRightRadius: RADIUS.md,
+              }}
               onPress={() => {
                 if (isEditing) {
                   savePresets();
@@ -126,8 +146,6 @@ export const TimerSettings = ({ onTimerStarted }: Props) => {
                   setPresetEditIdx(idx);
                 }
               }}
-              width={40}
-              roundedSide="end"
             />
           </View>
         );

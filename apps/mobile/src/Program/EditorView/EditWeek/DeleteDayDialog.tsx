@@ -28,6 +28,8 @@ export const DeleteDayDialog = ({ deletingDayIdx, onClose }: Props) => {
       open={deletingDayIdx !== undefined}
       onClose={onClose}
       title="Delete Day"
+      icon="alert"
+      destructive
       onConfirm={handleRemoveDay}
       description="Are you sure you want to delete this day?"
       emphasis="This action cannot be undone."

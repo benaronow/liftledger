@@ -197,8 +197,7 @@ export const Dashboard = () => {
               justifyContent: "center",
               marginTop: SPACING.md,
               // Intentionally bespoke: the signature "Lift!" CTA keeps web's
-              // layered/raised look rather than using Paper's <Button> or
-              // ActionButton.
+              // layered/raised look rather than using Paper's <Button>.
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.4,

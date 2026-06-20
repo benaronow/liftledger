@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ReactNode } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { Button, Dialog, Portal, Text, useTheme } from "../paper";
@@ -15,6 +16,11 @@ interface Props {
   open: boolean;
   onClose: () => void;
   title: string;
+  // MaterialCommunityIcons name shown above the title, tuned to each dialog's
+  // intent (no icon if omitted). `destructive` tints it (and signals an
+  // irreversible action) — pass "alert" + destructive for deletes/quits.
+  icon?: string;
+  destructive?: boolean;
   onConfirm: () => void;
   confirming?: boolean;
   confirmationDisabled?: boolean;
@@ -32,6 +38,8 @@ export const ConfirmationDialog = ({
   open,
   onClose,
   title,
+  icon,
+  destructive,
   onConfirm,
   confirming,
   confirmationDisabled,
@@ -56,12 +64,32 @@ export const ConfirmationDialog = ({
           dismissable={!confirming}
           dismissableBackButton={!confirming}
         >
-          <Dialog.Icon icon="alert" color={colors.danger} size={32} />
-          <Dialog.Title style={{ textAlign: "center" }}>{title}</Dialog.Title>
-          <Dialog.Content>
-            <View
-              style={{ width: "100%", marginTop: SPACING.sm, gap: SPACING.md }}
-            >
+          {/* Title with its icon inline to the right (rather than Paper's
+              default centered icon-above-title "alert" layout). */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: SPACING.sm,
+              marginTop: SPACING.lg,
+              marginBottom: SPACING.md,
+              paddingHorizontal: SPACING.lg,
+            }}
+          >
+            <Text variant="headlineSmall" style={{ flexShrink: 1, textAlign: "center" }}>
+              {title}
+            </Text>
+            {icon && (
+              <MaterialCommunityIcons
+                name={icon as keyof typeof MaterialCommunityIcons.glyphMap}
+                size={24}
+                color={destructive ? colors.danger : colors.primary}
+              />
+            )}
+          </View>
+          <Dialog.Content style={{ paddingBottom: SPACING.sm }}>
+            <View style={{ width: "100%", gap: SPACING.sm }}>
               {description && (
                 <Text style={{ color: colors.text, fontSize: FONT.base }}>
                   {description}
@@ -85,8 +113,9 @@ export const ConfirmationDialog = ({
             <Dialog.Actions
               style={{
                 gap: SPACING.sm,
+                paddingTop: 0,
                 paddingHorizontal: SPACING.lg,
-                paddingBottom: SPACING.lg,
+                paddingBottom: SPACING.md,
               }}
             >
               <Button

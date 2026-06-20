@@ -22,6 +22,7 @@ export const VerifyEmailSentDialog = ({ open, email }: Props) => {
       open={open}
       onClose={() => {}}
       title="Verify your new email"
+      icon="email-check-outline"
       onConfirm={() => {
         clearSession();
         setIsClearing(true);
