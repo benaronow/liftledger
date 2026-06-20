@@ -10,15 +10,10 @@ import { Fragment, useEffect, useState } from "react";
 import { View } from "react-native";
 import { DatePickerInput } from "react-native-paper-dates";
 import { SearchableSelect } from "../../../components/SearchableSelect";
-import {
-  PaperProvider,
-  Surface,
-  Text,
-  TextInput,
-  useTheme,
-} from "../../../paper";
+import { PaperProvider, Surface, Text, useTheme } from "../../../paper";
 import { AddRow } from "../../../components/AddRow";
-import { FONT, RADIUS, SPACING } from "../../../theme";
+import { AppTextInput } from "../../../components/inputs";
+import { FONT, INPUT_HEIGHT, RADIUS, SPACING } from "../../../theme";
 import { useTemplate } from "../../TemplateProvider";
 import { DayInfo } from "./DayInfo";
 import { DeleteDayDialog } from "./DeleteDayDialog";
@@ -179,10 +174,7 @@ export const EditWeek = () => {
         >
           Program Details
         </Text>
-        <TextInput
-          style={{ height: 45 }}
-          outlineStyle={{ borderRadius: 8 }}
-          mode="outlined"
+        <AppTextInput
           label="Name"
           value={templateProgram.name}
           onChangeText={(text) =>
@@ -194,8 +186,8 @@ export const EditWeek = () => {
         <View>
           <PaperProvider theme={modalTheme}>
             <DatePickerInput
-              style={{ height: 45 }}
-              outlineStyle={{ borderRadius: 8 }}
+              style={{ height: INPUT_HEIGHT }}
+              outlineStyle={{ borderRadius: RADIUS.md }}
               mode="outlined"
               locale="en"
               label="Start Date"
@@ -209,10 +201,7 @@ export const EditWeek = () => {
             />
           </PaperProvider>
         </View>
-        <TextInput
-          style={{ height: 45 }}
-          outlineStyle={{ borderRadius: 8 }}
-          mode="outlined"
+        <AppTextInput
           label="Weeks"
           value={String(templateProgram.length)}
           onChangeText={handleLengthInput}

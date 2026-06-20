@@ -26,3 +26,7 @@ export const FONT = {
   xl: 25,
   xxl: 28,
 } as const;
+
+// Shared height for outlined form controls (text inputs, selects, date fields)
+// so every field lines up regardless of which primitive renders it.
+export const INPUT_HEIGHT = 45;

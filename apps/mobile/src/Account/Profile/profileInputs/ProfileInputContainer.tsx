@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated, View } from "react-native";
 import { HelperText, useTheme } from "../../../paper";
-import { SPACING } from "../../../theme";
+import { INPUT_HEIGHT, RADIUS, SPACING } from "../../../theme";
 import { IconButton } from "react-native-paper";
 import { TextInput as RNTextInput } from "react-native";
 
@@ -38,7 +38,7 @@ export const ProfileInputContainer = ({
     if (fieldSelected) {
       Animated.sequence([
         Animated.timing(width, {
-          toValue: 45 + SPACING.sm,
+          toValue: INPUT_HEIGHT + SPACING.sm,
           duration: 150,
           useNativeDriver: false,
         }),
@@ -111,7 +111,7 @@ export const ProfileInputContainer = ({
           style={{
             width,
             opacity,
-            height: 45,
+            height: INPUT_HEIGHT,
             overflow: "hidden",
             alignItems: "flex-end",
           }}
@@ -121,9 +121,9 @@ export const ProfileInputContainer = ({
             style={{
               margin: 0,
               marginLeft: SPACING.sm,
-              height: 45,
-              width: 45,
-              borderRadius: 8,
+              height: INPUT_HEIGHT,
+              width: INPUT_HEIGHT,
+              borderRadius: RADIUS.md,
               flexDirection: "column",
               justifyContent: "center",
             }}

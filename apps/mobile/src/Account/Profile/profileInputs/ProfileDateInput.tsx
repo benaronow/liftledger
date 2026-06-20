@@ -1,6 +1,7 @@
 import { View } from "react-native";
 import { DatePickerInput } from "react-native-paper-dates";
 import { PaperProvider, useTheme } from "../../../paper";
+import { INPUT_HEIGHT, RADIUS } from "../../../theme";
 import { ProfileInputContainer } from "./ProfileInputContainer";
 
 interface Props {
@@ -51,8 +52,8 @@ export const ProfileDateInput = ({
           <PaperProvider theme={modalTheme}>
             <DatePickerInput
               ref={inputRef}
-              style={{ height: 45 }}
-              outlineStyle={{ borderRadius: 8 }}
+              style={{ height: INPUT_HEIGHT }}
+              outlineStyle={{ borderRadius: RADIUS.md }}
               label={label}
               value={value}
               error={!!error}

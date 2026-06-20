@@ -16,7 +16,7 @@ import {
   TextInput,
   useTheme,
 } from "../paper";
-import { FONT, SPACING } from "../theme";
+import { FONT, INPUT_HEIGHT, RADIUS, SPACING } from "../theme";
 import { TextInput as RNTextInput } from "react-native";
 
 interface Props {
@@ -104,8 +104,8 @@ export const SearchableSelect = ({
     <>
       <TextInput
         ref={inputRef}
-        style={{ height: 45 }}
-        outlineStyle={{ borderRadius: 8 }}
+        style={{ height: INPUT_HEIGHT }}
+        outlineStyle={{ borderRadius: RADIUS.md }}
         label={label}
         mode="outlined"
         value={value}

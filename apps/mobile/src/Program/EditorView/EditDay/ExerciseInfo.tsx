@@ -11,8 +11,8 @@ import { View } from "react-native";
 import { ExerciseApparatusSelect } from "../../../components/ExerciseApparatusSelect";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
 import { WeightTypeSelect } from "../../../components/WeightTypeSelect";
-import { TextInput } from "../../../paper";
 import { SPACING } from "../../../theme";
+import { AppTextInput } from "../../../components/inputs";
 import { Info, InfoAction } from "../../../components/Info";
 import { useTemplate } from "../../TemplateProvider";
 import { moveExercise } from "./moveExercise";
@@ -156,20 +156,16 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
         onSelect={(value) => switchExercise(value, "apparatus")}
       />
       <View style={rowStyle}>
-        <TextInput
-          style={{ flex: 1, height: 45 }}
-          outlineStyle={{ borderRadius: 8 }}
-          mode="outlined"
+        <AppTextInput
+          style={{ flex: 1 }}
           label="Sets"
           value={String(setCount)}
           keyboardType="number-pad"
           onChangeText={(text) => handleNumberInput(text, "sets")}
         />
         {!curProgram && (
-          <TextInput
-            style={{ flex: 1, height: 45 }}
-            outlineStyle={{ borderRadius: 8 }}
-            mode="outlined"
+          <AppTextInput
+            style={{ flex: 1 }}
             label="Reps"
             value={String(exercise.sets[0]?.reps || 0)}
             keyboardType="number-pad"
@@ -180,10 +176,8 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
       </View>
       {!curProgram && (
         <View style={rowStyle}>
-          <TextInput
-            style={{ flex: 1, height: 45 }}
-            outlineStyle={{ borderRadius: 8 }}
-            mode="outlined"
+          <AppTextInput
+            style={{ flex: 1 }}
             label="Weight"
             value={
               exercise.sets[0]?.weight ? String(exercise.sets[0].weight) : ""

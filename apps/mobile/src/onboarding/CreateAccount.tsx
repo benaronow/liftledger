@@ -17,7 +17,8 @@ import {
   useTheme,
 } from "../paper";
 import { useThemePreference } from "../providers/ThemeProvider";
-import { SPACING } from "../theme";
+import { AppTextInput } from "../components/inputs";
+import { INPUT_HEIGHT, RADIUS, SPACING } from "../theme";
 import { useSnackbar } from "../providers/SnackbarProvider";
 import { useLogout } from "../RootNavigator/AuthenticatedRouter/useLogout";
 
@@ -119,19 +120,13 @@ export const CreateAccount = () => {
           >
             Finish your account
           </Text>
-          <TextInput
-            style={{ height: 50 }}
-            outlineStyle={{ borderRadius: 8 }}
-            mode="outlined"
+          <AppTextInput
             label="Full Name"
             value={fullName}
             onChangeText={setFullName}
             autoCapitalize="none"
           />
-          <TextInput
-            style={{ height: 50 }}
-            outlineStyle={{ borderRadius: 8 }}
-            mode="outlined"
+          <AppTextInput
             label="Email"
             value={email}
             disabled
@@ -141,10 +136,7 @@ export const CreateAccount = () => {
               },
             }}
           />
-          <TextInput
-            style={{ height: 50 }}
-            outlineStyle={{ borderRadius: 8 }}
-            mode="outlined"
+          <AppTextInput
             label="Username"
             value={username}
             onChangeText={setUsername}
@@ -165,8 +157,8 @@ export const CreateAccount = () => {
           <View>
             <PaperProvider theme={modalTheme}>
               <DatePickerInput
-                style={{ height: 50 }}
-                outlineStyle={{ borderRadius: 8 }}
+                style={{ height: INPUT_HEIGHT }}
+                outlineStyle={{ borderRadius: RADIUS.md }}
                 mode="outlined"
                 locale="en"
                 label="Birthday"

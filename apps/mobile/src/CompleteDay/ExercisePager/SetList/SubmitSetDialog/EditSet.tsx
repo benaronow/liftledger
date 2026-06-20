@@ -1,12 +1,13 @@
 import { Exercise } from "@liftledger/shared";
 import { Dispatch, SetStateAction, useMemo } from "react";
+import { View } from "react-native";
 import { Text } from "../../../../paper";
 import {
   findLatestOccurrence,
   useCompletedExercises,
   useMe,
 } from "@liftledger/api-client";
-import { LabeledTextInput } from "../../../../components/inputs";
+import { AppTextInput } from "../../../../components/inputs";
 import { FONT, SPACING } from "../../../../theme";
 
 interface Props {
@@ -52,28 +53,28 @@ export const EditSet = ({ exerciseState, setExerciseState, setIdx }: Props) => {
   const curSet = exerciseState?.sets[setIdx];
 
   return (
-    <>
+    <View style={{ width: "100%", gap: SPACING.sm }}>
       {!!latestPreviousSetNote && (
-        <Text style={{ width: "100%", color: "white", fontSize: FONT.sm, marginBottom: SPACING.xs }}>{`Previous note: ${latestPreviousSetNote}`}</Text>
+        <Text style={{ color: "white", fontSize: FONT.sm }}>{`Previous note: ${latestPreviousSetNote}`}</Text>
       )}
-      <LabeledTextInput
+      <AppTextInput
         label="Reps"
         value={curSet?.reps ? String(curSet.reps) : ""}
         keyboardType="number-pad"
         onChangeText={(text) => handleChange(text, "reps")}
       />
-      <LabeledTextInput
+      <AppTextInput
         label="Weight"
         value={curSet?.weight ? String(curSet.weight) : ""}
         keyboardType="decimal-pad"
         onChangeText={(text) => handleChange(text, "weight")}
       />
-      <LabeledTextInput
+      <AppTextInput
         label="Note"
         value={curSet?.note}
         onChangeText={(text) => handleChange(text, "note")}
       />
-    </>
+    </View>
   );
 };
 

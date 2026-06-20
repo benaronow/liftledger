@@ -1,4 +1,5 @@
 import { useTheme } from "../../../paper";
+import { INPUT_HEIGHT, RADIUS } from "../../../theme";
 import { ProfileInputContainer } from "./ProfileInputContainer";
 import { TextInput } from "react-native-paper";
 
@@ -38,8 +39,8 @@ export const ProfileTextInput = ({
       {({ inputRef, onFocus, onBlur }) => (
         <TextInput
           ref={inputRef}
-          style={{ flex: 1, height: 45 }}
-          outlineStyle={{ borderRadius: 8 }}
+          style={{ flex: 1, height: INPUT_HEIGHT }}
+          outlineStyle={{ borderRadius: RADIUS.md }}
           label={label}
           value={value}
           error={!!error}

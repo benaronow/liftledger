@@ -2,9 +2,9 @@ import { useProgram, useMe } from "@liftledger/api-client";
 import { Exercise } from "@liftledger/shared";
 import { useState } from "react";
 import { View } from "react-native";
-import { TextInput } from "../../../paper";
 import { SPACING } from "../../../theme";
 import { AddRow } from "../../../components/AddRow";
+import { AppTextInput } from "../../../components/inputs";
 import { useTemplate } from "../../TemplateProvider";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
 import { ExerciseInfo } from "./ExerciseInfo";
@@ -63,10 +63,7 @@ export const EditDay = () => {
   return (
     <View style={{ width: "100%", alignItems: "center" }}>
       <View style={{ width: "100%", marginBottom: SPACING.lg }}>
-        <TextInput
-          style={{ height: 45 }}
-          outlineStyle={{ borderRadius: 8 }}
-          mode="outlined"
+        <AppTextInput
           label="Day Name"
           value={day.name}
           onChangeText={handleDayNameInput}
