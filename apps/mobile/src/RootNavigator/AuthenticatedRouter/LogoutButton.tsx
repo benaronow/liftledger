@@ -11,7 +11,7 @@ export const LogoutButton = () => {
 
   return (
     <TouchableRipple
-      background={colors.danger}
+      rippleColor={colors.danger}
       onPress={handleLogout}
       style={{
         borderRadius: RADIUS.md,

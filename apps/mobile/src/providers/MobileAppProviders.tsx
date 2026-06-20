@@ -1,5 +1,5 @@
 import { initApiClient } from "@liftledger/api-client";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useRef } from "react";
 import { Auth0Provider, useAuth0 } from "react-native-auth0";
 import { SWRConfig } from "swr";
 import { env } from "../config/env";
@@ -11,10 +11,22 @@ import { ThemeProvider } from "./ThemeProvider";
 // manager (which silently refreshes), where web uses getAccessTokenSilently.
 const ApiClientProvider = ({ children }: PropsWithChildren) => {
   const { getCredentials } = useAuth0();
-  initApiClient({
-    baseURL: env.apiUrl,
-    getToken: async () => (await getCredentials()).accessToken,
-  });
+  // Keep a live ref to the latest getCredentials so the token closure below
+  // never goes stale, even though initApiClient only runs once.
+  const getCredentialsRef = useRef(getCredentials);
+  getCredentialsRef.current = getCredentials;
+
+  // Configure the shared axios client once, synchronously on first render —
+  // children's SWR hooks read it as they mount, so this must run before them
+  // (not in an effect). The ref guard keeps later re-renders from redoing it.
+  const initialized = useRef(false);
+  if (!initialized.current) {
+    initApiClient({
+      baseURL: env.apiUrl,
+      getToken: async () => (await getCredentialsRef.current()).accessToken,
+    });
+    initialized.current = true;
+  }
   return <>{children}</>;
 };
 

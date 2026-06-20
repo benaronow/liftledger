@@ -8,7 +8,6 @@ import { LogoSpinner } from "../../components/LogoSpinner";
 import { Text, useTheme } from "../../paper";
 import { FONT, SPACING } from "../../theme";
 import { ExerciseTooltip } from "./ExerciseTooltip";
-import { GYM_COLORS } from "./gymColors";
 import { NoDataPlaceholder } from "./NoDataPlaceholder";
 import type { ChartPoint } from "./types";
 
@@ -50,6 +49,13 @@ export const ProgressChart = ({
   const [size, setSize] = useState({ width: 0, height: 0 });
   const { colors } = useTheme();
 
+  // One color per gym line, cycled if there are more gyms than colors (web
+  // parity). Theme-derived so the lines track the active light/dark palette.
+  const gymColors = useMemo(
+    () => [colors.primary, colors.secondary, colors.success, colors.warning],
+    [colors],
+  );
+
   // Completed occurrences of this exercise, oldest → newest (web reverses the
   // newest-first API order).
   const chartExercises = useMemo<CompletedExercise[]>(
@@ -78,7 +84,7 @@ export const ProgressChart = ({
       Math.max(...e.sets.filter((s: Set) => s.completed).map((s) => s.weight));
 
     const gymLines = gyms.map((lineGym, gymIdx) => {
-      const color = GYM_COLORS[gymIdx % GYM_COLORS.length];
+      const color = gymColors[gymIdx % gymColors.length];
 
       // This gym's real sessions, with their chronological index in the
       // shared x-axis and their plotted value.
@@ -160,7 +166,7 @@ export const ProgressChart = ({
     };
 
     return [carrier, ...gymLines];
-  }, [gyms, chartExercises]);
+  }, [gyms, chartExercises, gymColors]);
 
   const { yAxisOffset, maxValue } = useMemo(() => {
     const values = chartExercises.flatMap((e) =>
@@ -219,7 +225,7 @@ export const ProgressChart = ({
             yAxisColor={colors.textDisabled}
             xAxisColor={colors.textDisabled}
             yAxisTextStyle={{ color: colors.text, fontSize: 11 }}
-            color={GYM_COLORS[0]}
+            color={gymColors[0]}
             dataPointsRadius={4}
             pointerConfig={{
               pointerColor: colors.primary,
@@ -228,7 +234,7 @@ export const ProgressChart = ({
               // matches its own line's color instead of the global default.
               pointerColorsForDataSet: [
                 "transparent",
-                ...gyms.map((_, i) => GYM_COLORS[i % GYM_COLORS.length]),
+                ...gyms.map((_, i) => gymColors[i % gymColors.length]),
               ],
               radius: POINTER_RADIUS,
               showPointerStrip: true,
@@ -308,7 +314,7 @@ export const ProgressChart = ({
                   width: 12,
                   height: 12,
                   borderRadius: 6,
-                  backgroundColor: GYM_COLORS[i % GYM_COLORS.length],
+                  backgroundColor: gymColors[i % gymColors.length],
                 }}
               />
               <Text

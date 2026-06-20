@@ -218,7 +218,6 @@ export const SearchableSelect = ({
           </View>
         </KeyboardAvoidingView>
       </Modal>
-      {/* </LabeledInputContainer> */}
     </>
   );
 };

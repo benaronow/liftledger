@@ -39,7 +39,6 @@ export const LabeledTextInput = ({
     <LabeledInputContainer label={label} error={error} renderEnd={renderEnd}>
       <TextInput
         mode="outlined"
-        label="First name"
         dense
         style={{
           flex: 1,
