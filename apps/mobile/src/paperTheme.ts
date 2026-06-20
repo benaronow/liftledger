@@ -19,7 +19,10 @@ export type AppTheme = Omit<MD3Theme, "colors"> & { colors: AppColors };
 const buildColors = (p: ColorPalette, base: MD3Theme): AppColors => ({
   ...base.colors,
   primary: p.primary,
-  onPrimary: p.text,
+  // Content on the solid primary fill is white in both schemes — primary is the
+  // same saturated blue in light and dark, so button icons/labels shouldn't flip
+  // to dark text in light mode.
+  onPrimary: "white",
   primaryDisabled: p.primaryDisabled,
   primaryContainer: p.darkContainer,
   onPrimaryContainer: p.text,
