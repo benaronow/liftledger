@@ -53,7 +53,7 @@ export const ExerciseTooltip = ({
                 fontSize: FONT.sm,
                 fontWeight: "700",
                 marginBottom: 4,
-                color: item.color ?? "white",
+                color: item.color ?? colors.text,
               }}
             >
               {item.gym}

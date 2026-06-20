@@ -15,7 +15,7 @@ import { SPACING } from "../../../theme";
 import { AppTextInput } from "../../../components/inputs";
 import { Info, InfoAction } from "../../../components/Info";
 import { useTemplate } from "../../TemplateProvider";
-import { moveExercise } from "./moveExercise";
+import { fullExerciseIndex, moveExercise } from "./moveExercise";
 
 type ExerciseInfoName = "name" | "apparatus" | "weightType";
 
@@ -44,6 +44,9 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
 
   const updateExercise = useCallback(
     (exerciseUpdate: Exercise) => {
+      // eIdx is the position in the *visible* list; map it to the full-array
+      // index so hidden addedOn exercises don't shift the target.
+      const fullIdx = fullExerciseIndex(curDayExercises, eIdx);
       setTemplateProgram({
         ...templateProgram,
         weeks: templateProgram.weeks.map((week, wIdx) =>
@@ -53,7 +56,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
                   ? {
                       ...day,
                       exercises: day.exercises.map((ex, idx) =>
-                        eIdx === idx ? exerciseUpdate : ex,
+                        idx === fullIdx ? exerciseUpdate : ex,
                       ),
                     }
                   : day,
@@ -62,7 +65,14 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
         ),
       });
     },
-    [templateProgram, setTemplateProgram, editingWeekIdx, editingDayIdx, eIdx],
+    [
+      templateProgram,
+      setTemplateProgram,
+      editingWeekIdx,
+      editingDayIdx,
+      eIdx,
+      curDayExercises,
+    ],
   );
 
   const handleMoveExercise = (type: "up" | "down") => {

@@ -1,5 +1,6 @@
 import { ConfirmationDialog } from "../../../components/ConfirmationDialog";
 import { useTemplate } from "../../TemplateProvider";
+import { fullExerciseIndex } from "./moveExercise";
 
 interface Props {
   deletingExerciseIdx: number | undefined;
@@ -14,25 +15,24 @@ export const DeleteExerciseDialog = ({
     useTemplate();
 
   const handleRemoveExercise = () => {
-    if (templateProgram.weeks[editingWeekIdx][editingDayIdx].exercises.length > 1)
+    const day = templateProgram.weeks[editingWeekIdx][editingDayIdx];
+    if (day.exercises.length > 1 && deletingExerciseIdx !== undefined) {
+      // deletingExerciseIdx is the position in the *visible* list; map it to the
+      // full-array index so a hidden addedOn exercise isn't deleted in its place.
+      const fullIdx = fullExerciseIndex(day.exercises, deletingExerciseIdx);
       setTemplateProgram({
         ...templateProgram,
         weeks: templateProgram.weeks.map((week, wIdx) =>
           wIdx === editingWeekIdx
-            ? week.map((day, dIdx) =>
-                dIdx === editingDayIdx && deletingExerciseIdx !== undefined
-                  ? {
-                      ...day,
-                      exercises: day.exercises.toSpliced(
-                        deletingExerciseIdx,
-                        1,
-                      ),
-                    }
-                  : day,
+            ? week.map((d, dIdx) =>
+                dIdx === editingDayIdx
+                  ? { ...d, exercises: d.exercises.toSpliced(fullIdx, 1) }
+                  : d,
               )
             : week,
         ),
       });
+    }
     onClose();
   };
 

@@ -135,16 +135,23 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       }),
     };
 
-    const updatedExercises = exercises.toSpliced(
-      exercises.findIndex(
-        (e: Exercise) =>
-          e.name === updatedExercise.name &&
-          e.apparatus === updatedExercise.apparatus &&
-          e.gym === updatedExercise.gym,
-      ),
-      1,
-      updatedExercise,
+    const exerciseIdx = exercises.findIndex(
+      (e: Exercise) =>
+        e.name === updatedExercise.name &&
+        e.apparatus === updatedExercise.apparatus &&
+        e.gym === updatedExercise.gym,
     );
+
+    // Guard against a -1 from findIndex: toSpliced(-1, …) would silently
+    // replace the *last* exercise rather than the intended one.
+    if (exerciseIdx === -1) {
+      showSnackbar("Error submitting set. Please try again.");
+      setSkippingSet(false);
+      setSubmittingSet(false);
+      return;
+    }
+
+    const updatedExercises = exercises.toSpliced(exerciseIdx, 1, updatedExercise);
 
     try {
       await saveExercises(updatedExercises);
