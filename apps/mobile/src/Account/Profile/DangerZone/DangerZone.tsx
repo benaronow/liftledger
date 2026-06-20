@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Text, useTheme } from "../../../paper";
-import { FONT, RADIUS, SPACING } from "../../../theme";
+import { useTheme } from "../../../paper";
+import { SectionCard } from "../../../components/SectionCard";
 import { DeleteAccountDialog } from "./DeleteAccountDialog";
-import { Button, Surface } from "react-native-paper";
+import { Button } from "react-native-paper";
 
 export const DangerZone = () => {
   const [open, setOpen] = useState(false);
@@ -10,27 +10,11 @@ export const DangerZone = () => {
 
   return (
     <>
-      <Surface
-        elevation={1}
-        style={{
-          width: "100%",
-          backgroundColor: colors.danger,
-          borderRadius: RADIUS.md,
-          gap: SPACING.md,
-          paddingVertical: SPACING.md,
-          paddingHorizontal: SPACING.lg,
-        }}
+      <SectionCard
+        title="Danger Zone"
+        background={colors.danger}
+        titleColor="white"
       >
-        <Text
-          style={{
-            color: "white",
-            fontSize: FONT.base,
-            fontWeight: "800",
-            alignSelf: "flex-start",
-          }}
-        >
-          Danger Zone
-        </Text>
         <Button
           style={{
             flexDirection: "column",
@@ -45,7 +29,7 @@ export const DangerZone = () => {
         >
           Delete Account
         </Button>
-      </Surface>
+      </SectionCard>
       <DeleteAccountDialog open={open} onClose={() => setOpen(false)} />
     </>
   );

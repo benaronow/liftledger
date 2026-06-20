@@ -1,11 +1,12 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, View } from "react-native";
-import { Surface, Text, useTheme } from "../../paper";
+import { Text, useTheme } from "../../paper";
+import { SectionCard } from "../../components/SectionCard";
 import {
   ThemePreference,
   useThemePreference,
 } from "../../providers/ThemeProvider";
-import { RADIUS, SPACING, FONT } from "../../theme";
+import { SPACING, FONT } from "../../theme";
 
 type Icon = React.ComponentProps<typeof MaterialCommunityIcons>["name"];
 const THEME_OPTIONS: { label: string; value: ThemePreference; icon: Icon }[] = [
@@ -19,28 +20,7 @@ export const Appearance = () => {
   const { preference, setPreference } = useThemePreference();
 
   return (
-    <Surface
-      elevation={1}
-      style={{
-        width: "100%",
-        borderRadius: RADIUS.md,
-        gap: SPACING.md,
-        paddingVertical: SPACING.md,
-        paddingHorizontal: SPACING.md,
-        backgroundColor: colors.dark,
-      }}
-    >
-      <Text
-        style={{
-          color: colors.text,
-          fontSize: FONT.base,
-          fontWeight: "800",
-          alignSelf: "flex-start",
-          paddingBottom: SPACING.sm,
-        }}
-      >
-        Appearance
-      </Text>
+    <SectionCard title="Appearance">
       {THEME_OPTIONS.map((opt, index) => {
         const selected = preference === opt.value;
         return (
@@ -55,7 +35,7 @@ export const Appearance = () => {
                 index === THEME_OPTIONS.length - 1
                   ? 0
                   : StyleSheet.hairlineWidth,
-              borderBottomColor: colors.container,
+              borderBottomColor: colors.dark,
             }}
             onPress={() => setPreference(opt.value)}
           >
@@ -89,6 +69,6 @@ export const Appearance = () => {
           </Pressable>
         );
       })}
-    </Surface>
+    </SectionCard>
   );
 };

@@ -10,10 +10,11 @@ import { Fragment, useEffect, useState } from "react";
 import { View } from "react-native";
 import { DatePickerInput } from "react-native-paper-dates";
 import { SearchableSelect } from "../../../components/SearchableSelect";
-import { PaperProvider, Surface, Text, useTheme } from "../../../paper";
+import { PaperProvider, useTheme } from "../../../paper";
 import { AddRow } from "../../../components/AddRow";
 import { AppTextInput } from "../../../components/inputs";
-import { FONT, INPUT_HEIGHT, RADIUS, SPACING } from "../../../theme";
+import { SectionCard } from "../../../components/SectionCard";
+import { INPUT_HEIGHT, RADIUS, SPACING } from "../../../theme";
 import { useTemplate } from "../../TemplateProvider";
 import { DayInfo } from "./DayInfo";
 import { DeleteDayDialog } from "./DeleteDayDialog";
@@ -152,28 +153,7 @@ export const EditWeek = () => {
 
   return (
     <View style={{ width: "100%" }}>
-      <Surface
-        elevation={1}
-        style={{
-          width: "100%",
-          borderRadius: RADIUS.md,
-          gap: SPACING.md,
-          paddingVertical: SPACING.md,
-          paddingHorizontal: SPACING.md,
-          backgroundColor: colors.container,
-          marginBottom: SPACING.lg,
-        }}
-      >
-        <Text
-          style={{
-            color: colors.text,
-            fontSize: FONT.base,
-            fontWeight: "800",
-            alignSelf: "flex-start",
-          }}
-        >
-          Program Details
-        </Text>
+      <SectionCard title="Program Details" style={{ marginBottom: SPACING.lg }}>
         <AppTextInput
           label="Name"
           value={templateProgram.name}
@@ -216,7 +196,7 @@ export const EditWeek = () => {
           canAddCustom
           placeholder="Enter gym..."
         />
-      </Surface>
+      </SectionCard>
 
       <View style={{ width: "100%", alignItems: "center" }}>
         {week.map((day, idx) => (
