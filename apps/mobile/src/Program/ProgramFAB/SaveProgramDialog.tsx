@@ -5,12 +5,9 @@ import {
   useUpdateUserProgram,
 } from "@liftledger/api-client";
 import { useNavigation } from "@react-navigation/native";
-import { View } from "react-native";
-import { Text, useTheme } from "../../paper";
 import { useSnackbar } from "../../providers/SnackbarProvider";
 import { ConfirmationDialog } from "../../components/ConfirmationDialog";
 import type { TabNav } from "../../RootNavigator/types";
-import { FONT, SPACING } from "../../theme";
 import { useProgramTransition } from "../ProgramTransition";
 import { useTemplate } from "../TemplateProvider";
 
@@ -20,7 +17,6 @@ interface Props {
 }
 
 export const SaveProgramDialog = ({ open, onClose }: Props) => {
-  const { colors } = useTheme();
   const navigation = useNavigation<TabNav<"Program">>();
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
@@ -87,19 +83,12 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
       title="Save Program"
       onConfirm={handleSave}
       confirming={saving}
-    >
-      <View style={{ width: "100%", gap: SPACING.md }}>
-        <Text style={{ color: colors.text, fontSize: FONT.base }}>
-          Are you sure you want to save this program?
-        </Text>
-        <Text
-          style={{ color: colors.text, fontSize: FONT.base, fontWeight: "700" }}
-        >
-          {curProgram
-            ? "This will overwrite your current program."
-            : "This will become your active training program."}
-        </Text>
-      </View>
-    </ConfirmationDialog>
+      description="Are you sure you want to save this program?"
+      emphasis={
+        curProgram
+          ? "This will overwrite your current program."
+          : "This will become your active training program."
+      }
+    />
   );
 };

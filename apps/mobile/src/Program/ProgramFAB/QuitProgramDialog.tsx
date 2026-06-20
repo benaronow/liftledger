@@ -1,11 +1,10 @@
 import { useMe, useQuitProgram } from "@liftledger/api-client";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
-import { View } from "react-native";
 import { Text, useTheme } from "../../paper";
 import { ConfirmationDialog } from "../../components/ConfirmationDialog";
 import type { TabNav } from "../../RootNavigator/types";
-import { FONT, SPACING } from "../../theme";
+import { FONT } from "../../theme";
 import { useProgramTransition } from "../ProgramTransition";
 import { useTemplate } from "../TemplateProvider";
 
@@ -51,23 +50,12 @@ export const QuitProgramDialog = ({ open, onClose }: Props) => {
       title="Quit Program"
       onConfirm={handleQuit}
       confirming={quitting}
+      description="Are you sure you want to quit this program?"
+      emphasis="The program will be saved to your history with the weeks completed so far."
     >
-      <View style={{ width: "100%", gap: SPACING.md }}>
-        <Text style={{ color: colors.text, fontSize: FONT.base }}>
-          Are you sure you want to quit this program?
-        </Text>
-        <Text
-          style={{ color: colors.text, fontSize: FONT.base, fontWeight: "700" }}
-        >
-          The program will be saved to your history with the weeks completed so
-          far.
-        </Text>
-        {!!error && (
-          <Text style={{ color: colors.danger, fontSize: FONT.sm }}>
-            {error}
-          </Text>
-        )}
-      </View>
+      {!!error && (
+        <Text style={{ color: colors.danger, fontSize: FONT.sm }}>{error}</Text>
+      )}
     </ConfirmationDialog>
   );
 };

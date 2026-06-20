@@ -9,7 +9,9 @@ import {
   useUpdateUserProgram,
 } from "@liftledger/api-client";
 import { AddRow } from "../../../components/AddRow";
-import { Button, IconButton, Surface, Text, useTheme } from "../../../paper";
+import { Badge } from "../../../components/Badge";
+import { SheetHeader } from "../../../components/SheetHeader";
+import { IconButton, Surface, Text, useTheme } from "../../../paper";
 import { useSnackbar } from "../../../providers/SnackbarProvider";
 import { FONT, RADIUS, SPACING } from "../../../theme";
 import { EditExercise } from "./EditExercise";
@@ -129,25 +131,10 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
           paddingTop: (Platform.OS === "android" ? insets.top : 0) + SPACING.md,
         }}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingLeft: SPACING.lg,
-            paddingRight: SPACING.sm,
-            marginBottom: SPACING.sm,
-          }}
-        >
-          <Text
-            style={{ color: colors.text, fontSize: FONT.lg, fontWeight: "600" }}
-          >
-            Edit Exercises
-          </Text>
-          <Button onPress={close} textColor={colors.primary}>
-            Done
-          </Button>
-        </View>
+        <SheetHeader
+          title="Edit Exercises"
+          actions={[{ label: "Done", onPress: close }]}
+        />
         <ScrollView
           contentContainerStyle={{
             padding: SPACING.lg,
@@ -213,21 +200,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                       }}
                     >
                       {exercise.addedOn && (
-                        <Text
-                          style={{
-                            paddingHorizontal: SPACING.sm,
-                            paddingVertical: SPACING.xs,
-                            fontSize: 10,
-                            fontWeight: "600",
-                            letterSpacing: 0.5,
-                            color: colors.text,
-                            backgroundColor: colors.dark,
-                            borderRadius: RADIUS.sm,
-                            overflow: "hidden",
-                          }}
-                        >
-                          ADD-ON
-                        </Text>
+                        <Badge label="ADD-ON" background={colors.dark} />
                       )}
                       <IconButton
                         style={{ margin: 0 }}
@@ -267,42 +240,23 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
               (Platform.OS === "android" ? insets.top : 0) + SPACING.md,
           }}
         >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingLeft: SPACING.lg,
-              paddingRight: SPACING.sm,
-              marginBottom: SPACING.sm,
-            }}
-          >
-            <Text
-              style={{
-                color: colors.text,
-                fontSize: FONT.lg,
-                fontWeight: "600",
-              }}
-            >
-              {editor?.type === "edit" ? "Edit Exercise" : "Add Exercise"}
-            </Text>
-            <View style={{ flexDirection: "row" }}>
-              <Button
-                onPress={() => setEditor(undefined)}
-                disabled={saving}
-                textColor={colors.danger}
-              >
-                Cancel
-              </Button>
-              <Button
-                onPress={handleSave}
-                loading={saving}
-                disabled={saving || exerciseIncomplete}
-              >
-                {editor?.type === "edit" ? "Save" : "Add"}
-              </Button>
-            </View>
-          </View>
+          <SheetHeader
+            title={editor?.type === "edit" ? "Edit Exercise" : "Add Exercise"}
+            actions={[
+              {
+                label: "Cancel",
+                onPress: () => setEditor(undefined),
+                disabled: saving,
+                textColor: colors.danger,
+              },
+              {
+                label: editor?.type === "edit" ? "Save" : "Add",
+                onPress: handleSave,
+                loading: saving,
+                disabled: saving || exerciseIncomplete,
+              },
+            ]}
+          />
           <View style={{ padding: SPACING.lg }}>
             <EditExercise
               newExercise={newExercise}

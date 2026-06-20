@@ -2,12 +2,9 @@ import { Program } from "@liftledger/shared";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useCallback } from "react";
-import { View } from "react-native";
-import { Text, useTheme } from "../paper";
 import { useProgram, useMe, useUpdateUserProgram } from "@liftledger/api-client";
 import { ConfirmationDialog } from "../components/ConfirmationDialog";
 import type { RootStackParamList } from "../RootNavigator/types";
-import { FONT, SPACING } from "../theme";
 import { useSnackbar } from "../providers/SnackbarProvider";
 
 interface Props {
@@ -23,7 +20,6 @@ export const FinishDayDialog = ({
   finishing,
   setFinishing,
 }: Props) => {
-  const { colors } = useTheme();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data: curUser } = useMe();
@@ -77,26 +73,8 @@ export const FinishDayDialog = ({
       title="Finish Day"
       onConfirm={handleFinishDay}
       confirming={finishing}
-    >
-      <View style={{ width: "100%", gap: SPACING.md }}>
-        <Text
-          style={{
-            color: colors.text,
-            fontSize: FONT.base,
-          }}
-        >
-          Are you sure you want to finish today&apos;s workout?
-        </Text>
-        <Text
-          style={{
-            color: colors.text,
-            fontSize: FONT.base,
-            fontWeight: "700",
-          }}
-        >
-          Once you finish, you can no longer edit exercises from this workout.
-        </Text>
-      </View>
-    </ConfirmationDialog>
+      description="Are you sure you want to finish today's workout?"
+      emphasis="Once you finish, you can no longer edit exercises from this workout."
+    />
   );
 };

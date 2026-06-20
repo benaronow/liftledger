@@ -9,7 +9,6 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ActivityIndicator,
-  Button,
   List,
   Searchbar,
   Text,
@@ -18,6 +17,7 @@ import {
 } from "../paper";
 import { FONT, INPUT_HEIGHT, RADIUS, SPACING } from "../theme";
 import { TextInput as RNTextInput } from "react-native";
+import { SheetHeader } from "./SheetHeader";
 
 interface Props {
   label?: string;
@@ -141,29 +141,10 @@ export const SearchableSelect = ({
                 (Platform.OS === "android" ? insets.top : 0) + SPACING.md,
             }}
           >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                paddingLeft: SPACING.lg,
-                paddingRight: SPACING.sm,
-                marginBottom: SPACING.sm,
-              }}
-            >
-              <Text
-                style={{
-                  color: colors.text,
-                  fontSize: FONT.lg,
-                  fontWeight: "600",
-                }}
-              >
-                {label ?? "Select"}
-              </Text>
-              <Button onPress={close} textColor={colors.primary}>
-                Done
-              </Button>
-            </View>
+            <SheetHeader
+              title={label ?? "Select"}
+              actions={[{ label: "Done", onPress: close }]}
+            />
             <Searchbar
               style={{ marginHorizontal: SPACING.md, marginBottom: SPACING.sm }}
               inputStyle={{ color: "black" }}
