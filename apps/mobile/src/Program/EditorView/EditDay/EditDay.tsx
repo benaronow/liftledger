@@ -2,11 +2,12 @@ import { useProgram, useMe } from "@liftledger/api-client";
 import { Exercise } from "@liftledger/shared";
 import { useState } from "react";
 import { View } from "react-native";
-import { TextInput } from "../../../paper";
 import { SPACING } from "../../../theme";
 import { AddRow } from "../../../components/AddRow";
+import { AppTextInput } from "../../../components/inputs";
 import { useTemplate } from "../../TemplateProvider";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
+import { fullExerciseIndex } from "./moveExercise";
 import { ExerciseInfo } from "./ExerciseInfo";
 
 export const EditDay = () => {
@@ -63,10 +64,7 @@ export const EditDay = () => {
   return (
     <View style={{ width: "100%", alignItems: "center" }}>
       <View style={{ width: "100%", marginBottom: SPACING.lg }}>
-        <TextInput
-          style={{ height: 45 }}
-          outlineStyle={{ borderRadius: 8 }}
-          mode="outlined"
+        <AppTextInput
           label="Day Name"
           value={day.name}
           onChangeText={handleDayNameInput}
@@ -75,7 +73,13 @@ export const EditDay = () => {
       </View>
       {visibleExercises.map((exercise, idx) => (
         <View key={idx} style={{ width: "100%", alignItems: "center" }}>
-          <AddRow onPress={() => handleAddExercise(idx)} />
+          {/* Insert before this visible exercise's real position in the full
+              array, so a hidden addedOn exercise doesn't shift the insert. */}
+          <AddRow
+            onPress={() =>
+              handleAddExercise(fullExerciseIndex(day.exercises, idx))
+            }
+          />
           <ExerciseInfo
             exercise={exercise}
             eIdx={idx}

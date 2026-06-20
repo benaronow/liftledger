@@ -6,8 +6,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LogoSpinner } from "../components/LogoSpinner";
 import { floatingTabBarClearance } from "../RootNavigator/TabNavigator/FloatingTabBar";
 import type { TabParamList } from "../RootNavigator/types";
-import { Surface, useTheme } from "../paper";
-import { SPACING } from "../theme";
+import { Surface, Text, useTheme } from "../paper";
+import { FONT, RADIUS, SPACING } from "../theme";
 import { ExerciseSelector } from "./ExerciseSelector";
 import { ProgressChart } from "./ProgressChart";
 
@@ -73,9 +73,20 @@ export const Progress = () => {
             flex: 1,
             paddingTop: SPACING.lg,
             paddingBottom: SPACING.sm,
-            borderRadius: 12,
+            borderRadius: RADIUS.lg,
           }}
         >
+          <Text
+            style={{
+              paddingHorizontal: SPACING.lg,
+              marginBottom: SPACING.sm,
+              color: colors.text,
+              fontSize: FONT.base,
+              fontWeight: "800",
+            }}
+          >
+            All Progress
+          </Text>
           <ProgressChart
             selectedName={selectedName}
             selectedApparatus={selectedApparatus}

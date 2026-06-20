@@ -39,7 +39,7 @@ export const LIGHT_COLORS: ColorPalette = {
   dangerContainer: "#f76575",
   primary: "#0096ff",
   primaryDisabled: "#317baf",
-  secondary: "#ba209e",
+  secondary: "#ff40ed",
   secondaryDisabled: "#ad5598",
   text: "#1c1c1e",
   textDisabled: "#8e8e93",

@@ -11,11 +11,11 @@ import { View } from "react-native";
 import { ExerciseApparatusSelect } from "../../../components/ExerciseApparatusSelect";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
 import { WeightTypeSelect } from "../../../components/WeightTypeSelect";
-import { TextInput } from "../../../paper";
 import { SPACING } from "../../../theme";
+import { AppTextInput } from "../../../components/inputs";
 import { Info, InfoAction } from "../../../components/Info";
 import { useTemplate } from "../../TemplateProvider";
-import { moveExercise } from "./moveExercise";
+import { fullExerciseIndex, moveExercise } from "./moveExercise";
 
 type ExerciseInfoName = "name" | "apparatus" | "weightType";
 
@@ -44,6 +44,9 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
 
   const updateExercise = useCallback(
     (exerciseUpdate: Exercise) => {
+      // eIdx is the position in the *visible* list; map it to the full-array
+      // index so hidden addedOn exercises don't shift the target.
+      const fullIdx = fullExerciseIndex(curDayExercises, eIdx);
       setTemplateProgram({
         ...templateProgram,
         weeks: templateProgram.weeks.map((week, wIdx) =>
@@ -53,7 +56,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
                   ? {
                       ...day,
                       exercises: day.exercises.map((ex, idx) =>
-                        eIdx === idx ? exerciseUpdate : ex,
+                        idx === fullIdx ? exerciseUpdate : ex,
                       ),
                     }
                   : day,
@@ -62,7 +65,14 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
         ),
       });
     },
-    [templateProgram, setTemplateProgram, editingWeekIdx, editingDayIdx, eIdx],
+    [
+      templateProgram,
+      setTemplateProgram,
+      editingWeekIdx,
+      editingDayIdx,
+      eIdx,
+      curDayExercises,
+    ],
   );
 
   const handleMoveExercise = (type: "up" | "down") => {
@@ -156,20 +166,16 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
         onSelect={(value) => switchExercise(value, "apparatus")}
       />
       <View style={rowStyle}>
-        <TextInput
-          style={{ flex: 1, height: 45 }}
-          outlineStyle={{ borderRadius: 8 }}
-          mode="outlined"
+        <AppTextInput
+          style={{ flex: 1 }}
           label="Sets"
           value={String(setCount)}
           keyboardType="number-pad"
           onChangeText={(text) => handleNumberInput(text, "sets")}
         />
         {!curProgram && (
-          <TextInput
-            style={{ flex: 1, height: 45 }}
-            outlineStyle={{ borderRadius: 8 }}
-            mode="outlined"
+          <AppTextInput
+            style={{ flex: 1 }}
             label="Reps"
             value={String(exercise.sets[0]?.reps || 0)}
             keyboardType="number-pad"
@@ -180,10 +186,8 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
       </View>
       {!curProgram && (
         <View style={rowStyle}>
-          <TextInput
-            style={{ flex: 1, height: 45 }}
-            outlineStyle={{ borderRadius: 8 }}
-            mode="outlined"
+          <AppTextInput
+            style={{ flex: 1 }}
             label="Weight"
             value={
               exercise.sets[0]?.weight ? String(exercise.sets[0].weight) : ""

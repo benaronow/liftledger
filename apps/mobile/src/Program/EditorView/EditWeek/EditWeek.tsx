@@ -10,15 +10,11 @@ import { Fragment, useEffect, useState } from "react";
 import { View } from "react-native";
 import { DatePickerInput } from "react-native-paper-dates";
 import { SearchableSelect } from "../../../components/SearchableSelect";
-import {
-  PaperProvider,
-  Surface,
-  Text,
-  TextInput,
-  useTheme,
-} from "../../../paper";
+import { PaperProvider, useTheme } from "../../../paper";
 import { AddRow } from "../../../components/AddRow";
-import { FONT, RADIUS, SPACING } from "../../../theme";
+import { AppTextInput } from "../../../components/inputs";
+import { SectionCard } from "../../../components/SectionCard";
+import { INPUT_HEIGHT, RADIUS, SPACING } from "../../../theme";
 import { useTemplate } from "../../TemplateProvider";
 import { DayInfo } from "./DayInfo";
 import { DeleteDayDialog } from "./DeleteDayDialog";
@@ -157,32 +153,8 @@ export const EditWeek = () => {
 
   return (
     <View style={{ width: "100%" }}>
-      <Surface
-        elevation={1}
-        style={{
-          width: "100%",
-          borderRadius: RADIUS.md,
-          gap: SPACING.md,
-          paddingVertical: SPACING.md,
-          paddingHorizontal: SPACING.md,
-          backgroundColor: colors.container,
-          marginBottom: SPACING.lg,
-        }}
-      >
-        <Text
-          style={{
-            color: colors.text,
-            fontSize: FONT.base,
-            fontWeight: "800",
-            alignSelf: "flex-start",
-          }}
-        >
-          Program Details
-        </Text>
-        <TextInput
-          style={{ height: 45 }}
-          outlineStyle={{ borderRadius: 8 }}
-          mode="outlined"
+      <SectionCard title="Program Details" style={{ marginBottom: SPACING.lg }}>
+        <AppTextInput
           label="Name"
           value={templateProgram.name}
           onChangeText={(text) =>
@@ -194,8 +166,8 @@ export const EditWeek = () => {
         <View>
           <PaperProvider theme={modalTheme}>
             <DatePickerInput
-              style={{ height: 45 }}
-              outlineStyle={{ borderRadius: 8 }}
+              style={{ height: INPUT_HEIGHT }}
+              outlineStyle={{ borderRadius: RADIUS.md }}
               mode="outlined"
               locale="en"
               label="Start Date"
@@ -209,10 +181,7 @@ export const EditWeek = () => {
             />
           </PaperProvider>
         </View>
-        <TextInput
-          style={{ height: 45 }}
-          outlineStyle={{ borderRadius: 8 }}
-          mode="outlined"
+        <AppTextInput
           label="Weeks"
           value={String(templateProgram.length)}
           onChangeText={handleLengthInput}
@@ -227,7 +196,7 @@ export const EditWeek = () => {
           canAddCustom
           placeholder="Enter gym..."
         />
-      </Surface>
+      </SectionCard>
 
       <View style={{ width: "100%", alignItems: "center" }}>
         {week.map((day, idx) => (

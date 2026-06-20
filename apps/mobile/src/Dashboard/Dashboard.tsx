@@ -10,6 +10,12 @@ import { floatingTabBarClearance } from "../RootNavigator/TabNavigator/FloatingT
 import type { TabNav } from "../RootNavigator/types";
 import { FONT, RADIUS, SPACING } from "../theme";
 
+// Factors that convert a set's logged weight into lbs for the running total,
+// keyed off the exercise's weight unit.
+const KGS_TO_LBS = 2.205;
+// Fallback for any non-lbs/non-kgs unit (preserves prior behavior).
+const UNKNOWN_UNIT_TO_LBS = 0.454;
+
 export const Dashboard = () => {
   const navigation = useNavigation<TabNav<"Dashboard">>();
   const { data: curUser } = useMe();
@@ -27,7 +33,7 @@ export const Dashboard = () => {
     );
 
   // Sum of completed reps×weight across the program, normalized to lbs.
-  const getTotalWeight = (type: "lbs" | "kgs") =>
+  const getTotalWeight = () =>
     `${curProgram?.weeks.reduce((accWeek: number, curWeek: Day[]) => {
       return (
         accWeek +
@@ -43,11 +49,11 @@ export const Dashboard = () => {
                     (curSet.completed
                       ? curSet.reps *
                         curSet.weight *
-                        (curEx.weightType === type
+                        (curEx.weightType === "lbs"
                           ? 1
                           : curEx.weightType === "kgs"
-                            ? 2.205
-                            : 0.454)
+                            ? KGS_TO_LBS
+                            : UNKNOWN_UNIT_TO_LBS)
                       : 0),
                   0,
                 )
@@ -93,13 +99,13 @@ export const Dashboard = () => {
       value: dayjs(curProgram?.startDate).format("MM/DD/YYYY"),
     },
     {
-      metric: "Program Length:",
+      metric: "Program Length",
       value: `${curProgram?.length} week${(curProgram?.length || 0) > 1 ? "s" : ""}`,
     },
-    { metric: "Week:", value: `Week ${(curProgram?.curWeekIdx || 0) + 1}` },
-    { metric: "Day:", value: curDayName },
-    { metric: "Days Since Last Workout:", value: getDaysSinceLast() },
-    { metric: "Total Weight Lifted:", value: getTotalWeight("lbs") },
+    { metric: "Week", value: `Week ${(curProgram?.curWeekIdx || 0) + 1}` },
+    { metric: "Day", value: curDayName },
+    { metric: "Days Since Last Workout", value: getDaysSinceLast() },
+    { metric: "Total Weight Lifted", value: getTotalWeight() },
   ];
 
   if (!curUser || curProgramLoading) return <LogoSpinner />;
@@ -190,7 +196,9 @@ export const Dashboard = () => {
               alignItems: "center",
               justifyContent: "center",
               marginTop: SPACING.md,
-              // Raised look matching web's layered "Lift!" button.
+              // Intentionally bespoke: the signature "Lift!" CTA keeps web's
+              // layered/raised look rather than using Paper's <Button> or
+              // ActionButton.
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.4,

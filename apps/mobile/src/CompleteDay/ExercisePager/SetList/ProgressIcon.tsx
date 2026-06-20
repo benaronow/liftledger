@@ -1,4 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { DARK_COLORS } from "@liftledger/shared";
 import { useMemo } from "react";
 import { View } from "react-native";
 import { useTheme } from "../../../paper";
@@ -15,8 +16,11 @@ interface Props {
 export const ProgressIcon = ({ sign, isSetComplete, isSetSkipped }: Props) => {
   const { colors } = useTheme();
   const background = useMemo(() => {
-    if (!isSetComplete && !isSetSkipped) return colors.container;
-    if (sign === undefined || isSetSkipped) return colors.background;
+    // Neutral (pending / skipped / no-history) states use fixed dark-palette
+    // grays rather than theme-relative ones, so the white glyph stays legible
+    // and the icon looks identical in light and dark mode.
+    if (!isSetComplete && !isSetSkipped) return DARK_COLORS.lightContainer;
+    if (sign === undefined || isSetSkipped) return DARK_COLORS.background;
     if (sign === 0) return colors.warning;
     return sign > 0 ? colors.success : colors.danger;
   }, [sign, isSetComplete, isSetSkipped, colors]);

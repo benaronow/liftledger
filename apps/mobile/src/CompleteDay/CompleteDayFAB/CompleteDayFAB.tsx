@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, View } from "react-native";
 import { useCurrentDay, useMe, useTimerEnd } from "@liftledger/api-client";
 import { FAB_EDGE, FAB_GAP, FAB_SIZE, FAB_TOP } from "../../layout";
-import { FAB, Text, useTheme } from "../../paper";
-import { FONT, RADIUS, SPACING } from "../../theme";
+import { FAB, useTheme } from "../../paper";
+import { RADIUS, SPACING } from "../../theme";
 import { EditExercisesModal } from "./EditExercisesModal/EditExercisesModal";
 import { EditGymDialog } from "./EditGymDialog";
 import { TimerSettingsDialog } from "./TimerSettingsDialog";
@@ -121,35 +121,19 @@ export const CompleteDayFAB = ({ isFinishing }: Props) => {
           }}
         >
           {actions.map((action) => (
-            <View
+            <FAB
               key={action.icon}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: SPACING.md,
+              icon={action.icon}
+              accessibilityLabel={action.label}
+              size="small"
+              customSize={FAB_SIZE}
+              color="white"
+              style={fabStyle}
+              onPress={() => {
+                setOpen(false);
+                action.onPress();
               }}
-            >
-              <Text
-                style={{
-                  color: colors.text,
-                  fontWeight: "600",
-                  fontSize: FONT.sm,
-                }}
-              >
-                {action.label}
-              </Text>
-              <FAB
-                icon={action.icon}
-                size="small"
-                customSize={FAB_SIZE}
-                color="white"
-                style={fabStyle}
-                onPress={() => {
-                  setOpen(false);
-                  action.onPress();
-                }}
-              />
-            </View>
+            />
           ))}
         </Animated.View>
       </View>

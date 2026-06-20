@@ -36,19 +36,19 @@ export const EditExercise = ({ newExercise, setNewExercise }: Props) => {
   return (
     <View style={{ width: "100%", gap: SPACING.sm }}>
       <ExerciseNameSelect
-        label="Exercise:"
+        label="Exercise"
         curExercise={newExercise}
         reservedExercises={exercises}
         onSelect={(value) => switchExercise(value, "name")}
       />
       <ExerciseApparatusSelect
-        label="Apparatus:"
+        label="Apparatus"
         curExercise={newExercise}
         reservedExercises={exercises}
         onSelect={(value) => switchExercise(value, "apparatus")}
       />
       <WeightTypeSelect
-        label="Weight Type:"
+        label="Weight Type"
         value={newExercise.weightType}
         onSelect={(value) => switchExercise(value, "weightType")}
       />

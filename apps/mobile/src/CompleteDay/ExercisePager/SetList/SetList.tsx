@@ -141,15 +141,6 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
                   justifyContent: "center",
                 }}
               >
-                <View
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    width: 1,
-                    height: 30,
-                    backgroundColor: "white",
-                  }}
-                />
                 <ProgressIcon
                   sign={getProgressSign(i)}
                   isSetComplete={set.completed}

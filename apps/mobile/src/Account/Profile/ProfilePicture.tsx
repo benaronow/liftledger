@@ -1,12 +1,10 @@
 import { Image, View } from "react-native";
 import { useAuth0 } from "react-native-auth0";
 import { useTheme } from "../../paper";
-import { useThemePreference } from "../../providers/ThemeProvider";
 
 export const ProfilePicture = () => {
   const { user: auth0User } = useAuth0();
   const { dark } = useTheme();
-  const { scheme } = useThemePreference();
 
   return (
     <View
@@ -38,7 +36,7 @@ export const ProfilePicture = () => {
               width: 80,
               borderRadius: 40,
               borderWidth: 2,
-              borderColor: scheme === "dark" ? "white" : "white",
+              borderColor: "white",
             }}
           />
         </View>

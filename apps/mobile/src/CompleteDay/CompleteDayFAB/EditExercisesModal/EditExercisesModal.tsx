@@ -1,6 +1,6 @@
 import { Program, Day, Exercise } from "@liftledger/shared";
 import { useMemo, useState } from "react";
-import { Modal, Platform, ScrollView, View } from "react-native";
+import { Modal, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   useProgram,
@@ -9,7 +9,9 @@ import {
   useUpdateUserProgram,
 } from "@liftledger/api-client";
 import { AddRow } from "../../../components/AddRow";
-import { Button, IconButton, Surface, Text, useTheme } from "../../../paper";
+import { Badge } from "../../../components/Badge";
+import { Sheet } from "../../../components/Sheet";
+import { IconButton, Surface, Text, useTheme } from "../../../paper";
 import { useSnackbar } from "../../../providers/SnackbarProvider";
 import { FONT, RADIUS, SPACING } from "../../../theme";
 import { EditExercise } from "./EditExercise";
@@ -122,32 +124,10 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
       animationType="slide"
       presentationStyle="pageSheet"
     >
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: colors.dark,
-          paddingTop: (Platform.OS === "android" ? insets.top : 0) + SPACING.md,
-        }}
+      <Sheet
+        title="Edit Exercises"
+        actions={[{ label: "Done", onPress: close }]}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingLeft: SPACING.lg,
-            paddingRight: SPACING.sm,
-            marginBottom: SPACING.sm,
-          }}
-        >
-          <Text
-            style={{ color: colors.text, fontSize: FONT.lg, fontWeight: "600" }}
-          >
-            Edit Exercises
-          </Text>
-          <Button onPress={close} textColor={colors.primary}>
-            Done
-          </Button>
-        </View>
         <ScrollView
           contentContainerStyle={{
             padding: SPACING.lg,
@@ -213,21 +193,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                       }}
                     >
                       {exercise.addedOn && (
-                        <Text
-                          style={{
-                            paddingHorizontal: SPACING.sm,
-                            paddingVertical: SPACING.xs,
-                            fontSize: 10,
-                            fontWeight: "600",
-                            letterSpacing: 0.5,
-                            color: colors.text,
-                            backgroundColor: colors.dark,
-                            borderRadius: RADIUS.sm,
-                            overflow: "hidden",
-                          }}
-                        >
-                          ADD-ON
-                        </Text>
+                        <Badge label="ADD-ON" background={colors.dark} />
                       )}
                       <IconButton
                         style={{ margin: 0 }}
@@ -251,7 +217,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
           })}
           <AddRow onPress={() => startAdd(exercises.length)} />
         </ScrollView>
-      </View>
+      </Sheet>
 
       <Modal
         visible={!!editor}
@@ -259,57 +225,30 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
         animationType="slide"
         presentationStyle="pageSheet"
       >
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: colors.dark,
-            paddingTop:
-              (Platform.OS === "android" ? insets.top : 0) + SPACING.md,
-          }}
+        <Sheet
+          title={editor?.type === "edit" ? "Edit Exercise" : "Add Exercise"}
+          actions={[
+            {
+              label: "Cancel",
+              onPress: () => setEditor(undefined),
+              disabled: saving,
+              textColor: colors.danger,
+            },
+            {
+              label: editor?.type === "edit" ? "Save" : "Add",
+              onPress: handleSave,
+              loading: saving,
+              disabled: saving || exerciseIncomplete,
+            },
+          ]}
         >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingLeft: SPACING.lg,
-              paddingRight: SPACING.sm,
-              marginBottom: SPACING.sm,
-            }}
-          >
-            <Text
-              style={{
-                color: colors.text,
-                fontSize: FONT.lg,
-                fontWeight: "600",
-              }}
-            >
-              {editor?.type === "edit" ? "Edit Exercise" : "Add Exercise"}
-            </Text>
-            <View style={{ flexDirection: "row" }}>
-              <Button
-                onPress={() => setEditor(undefined)}
-                disabled={saving}
-                textColor={colors.danger}
-              >
-                Cancel
-              </Button>
-              <Button
-                onPress={handleSave}
-                loading={saving}
-                disabled={saving || exerciseIncomplete}
-              >
-                {editor?.type === "edit" ? "Save" : "Add"}
-              </Button>
-            </View>
-          </View>
           <View style={{ padding: SPACING.lg }}>
             <EditExercise
               newExercise={newExercise}
               setNewExercise={setNewExercise}
             />
           </View>
-        </View>
+        </Sheet>
       </Modal>
     </Modal>
   );

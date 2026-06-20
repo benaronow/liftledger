@@ -15,6 +15,10 @@ export const History = () => {
 
   if (isUserLoading || isProgramLoading) return <LogoSpinner />;
 
+  // Duplicating a past program starts a fresh one, which would overwrite the
+  // active program. Block it while a program is in progress.
+  const hasActiveProgram = !!curUser?.curProgram;
+
   const completedPrograms =
     curUser?.programs.filter((program) => program._id !== curProgram?._id) ?? [];
 
@@ -29,9 +33,27 @@ export const History = () => {
         paddingHorizontal: SPACING.lg,
       }}
     >
+      {hasActiveProgram && completedPrograms.length > 0 && (
+        <Text
+          style={{
+            width: "100%",
+            marginBottom: SPACING.lg,
+            fontSize: FONT.sm,
+            color: colors.textDisabled,
+            textAlign: "center",
+          }}
+        >
+          Programs can&apos;t be duplicated while one is in progress.
+        </Text>
+      )}
       {completedPrograms.length > 0 ? (
         completedPrograms.map((program, idx) => (
-          <CompletedProgram key={program._id} program={program} idx={idx} />
+          <CompletedProgram
+            key={program._id}
+            program={program}
+            idx={idx}
+            disabled={hasActiveProgram}
+          />
         ))
       ) : (
         <View

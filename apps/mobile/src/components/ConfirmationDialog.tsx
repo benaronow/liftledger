@@ -1,10 +1,17 @@
 import { ReactNode } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
-import { Button, Dialog, Portal, useTheme } from "../paper";
-import { SPACING } from "../theme";
+import { Button, Dialog, Portal, Text, useTheme } from "../paper";
+import { FONT, SPACING } from "../theme";
 
 interface Props {
-  children: ReactNode;
+  // Custom body. Most confirmations only need `description`/`emphasis`; pass
+  // children for richer content (an input, an error line, …) — they render
+  // below the standard lines.
+  children?: ReactNode;
+  // The standard two-line confirmation body: a normal lead line and a bold
+  // line beneath it.
+  description?: string;
+  emphasis?: string;
   open: boolean;
   onClose: () => void;
   title: string;
@@ -20,6 +27,8 @@ interface Props {
 
 export const ConfirmationDialog = ({
   children,
+  description,
+  emphasis,
   open,
   onClose,
   title,
@@ -50,7 +59,25 @@ export const ConfirmationDialog = ({
           <Dialog.Icon icon="alert" color={colors.danger} size={32} />
           <Dialog.Title style={{ textAlign: "center" }}>{title}</Dialog.Title>
           <Dialog.Content>
-            <View style={{ width: "100%", marginTop: SPACING.sm }}>
+            <View
+              style={{ width: "100%", marginTop: SPACING.sm, gap: SPACING.md }}
+            >
+              {description && (
+                <Text style={{ color: colors.text, fontSize: FONT.base }}>
+                  {description}
+                </Text>
+              )}
+              {emphasis && (
+                <Text
+                  style={{
+                    color: colors.text,
+                    fontSize: FONT.base,
+                    fontWeight: "700",
+                  }}
+                >
+                  {emphasis}
+                </Text>
+              )}
               {children}
             </View>
           </Dialog.Content>

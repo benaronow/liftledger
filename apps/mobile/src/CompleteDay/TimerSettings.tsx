@@ -31,19 +31,15 @@ export const TimerSettings = ({ onTimerStarted }: Props) => {
   const { trigger: triggerSetTimerEnd } = useSetTimerEnd();
   const { trigger: triggerUpdateTimerPresets } = useUpdateTimerPresets();
 
-  const [presetsState, setPresetsState] = useState<{ [key: number]: number }>();
+  const [presetsState, setPresetsState] = useState<TimerPresets>();
   const [presetEditIdx, setPresetEditIdx] = useState<number>();
 
   useEffect(() => {
-    setPresetsState(
-      timerPresetsData?.timerPresets as unknown as
-        | { [key: number]: number }
-        | undefined,
-    );
+    setPresetsState(timerPresetsData?.timerPresets);
   }, [timerPresetsData?.timerPresets]);
 
   const updatePresetsState = (idx: number, totalSeconds: number) => {
-    setPresetsState({ ...presetsState, [idx]: totalSeconds });
+    setPresetsState((prev) => prev && { ...prev, [idx]: totalSeconds });
   };
 
   const startTimer = (totalSeconds: number) => {
@@ -56,7 +52,7 @@ export const TimerSettings = ({ onTimerStarted }: Props) => {
     if (!curUser?._id || !presetsState) return;
     triggerUpdateTimerPresets({
       userId: curUser._id,
-      timerPresets: presetsState as unknown as TimerPresets,
+      timerPresets: presetsState,
     });
   };
 

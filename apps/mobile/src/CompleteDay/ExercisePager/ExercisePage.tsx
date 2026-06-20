@@ -6,12 +6,13 @@ import type { Exercise } from "@liftledger/shared";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Badge } from "../../components/Badge";
 import { Info, InfoAction } from "../../components/Info";
 import { FAB_SIZE, FAB_TOP, titleRightInset } from "../../layout";
 import { Text, useTheme } from "../../paper";
 import { ProgressChart } from "../../Progress/ProgressChart";
 import type { RootStackParamList } from "../../RootNavigator/types";
-import { FONT, RADIUS, SPACING } from "../../theme";
+import { FONT, SPACING } from "../../theme";
 import { pagerBarClearance } from "./PagerBar";
 import { SetList } from "./SetList/SetList";
 import { SubmitSetDialog } from "./SetList/SubmitSetDialog/SubmitSetDialog";
@@ -111,23 +112,7 @@ export const ExercisePage = ({
               color={colors.success}
             />
           )}
-          {exercise.addedOn && (
-            <Text
-              style={{
-                paddingHorizontal: SPACING.sm,
-                paddingVertical: SPACING.xs,
-                fontSize: 10,
-                fontWeight: "600",
-                letterSpacing: 0.5,
-                color: colors.text,
-                backgroundColor: colors.container,
-                borderRadius: RADIUS.sm,
-                overflow: "hidden",
-              }}
-            >
-              ADD-ON
-            </Text>
-          )}
+          {exercise.addedOn && <Badge label="ADD-ON" />}
         </View>
         <Text
           style={{

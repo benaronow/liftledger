@@ -12,9 +12,10 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 interface Props {
   program: Program;
   idx: number;
+  disabled?: boolean;
 }
 
-export const CompletedProgram = ({ program, idx }: Props) => {
+export const CompletedProgram = ({ program, idx, disabled }: Props) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors } = useTheme();
@@ -39,7 +40,7 @@ export const CompletedProgram = ({ program, idx }: Props) => {
         borderRadius: RADIUS.sm,
         paddingLeft: SPACING.sm,
         overflow: "hidden",
-        backgroundColor: colors.dark,
+        backgroundColor: colors.container,
       }}
     >
       <Text
@@ -55,8 +56,13 @@ export const CompletedProgram = ({ program, idx }: Props) => {
         roundedSide="end"
         height={35}
         width={35}
+        disabled={disabled}
         icon={
-          <MaterialCommunityIcons name="content-copy" size={20} color="white" />
+          <MaterialCommunityIcons
+            name="content-copy"
+            size={20}
+            color={disabled ? colors.textDisabled : "white"}
+          />
         }
         onPress={() =>
           // `pop: true` returns to the existing Tabs screen instead of pushing
