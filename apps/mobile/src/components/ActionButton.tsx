@@ -86,6 +86,11 @@ interface Props {
 // Paper TouchableRipple gives Material press feedback; the colored rectangular
 // fill + variant table are kept so every existing call site (full-width CTAs,
 // icon-only footer buttons, grouped input adornments) renders unchanged.
+//
+// Button convention: use this for grouped/segmented controls that need a square
+// fill and `roundedSide` (timer presets, history row) — its variant table
+// mirrors web. For standalone/dialog/form actions use Paper's <Button>. The
+// dashboard "Lift!" CTA is an intentional one-off (see Dashboard.tsx).
 export const ActionButton = ({
   label,
   icon,

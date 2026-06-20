@@ -1,16 +1,14 @@
-import { useMemo, useRef, useState } from "react";
-import { FlatList, Modal } from "react-native";
+import { useMemo, useState } from "react";
+import { FlatList, Modal, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ActivityIndicator,
   List,
   Searchbar,
-  Text,
   TextInput,
   useTheme,
 } from "../paper";
 import { FONT, INPUT_HEIGHT, RADIUS, SPACING } from "../theme";
-import { TextInput as RNTextInput } from "react-native";
 import { Sheet } from "./Sheet";
 
 interface Props {
@@ -92,32 +90,30 @@ export const SearchableSelect = ({
     close();
   };
 
-  const inputRef = useRef<RNTextInput | null>(null);
-
   return (
     <>
-      <TextInput
-        ref={inputRef}
-        style={{ height: INPUT_HEIGHT }}
-        outlineStyle={{ borderRadius: RADIUS.md }}
-        label={label}
-        mode="outlined"
-        value={value}
-        editable={false}
-        disabled={disabled}
-        onFocus={() => inputRef.current?.blur()}
-        render={({ style, onLayout }) => (
-          <Text
-            style={style}
-            onLayout={onLayout}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            onPress={disabled ? undefined : () => setOpen(true)}
-          >
-            {value}
-          </Text>
-        )}
-      />
+      {/* The field is display-only — render a real (non-editable) Paper input
+          so its value sits exactly where an editable AppTextInput's does, and
+          capture taps with an overlay (a custom Text render mis-aligned the
+          value vertically). The input is pointer-transparent so the overlay
+          gets the press. */}
+      <View>
+        <View pointerEvents="none">
+          <TextInput
+            style={{ height: INPUT_HEIGHT }}
+            outlineStyle={{ borderRadius: RADIUS.md }}
+            label={label}
+            mode="outlined"
+            value={value}
+            editable={false}
+            disabled={disabled}
+          />
+        </View>
+        <Pressable
+          style={StyleSheet.absoluteFill}
+          onPress={disabled ? undefined : () => setOpen(true)}
+        />
+      </View>
       <Modal
         visible={open}
         onRequestClose={close}

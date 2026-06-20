@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { useAuth0 } from "react-native-auth0";
-import { ActivityIndicator, Text, TouchableRipple, useTheme } from "../paper";
+import { Button, Text, useTheme } from "../paper";
 import { env } from "../config/env";
 import { FONT, RADIUS, SPACING } from "../theme";
 
@@ -26,26 +26,17 @@ export const Welcome = () => {
     >
       {/* One-off brand wordmark — larger than any FONT token by design. */}
       <Text style={{ fontSize: 32, fontWeight: "700" }}>LiftLedger</Text>
-      <TouchableRipple
-        style={{
-          backgroundColor: colors.primary,
-          paddingVertical: 14,
-          paddingHorizontal: 48,
-          borderRadius: RADIUS.md,
-          minWidth: 180,
-          alignItems: "center",
-        }}
+      <Button
+        mode="contained"
         onPress={onLogin}
+        loading={isLoading}
         disabled={isLoading}
+        style={{ minWidth: 180, borderRadius: RADIUS.md }}
+        contentStyle={{ paddingVertical: SPACING.xs }}
+        labelStyle={{ fontSize: FONT.base, fontWeight: "600" }}
       >
-        {isLoading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text style={{ color: "white", fontSize: FONT.base, fontWeight: "600" }}>
-            Log in
-          </Text>
-        )}
-      </TouchableRipple>
+        Log in
+      </Button>
       {error && (
         <Text style={{ color: colors.danger, textAlign: "center" }}>
           {error.message}

@@ -196,7 +196,9 @@ export const Dashboard = () => {
               alignItems: "center",
               justifyContent: "center",
               marginTop: SPACING.md,
-              // Raised look matching web's layered "Lift!" button.
+              // Intentionally bespoke: the signature "Lift!" CTA keeps web's
+              // layered/raised look rather than using Paper's <Button> or
+              // ActionButton.
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.4,
