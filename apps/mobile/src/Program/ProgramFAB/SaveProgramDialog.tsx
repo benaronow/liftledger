@@ -37,10 +37,11 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
   const handleSave = async () => {
     if (!curUser?._id) return;
 
-    // Cover the editor before the save lands: the curUser update remounts the
-    // editor (quit FAB appears) before we navigate away. Reset on failure so we
-    // don't strand the spinner over a screen we're staying on.
+    // Show the loading spinner and close the dialog right away so only the
+    // spinner shows through the save. Reset on failure so we don't strand the
+    // spinner over a screen we're staying on.
     setTransitioning(true);
+    onClose();
     try {
       if (curProgram) {
         const res = await triggerUpdateUserProgram({
@@ -62,9 +63,6 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
         setEditingWeekIdx(0);
       }
 
-      // Close the dialog ourselves — its Modal would otherwise stay up over the
-      // Dashboard we're about to navigate to.
-      onClose();
       // Drop any lingering ?duplicateFrom so a later visit starts from curProgram.
       navigation.setParams({ duplicateFrom: undefined });
       navigation.navigate("Dashboard");

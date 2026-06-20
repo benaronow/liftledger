@@ -45,13 +45,11 @@ export const Program = () => {
 
   const editingActiveProgram = !!curUser.curProgram;
 
-  if (editingActiveProgram || curProgramLoading || !curProgram) {
+  if (editingActiveProgram && (curProgramLoading || !curProgram)) {
     return <LogoSpinner />;
   } else if (
-    duplicateFromId ||
-    !sourceProgram ||
-    completedExercisesLoading ||
-    !completedExercises
+    duplicateFromId &&
+    (!sourceProgram || completedExercisesLoading || !completedExercises)
   ) {
     return <LogoSpinner />;
   }

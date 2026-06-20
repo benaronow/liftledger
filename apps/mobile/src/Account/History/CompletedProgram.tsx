@@ -40,7 +40,7 @@ export const CompletedProgram = ({ program, idx, disabled }: Props) => {
         borderRadius: RADIUS.sm,
         paddingLeft: SPACING.sm,
         overflow: "hidden",
-        backgroundColor: colors.dark,
+        backgroundColor: colors.container,
       }}
     >
       <Text
