@@ -37,8 +37,7 @@ export const Welcome = () => {
         gap: SPACING.xl,
         padding: SPACING.xl,
       }}
-    >
-      {/* One-off brand wordmark — larger than any FONT token by design. */}
+    >=
       <Text style={{ fontSize: 32, fontWeight: "700" }}>LiftLedger</Text>
       <Button
         mode="contained"
