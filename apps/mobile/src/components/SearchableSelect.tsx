@@ -126,6 +126,7 @@ export const SearchableSelect = ({
           keyboardAvoiding
         >
           <Searchbar
+            testID="select-search"
             style={{ marginHorizontal: SPACING.md, marginBottom: SPACING.sm }}
             inputStyle={{ color: "black" }}
             placeholderTextColor={colors.textDisabled}
@@ -146,6 +147,7 @@ export const SearchableSelect = ({
             renderItem={({ item }) => (
               <List.Item
                 title={item}
+                testID={`select-option-${item}`}
                 titleStyle={{ color: colors.text }}
                 style={{
                   backgroundColor:
@@ -157,6 +159,7 @@ export const SearchableSelect = ({
             ListFooterComponent={
               showAddOrUnavailable ? (
                 <List.Item
+                  testID="select-add-custom"
                   title={
                     addingCustom ? (
                       <ActivityIndicator color={colors.primary} size="small" />

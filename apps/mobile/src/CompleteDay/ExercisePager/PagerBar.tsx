@@ -60,6 +60,7 @@ export const PagerBar = ({ pageIdx, onPageChange, onFinish }: Props) => {
         <IconButton
           style={{ margin: 0, opacity: pageIdx === 0 ? 0 : 1 }}
           icon="chevron-left"
+          accessibilityLabel="Previous exercise"
           mode="contained"
           containerColor={colors.primary}
           iconColor={colors.onPrimary}
@@ -92,6 +93,7 @@ export const PagerBar = ({ pageIdx, onPageChange, onFinish }: Props) => {
           <IconButton
             style={{ margin: 0 }}
             icon="check"
+            accessibilityLabel="Finish day"
             mode="contained"
             containerColor={
               isDayComplete ? colors.success : colors.primaryDisabled
@@ -104,6 +106,7 @@ export const PagerBar = ({ pageIdx, onPageChange, onFinish }: Props) => {
           <IconButton
             style={{ margin: 0 }}
             icon="chevron-right"
+            accessibilityLabel="Next exercise"
             mode="contained"
             containerColor={colors.primary}
             iconColor={colors.onPrimary}

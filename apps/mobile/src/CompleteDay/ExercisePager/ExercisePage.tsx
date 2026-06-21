@@ -56,6 +56,7 @@ export const ExercisePage = ({
   const setsActions: InfoAction[] = [
     {
       icon: "plus",
+      accessibilityLabel: "Add set",
       onPress: () => setEditingSetIdx(exercise.sets.length),
       // Extra sets can only follow a fully completed exercise, and skipping a
       // set forfeits the option (web parity).

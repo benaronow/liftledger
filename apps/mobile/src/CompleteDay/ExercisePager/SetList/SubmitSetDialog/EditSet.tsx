@@ -59,18 +59,21 @@ export const EditSet = ({ exerciseState, setExerciseState, setIdx }: Props) => {
       )}
       <AppTextInput
         label="Reps"
+        testID="set-input-reps"
         value={curSet?.reps ? String(curSet.reps) : ""}
         keyboardType="number-pad"
         onChangeText={(text) => handleChange(text, "reps")}
       />
       <AppTextInput
         label="Weight"
+        testID="set-input-weight"
         value={curSet?.weight ? String(curSet.weight) : ""}
         keyboardType="decimal-pad"
         onChangeText={(text) => handleChange(text, "weight")}
       />
       <AppTextInput
         label="Note"
+        testID="set-input-note"
         value={curSet?.note}
         onChangeText={(text) => handleChange(text, "note")}
       />

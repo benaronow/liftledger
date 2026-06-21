@@ -1,0 +1,19 @@
+appId: app.liftledger.mobile
+# Smallest possible end-to-end check: does the dev-build E2E login work and does
+# the app reach the authenticated home screen? No data setup, no teardown — this
+# only proves the harness (button -> password-realm login -> API-verified token
+# -> authenticated UI) is wired up before investing in real regression flows.
+---
+# clearState wipes app storage but NOT the iOS Keychain, where react-native-auth0
+# keeps its session — so without clearKeychain the app boots already logged in and
+# the Welcome screen (with the E2E button) never shows. Clear both for a true
+# logged-out start that actually exercises the login path.
+- clearKeychain
+- launchApp:
+    clearState: true
+- tapOn:
+    text: "E2E Sign In"
+- extendedWaitUntil:
+    visible:
+      text: "Home"
+    timeout: 15000

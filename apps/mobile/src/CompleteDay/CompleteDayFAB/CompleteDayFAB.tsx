@@ -98,6 +98,7 @@ export const CompleteDayFAB = ({ isFinishing }: Props) => {
       >
         <FAB
           icon={open ? "close" : "dots-vertical"}
+          accessibilityLabel={open ? "Close actions" : "More actions"}
           size="small"
           customSize={FAB_SIZE}
           color="white"

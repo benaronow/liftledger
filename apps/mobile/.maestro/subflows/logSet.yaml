@@ -1,0 +1,37 @@
+appId: app.liftledger.mobile
+# Log one set as completed at the given WEIGHT x REPS (covers both plain
+# completions and "e" edits from the doc — same action, we always type the
+# actual values). Params: SET (0-based index within the exercise), WEIGHT, REPS.
+---
+- tapOn:
+    id: "set-row-${SET}"
+# The Submit Set dialog animates in; wait for the field AND let the dialog +
+# keyboard settle, or the erase/input below race the animation and get dropped
+# (leaving the planned value submitted instead of the edited one).
+- extendedWaitUntil:
+    visible:
+      id: "set-input-reps"
+    timeout: 5000
+- waitForAnimationToEnd
+- tapOn:
+    id: "set-input-reps"
+- waitForAnimationToEnd
+- eraseText
+- inputText: "${REPS}"
+- tapOn:
+    id: "set-input-weight"
+- eraseText
+- inputText: "${WEIGHT}"
+# The number-pad has no dismiss key and covers the dialog's actions. Tapping the
+# (non-input) title dismisses the keyboard via the dialog's tap-to-dismiss,
+# revealing Confirm.
+- tapOn: "Submit Set"
+# Submitting now closes the dialog outright (no auto rest-timer), so wait for it
+# to fully close before returning — otherwise the next set's row tap races the
+# close animation.
+- tapOn: "Confirm"
+- extendedWaitUntil:
+    notVisible:
+      text: "Submit Set"
+    timeout: 5000
+- waitForAnimationToEnd

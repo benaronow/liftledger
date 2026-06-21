@@ -143,7 +143,10 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
             );
             return (
               <View key={idx} style={{ width: "100%", alignItems: "center" }}>
-                <AddRow onPress={() => startAdd(idx)} />
+                <AddRow
+                  onPress={() => startAdd(idx)}
+                  accessibilityLabel={`insert-exercise-${idx}`}
+                />
                 <Surface
                   elevation={1}
                   style={{
@@ -215,7 +218,10 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
               </View>
             );
           })}
-          <AddRow onPress={() => startAdd(exercises.length)} />
+          <AddRow
+            onPress={() => startAdd(exercises.length)}
+            accessibilityLabel={`insert-exercise-${exercises.length}`}
+          />
         </ScrollView>
       </Sheet>
 

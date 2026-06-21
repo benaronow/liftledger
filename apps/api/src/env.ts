@@ -50,6 +50,13 @@ export const env = {
   get INTERNAL_API_SECRET() {
     return optional("INTERNAL_API_SECRET");
   },
+  // Auth0 id (the JWT `sub`, e.g. "auth0|...") of the single dedicated E2E
+  // regression-test user. The /internal/e2e/reset endpoint refuses to operate
+  // on any other account, so this is the safety rail that bounds blast radius
+  // when tests run against the production database. Unset disables the route.
+  get E2E_TEST_AUTH0_ID() {
+    return optional("E2E_TEST_AUTH0_ID");
+  },
   get CORS_ORIGINS(): string[] {
     return optional(
       "CORS_ORIGINS",

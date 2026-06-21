@@ -102,6 +102,7 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
         return (
           <TouchableRipple
             key={i}
+            testID={`set-row-${i}`}
             style={{
               flexDirection: "row",
               alignItems: "center",

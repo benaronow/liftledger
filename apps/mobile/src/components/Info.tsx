@@ -11,6 +11,7 @@ export interface InfoAction {
   onPress: () => void;
   disabled?: boolean;
   variant?: InfoActionVariant;
+  accessibilityLabel?: string;
 }
 
 interface Props {
@@ -106,6 +107,7 @@ export const Info = ({
                       borderRadius: RADIUS.md,
                     }}
                     icon={action.icon}
+                    accessibilityLabel={action.accessibilityLabel}
                     mode="contained"
                     containerColor={containerColor(action)}
                     iconColor={

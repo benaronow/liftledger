@@ -9,7 +9,6 @@ import {
   useUpdateUserProgram,
 } from "@liftledger/api-client";
 import { ConfirmationDialog } from "../../../../components/ConfirmationDialog";
-import { TimerSettings } from "../../../TimerSettings";
 import { EditSet } from "./EditSet";
 import { useSnackbar } from "../../../../providers/SnackbarProvider";
 
@@ -29,7 +28,6 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
   const { exercises } = useCurrentDay();
   const [submittingSet, setSubmittingSet] = useState(false);
   const [skippingSet, setSkippingSet] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   const [exerciseState, setExerciseState] = useState<Exercise>();
   useEffect(() => {
@@ -45,11 +43,6 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
         : exercise,
     );
   }, [exercise, setIdx]);
-
-  const handleClose = () => {
-    onClose();
-    setSubmitted(false);
-  };
 
   const saveExercises = async (updatedExercises: Exercise[]) => {
     if (!curUser?._id || !curProgram) return;
@@ -155,7 +148,9 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
 
     try {
       await saveExercises(updatedExercises);
-      setSubmitted(true);
+      // Close straight away on success — the rest timer is reached from the
+      // CompleteDay FAB's "Start Timer" action, not auto-shown after each set.
+      onClose();
     } catch {
       showSnackbar("Error submitting set. Please try again.");
     } finally {
@@ -169,9 +164,9 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
   return (
     <ConfirmationDialog
       open
-      onClose={handleClose}
-      title={submitted ? "Start Timer" : "Submit Set"}
-      icon={submitted ? "timer-outline" : "check-bold"}
+      onClose={onClose}
+      title="Submit Set"
+      icon="check-bold"
       onConfirm={handleSubmitSet}
       confirming={submittingSet || skippingSet}
       secondaryAction="Skip Set"
@@ -179,17 +174,12 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       secondaryActionDisabled={
         exerciseState?.sets[setIdx]?.skipped || setIdx === exercise.sets.length
       }
-      hideActions={submitted}
     >
-      {submitted ? (
-        <TimerSettings onTimerStarted={handleClose} />
-      ) : (
-        <EditSet
-          exerciseState={exerciseState}
-          setExerciseState={setExerciseState}
-          setIdx={setIdx}
-        />
-      )}
+      <EditSet
+        exerciseState={exerciseState}
+        setExerciseState={setExerciseState}
+        setIdx={setIdx}
+      />
     </ConfirmationDialog>
   );
 };

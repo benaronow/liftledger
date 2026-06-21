@@ -4,9 +4,10 @@ import { SPACING } from "../theme";
 
 interface Props {
   onPress: () => void;
+  accessibilityLabel?: string;
 }
 
-export const AddRow = ({ onPress }: Props) => {
+export const AddRow = ({ onPress, accessibilityLabel }: Props) => {
   const { colors } = useTheme();
   const lineStyle = { flex: 1, height: 2, backgroundColor: colors.primary };
   return (
@@ -23,6 +24,7 @@ export const AddRow = ({ onPress }: Props) => {
       <IconButton
         style={{ margin: 0, marginHorizontal: SPACING.sm }}
         icon="plus"
+        accessibilityLabel={accessibilityLabel}
         mode="contained"
         size={18}
         containerColor={colors.primary}

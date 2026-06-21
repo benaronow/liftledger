@@ -1,0 +1,4 @@
+appId: app.liftledger.mobile
+---
+# Reusable teardown: clear the E2E user's data back to a clean baseline.
+- runScript: ../scripts/reset.js
