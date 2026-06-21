@@ -43,11 +43,18 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name: "LiftLedger",
     slug: "liftledger",
+    owner: "liftledger",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
     scheme: BUNDLE_ID,
     userInterfaceStyle: "automatic",
+    extra: {
+      ...config.extra,
+      eas: {
+        projectId: "07ddf7be-e66c-4aa8-b47c-32fd2c4da423",
+      },
+    },
     ios: {
       ...config.ios,
       bundleIdentifier: BUNDLE_ID,
