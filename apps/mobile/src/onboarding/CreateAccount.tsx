@@ -21,6 +21,7 @@ import { AppTextInput } from "../components/inputs";
 import { INPUT_HEIGHT, RADIUS, SPACING } from "../theme";
 import { useSnackbar } from "../providers/SnackbarProvider";
 import { useLogout } from "../RootNavigator/AuthenticatedRouter/useLogout";
+import { SectionCard } from "../components/SectionCard";
 
 const DEFAULT_TIMER_PRESETS = { 0: 120, 1: 150, 2: 180, 3: 210, 4: 240 };
 
@@ -102,7 +103,7 @@ export const CreateAccount = () => {
 
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: colors.container }}
+      style={{ flex: 1, backgroundColor: colors.background }}
       contentContainerStyle={{ flexGrow: 1 }}
       keyboardShouldPersistTaps="handled"
     >
@@ -120,72 +121,76 @@ export const CreateAccount = () => {
           >
             Finish your account
           </Text>
-          <AppTextInput
-            label="Full Name"
-            value={fullName}
-            onChangeText={setFullName}
-            autoCapitalize="none"
-          />
-          <AppTextInput
-            label="Email"
-            value={email}
-            disabled
-            theme={{
-              colors: {
-                surfaceDisabled: scheme === "dark" ? colors.dark : "white",
-              },
-            }}
-          />
-          <AppTextInput
-            label="Username"
-            value={username}
-            onChangeText={setUsername}
-            autoCapitalize="none"
-            autoCorrect={false}
-            disabled={isNonConnectionUser}
-            right={
-              !isNonConnectionUser && profileLoading ? (
-                <TextInput.Icon icon={() => <ActivityIndicator size={18} />} />
-              ) : undefined
-            }
-            theme={{
-              colors: {
-                surfaceDisabled: scheme === "dark" ? colors.dark : "white",
-              },
-            }}
-          />
-          <View>
-            <PaperProvider theme={modalTheme}>
-              <DatePickerInput
-                style={{ height: INPUT_HEIGHT }}
-                outlineStyle={{ borderRadius: RADIUS.md }}
-                mode="outlined"
-                locale="en"
-                label="Birthday"
-                value={birthday}
-                onChange={setBirthday}
-                inputMode="start"
-              />
-            </PaperProvider>
-          </View>
-          {error !== "" && (
-            <Text style={{ color: colors.danger, textAlign: "center" }}>
-              {error}
-            </Text>
-          )}
-          <View style={{ gap: SPACING.sm, marginTop: SPACING.sm }}>
-            <Button
-              mode="contained"
-              onPress={handleCreate}
-              loading={creating}
-              disabled={!canSubmit}
-            >
-              Create account
-            </Button>
-            <Button mode="text" textColor={colors.danger} onPress={logout}>
-              Log out
-            </Button>
-          </View>
+          <SectionCard>
+            <AppTextInput
+              label="Full Name"
+              value={fullName}
+              onChangeText={setFullName}
+              autoCapitalize="none"
+            />
+            <AppTextInput
+              label="Email"
+              value={email}
+              disabled
+              theme={{
+                colors: {
+                  surfaceDisabled: scheme === "dark" ? colors.dark : "white",
+                },
+              }}
+            />
+            <AppTextInput
+              label="Username"
+              value={username}
+              onChangeText={setUsername}
+              autoCapitalize="none"
+              autoCorrect={false}
+              disabled={isNonConnectionUser}
+              right={
+                !isNonConnectionUser && profileLoading ? (
+                  <TextInput.Icon
+                    icon={() => <ActivityIndicator size={18} />}
+                  />
+                ) : undefined
+              }
+              theme={{
+                colors: {
+                  surfaceDisabled: scheme === "dark" ? colors.dark : "white",
+                },
+              }}
+            />
+            <View>
+              <PaperProvider theme={modalTheme}>
+                <DatePickerInput
+                  style={{ height: INPUT_HEIGHT }}
+                  outlineStyle={{ borderRadius: RADIUS.md }}
+                  mode="outlined"
+                  locale="en"
+                  label="Birthday"
+                  value={birthday}
+                  onChange={setBirthday}
+                  inputMode="start"
+                />
+              </PaperProvider>
+            </View>
+            {error !== "" && (
+              <Text style={{ color: colors.danger, textAlign: "center" }}>
+                {error}
+              </Text>
+            )}
+            <View style={{ gap: SPACING.sm, marginTop: SPACING.sm }}>
+              <Button
+                mode="contained"
+                onPress={handleCreate}
+                loading={creating}
+                disabled={!canSubmit}
+              >
+                Create account
+              </Button>
+              <Button mode="text" textColor={colors.danger} onPress={logout}>
+                Log out
+              </Button>
+            </View>
+          </SectionCard>
         </View>
       </TouchableWithoutFeedback>
     </ScrollView>

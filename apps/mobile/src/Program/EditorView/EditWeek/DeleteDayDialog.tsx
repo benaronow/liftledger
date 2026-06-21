@@ -21,8 +21,6 @@ export const DeleteDayDialog = ({ deletingDayIdx, onClose }: Props) => {
     onClose();
   };
 
-  if (deletingDayIdx === undefined) return null;
-
   return (
     <ConfirmationDialog
       open={deletingDayIdx !== undefined}

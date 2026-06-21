@@ -36,8 +36,6 @@ export const DeleteExerciseDialog = ({
     onClose();
   };
 
-  if (deletingExerciseIdx === undefined) return null;
-
   return (
     <ConfirmationDialog
       open={deletingExerciseIdx !== undefined}

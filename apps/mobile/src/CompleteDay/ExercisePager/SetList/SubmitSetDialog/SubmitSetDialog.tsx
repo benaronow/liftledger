@@ -88,10 +88,17 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
 
     const newProgram: Program = {
       ...curProgram,
-      weeks: curProgram.weeks.toSpliced(curProgram.curWeekIdx, 1, updatedLaterDays),
+      weeks: curProgram.weeks.toSpliced(
+        curProgram.curWeekIdx,
+        1,
+        updatedLaterDays,
+      ),
     };
 
-    await triggerUpdateUserProgram({ userId: curUser._id, program: newProgram });
+    await triggerUpdateUserProgram({
+      userId: curUser._id,
+      program: newProgram,
+    });
   };
 
   const handleSubmitSet = async (options?: { skip: boolean }) => {
@@ -144,12 +151,14 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       return;
     }
 
-    const updatedExercises = exercises.toSpliced(exerciseIdx, 1, updatedExercise);
+    const updatedExercises = exercises.toSpliced(
+      exerciseIdx,
+      1,
+      updatedExercise,
+    );
 
     try {
       await saveExercises(updatedExercises);
-      // Close straight away on success — the rest timer is reached from the
-      // CompleteDay FAB's "Start Timer" action, not auto-shown after each set.
       onClose();
     } catch {
       showSnackbar("Error submitting set. Please try again.");
@@ -159,11 +168,9 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
     }
   };
 
-  if (!exercise || setIdx === undefined) return null;
-
   return (
     <ConfirmationDialog
-      open
+      open={!!exercise && setIdx !== undefined}
       onClose={onClose}
       title="Submit Set"
       icon="check-bold"
@@ -172,13 +179,13 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       secondaryAction="Skip Set"
       onSecondaryAction={() => handleSubmitSet({ skip: true })}
       secondaryActionDisabled={
-        exerciseState?.sets[setIdx]?.skipped || setIdx === exercise.sets.length
+        exerciseState?.sets[setIdx!]?.skipped || setIdx === exercise!.sets.length
       }
     >
       <EditSet
         exerciseState={exerciseState}
         setExerciseState={setExerciseState}
-        setIdx={setIdx}
+        setIdx={setIdx!}
       />
     </ConfirmationDialog>
   );

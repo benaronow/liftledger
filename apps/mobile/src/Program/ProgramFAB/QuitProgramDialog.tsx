@@ -37,8 +37,6 @@ export const QuitProgramDialog = ({ open, onClose }: Props) => {
     }
   };
 
-  if (!open) return null;
-
   return (
     <ConfirmationDialog
       open={open}

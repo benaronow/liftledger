@@ -64,11 +64,9 @@ export const FinishDayDialog = ({
     showSnackbar,
   ]);
 
-  if (!open) return null;
-
   return (
     <ConfirmationDialog
-      open
+      open={open}
       onClose={onClose}
       title="Finish Day"
       icon="flag-checkered"

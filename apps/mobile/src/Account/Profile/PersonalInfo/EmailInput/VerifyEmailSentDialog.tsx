@@ -15,8 +15,6 @@ export const VerifyEmailSentDialog = ({ open, email }: Props) => {
   const { clearSession } = useAuth0();
   const [isClearing, setIsClearing] = useState(false);
 
-  if (!open) return null;
-
   return (
     <ConfirmationDialog
       open={open}

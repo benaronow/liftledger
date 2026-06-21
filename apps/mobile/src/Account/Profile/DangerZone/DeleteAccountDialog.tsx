@@ -32,8 +32,6 @@ export const DeleteAccountDialog = ({ open, onClose }: Props) => {
     }
   };
 
-  if (!open) return null;
-
   return (
     <ConfirmationDialog
       open={open}

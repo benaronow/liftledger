@@ -59,17 +59,13 @@ export const ConfirmationDialog = ({
           onDismiss={onClose}
           dismissable={!confirming}
           dismissableBackButton={!confirming}
+          style={{ backgroundColor: colors.dark}}
         >
-          {/* Tapping any non-input area dismisses the keyboard (same idiom as
-              Profile/CreateAccount), so dialogs with inputs — e.g. Submit Set —
-              can reveal their actions from behind the keyboard. */}
           <TouchableWithoutFeedback
             onPress={Keyboard.dismiss}
             accessible={false}
           >
             <View>
-              {/* Title with its icon inline to the right (rather than Paper's
-                  default centered icon-above-title "alert" layout). */}
               <View
                 style={{
                   flexDirection: "row",

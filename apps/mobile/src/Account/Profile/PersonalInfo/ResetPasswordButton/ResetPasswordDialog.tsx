@@ -30,8 +30,6 @@ export const ResetPasswordDialog = ({ open, onClose }: Props) => {
     }
   };
 
-  if (!open) return null;
-
   return (
     <ConfirmationDialog
       open={open}
