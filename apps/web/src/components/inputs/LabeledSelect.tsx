@@ -1,7 +1,7 @@
-import { COLORS } from "@liftledger/shared";
 import { ChangeEvent, JSX } from "react";
 import { FormSelect } from "react-bootstrap";
 import { LabeledInputContainer } from "./LabeledInputContainer";
+import { useTheme } from "@/providers/ThemeProvider";
 
 type Props = {
   className?: string;
@@ -32,6 +32,7 @@ export const LabeledSelect = ({
   renderEnd,
   onBlur,
 }: Props) => {
+  const { colors } = useTheme();
   return (
     <LabeledInputContainer
       className={className}
@@ -47,7 +48,7 @@ export const LabeledSelect = ({
         style={{
           height: height ?? 35,
           width: width ?? "100%",
-          background: disabled ? COLORS.textDisabled : "",
+          background: disabled ? colors.textDisabled : "",
         }}
         disabled={disabled}
       >

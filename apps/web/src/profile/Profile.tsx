@@ -9,11 +9,18 @@ import { DangerZone } from "./DangerZone";
 import { ActionButton } from "../components/ActionButton";
 import { TbLogout2 } from "react-icons/tb";
 import { ResetPasswordButton } from "./ResetPasswordButton";
-import { COLORS } from "@liftledger/shared";
+import { ThemePreference, useTheme } from "../providers/ThemeProvider";
+
+const THEME_OPTIONS: { label: string; value: ThemePreference }[] = [
+  { label: "System", value: "system" },
+  { label: "Light", value: "light" },
+  { label: "Dark", value: "dark" },
+];
 
 export const Profile = () => {
   const { user: auth0User, logout } = useAuth0();
   const { data: curUser } = useMe();
+  const { colors, preference, setPreference } = useTheme();
 
   const isConnectionUser = useMemo(
     () => auth0User?.sub?.startsWith("auth0|") ?? false,
@@ -34,7 +41,7 @@ export const Profile = () => {
       <div
         className="d-flex flex-column align-items-center w-100 gap-3 p-3"
         style={{
-          background: `linear-gradient(90deg, transparent 0%, ${COLORS.container} 30%, ${COLORS.container} 70%, transparent 100%)`,
+          background: `linear-gradient(90deg, transparent 0%, ${colors.container} 30%, ${colors.container} 70%, transparent 100%)`,
         }}
       >
         {auth0User?.picture && (
@@ -53,7 +60,7 @@ export const Profile = () => {
       </div>
       <div
         className="d-flex flex-column align-items-center w-100 rounded gap-3 p-3"
-        style={{ background: COLORS.dark }}
+        style={{ background: colors.dark }}
       >
         <FirstNameInput />
         <LastNameInput />
@@ -68,6 +75,25 @@ export const Profile = () => {
         />
       </div>
       <DangerZone />
+      <div
+        className="d-flex flex-column w-100 rounded gap-2 p-3"
+        style={{ background: colors.dark }}
+      >
+        <span className="text-white fw-semibold mb-1">Appearance</span>
+        {THEME_OPTIONS.map(({ label, value }) => (
+          <button
+            key={value}
+            className="d-flex align-items-center justify-content-between w-100 border-0 rounded px-3 py-2 text-white"
+            style={{ background: colors.container }}
+            onClick={() => setPreference(value)}
+          >
+            <span>{label}</span>
+            {preference === value && (
+              <span style={{ color: colors.primary }}>✓</span>
+            )}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

@@ -10,9 +10,6 @@ interface Props {
   label?: string;
 }
 
-// Apparatus picker: same shape as ExerciseNameSelect but keyed off the
-// (name, apparatus) pair so apparatuses already used for this name are flagged
-// unavailable. Mirrors web's ExerciseApparatusSelect.
 export const ExerciseApparatusSelect = ({
   curExercise,
   reservedExercises,

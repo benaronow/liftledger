@@ -300,7 +300,7 @@ describe("getProgressSign — W3-A (gym switch to Gym 2 for days 1 & 2)", () => 
   });
 });
 
-describe("getProgressSign — W4-A (extra addon sets added mid-block)", () => {
+describe("getProgressSign — W4-A (extra addon sets added mid-program)", () => {
   // Day 1: BB Bench now has 4 sets. Sets[0] and [1] existed before; [2] and [3] are new.
   // Last Gym 1 BB Bench completion was W2-A (W3-A day 1 was Gym 2).
 

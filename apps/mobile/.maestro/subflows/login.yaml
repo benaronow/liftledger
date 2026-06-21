@@ -1,0 +1,13 @@
+appId: app.liftledger.mobile
+---
+# Authenticate as the dedicated E2E user via the dev-build "E2E Sign In" button,
+# which calls Auth0 password-realm login under the hood (no browser sheet).
+# Requires the app built with EXPO_PUBLIC_E2E_EMAIL / EXPO_PUBLIC_E2E_PASSWORD.
+- tapOn:
+    text: "E2E Sign In"
+# Land on the authenticated home tab. Generous timeout: the password-realm
+# round-trip to prod Auth0 plus the /users/me fetch can take a few seconds.
+- extendedWaitUntil:
+    visible:
+      text: "Home"
+    timeout: 15000

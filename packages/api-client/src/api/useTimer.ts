@@ -28,7 +28,7 @@ export const useTimerPresets = (
   config?: SWRConfiguration<TimerPresetsResponse>,
 ) => useSWR<TimerPresetsResponse>(timerPresetsKey(userId), fetcher, config);
 
-// Same explicit-userId pattern as block.ts — no implicit useMe() subscription.
+// Same explicit-userId pattern as program.ts — no implicit useMe() subscription.
 
 export const useSetTimerEnd = () =>
   useSWRMutation(

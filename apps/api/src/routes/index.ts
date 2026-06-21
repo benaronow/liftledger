@@ -2,11 +2,13 @@ import type { FastifyInstance } from "fastify";
 import usersRoutes from "./users";
 import meRoutes from "./me";
 import userByIdRoutes from "./userById";
-import blockByIdRoutes from "./blockById";
+import programByIdRoutes from "./programById";
+import internalRoutes from "./internal";
 
 export const registerRoutes = async (app: FastifyInstance) => {
   await app.register(usersRoutes);
   await app.register(meRoutes);
   await app.register(userByIdRoutes);
-  await app.register(blockByIdRoutes);
+  await app.register(programByIdRoutes);
+  await app.register(internalRoutes);
 };

@@ -1,0 +1,67 @@
+appId: app.liftledger.mobile
+# Add an add-on exercise via FAB -> Edit Exercises -> insert row. The exercise
+# is inserted at position POS (the add-row above the exercise currently at that
+# 0-based index; use the day's exercise count to append at the end).
+#
+# NAME is added as a custom name (not pre-seeded); APPARATUS and WEIGHT_TYPE are
+# selected from existing options (seeded). Params: POS, NAME, APPARATUS,
+# WEIGHT_TYPE.
+---
+- tapOn: "More actions"
+- tapOn: "Edit Exercises"
+- extendedWaitUntil:
+    visible:
+      text: "insert-exercise-${POS}"
+    timeout: 5000
+- tapOn: "insert-exercise-${POS}"
+- extendedWaitUntil:
+    visible:
+      text: "Add Exercise"
+    timeout: 5000
+- waitForAnimationToEnd
+
+# --- Name: typed + added as a custom option ---
+- tapOn: "Exercise"
+- extendedWaitUntil:
+    visible:
+      id: "select-search"
+    timeout: 5000
+- tapOn:
+    id: "select-search"
+- inputText: "${NAME}"
+- tapOn:
+    id: "select-add-custom"
+
+# --- Apparatus: typed to filter, then the existing option is picked ---
+- tapOn: "Apparatus"
+- extendedWaitUntil:
+    visible:
+      id: "select-search"
+    timeout: 5000
+- tapOn:
+    id: "select-search"
+- inputText: "${APPARATUS}"
+- tapOn:
+    id: "select-option-${APPARATUS}"
+
+# --- Weight type: fixed options (lbs/kgs), pick directly ---
+- tapOn: "Weight Type"
+- extendedWaitUntil:
+    visible:
+      id: "select-option-${WEIGHT_TYPE}"
+    timeout: 5000
+- tapOn:
+    id: "select-option-${WEIGHT_TYPE}"
+
+# Save the new exercise, then close the Edit Exercises sheet.
+- tapOn: "Add"
+- extendedWaitUntil:
+    notVisible:
+      text: "Add Exercise"
+    timeout: 5000
+- tapOn: "Done"
+- extendedWaitUntil:
+    notVisible:
+      text: "Edit Exercises"
+    timeout: 5000
+- waitForAnimationToEnd

@@ -1,0 +1,260 @@
+appId: app.liftledger.mobile
+# Test 1 from LiftLedger Test.pdf, built up week by week. Logs each week's
+# "Actual" against the seeded W1 program and asserts the app's carried-forward
+# "Initial" values at the start of each later week (progression check).
+#   W1: edited completes + skips.
+#   W2: + add-on set (DB Bicep Curl) and add-on exercise (Adductors).
+# Gym switches (W3+) are not reached yet.
+#
+# Seed the program before the run and wipe it after. INTERNAL_SECRET must be
+# passed on the CLI (kept out of git); API_URL defaults to local below but a
+# CLI `-e API_URL=...` still overrides it:
+#   maestro test ... -e INTERNAL_SECRET=...
+env:
+  API_URL: https://localhost:4000
+onFlowStart:
+  - runScript: ../scripts/seed.js
+onFlowComplete:
+  - runScript: ../scripts/reset.js
+---
+# NOTE on set-value assertions below: iOS/XCUITest coalesces each pressable set
+# row into ONE accessibility label, e.g. "10 reps, ✕, 50lbs, ⋯" — there is no
+# standalone "50lbs" element. Maestro matches the label by FULL regex, so a bare
+# "50lbs" fails. We wrap set reps/weight checks as ".*<value>.*" to match within
+# the coalesced row label. (Exercise names, "Lift!", buttons, etc. are real
+# standalone elements and stay bare.)
+- clearKeychain
+- launchApp:
+    clearState: true
+- runFlow: ../subflows/login.yaml
+# Seeded program loaded -> dashboard shows the "Lift!" CTA.
+- assertVisible: "Lift!"
+
+# ============================ Day 1 (Gym 1) ============================
+- tapOn: "Lift!"
+# BB Bench: 100x10 e, 100x10 e
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "100", REPS: "10" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "100", REPS: "10" }
+- tapOn: "Next exercise"
+# DB OHP: 50x10 e, 50x10 e
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "50", REPS: "10" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "50", REPS: "10" }
+- tapOn: "Next exercise"
+# Tricep Pushdown: Skip, Skip
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "0" }
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "1" }
+- tapOn: "Finish day"
+- tapOn: "Confirm"
+- assertVisible: "Lift!"
+
+# ============================ Day 2 (Gym 1) ============================
+- tapOn: "Lift!"
+# BB Row: 200x8 e, 200x8 e
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "200", REPS: "8" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "200", REPS: "8" }
+- tapOn: "Next exercise"
+# Lat Pulldown: Skip, Skip
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "0" }
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "1" }
+- tapOn: "Next exercise"
+# DB Bicep Curl: 25x12 e, 25x12 e
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "25", REPS: "12" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "25", REPS: "12" }
+- tapOn: "Finish day"
+- tapOn: "Confirm"
+- assertVisible: "Lift!"
+
+# ============================ Day 3 (Gym 1) ============================
+- tapOn: "Lift!"
+# BB Squat: Skip, Skip
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "0" }
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "1" }
+- tapOn: "Next exercise"
+# Hamstring Curl: 200x12 e, 200x12 e
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "200", REPS: "12" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "200", REPS: "12" }
+- tapOn: "Next exercise"
+# Calf Raise: 350x14 e, 350x14 e
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "350", REPS: "14" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "350", REPS: "14" }
+- tapOn: "Finish day"
+- tapOn: "Confirm"
+- assertVisible: "Lift!"
+
+# ############################## WEEK 2 ##############################
+# The app generated W2-I by carrying W1-A forward. Each day below first asserts
+# those carried "Initial" values, then logs the "W2-A" Actuals.
+
+# ============================ Day 1 (Gym 1) ============================
+- tapOn: "Lift!"
+# W2-I BB Bench carried from W1-A 100x10 (reps 8 -> 10).
+- assertVisible: ".*10 reps.*"
+- assertVisible: ".*100lbs.*"
+# BB Bench: 100x11, 100x11
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "100", REPS: "11" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "100", REPS: "11" }
+- tapOn: "Next exercise"
+# W2-I DB OHP carried from W1-A 50x10 (weight 45 -> 50).
+- assertVisible: ".*10 reps.*"
+- assertVisible: ".*50lbs.*"
+# DB OHP: 55x10, 55x10
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "55", REPS: "10" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "55", REPS: "10" }
+- tapOn: "Next exercise"
+# W2-I Tricep Pushdown carried 30x12 (W1-A skipped -> kept planned).
+- assertVisible: ".*12 reps.*"
+- assertVisible: ".*30lbs.*"
+# Tricep Pushdown: 35x10, 35x10
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "35", REPS: "10" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "35", REPS: "10" }
+- tapOn: "Finish day"
+- tapOn: "Confirm"
+- assertVisible: "Lift!"
+
+# ============================ Day 2 (Gym 1) ============================
+- tapOn: "Lift!"
+# W2-I BB Row carried from W1-A 200x8 (reps 10 -> 8).
+- assertVisible: ".*8 reps.*"
+- assertVisible: ".*200lbs.*"
+# BB Row: 200x7, 200x7
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "200", REPS: "7" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "200", REPS: "7" }
+- tapOn: "Next exercise"
+# W2-I Lat Pulldown carried 150x10 (W1-A skipped -> kept planned).
+- assertVisible: ".*150lbs.*"
+# Lat Pulldown: 145x10, 145x10
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "145", REPS: "10" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "145", REPS: "10" }
+- tapOn: "Next exercise"
+# W2-I DB Bicep Curl carried from W1-A 25x12 (weight 30 -> 25).
+- assertVisible: ".*12 reps.*"
+- assertVisible: ".*25lbs.*"
+# DB Bicep Curl: 30x11, 25x12, + add-on set 30x12
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "30", REPS: "11" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "25", REPS: "12" }
+- runFlow:
+    file: ../subflows/addSet.yaml
+    env: { WEIGHT: "30", REPS: "12" }
+- tapOn: "Finish day"
+- tapOn: "Confirm"
+- assertVisible: "Lift!"
+
+# ============================ Day 3 (Gym 1) ============================
+- tapOn: "Lift!"
+# Add the Adductors add-on exercise before Calf Raise (insert position 2 of the
+# 3-exercise day), then log everything in order.
+- runFlow:
+    file: ../subflows/addExercise.yaml
+    env:
+      POS: "2"
+      NAME: "Adductors"
+      APPARATUS: "Machine"
+      WEIGHT_TYPE: "lbs"
+# Adductors is now exercise 3 of 4, but the pager sits on the first page (BB
+# Squat) after the edit sheet closes — its name only renders on its own page,
+# so we assert it once we page over to it below, not here.
+# W2-I BB Squat carried 300x6 (W1-A skipped -> kept planned).
+- assertVisible: ".*6 reps.*"
+- assertVisible: ".*300lbs.*"
+# BB Squat: 290x7, 290x7
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "290", REPS: "7" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "290", REPS: "7" }
+- tapOn: "Next exercise"
+# W2-I Hamstring Curl carried 200x12.
+- assertVisible: ".*12 reps.*"
+- assertVisible: ".*200lbs.*"
+# Hamstring Curl: 190x12, Skip
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "190", REPS: "12" }
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "1" }
+- tapOn: "Next exercise"
+# Now on the Adductors page — confirm the add-on landed where we expect.
+- assertVisible: "Adductors"
+# Adductors (new, starts as one 0x0 set): 100x10, + add-on set 110x11
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "100", REPS: "10" }
+- runFlow:
+    file: ../subflows/addSet.yaml
+    env: { WEIGHT: "110", REPS: "11" }
+- tapOn: "Next exercise"
+# W2-I Calf Raise carried 350x14.
+- assertVisible: ".*14 reps.*"
+- assertVisible: ".*350lbs.*"
+# Calf Raise: 350x12, Skip
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "350", REPS: "12" }
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "1" }
+- tapOn: "Finish day"
+- tapOn: "Confirm"
+- assertVisible: "Lift!"

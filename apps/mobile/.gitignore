@@ -39,3 +39,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Maestro: machine-local Java trust store (mkcert CA for host-side scripts)
+.maestro/truststore.jks

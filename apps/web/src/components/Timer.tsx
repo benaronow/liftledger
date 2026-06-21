@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useClearTimerEnd, useMe, useTimerEnd } from "@liftledger/api-client";
-import { COLORS } from "@liftledger/shared";
+import { DARK_COLORS } from "@liftledger/shared";
+import { useTheme } from "@/providers/ThemeProvider";
 import { IoIosArrowForward, IoMdClose } from "react-icons/io";
 import { RiTimerLine } from "react-icons/ri";
 
@@ -19,6 +20,7 @@ export const Timer = () => {
     return raw instanceof Date ? raw : new Date(raw);
   }, [timerEndData?.timerEnd]);
 
+  const { colors } = useTheme();
   const [open, setOpen] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -49,8 +51,8 @@ export const Timer = () => {
     <div
       className="position-absolute d-flex align-items-center justify-content-center rounded end-0 me-3 gap-2"
       style={{
-        background: COLORS.container,
-        boxShadow: "0px 0px 15px #131314",
+        background: colors.container,
+        boxShadow: `0px 0px 15px ${colors.dark}`,
         top: "60px",
         height: "50px",
         zIndex: 100,
@@ -63,7 +65,7 @@ export const Timer = () => {
             style={{
               width: "50px",
               height: "50px",
-              background: COLORS.primary,
+              background: DARK_COLORS.primary,
             }}
             onClick={() => setOpen(false)}
           >
@@ -75,7 +77,7 @@ export const Timer = () => {
             style={{
               width: "50px",
               height: "50px",
-              background: COLORS.danger,
+              background: DARK_COLORS.danger,
             }}
             onClick={() => curUser?._id && triggerClearTimerEnd(curUser._id)}
           >
@@ -89,7 +91,9 @@ export const Timer = () => {
             width: "50px",
             height: "50px",
             background:
-              timeString === "00 : 00" ? COLORS.success : COLORS.primary,
+              timeString === "00 : 00"
+                ? DARK_COLORS.success
+                : DARK_COLORS.primary,
           }}
           onClick={() => setOpen(true)}
         >

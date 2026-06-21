@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Modal } from "react-bootstrap";
-import { COLORS } from "@liftledger/shared";
 import { ActionButton, Variant } from "./ActionButton";
+import { useTheme } from "@/providers/ThemeProvider";
 
 export interface DialogAction {
   icon: ReactNode;
@@ -26,49 +26,52 @@ export const ActionDialog = ({
   title,
   actions,
   saving,
-}: Props) => (
-  <Modal
-    show={open}
-    onHide={saving ? undefined : onClose}
-    backdrop={saving ? "static" : true}
-    centered
-    style={{
-      marginLeft: "15%",
-      maxWidth: "70%",
-    }}
-  >
-    <Modal.Header
-      className="d-flex justify-content-center align-items-center p-2 border-0"
+}: Props) => {
+  const { colors } = useTheme();
+  return (
+    <Modal
+      show={open}
+      onHide={saving ? undefined : onClose}
+      backdrop={saving ? "static" : true}
+      centered
       style={{
-        background: COLORS.dark,
+        marginLeft: "15%",
+        maxWidth: "70%",
       }}
     >
-      <Modal.Title className="text-white">{title}</Modal.Title>
-    </Modal.Header>
-    <Modal.Body
-      className={`d-flex flex-column align-items-center p-2 border-0 ${
-        actions.length === 0 ? "rounded-bottom" : ""
-      }`}
-      style={{ background: COLORS.container }}
-    >
-      {children}
-    </Modal.Body>
-    {actions.length !== 0 && (
-      <Modal.Footer
-        className="d-flex justify-content-between align-items-center border-0 flex-nowrap p-2 gap-2"
-        style={{ background: COLORS.dark }}
+      <Modal.Header
+        className="d-flex justify-content-center align-items-center p-2 border-0"
+        style={{
+          background: colors.dark,
+        }}
       >
-        {actions.map((action, idx) => (
-          <ActionButton
-            key={idx}
-            icon={action.icon}
-            onClick={action.onClick}
-            disabled={action.disabled}
-            variant={action.variant}
-            height={55}
-          />
-        ))}
-      </Modal.Footer>
-    )}
-  </Modal>
-);
+        <Modal.Title className="text-white">{title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body
+        className={`d-flex flex-column align-items-center p-2 border-0 ${
+          actions.length === 0 ? "rounded-bottom" : ""
+        }`}
+        style={{ background: colors.container }}
+      >
+        {children}
+      </Modal.Body>
+      {actions.length !== 0 && (
+        <Modal.Footer
+          className="d-flex justify-content-between align-items-center border-0 flex-nowrap p-2 gap-2"
+          style={{ background: colors.dark }}
+        >
+          {actions.map((action, idx) => (
+            <ActionButton
+              key={idx}
+              icon={action.icon}
+              onClick={action.onClick}
+              disabled={action.disabled}
+              variant={action.variant}
+              height={55}
+            />
+          ))}
+        </Modal.Footer>
+      )}
+    </Modal>
+  );
+};

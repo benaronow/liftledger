@@ -1,4 +1,4 @@
-import { COLORS } from "@liftledger/shared";
+import { DARK_COLORS } from "@liftledger/shared";
 import { GrFormAdd } from "react-icons/gr";
 
 interface Props {
@@ -13,12 +13,12 @@ export const AddButton = ({ onClick }: Props) => {
     >
       <div
         className="w-100"
-        style={{ height: "2px", background: COLORS.primary }}
+        style={{ height: "2px", background: DARK_COLORS.primary }}
       />
       <button
         className="d-flex justify-content-center align-items-center border-0 text-white p-0 mx-2"
         style={{
-          background: COLORS.primary,
+          background: DARK_COLORS.primary,
           fontSize: "20px",
           height: "20px",
           minWidth: "20px",
@@ -30,7 +30,7 @@ export const AddButton = ({ onClick }: Props) => {
       </button>
       <div
         className="w-100"
-        style={{ height: "2px", background: COLORS.primary }}
+        style={{ height: "2px", background: DARK_COLORS.primary }}
       />
     </div>
   );

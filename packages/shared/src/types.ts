@@ -34,7 +34,7 @@ export interface Day {
   completedDate: Date | undefined;
 }
 
-export interface Block {
+export interface Program {
   _id?: string;
   name: string;
   startDate: Date;
@@ -58,10 +58,11 @@ export interface User {
   _id?: string;
   email: string;
   auth0Id: string;
-  firstName?: string;
-  lastName?: string;
-  blocks: Block[];
-  curBlock?: string;
+  username: string;
+  fullName: string;
+  birthday: string;
+  programs: Program[];
+  curProgram?: string;
   timerEnd?: Date;
   timerPresets: TimerPresets;
   gyms: string[];

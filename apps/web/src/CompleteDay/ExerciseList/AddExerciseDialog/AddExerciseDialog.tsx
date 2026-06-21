@@ -1,12 +1,12 @@
 import { DialogAction, ActionDialog } from "@/components/ActionDialog";
 import { EditExercise } from "./EditExercise";
 import { useEffect, useMemo, useState } from "react";
-import { Block, Day, Exercise } from "@liftledger/shared";
+import { Program, Day, Exercise } from "@liftledger/shared";
 import {
   useCurrentDay,
   useMe,
-  useUpdateUserBlock,
-  useBlock,
+  useUpdateUserProgram,
+  useProgram,
 } from "@liftledger/api-client";
 import { FaSave } from "react-icons/fa";
 import { IoArrowBack } from "react-icons/io5";
@@ -19,14 +19,14 @@ interface Props {
 
 export const AddExerciseDialog = ({ addExerciseIdx, onClose }: Props) => {
   const { data: curUser } = useMe();
-  const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
-  const { trigger: triggerUpdateUserBlock, isMutating: addingExercise } =
-    useUpdateUserBlock();
+  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
+  const { trigger: triggerUpdateUserProgram, isMutating: addingExercise } =
+    useUpdateUserProgram();
   const { exercises } = useCurrentDay();
 
   const curGym = useMemo(
-    () => curBlock?.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].gym || "",
-    [curBlock],
+    () => curProgram?.weeks[curProgram.curWeekIdx][curProgram.curDayIdx].gym || "",
+    [curProgram],
   );
   const defaultNewExercise: Exercise = useMemo(
     () => ({
@@ -46,22 +46,22 @@ export const AddExerciseDialog = ({ addExerciseIdx, onClose }: Props) => {
   );
 
   const saveExercises = async (exercises: Exercise[]) => {
-    if (!curUser?._id || !curBlock) return;
-    const newDays: Day[] = curBlock.weeks[curBlock.curWeekIdx].toSpliced(
-      curBlock.curDayIdx,
+    if (!curUser?._id || !curProgram) return;
+    const newDays: Day[] = curProgram.weeks[curProgram.curWeekIdx].toSpliced(
+      curProgram.curDayIdx,
       1,
       {
-        ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
+        ...curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx],
         exercises,
       },
     );
 
-    const newBlock: Block = {
-      ...curBlock,
-      weeks: curBlock?.weeks.toSpliced(curBlock.curWeekIdx, 1, newDays),
+    const newProgram: Program = {
+      ...curProgram,
+      weeks: curProgram?.weeks.toSpliced(curProgram.curWeekIdx, 1, newDays),
     };
 
-    await triggerUpdateUserBlock({ userId: curUser._id, block: newBlock });
+    await triggerUpdateUserProgram({ userId: curUser._id, program: newProgram });
   };
 
   const handleAddExercise = async () => {

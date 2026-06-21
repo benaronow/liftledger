@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import type { Exercise, Set } from "@liftledger/shared";
 import { useMe } from "../api/useMe";
-import { useBlock } from "../api/useBlock";
+import { useProgram } from "../api/useProgram";
 
 export const isExerciseComplete = (exercise: Exercise) =>
   exercise.sets.length !== 0 &&
@@ -9,14 +9,14 @@ export const isExerciseComplete = (exercise: Exercise) =>
 
 export const useCurrentDay = () => {
   const { data: curUser } = useMe();
-  const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
+  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
 
   const exercises = useMemo<Exercise[]>(
     () =>
-      curBlock
-        ? curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx].exercises
+      curProgram
+        ? curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx].exercises
         : [],
-    [curBlock],
+    [curProgram],
   );
 
   const currentExIdx = useMemo(

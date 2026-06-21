@@ -1,3 +1,19 @@
+:root {
+  --color-background: #3c3c3e;
+  --color-dark: #131314;
+  --color-container: #58585b;
+  --color-text: #ffffff;
+  --color-text-disabled: #a7a7a7;
+}
+
+[data-theme="light"] {
+  --color-background: #f2f2f7;
+  --color-dark: #FF26EB;
+  --color-container: #e5e5ea;
+  --color-text: #1c1c1e;
+  --color-text-disabled: #8e8e93;
+}
+
 html,
 body {
   min-height: 100dvh;

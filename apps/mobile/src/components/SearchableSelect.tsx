@@ -1,28 +1,20 @@
-import { Ionicons } from "@expo/vector-icons";
-import { COLORS } from "@liftledger/shared";
 import { useMemo, useState } from "react";
+import { FlatList, Modal, Pressable, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ActivityIndicator,
-  FlatList,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
+  List,
+  Searchbar,
   TextInput,
-  View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { FONT, RADIUS, SPACING } from "../theme";
-import { LabeledInputContainer } from "./inputs/LabeledInputContainer";
+  useTheme,
+} from "../paper";
+import { FONT, INPUT_HEIGHT, RADIUS, SPACING } from "../theme";
+import { Sheet } from "./Sheet";
 
 interface Props {
   label?: string;
   value: string;
   options: string[];
-  // Options that exist but can't be picked here (shown as a disabled "… is
-  // unavailable" row when typed) — used by EditBlock's exercise pickers.
   unavailableOptions?: string[];
   onSelect: (value: string) => void;
   onAddCustom?: (value: string) => Promise<void>;
@@ -31,8 +23,6 @@ interface Props {
   placeholder?: string;
 }
 
-// Native replacement for web's SearchableSelect: a tappable field that opens a
-// modal with a search box + filtered list, optionally allowing a custom entry.
 export const SearchableSelect = ({
   label,
   value,
@@ -48,6 +38,7 @@ export const SearchableSelect = ({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [addingCustom, setAddingCustom] = useState(false);
+  const { colors } = useTheme();
 
   const filteredOptions = useMemo(
     () => options.filter((o) => o.toLowerCase().includes(query.toLowerCase())),
@@ -59,7 +50,9 @@ export const SearchableSelect = ({
   const isUnavailable = useMemo(
     () =>
       trimmed !== "" &&
-      (unavailableOptions?.some((o) => o.toLowerCase() === trimmed.toLowerCase()) ??
+      (unavailableOptions?.some(
+        (o) => o.toLowerCase() === trimmed.toLowerCase(),
+      ) ??
         false),
     [trimmed, unavailableOptions],
   );
@@ -72,7 +65,8 @@ export const SearchableSelect = ({
     [trimmed, options, isUnavailable],
   );
 
-  const showAddOrUnavailable = (canAddCustom ?? false) && (isCustom || isUnavailable);
+  const showAddOrUnavailable =
+    (canAddCustom ?? false) && (isCustom || isUnavailable);
 
   const close = () => {
     setOpen(false);
@@ -97,130 +91,93 @@ export const SearchableSelect = ({
   };
 
   return (
-    <LabeledInputContainer label={label}>
-      <Pressable
-        style={[
-          styles.field,
-          { backgroundColor: disabled ? COLORS.textDisabled : "white" },
-        ]}
-        onPress={disabled ? undefined : () => setOpen(true)}
-        disabled={disabled}
-      >
-        <Text style={styles.value} numberOfLines={1}>
-          {value || placeholder || ""}
-        </Text>
-        <Ionicons name="chevron-down" size={16} color={COLORS.container} />
-      </Pressable>
-
+    <>
+      {/* The field is display-only — render a real (non-editable) Paper input
+          so its value sits exactly where an editable AppTextInput's does, and
+          capture taps with an overlay (a custom Text render mis-aligned the
+          value vertically). The input is pointer-transparent so the overlay
+          gets the press. */}
+      <View>
+        <View pointerEvents="none">
+          <TextInput
+            style={{ height: INPUT_HEIGHT }}
+            outlineStyle={{ borderRadius: RADIUS.md }}
+            label={label}
+            mode="outlined"
+            value={value}
+            editable={false}
+            disabled={disabled}
+          />
+        </View>
+        <Pressable
+          style={StyleSheet.absoluteFill}
+          onPress={disabled ? undefined : () => setOpen(true)}
+        />
+      </View>
       <Modal
         visible={open}
-        transparent
-        animationType="fade"
         onRequestClose={close}
+        animationType="slide"
+        presentationStyle="pageSheet"
       >
-        {/* The sheet is bottom-anchored, so the keyboard would otherwise cover
-            it (and its search box) entirely — lift it above the keyboard. */}
-        <KeyboardAvoidingView
-          style={styles.fill}
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        <Sheet
+          title={label ?? "Select"}
+          actions={[{ label: "Done", onPress: close }]}
+          keyboardAvoiding
         >
-          <Pressable style={styles.backdrop} onPress={close}>
-            <Pressable style={styles.sheet} onPress={() => {}}>
-            <TextInput
-              style={styles.search}
-              value={query}
-              onChangeText={setQuery}
-              placeholder={placeholder ?? "Search..."}
-              placeholderTextColor={COLORS.textDisabled}
-              autoFocus
-              autoCapitalize="none"
-            />
-            <FlatList
-              data={filteredOptions}
-              keyboardShouldPersistTaps="handled"
-              keyExtractor={(item) => item}
-              // Trailing space so the last option clears the home indicator /
-              // screen curve, as part of the scroll content.
-              contentContainerStyle={{ paddingBottom: insets.bottom + SPACING.md }}
-              renderItem={({ item }) => (
-                <Pressable
-                  style={[
-                    styles.option,
-                    { backgroundColor: item === value ? COLORS.primary : COLORS.dark },
-                  ]}
-                  onPress={() => handleSelect(item)}
-                >
-                  <Text style={styles.optionText}>{item}</Text>
-                </Pressable>
-              )}
-              ListFooterComponent={
-                showAddOrUnavailable ? (
-                  <Pressable
-                    style={styles.addRow}
-                    onPress={isUnavailable ? undefined : handleAddCustom}
-                    disabled={isUnavailable}
-                  >
-                    {addingCustom ? (
-                      <ActivityIndicator color={COLORS.primary} size="small" />
+          <Searchbar
+            testID="select-search"
+            style={{ marginHorizontal: SPACING.md, marginBottom: SPACING.sm }}
+            inputStyle={{ color: "black" }}
+            placeholderTextColor={colors.textDisabled}
+            value={query}
+            onChangeText={setQuery}
+            placeholder={placeholder ?? "Search..."}
+            autoFocus
+            autoCapitalize="none"
+          />
+          <FlatList
+            style={{ flex: 1 }}
+            data={filteredOptions}
+            keyboardShouldPersistTaps="handled"
+            keyExtractor={(item) => item}
+            contentContainerStyle={{
+              paddingBottom: insets.bottom + SPACING.md,
+            }}
+            renderItem={({ item }) => (
+              <List.Item
+                title={item}
+                testID={`select-option-${item}`}
+                titleStyle={{ color: colors.text }}
+                style={{
+                  backgroundColor:
+                    item === value ? colors.primary : colors.dark,
+                }}
+                onPress={() => handleSelect(item)}
+              />
+            )}
+            ListFooterComponent={
+              showAddOrUnavailable ? (
+                <List.Item
+                  testID="select-add-custom"
+                  title={
+                    addingCustom ? (
+                      <ActivityIndicator color={colors.primary} size="small" />
+                    ) : isUnavailable ? (
+                      `"${trimmed}" is unavailable`
                     ) : (
-                      <Text style={styles.addText}>
-                        {isUnavailable
-                          ? `"${trimmed}" is unavailable`
-                          : `Add "${trimmed}"`}
-                      </Text>
-                    )}
-                  </Pressable>
-                ) : null
-              }
-            />
-            </Pressable>
-          </Pressable>
-        </KeyboardAvoidingView>
+                      `Add "${trimmed}"`
+                    )
+                  }
+                  titleStyle={{ color: colors.primary, fontSize: FONT.sm }}
+                  onPress={isUnavailable ? undefined : handleAddCustom}
+                  disabled={isUnavailable}
+                />
+              ) : null
+            }
+          />
+        </Sheet>
       </Modal>
-    </LabeledInputContainer>
+    </>
   );
 };
-
-const styles = StyleSheet.create({
-  field: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    height: 35,
-    paddingHorizontal: SPACING.sm,
-    borderRadius: RADIUS.md,
-  },
-  value: { flex: 1, fontSize: FONT.base, color: "black" },
-  fill: { flex: 1 },
-  backdrop: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  sheet: {
-    backgroundColor: COLORS.dark,
-    borderTopLeftRadius: RADIUS.xl,
-    borderTopRightRadius: RADIUS.xl,
-    paddingTop: SPACING.md,
-    maxHeight: "60%",
-  },
-  search: {
-    backgroundColor: "white",
-    marginHorizontal: SPACING.md,
-    marginBottom: SPACING.sm,
-    paddingHorizontal: SPACING.sm,
-    height: 40,
-    borderRadius: RADIUS.md,
-    fontSize: FONT.base,
-    color: "black",
-  },
-  option: { paddingVertical: SPACING.md, paddingHorizontal: SPACING.lg },
-  optionText: { fontSize: FONT.sm, color: "white" },
-  addRow: {
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.lg,
-    alignItems: "flex-start",
-  },
-  addText: { fontSize: FONT.sm, color: COLORS.primary },
-});

@@ -1,0 +1,18 @@
+appId: app.liftledger.mobile
+# Skip one set (doc "Skip"). Param: SET (0-based index within the exercise).
+---
+- tapOn:
+    id: "set-row-${SET}"
+- extendedWaitUntil:
+    visible:
+      text: "Skip Set"
+    timeout: 5000
+- waitForAnimationToEnd
+- tapOn: "Skip Set"
+# Skipping now closes the dialog outright; wait for it to close so the next row
+# tap doesn't race the animation.
+- extendedWaitUntil:
+    notVisible:
+      text: "Submit Set"
+    timeout: 5000
+- waitForAnimationToEnd

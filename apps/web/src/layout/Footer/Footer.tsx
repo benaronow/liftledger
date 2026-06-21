@@ -6,6 +6,7 @@ import { FaEdit, FaHistory } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
 import { useMe } from "@liftledger/api-client";
 import styles from "./footer.module.css";
+import { useTheme } from "../../providers/ThemeProvider";
 
 export const Footer = () => {
   const { pathname } = useLocation();
@@ -15,6 +16,8 @@ export const Footer = () => {
   useEffect(() => {
     setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
   }, []);
+
+  const { colors } = useTheme();
 
   const navButtonMap = [
     { route: RouteType.Progress, icon: <GiProgression />, isHome: false },
@@ -50,7 +53,7 @@ export const Footer = () => {
           className={styles.containerAnimate}
           style={{
             width: "100%",
-            background: "#131314",
+            background: colors.dark,
             height: "75px",
             zIndex: 10,
             borderRadius: "20px 20px 0 0",

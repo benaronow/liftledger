@@ -3,7 +3,7 @@ export enum RouteType {
   Progress = "/progress",
   History = "/history",
   Dashboard = "/dashboard",
-  Add = "/edit-block",
+  Add = "/edit-program",
   Profile = "/profile",
   Settings = "/settings",
   Workout = "/complete-day",

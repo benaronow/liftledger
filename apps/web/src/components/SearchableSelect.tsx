@@ -1,5 +1,6 @@
-import { COLORS } from "@liftledger/shared";
+import { DARK_COLORS } from "@liftledger/shared";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTheme } from "@/providers/ThemeProvider";
 import { Spinner } from "react-bootstrap";
 import { LabeledInputContainer } from "./inputs";
 
@@ -28,6 +29,7 @@ export const SearchableSelect = ({
   disabled,
   placeholder,
 }: Props) => {
+  const { colors } = useTheme();
   const [inputValue, setInputValue] = useState(value);
   const [open, setOpen] = useState(false);
   const [addingCustom, setAddingCustom] = useState(false);
@@ -97,8 +99,8 @@ export const SearchableSelect = ({
   }, [inputValue, onAddCustom, onSelect]);
 
   const optionBg = (option: string) => {
-    if (option === value) return COLORS.primary;
-    return COLORS.dark;
+    if (option === value) return DARK_COLORS.primary;
+    return colors.dark;
   };
 
   return (
@@ -108,7 +110,7 @@ export const SearchableSelect = ({
           className="w-100 rounded px-2 py-1 border-0"
           style={{
             fontSize: "16px",
-            outlineColor: COLORS.primary,
+            outlineColor: colors.primary,
             background: "white",
             height: 35,
           }}
@@ -130,14 +132,14 @@ export const SearchableSelect = ({
               top: "100%",
               left: 0,
               zIndex: 1000,
-              border: "1px solid #58585b",
-              boxShadow: "0px 0px 15px #131314",
-              background: "#131314",
+              border: `1px solid ${colors.container}`,
+              boxShadow: `0px 0px 15px ${colors.dark}`,
+              background: colors.dark,
             }}
           >
             <div
               style={{
-                background: "#131314",
+                background: colors.dark,
                 maxHeight: 200,
                 overflowY: "auto",
               }}
@@ -161,8 +163,8 @@ export const SearchableSelect = ({
                   className="px-2 py-1 border-0"
                   style={{
                     fontSize: 14,
-                    background: COLORS.dark,
-                    color: COLORS.primary,
+                    background: colors.dark,
+                    color: DARK_COLORS.primary,
                   }}
                   onClick={handleAddCustom}
                   disabled={isUnavailable}

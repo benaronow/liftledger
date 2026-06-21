@@ -2,11 +2,11 @@ import { useCallback, useState } from "react";
 import { ActionDialog, DialogAction } from "@/components/ActionDialog";
 import {
   useMe,
-  useUpdateUserBlock,
-  useBlock,
+  useUpdateUserProgram,
+  useProgram,
 } from "@liftledger/api-client";
 import { useNavigate } from "react-router";
-import { Block } from "@liftledger/shared";
+import { Program } from "@liftledger/shared";
 import { IoArrowBack } from "react-icons/io5";
 import { IoMdCheckmark } from "react-icons/io";
 import { Spinner } from "react-bootstrap";
@@ -19,30 +19,30 @@ interface Props {
 export const FinishDayDialog = ({ open, onClose }: Props) => {
   const navigate = useNavigate();
   const { data: curUser } = useMe();
-  const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
-  const { trigger: triggerUpdateUserBlock } = useUpdateUserBlock();
+  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
+  const { trigger: triggerUpdateUserProgram } = useUpdateUserProgram();
   const [finishing, setFinishing] = useState(false);
 
   const handleFinishDay = useCallback(async () => {
-    if (!curUser?._id || !curBlock) return;
+    if (!curUser?._id || !curProgram) return;
 
     setFinishing(true);
-    const newBlock: Block = {
-      ...curBlock,
-      weeks: curBlock.weeks.toSpliced(
-        curBlock.curWeekIdx,
+    const newProgram: Program = {
+      ...curProgram,
+      weeks: curProgram.weeks.toSpliced(
+        curProgram.curWeekIdx,
         1,
-        curBlock.weeks[curBlock.curWeekIdx].toSpliced(curBlock.curDayIdx, 1, {
-          ...curBlock.weeks[curBlock.curWeekIdx][curBlock.curDayIdx],
+        curProgram.weeks[curProgram.curWeekIdx].toSpliced(curProgram.curDayIdx, 1, {
+          ...curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx],
           completedDate: new Date(),
         }),
       ),
     };
 
-    await triggerUpdateUserBlock({ userId: curUser._id, block: newBlock });
+    await triggerUpdateUserProgram({ userId: curUser._id, program: newProgram });
     setFinishing(false);
     navigate("/dashboard");
-  }, [curUser?._id, curBlock, triggerUpdateUserBlock, navigate]);
+  }, [curUser?._id, curProgram, triggerUpdateUserProgram, navigate]);
 
   const actions: DialogAction[] = [
     {

@@ -1,5 +1,5 @@
 export * from "./types";
-export * from "./blockUtils";
+export * from "./programUtils";
 export * from "./colors";
 export * from "./exerciseApparatuses";
 export * from "./exerciseNames";

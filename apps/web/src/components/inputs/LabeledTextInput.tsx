@@ -1,7 +1,7 @@
-import { COLORS } from "@liftledger/shared";
 import { ChangeEvent, FocusEvent, JSX } from "react";
 import { LabeledInputContainer } from "./LabeledInputContainer";
 import styles from "./LabeledTextInput.module.css";
+import { useTheme } from "@/providers/ThemeProvider";
 
 type Props = {
   className?: string;
@@ -40,6 +40,7 @@ export const LabeledTextInput = ({
   onFocus,
   onBlur,
 }: Props) => {
+  const { colors } = useTheme();
   return (
     <LabeledInputContainer
       className={className}
@@ -53,7 +54,7 @@ export const LabeledTextInput = ({
         className={`${styles.formInput} w-100 px-2 py-1 border-0 ${renderEnd ? "rounded-start" : "rounded"}`}
         style={{
           fontSize: "16px",
-          background: disabled ? COLORS.textDisabled : "white",
+          background: disabled ? colors.textDisabled : "white",
           height: height ?? 35,
           width: width ?? "100%",
         }}

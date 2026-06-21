@@ -1,21 +1,23 @@
 import { useLocation, useNavigate } from "react-router";
 import { useAuth0 } from "@auth0/auth0-react";
 import { RouteType } from "../../routeTypes";
-import { useMe, useBlock } from "@liftledger/api-client";
+import { useMe, useProgram } from "@liftledger/api-client";
 import styles from "./header.module.css";
+import { useTheme } from "../../providers/ThemeProvider";
 
 export const Header = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { user: auth0User } = useAuth0();
   const { data: curUser } = useMe();
-  const { data: curBlock } = useBlock(curUser?._id, curUser?.curBlock);
+  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
+  const { colors } = useTheme();
 
   const getTitle = () => {
     if (pathname.includes(RouteType.Progress)) return "Progress";
     if (pathname.includes(RouteType.History)) return "History";
     if (pathname.includes(RouteType.Add))
-      return curBlock ? "Edit Block" : "Create Block";
+      return curProgram ? "Edit Program" : "Create Program";
     if (pathname.includes(RouteType.Settings)) return "Settings";
     if (pathname.includes(RouteType.Profile)) return "Profile";
     if (pathname.includes(RouteType.Workout)) return "Workout";
@@ -28,7 +30,7 @@ export const Header = () => {
     <div
       className={`${styles.containerAnimate} d-flex align-items-center`}
       style={{
-        background: "#131314",
+        background: colors.dark,
         height: "50px",
         width: "100%",
         zIndex: 10,

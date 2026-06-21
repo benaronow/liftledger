@@ -38,6 +38,25 @@ export const env = {
   get AUTH0_CLIENT_ID() {
     return optional("AUTH0_CLIENT_ID");
   },
+  // The native (Expo) Auth0 application. Used so mobile-originated verification
+  // emails are sent from the "LiftLedger - Mobile" client (matching sender +
+  // post-verification redirect) rather than the web client.
+  get AUTH0_MOBILE_CLIENT_ID() {
+    return optional("AUTH0_MOBILE_CLIENT_ID");
+  },
+  // Shared secret used by the Auth0 PreUserRegistration action to call the
+  // internal username-availability lookup. Optional so tests/local runs work
+  // without it; the internal route returns 503 when it's unset.
+  get INTERNAL_API_SECRET() {
+    return optional("INTERNAL_API_SECRET");
+  },
+  // Auth0 id (the JWT `sub`, e.g. "auth0|...") of the single dedicated E2E
+  // regression-test user. The /internal/e2e/reset endpoint refuses to operate
+  // on any other account, so this is the safety rail that bounds blast radius
+  // when tests run against the production database. Unset disables the route.
+  get E2E_TEST_AUTH0_ID() {
+    return optional("E2E_TEST_AUTH0_ID");
+  },
   get CORS_ORIGINS(): string[] {
     return optional(
       "CORS_ORIGINS",

@@ -1,0 +1,27 @@
+appId: app.liftledger.mobile
+# Reset BEFORE the run (not only after) so a previous crashed run can't leave
+# stale data that breaks this one. The teardown at the end keeps prod tidy.
+# API_URL defaults to local; pass INTERNAL_SECRET on the CLI.
+env:
+  API_URL: https://localhost:4000
+onFlowStart:
+  - runScript: ../scripts/reset.js
+onFlowComplete:
+  - runScript: ../scripts/reset.js
+---
+# clearKeychain forces a logged-out start (clearState alone leaves the
+# react-native-auth0 session in the iOS Keychain). See basic.yaml.
+- clearKeychain
+- launchApp:
+    clearState: true
+- runFlow: ../subflows/login.yaml
+
+# --- Regression steps go here. Example: create a program and assert it shows. ---
+# This is a starter; replace with the real critical-path flows you want guarded
+# after each substantial update.
+- assertVisible:
+    text: "Home"
+- tapOn:
+    text: "Program"
+- assertVisible:
+    text: "Program"

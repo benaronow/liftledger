@@ -9,7 +9,7 @@
     ".": "./src/index.ts",
     "./models": "./src/models/index.ts",
     "./models/user": "./src/models/user.ts",
-    "./models/block": "./src/models/block.ts"
+    "./models/program": "./src/models/program.ts"
   },
   "peerDependencies": {
     "mongoose": "^9.1.2"

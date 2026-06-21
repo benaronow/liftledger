@@ -4,7 +4,7 @@ import { LabeledTextInput } from "../components/inputs";
 import { ActionButton } from "../components/ActionButton";
 import { Spinner } from "react-bootstrap";
 import { FaSave } from "react-icons/fa";
-import { COLORS } from "@liftledger/shared";
+import { DARK_COLORS } from "@liftledger/shared";
 
 export const FirstNameInput = () => {
   const { data: curUser } = useMe();
@@ -47,7 +47,7 @@ export const FirstNameInput = () => {
   const renderEnd = useCallback(() => {
     const disabled = !firstNameEdited || firstName.trim() === "";
     const outline = focused
-      ? `solid 2px ${disabled ? COLORS.primaryDisabled : COLORS.primary}`
+      ? `solid 2px ${disabled ? DARK_COLORS.primaryDisabled : DARK_COLORS.primary}`
       : undefined;
 
     return (

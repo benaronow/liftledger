@@ -1,5 +1,5 @@
 export * from "./useMe";
 export * from "./useUser";
-export * from "./useBlock";
+export * from "./useProgram";
 export * from "./useTimer";
 export * from "./useCompletedExercises";

@@ -1,4 +1,4 @@
-import { COLORS } from "@liftledger/shared";
+import { useTheme } from "@/providers/ThemeProvider";
 import {
   CartesianGrid,
   Legend,
@@ -24,6 +24,7 @@ interface Props {
 }
 
 export const ProgressChart = ({ selectedName, selectedApparatus }: Props) => {
+  const { colors } = useTheme();
   const { data: curUser, isLoading: isUserLoading } = useMe();
   const { data: completedExercises, isLoading: completedExercisesLoading } =
     useCompletedExercises(curUser?._id);
@@ -85,7 +86,7 @@ export const ProgressChart = ({ selectedName, selectedApparatus }: Props) => {
     >
       <CartesianGrid
         strokeDasharray="3 3"
-        stroke={COLORS.container}
+        stroke={colors.container}
         style={{ outline: "none" }}
       />
       <XAxis

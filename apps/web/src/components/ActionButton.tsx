@@ -1,5 +1,6 @@
-import { COLORS } from "@liftledger/shared";
+import { DARK_COLORS } from "@liftledger/shared";
 import { ReactNode } from "react";
+import { useTheme } from "@/providers/ThemeProvider";
 
 export type Variant =
   | "primary"
@@ -34,6 +35,7 @@ export const ActionButton = ({
   className,
   style,
 }: Props) => {
+  const { colors } = useTheme();
   const getButtonStyle = (
     variant: Variant | undefined,
     disabled: boolean | undefined,
@@ -41,24 +43,28 @@ export const ActionButton = ({
     switch (variant) {
       case "primaryInverted":
         return {
-          background: disabled ? COLORS.textDisabled : "white",
-          color: disabled ? COLORS.primaryDisabled : COLORS.primary,
+          background: disabled ? colors.textDisabled : "white",
+          color: disabled ? DARK_COLORS.primaryDisabled : DARK_COLORS.primary,
         };
       case "danger":
         return {
-          background: disabled ? COLORS.dangerDisabled : COLORS.danger,
-          color: disabled ? COLORS.textDisabled : "white",
+          background: disabled
+            ? DARK_COLORS.dangerDisabled
+            : DARK_COLORS.danger,
+          color: disabled ? colors.textDisabled : "white",
         };
       case "dangerInverted":
         return {
-          background: disabled ? COLORS.textDisabled : "white",
-          color: disabled ? COLORS.dangerDisabled : COLORS.danger,
+          background: disabled ? colors.textDisabled : "white",
+          color: disabled ? DARK_COLORS.dangerDisabled : DARK_COLORS.danger,
         };
       case "primary":
       default:
         return {
-          background: disabled ? COLORS.primaryDisabled : COLORS.primary,
-          color: disabled ? COLORS.textDisabled : "white",
+          background: disabled
+            ? DARK_COLORS.primaryDisabled
+            : DARK_COLORS.primary,
+          color: disabled ? colors.textDisabled : "white",
         };
     }
   };

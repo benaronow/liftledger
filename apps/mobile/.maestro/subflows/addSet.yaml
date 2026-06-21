@@ -1,0 +1,28 @@
+appId: app.liftledger.mobile
+# Add an add-on set (the "+" in the Sets header, enabled once an exercise is
+# fully complete) at WEIGHT x REPS. Same dialog as logSet; the new set pre-fills
+# from the last set's values, so we erase before typing. Params: WEIGHT, REPS.
+---
+- tapOn: "Add set"
+- extendedWaitUntil:
+    visible:
+      id: "set-input-reps"
+    timeout: 5000
+- waitForAnimationToEnd
+- tapOn:
+    id: "set-input-reps"
+- waitForAnimationToEnd
+- eraseText
+- inputText: "${REPS}"
+- tapOn:
+    id: "set-input-weight"
+- eraseText
+- inputText: "${WEIGHT}"
+# Tap the (non-input) title to dismiss the number-pad and reveal Confirm.
+- tapOn: "Submit Set"
+- tapOn: "Confirm"
+- extendedWaitUntil:
+    notVisible:
+      text: "Submit Set"
+    timeout: 5000
+- waitForAnimationToEnd
