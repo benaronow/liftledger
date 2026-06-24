@@ -3,21 +3,26 @@ import { Day } from "@liftledger/shared";
 import { Text, useTheme } from "../../../paper";
 import { FONT } from "../../../theme";
 import { Info, InfoAction } from "../../../components/Info";
+import { DayErrors } from "../../validateTemplate";
 import { useTemplate } from "../../TemplateProvider";
 
 interface Props {
   day: Day;
   dIdx: number;
-  hasErrors: boolean;
+  errors: DayErrors | undefined;
   onRequestDelete: (dIdx: number) => void;
 }
 
-export const DayInfo = ({ day, dIdx, hasErrors, onRequestDelete }: Props) => {
+export const DayInfo = ({ day, dIdx, errors, onRequestDelete }: Props) => {
   const { colors } = useTheme();
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { templateProgram, setTemplateProgram, editingWeekIdx, setEditingDayIdx } =
-    useTemplate();
+  const {
+    templateProgram,
+    setTemplateProgram,
+    editingWeekIdx,
+    setEditingDayIdx,
+  } = useTemplate();
 
   const week = templateProgram.weeks[editingWeekIdx];
 
@@ -96,6 +101,15 @@ export const DayInfo = ({ day, dIdx, hasErrors, onRequestDelete }: Props) => {
     (e) => e.name && e.apparatus && e.sets.length,
   );
 
+  const errorLines = [
+    ...(errors?.name ? [errors.name] : []),
+    ...(errors?.exercises ?? []).flatMap((exErrors, i) =>
+      Object.keys(exErrors).length > 0
+        ? [`Exercise ${i + 1}: Not complete`]
+        : [],
+    ),
+  ];
+
   return (
     <Info
       title={day.name}
@@ -110,14 +124,19 @@ export const DayInfo = ({ day, dIdx, hasErrors, onRequestDelete }: Props) => {
               {`${i + 1}. ${ex.name} [${ex.sets.filter((s) => !s.addedOn).length}]`}
             </Text>
           ))}
-      {hasErrors && (
-        <Text style={errorStyle(colors.danger)}>Must add at least one exercise.</Text>
-      )}
+      {errorLines.map((line, i) => (
+        <Text key={i} style={errorStyle(colors.danger)}>
+          {line}
+        </Text>
+      ))}
     </Info>
   );
 };
 
-const lineStyle = (textColor: string) => ({ color: textColor, fontSize: FONT.sm });
+const lineStyle = (textColor: string) => ({
+  color: textColor,
+  fontSize: FONT.sm,
+});
 const errorStyle = (dangerColor: string) => ({
   color: dangerColor,
   fontSize: FONT.sm,

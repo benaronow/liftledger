@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ReactNode } from "react";
 import { View } from "react-native";
-import { IconButton, Surface, Text, useTheme } from "../paper";
+import { IconButton, PaperProvider, Surface, Text, useTheme } from "../paper";
 import { FONT, RADIUS, SPACING } from "../theme";
 
 export type InfoActionVariant = "primary" | "danger";
@@ -19,7 +19,11 @@ interface Props {
   actions?: InfoAction[];
   // A small icon button shown in the top-right of the title row (e.g. the
   // "full progress" shortcut on CompleteDay's chart card).
-  titleAction?: { icon: string; onPress: () => void; accessibilityLabel?: string };
+  titleAction?: {
+    icon: string;
+    onPress: () => void;
+    accessibilityLabel?: string;
+  };
   disabledMessage?: string;
   children: ReactNode;
 }
@@ -34,7 +38,8 @@ export const Info = ({
   disabledMessage,
   children,
 }: Props) => {
-  const { colors } = useTheme();
+  const theme = useTheme();
+  const { colors } = theme;
 
   const containerColor = (action: InfoAction) =>
     action.variant === "danger"
@@ -99,23 +104,33 @@ export const Info = ({
             >
               {actions.map((action, idx) => (
                 <View key={idx} style={{ flex: 1 }}>
-                  <IconButton
-                    style={{
-                      margin: 0,
-                      width: "100%",
-                      height: 40,
-                      borderRadius: RADIUS.md,
+                  <PaperProvider
+                    theme={{
+                      ...theme,
+                      colors: {
+                        ...colors,
+                        surfaceDisabled: containerColor(action),
+                      },
                     }}
-                    icon={action.icon}
-                    accessibilityLabel={action.accessibilityLabel}
-                    mode="contained"
-                    containerColor={containerColor(action)}
-                    iconColor={
-                      action.disabled ? colors.textDisabled : colors.onPrimary
-                    }
-                    disabled={action.disabled}
-                    onPress={action.onPress}
-                  />
+                  >
+                    <IconButton
+                      style={{
+                        margin: 0,
+                        width: "100%",
+                        height: 40,
+                        borderRadius: RADIUS.md,
+                      }}
+                      icon={action.icon}
+                      accessibilityLabel={action.accessibilityLabel}
+                      mode="contained"
+                      containerColor={containerColor(action)}
+                      iconColor={
+                        action.disabled ? colors.textDisabled : colors.onPrimary
+                      }
+                      disabled={action.disabled}
+                      onPress={action.onPress}
+                    />
+                  </PaperProvider>
                 </View>
               ))}
             </View>

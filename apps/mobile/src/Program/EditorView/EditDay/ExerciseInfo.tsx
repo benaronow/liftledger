@@ -29,8 +29,15 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
-  const { templateProgram, setTemplateProgram, editingWeekIdx, editingDayIdx } =
-    useTemplate();
+  const {
+    templateProgram,
+    setTemplateProgram,
+    editingWeekIdx,
+    editingDayIdx,
+    templateErrors,
+  } = useTemplate();
+
+  const errors = templateErrors.days[editingDayIdx]?.exercises[eIdx] ?? {};
 
   const curDayExercises = useMemo(
     () => templateProgram.weeks[editingWeekIdx][editingDayIdx].exercises,
@@ -157,12 +164,14 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
     <Info title={`Exercise ${eIdx + 1}`} actions={infoActions}>
       <ExerciseNameSelect
         label="Exercise"
+        error={errors.name}
         curExercise={exercise}
         reservedExercises={curDayExercises}
         onSelect={(value) => switchExercise(value, "name")}
       />
       <ExerciseApparatusSelect
         label="Apparatus"
+        error={errors.apparatus}
         curExercise={exercise}
         reservedExercises={curDayExercises}
         onSelect={(value) => switchExercise(value, "apparatus")}
@@ -172,6 +181,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
           style={{ flex: 1 }}
           label="Sets"
           value={setCount}
+          error={errors.sets}
           onChangeValue={handleSetsCount}
         />
         {!curProgram && (
@@ -197,6 +207,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
           <View style={cellStyle}>
             <WeightTypeSelect
               label="Weight Type"
+              error={errors.weightType}
               value={exercise.weightType}
               onSelect={(value) => switchExercise(value, "weightType")}
             />

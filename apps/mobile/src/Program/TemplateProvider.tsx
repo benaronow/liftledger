@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { validateTemplate } from "./validateTemplate";
+import { TemplateErrors, validateTemplate } from "./validateTemplate";
 import { EMPTY_PROGRAM } from "./emptyProgram";
 
 interface TemplateContextModel {
@@ -19,7 +19,7 @@ interface TemplateContextModel {
   setEditingWeekIdx: Dispatch<SetStateAction<number>>;
   editingDayIdx: number;
   setEditingDayIdx: Dispatch<SetStateAction<number>>;
-  templateErrors: string[];
+  templateErrors: TemplateErrors;
 }
 
 const defaultTemplateContext: TemplateContextModel = {
@@ -30,7 +30,7 @@ const defaultTemplateContext: TemplateContextModel = {
   setEditingWeekIdx: () => {},
   editingDayIdx: -1,
   setEditingDayIdx: () => {},
-  templateErrors: [],
+  templateErrors: { program: {}, days: [] },
 };
 
 const TemplateContext = createContext<TemplateContextModel>(
@@ -47,7 +47,8 @@ export const TemplateProvider = ({
   initialWeekIdx,
   children,
 }: Props) => {
-  const [templateProgram, setTemplateProgram] = useState<Program>(initialTemplate);
+  const [templateProgram, setTemplateProgram] =
+    useState<Program>(initialTemplate);
   const [editingWeekIdx, setEditingWeekIdx] = useState(initialWeekIdx);
   const [editingDayIdx, setEditingDayIdx] = useState(-1);
 

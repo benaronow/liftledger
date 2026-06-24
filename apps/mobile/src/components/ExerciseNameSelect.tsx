@@ -8,6 +8,7 @@ interface Props {
   reservedExercises: Exercise[];
   onSelect: (value: string) => void;
   label?: string;
+  error?: string;
 }
 
 export const ExerciseNameSelect = ({
@@ -15,6 +16,7 @@ export const ExerciseNameSelect = ({
   reservedExercises,
   onSelect,
   label,
+  error,
 }: Props) => {
   const {
     addCustomExerciseName,
@@ -36,6 +38,7 @@ export const ExerciseNameSelect = ({
   return (
     <SearchableSelect
       label={label}
+      error={error}
       value={curExercise.name}
       options={availableNameOptions}
       unavailableOptions={unavailableNameOptions}

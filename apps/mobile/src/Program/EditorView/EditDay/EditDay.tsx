@@ -5,6 +5,7 @@ import { View } from "react-native";
 import { SPACING } from "../../../theme";
 import { AddRow } from "../../../components/AddRow";
 import { AppTextInput } from "../../../components/inputs";
+import { SectionCard } from "../../../components/SectionCard";
 import { useTemplate } from "../../TemplateProvider";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
 import { fullExerciseIndex } from "./moveExercise";
@@ -13,8 +14,13 @@ import { ExerciseInfo } from "./ExerciseInfo";
 export const EditDay = () => {
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { templateProgram, setTemplateProgram, editingWeekIdx, editingDayIdx } =
-    useTemplate();
+  const {
+    templateProgram,
+    setTemplateProgram,
+    editingWeekIdx,
+    editingDayIdx,
+    templateErrors,
+  } = useTemplate();
   const [deletingExerciseIdx, setDeletingExerciseIdx] = useState<
     number | undefined
   >(undefined);
@@ -63,14 +69,15 @@ export const EditDay = () => {
 
   return (
     <View style={{ width: "100%", alignItems: "center" }}>
-      <View style={{ width: "100%", marginBottom: SPACING.lg }}>
+      <SectionCard title="Day Details" style={{ marginBottom: SPACING.lg }}>
         <AppTextInput
           label="Day Name"
           value={day.name}
+          error={templateErrors.days[editingDayIdx]?.name}
           onChangeText={handleDayNameInput}
           autoCapitalize="none"
         />
-      </View>
+      </SectionCard>
       {visibleExercises.map((exercise, idx) => (
         <View key={idx} style={{ width: "100%", alignItems: "center" }}>
           {/* Insert before this visible exercise's real position in the full

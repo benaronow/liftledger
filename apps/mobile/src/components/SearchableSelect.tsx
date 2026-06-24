@@ -9,6 +9,7 @@ import { Sheet } from "./Sheet";
 
 interface Props {
   label?: string;
+  error?: string;
   value: string;
   options: string[];
   unavailableOptions?: string[];
@@ -21,6 +22,7 @@ interface Props {
 
 export const SearchableSelect = ({
   label,
+  error,
   value,
   options,
   unavailableOptions,
@@ -101,6 +103,7 @@ export const SearchableSelect = ({
           <AppTextInput
             label={label}
             value={value}
+            error={error}
             editable={false}
             disabled={disabled}
           />
@@ -160,10 +163,11 @@ export const SearchableSelect = ({
                   testID="select-add-custom"
                   title={
                     addingCustom ? (
-                      // Pad the row so the spinner isn't clipped by the
-                      // List.Item title's tight line box.
                       <View style={{ paddingVertical: SPACING.xs }}>
-                        <ActivityIndicator color={colors.primary} size="small" />
+                        <ActivityIndicator
+                          color={colors.primary}
+                          size="small"
+                        />
                       </View>
                     ) : isUnavailable ? (
                       `"${trimmed}" is unavailable`

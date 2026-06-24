@@ -157,6 +157,7 @@ export const EditWeek = () => {
         <AppTextInput
           label="Name"
           value={templateProgram.name}
+          error={templateErrors.program.name}
           onChangeText={(text) =>
             setTemplateProgram({ ...templateProgram, name: text })
           }
@@ -184,10 +185,12 @@ export const EditWeek = () => {
         <NumberInput
           label="Weeks"
           value={templateProgram.length}
+          error={templateErrors.program.length}
           onChangeValue={handleLengthInput}
         />
         <SearchableSelect
           label="Primary Gym"
+          error={templateErrors.program.primaryGym}
           value={templateProgram.primaryGym ?? ""}
           options={curUser?.gyms || []}
           onSelect={setPrimaryGym}
@@ -204,7 +207,7 @@ export const EditWeek = () => {
             <DayInfo
               day={day}
               dIdx={idx}
-              hasErrors={templateErrors.includes(day.name)}
+              errors={templateErrors.days[idx]}
               onRequestDelete={setDeletingDayIdx}
             />
           </Fragment>

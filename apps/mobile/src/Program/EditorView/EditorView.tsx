@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { EditDay } from "./EditDay/EditDay";
 import { EditWeek } from "./EditWeek/EditWeek";
 import { useTemplate } from "../TemplateProvider";
@@ -17,21 +18,24 @@ export const EditorView = () => {
   const { editingDayIdx } = useTemplate();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const scrollRef = useRef<ScrollView>(null);
+
+  // Toggling between week- and day-editing swaps the whole view, so snap back
+  // to the top instantly rather than carrying over the previous scroll offset.
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  }, [editingDayIdx]);
 
   return (
     <ScrollView
+      ref={scrollRef}
       style={{ flex: 1, backgroundColor: colors.background }}
-      // Bottom padding keeps the last item reachable above the floating tab
-      // pill while the scroll itself runs full-screen behind it (the blur
-      // overlay sits on top of whatever passes underneath).
       contentContainerStyle={{
         paddingBottom: floatingTabBarClearance(insets.bottom),
       }}
       keyboardShouldPersistTaps="handled"
       automaticallyAdjustKeyboardInsets
     >
-      {/* Tapping any empty area dismisses the keyboard / blurs the focused
-          input, matching Profile and the set-submit form. */}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View>
           <EditorTitle />
