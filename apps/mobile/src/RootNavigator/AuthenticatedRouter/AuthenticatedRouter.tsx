@@ -7,6 +7,7 @@ import { useAuth0 } from "react-native-auth0";
 import { useAuth0Profile, useMe } from "@liftledger/api-client";
 import { useTheme } from "../../paper";
 import { AvatarButton } from "./AvatarButton";
+import { ConnectionError } from "./ConnectionError";
 import { LogoutButton } from "./LogoutButton";
 import { LogoSpinner } from "../../components/LogoSpinner";
 import { Timer } from "../../components/Timer";
@@ -46,12 +47,22 @@ export const AuthenticatedRouter = () => {
     data: curUser,
     isLoading: userLoading,
     error: userError,
+    mutate: refreshMe,
   } = useMe(emailVerified);
 
+  const status = (userError as { response?: { status?: number } } | undefined)
+    ?.response?.status;
+  const accountMissing = status === 404;
+
   if (!tokenVerified && !profile) return <LogoSpinner />;
+
   if (!emailVerified) return <VerifyEmail onRefresh={refreshProfile} />;
 
   if (userLoading && !curUser && !userError) return <LogoSpinner />;
+
+  if (userError && !accountMissing)
+    return <ConnectionError onRetry={refreshMe} />;
+  
   if (!curUser) return <CreateAccount />;
 
   return (

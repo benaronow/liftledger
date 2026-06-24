@@ -1,12 +1,25 @@
+import { useEffect } from "react";
 import { View } from "react-native";
-import { useAuth0 } from "react-native-auth0";
-import { Button, Text, useTheme } from "../paper";
+import { useAuth0, WebAuthError, WebAuthErrorCodes } from "react-native-auth0";
+import { Button, Text } from "../paper";
 import { env } from "../config/env";
+import { useSnackbar } from "../providers/SnackbarProvider";
 import { FONT, RADIUS, SPACING } from "../theme";
 
 export const Welcome = () => {
   const { authorize, loginWithPasswordRealm, isLoading, error } = useAuth0();
-  const { colors } = useTheme();
+  const { showSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    if (!error) return;
+    const canceled =
+      error instanceof WebAuthError &&
+      error.type === WebAuthErrorCodes.USER_CANCELLED;
+    showSnackbar(
+      canceled ? "Sign-in canceled." : "Couldn't sign you in. Please try again.",
+      "error",
+    );
+  }, [error, showSnackbar]);
 
   const onLogin = () =>
     authorize({
@@ -37,7 +50,7 @@ export const Welcome = () => {
         gap: SPACING.xl,
         padding: SPACING.xl,
       }}
-    >=
+    >
       <Text style={{ fontSize: 32, fontWeight: "700" }}>LiftLedger</Text>
       <Button
         mode="contained"
@@ -61,11 +74,6 @@ export const Welcome = () => {
         >
           E2E Sign In
         </Button>
-      )}
-      {error && (
-        <Text style={{ color: colors.danger, textAlign: "center" }}>
-          {error.message}
-        </Text>
       )}
     </View>
   );
