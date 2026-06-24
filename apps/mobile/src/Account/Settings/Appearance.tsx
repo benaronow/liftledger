@@ -1,12 +1,13 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Animated, Pressable, View } from "react-native";
 import { Text, useTheme } from "../../paper";
 import { SectionCard } from "../../components/SectionCard";
 import {
   ThemePreference,
   useThemePreference,
 } from "../../providers/ThemeProvider";
-import { SPACING, FONT } from "../../theme";
+import { SPACING, FONT, RADIUS } from "../../theme";
 
 type Icon = React.ComponentProps<typeof MaterialCommunityIcons>["name"];
 const THEME_OPTIONS: { label: string; value: ThemePreference; icon: Icon }[] = [
@@ -18,57 +19,97 @@ const THEME_OPTIONS: { label: string; value: ThemePreference; icon: Icon }[] = [
 export const Appearance = () => {
   const { colors } = useTheme();
   const { preference, setPreference } = useThemePreference();
+  const selectedIdx = THEME_OPTIONS.findIndex(
+    (opt) => opt.value === preference,
+  );
+
+  const [trackWidth, setTrackWidth] = useState(0);
+  const segmentWidth = trackWidth / THEME_OPTIONS.length;
+
+  const thumbX = useRef(new Animated.Value(0)).current;
+  const positioned = useRef(false);
+  useEffect(() => {
+    if (!segmentWidth) return;
+    const toValue = selectedIdx * segmentWidth;
+    if (positioned.current) {
+      Animated.spring(thumbX, {
+        toValue,
+        useNativeDriver: true,
+        friction: 9,
+        tension: 90,
+      }).start();
+    } else {
+      thumbX.setValue(toValue);
+      positioned.current = true;
+    }
+  }, [selectedIdx, segmentWidth, thumbX]);
 
   return (
     <SectionCard title="Appearance">
-      {THEME_OPTIONS.map((opt, index) => {
-        const selected = preference === opt.value;
-        return (
-          <Pressable
-            key={opt.value}
+      <View
+        onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+        style={{
+          flexDirection: "row",
+          marginTop: SPACING.xs,
+          padding: 0,
+          borderRadius: RADIUS.lg,
+          backgroundColor: colors.background,
+        }}
+      >
+        {segmentWidth > 0 && (
+          <Animated.View
+            pointerEvents="none"
             style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingBottom:
-                index === THEME_OPTIONS.length - 1 ? 0 : SPACING.md,
-              borderBottomWidth:
-                index === THEME_OPTIONS.length - 1
-                  ? 0
-                  : StyleSheet.hairlineWidth,
-              borderBottomColor: colors.dark,
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: 0,
+              width: segmentWidth,
+              borderRadius: RADIUS.md,
+              backgroundColor: colors.dark,
+              transform: [{ translateX: thumbX }],
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.2,
+              shadowRadius: 2,
+              elevation: 2,
             }}
-            onPress={() => setPreference(opt.value)}
-          >
-            <View
-              style={{ flexDirection: "row", alignItems: "center", flex: 1 }}
+          />
+        )}
+        {THEME_OPTIONS.map((opt) => {
+          const selected = preference === opt.value;
+          return (
+            <Pressable
+              key={opt.value}
+              style={{
+                flex: 1,
+                alignItems: "center",
+                gap: SPACING.xs,
+                paddingVertical: SPACING.sm,
+              }}
+              accessibilityRole="button"
+              accessibilityState={selected ? { selected: true } : {}}
+              accessibilityLabel={opt.label}
+              onPress={() => setPreference(opt.value)}
             >
               <MaterialCommunityIcons
                 name={opt.icon}
-                size={22}
+                size={24}
                 color={selected ? colors.primary : colors.textDisabled}
-                style={{ marginRight: SPACING.sm }}
               />
               <Text
                 style={{
-                  flex: 1,
-                  fontSize: FONT.base,
+                  fontSize: FONT.sm,
                   color: selected ? colors.primary : colors.text,
                   fontWeight: selected ? "700" : "400",
                 }}
               >
                 {opt.label}
               </Text>
-              {selected && (
-                <MaterialCommunityIcons
-                  name="check"
-                  size={20}
-                  color={colors.primary}
-                />
-              )}
-            </View>
-          </Pressable>
-        );
-      })}
+            </Pressable>
+          );
+        })}
+      </View>
     </SectionCard>
   );
 };

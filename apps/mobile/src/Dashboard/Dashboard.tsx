@@ -1,4 +1,4 @@
-import { useProgram, useMe } from "@liftledger/api-client";
+import { useProgram, useMe, useCurrentDay } from "@liftledger/api-client";
 import { Day, Exercise, Set } from "@liftledger/shared";
 import { useNavigation } from "@react-navigation/native";
 import dayjs from "dayjs";
@@ -6,15 +6,13 @@ import { ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, TouchableRipple, useTheme } from "../paper";
 import { LogoSpinner } from "../components/LogoSpinner";
+import { SectionCard } from "../components/SectionCard";
 import { floatingTabBarClearance } from "../RootNavigator/TabNavigator/FloatingTabBar";
 import type { TabNav } from "../RootNavigator/types";
 import { FONT, RADIUS, SPACING } from "../theme";
 
-// Factors that convert a set's logged weight into lbs for the running total,
-// keyed off the exercise's weight unit.
 const KGS_TO_LBS = 2.205;
-// Fallback for any non-lbs/non-kgs unit (preserves prior behavior).
-const UNKNOWN_UNIT_TO_LBS = 0.454;
+const LBS_TO_KGS = 0.454;
 
 export const Dashboard = () => {
   const navigation = useNavigation<TabNav<"Dashboard">>();
@@ -25,6 +23,7 @@ export const Dashboard = () => {
     curUser?._id,
     curUser?.curProgram,
   );
+  const { isDayStarted } = useCurrentDay();
 
   const getExerciseCompleted = (exercise: Exercise) =>
     exercise.sets.reduce(
@@ -53,7 +52,7 @@ export const Dashboard = () => {
                           ? 1
                           : curEx.weightType === "kgs"
                             ? KGS_TO_LBS
-                            : UNKNOWN_UNIT_TO_LBS)
+                            : LBS_TO_KGS)
                       : 0),
                   0,
                 )
@@ -116,19 +115,18 @@ export const Dashboard = () => {
       contentContainerStyle={{
         flexGrow: 1,
         alignItems: "center",
-        justifyContent: "space-evenly",
-        paddingVertical: SPACING.lg,
+        justifyContent: "center",
+        gap: SPACING.xxl,
         paddingHorizontal: SPACING.lg,
         paddingBottom: floatingTabBarClearance(insets.bottom),
       }}
     >
-      <View style={{ alignItems: "center", marginBottom: SPACING.sm }}>
+      <View style={{ alignItems: "center" }}>
         {curUser && !curProgram ? (
           <Text
             style={{
               fontSize: FONT.base,
               fontWeight: "900",
-              marginBottom: SPACING.xs,
               color: colors.text,
             }}
           >
@@ -154,40 +152,39 @@ export const Dashboard = () => {
           </>
         )}
       </View>
-
       {curProgram && (
         <>
-          {metricValueMap.map((pair, idx) => (
-            <View
-              key={idx}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                width: "100%",
-                marginBottom: SPACING.sm,
-              }}
-            >
-              <Text
+          <SectionCard style={{ gap: SPACING.xl }}>
+            {metricValueMap.map((pair, idx) => (
+              <View
+                key={idx}
                 style={{
-                  fontSize: FONT.base,
-                  fontWeight: "700",
-                  color: colors.text,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                {pair.metric}
-              </Text>
-              <Text
-                style={{
-                  fontSize: FONT.base,
-                  textAlign: "right",
-                  color: colors.text,
-                }}
-              >
-                {pair.value}
-              </Text>
-            </View>
-          ))}
+                <Text
+                  style={{
+                    fontSize: FONT.base,
+                    fontWeight: "700",
+                    color: colors.text,
+                  }}
+                >
+                  {pair.metric}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: FONT.base,
+                    textAlign: "right",
+                    color: colors.text,
+                  }}
+                >
+                  {pair.value}
+                </Text>
+              </View>
+            ))}
+          </SectionCard>
           <TouchableRipple
             style={{
               width: "100%",
@@ -195,9 +192,6 @@ export const Dashboard = () => {
               borderRadius: RADIUS.xl,
               alignItems: "center",
               justifyContent: "center",
-              marginTop: SPACING.md,
-              // Intentionally bespoke: the signature "Lift!" CTA keeps web's
-              // layered/raised look rather than using Paper's <Button>.
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.4,
@@ -210,7 +204,7 @@ export const Dashboard = () => {
             <Text
               style={{ color: "white", fontSize: FONT.lg, fontWeight: "600" }}
             >
-              Lift!
+              {isDayStarted ? "Resume Workout" : "Start Workout"}
             </Text>
           </TouchableRipple>
         </>

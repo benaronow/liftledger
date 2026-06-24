@@ -88,15 +88,10 @@ export const ExercisePage = ({
             flexDirection: "row",
             alignItems: "center",
             gap: SPACING.sm,
-            // Center the title in a FAB_SIZE-tall row, mirroring the Program
-            // editor's title (EditorTitle) so both pages share the same
-            // header padding — the title sits as far from the top as from the
-            // left edge.
-            height: FAB_SIZE,
+            minHeight: FAB_SIZE,
           }}
         >
           <Text
-            numberOfLines={1}
             style={{
               flexShrink: 1,
               fontSize: FONT.xl,
