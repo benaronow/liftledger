@@ -8,6 +8,7 @@ interface Props {
   reservedExercises: Exercise[];
   onSelect: (value: string) => void;
   label?: string;
+  error?: string;
 }
 
 export const ExerciseApparatusSelect = ({
@@ -15,6 +16,7 @@ export const ExerciseApparatusSelect = ({
   reservedExercises,
   onSelect,
   label,
+  error,
 }: Props) => {
   const {
     addCustomExerciseApparatus,
@@ -38,12 +40,14 @@ export const ExerciseApparatusSelect = ({
   return (
     <SearchableSelect
       label={label}
+      error={error}
       value={curExercise.apparatus}
       options={availableApparatusOptions}
       unavailableOptions={unavailableApparatusOptions}
       onSelect={onSelect}
       onAddCustom={addCustomExerciseApparatus}
       canAddCustom
+      placeholder="Enter or add an apparatus..."
     />
   );
 };

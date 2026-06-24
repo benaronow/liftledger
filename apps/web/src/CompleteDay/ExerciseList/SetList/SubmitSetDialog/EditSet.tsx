@@ -13,6 +13,14 @@ interface Props {
   setIdx: number;
 }
 
+// Empty input → null; an unparseable string → null. Reps are whole numbers,
+// weight allows decimals.
+const commitNumber = (text: string, kind: "reps" | "weight"): number | null => {
+  if (text.trim() === "") return null;
+  const n = kind === "weight" ? parseFloat(text) : parseInt(text, 10);
+  return Number.isNaN(n) ? null : n;
+};
+
 export const EditSet = ({ exerciseState, setExerciseState, setIdx }: Props) => {
   const { data: curUser } = useMe();
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
@@ -39,11 +47,11 @@ export const EditSet = ({ exerciseState, setExerciseState, setIdx }: Props) => {
         ...exerciseState.sets[setIdx],
         reps:
           type === "reps"
-            ? parseInt(e.target.value) || 0
+            ? commitNumber(e.target.value, "reps")
             : exerciseState.sets[setIdx].reps,
         weight:
           type === "weight"
-            ? parseFloat(e.target.value) || 0
+            ? commitNumber(e.target.value, "weight")
             : exerciseState.sets[setIdx].weight,
         note:
           type === "note" ? e.target.value : exerciseState.sets[setIdx].note,

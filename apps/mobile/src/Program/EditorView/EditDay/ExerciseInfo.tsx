@@ -12,7 +12,7 @@ import { ExerciseApparatusSelect } from "../../../components/ExerciseApparatusSe
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
 import { WeightTypeSelect } from "../../../components/WeightTypeSelect";
 import { SPACING } from "../../../theme";
-import { AppTextInput } from "../../../components/inputs";
+import { NumberInput } from "../../../components/inputs";
 import { Info, InfoAction } from "../../../components/Info";
 import { useTemplate } from "../../TemplateProvider";
 import { fullExerciseIndex, moveExercise } from "./moveExercise";
@@ -29,8 +29,15 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
-  const { templateProgram, setTemplateProgram, editingWeekIdx, editingDayIdx } =
-    useTemplate();
+  const {
+    templateProgram,
+    setTemplateProgram,
+    editingWeekIdx,
+    editingDayIdx,
+    templateErrors,
+  } = useTemplate();
+
+  const errors = templateErrors.days[editingDayIdx]?.exercises[eIdx] ?? {};
 
   const curDayExercises = useMemo(
     () => templateProgram.weeks[editingWeekIdx][editingDayIdx].exercises,
@@ -93,27 +100,29 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
     });
   };
 
-  const handleNumberInput = (
-    text: string,
-    type: "sets" | "reps" | "weight",
-  ) => {
-    const parsed = type === "weight" ? parseFloat(text) : parseInt(text);
-    const value = parsed
-      ? type === "sets"
-        ? Math.min(parsed, 999)
-        : parsed
-      : 0;
-
+  // Sets is a list length, not a Set value: regenerate the set list (capped at
+  // 999). An empty field commits null, which we ignore so clearing it mid-edit
+  // doesn't wipe the existing sets — it snaps back to the count on blur.
+  const handleSetsCount = (count: number | null) => {
+    if (count == null) return;
     updateExercise({
       ...exercise,
-      sets:
-        type === "sets"
-          ? getNewSetsFromLatest(completedExercises, exercise, value)
-          : exercise.sets.map((set) => ({
-              ...set,
-              reps: type === "reps" ? value : exercise.sets[0].reps,
-              weight: type === "weight" ? value : exercise.sets[0].weight,
-            })),
+      sets: getNewSetsFromLatest(
+        completedExercises,
+        exercise,
+        Math.min(count, 999),
+      ),
+    });
+  };
+
+  const updateSetsField = (field: "reps" | "weight", value: number | null) => {
+    updateExercise({
+      ...exercise,
+      sets: exercise.sets.map((set) => ({
+        ...set,
+        reps: field === "reps" ? value : exercise.sets[0].reps,
+        weight: field === "weight" ? value : exercise.sets[0].weight,
+      })),
     });
   };
 
@@ -155,50 +164,50 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
     <Info title={`Exercise ${eIdx + 1}`} actions={infoActions}>
       <ExerciseNameSelect
         label="Exercise"
+        error={errors.name}
         curExercise={exercise}
         reservedExercises={curDayExercises}
         onSelect={(value) => switchExercise(value, "name")}
       />
       <ExerciseApparatusSelect
         label="Apparatus"
+        error={errors.apparatus}
         curExercise={exercise}
         reservedExercises={curDayExercises}
         onSelect={(value) => switchExercise(value, "apparatus")}
       />
       <View style={rowStyle}>
-        <AppTextInput
+        <NumberInput
           style={{ flex: 1 }}
           label="Sets"
-          value={String(setCount)}
-          keyboardType="number-pad"
-          onChangeText={(text) => handleNumberInput(text, "sets")}
+          value={setCount}
+          error={errors.sets}
+          onChangeValue={handleSetsCount}
         />
         {!curProgram && (
-          <AppTextInput
+          <NumberInput
             style={{ flex: 1 }}
             label="Reps"
-            value={String(exercise.sets[0]?.reps || 0)}
-            keyboardType="number-pad"
+            value={exercise.sets[0]?.reps ?? null}
             disabled={editDisabled}
-            onChangeText={(text) => handleNumberInput(text, "reps")}
+            onChangeValue={(reps) => updateSetsField("reps", reps)}
           />
         )}
       </View>
       {!curProgram && (
         <View style={rowStyle}>
-          <AppTextInput
+          <NumberInput
             style={{ flex: 1 }}
             label="Weight"
-            value={
-              exercise.sets[0]?.weight ? String(exercise.sets[0].weight) : ""
-            }
-            keyboardType="decimal-pad"
+            value={exercise.sets[0]?.weight ?? null}
+            decimal
             disabled={editDisabled}
-            onChangeText={(text) => handleNumberInput(text, "weight")}
+            onChangeValue={(weight) => updateSetsField("weight", weight)}
           />
           <View style={cellStyle}>
             <WeightTypeSelect
               label="Weight Type"
+              error={errors.weightType}
               value={exercise.weightType}
               onSelect={(value) => switchExercise(value, "weightType")}
             />

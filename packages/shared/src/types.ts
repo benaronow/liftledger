@@ -1,6 +1,6 @@
 export interface Set {
-  reps: number;
-  weight: number;
+  reps: number | null;
+  weight: number | null;
   note: string;
   completed: boolean;
   skipped?: boolean;

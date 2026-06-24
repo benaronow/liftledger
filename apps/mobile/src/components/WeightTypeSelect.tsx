@@ -5,17 +5,16 @@ interface Props {
   value: string;
   onSelect: (value: string) => void;
   label?: string;
+  error?: string;
 }
 
-// The weight-type field, shared by CompleteDay's add/edit exercise form and the
-// Program editor. A SearchableSelect over the fixed WEIGHT_TYPES (lbs/kgs) —
-// no custom entry — so the control matches the other exercise selects.
-export const WeightTypeSelect = ({ value, onSelect, label }: Props) => (
+export const WeightTypeSelect = ({ value, onSelect, label, error }: Props) => (
   <SearchableSelect
     label={label}
+    error={error}
     value={value}
     options={WEIGHT_TYPES}
     onSelect={onSelect}
-    placeholder="Select weight type..."
+    placeholder="Enter weight type..."
   />
 );

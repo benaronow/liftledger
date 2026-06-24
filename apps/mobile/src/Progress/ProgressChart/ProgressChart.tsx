@@ -81,7 +81,9 @@ export const ProgressChart = ({
 
   const dataSet = useMemo(() => {
     const maxWeight = (e: CompletedExercise) =>
-      Math.max(...e.sets.filter((s: Set) => s.completed).map((s) => s.weight));
+      Math.max(
+        ...e.sets.filter((s: Set) => s.completed).map((s) => s.weight ?? 0),
+      );
 
     const gymLines = gyms.map((lineGym, gymIdx) => {
       const color = gymColors[gymIdx % gymColors.length];
@@ -170,7 +172,7 @@ export const ProgressChart = ({
 
   const { yAxisOffset, maxValue } = useMemo(() => {
     const values = chartExercises.flatMap((e) =>
-      e.sets.filter((s) => s.completed).map((s) => s.weight),
+      e.sets.filter((s) => s.completed).map((s) => s.weight ?? 0),
     );
     if (!values.length) return { yAxisOffset: 0, maxValue: 0 };
     return {

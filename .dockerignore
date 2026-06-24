@@ -1,0 +1,23 @@
+# Never ship local installs or VCS metadata; they're rebuilt in the image.
+**/node_modules
+.git
+.gitignore
+
+# Local secrets — provide these as Fly secrets instead.
+**/.env.local
+**/.env
+
+# Build outputs / caches
+apps/api/dist
+apps/web/dist
+**/.turbo
+**/.vite
+
+# Mobile native build artifacts (not needed to run the API)
+apps/mobile/ios/build
+apps/mobile/ios/Pods
+apps/mobile/android
+
+# Misc
+*.log
+.DS_Store

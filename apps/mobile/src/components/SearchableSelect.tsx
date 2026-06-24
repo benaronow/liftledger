@@ -1,18 +1,15 @@
+import Fuse from "fuse.js";
 import { useMemo, useState } from "react";
 import { FlatList, Modal, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {
-  ActivityIndicator,
-  List,
-  Searchbar,
-  TextInput,
-  useTheme,
-} from "../paper";
-import { FONT, INPUT_HEIGHT, RADIUS, SPACING } from "../theme";
+import { ActivityIndicator, List, Searchbar, useTheme } from "../paper";
+import { FONT, SPACING } from "../theme";
+import { AppTextInput } from "./inputs";
 import { Sheet } from "./Sheet";
 
 interface Props {
   label?: string;
+  error?: string;
   value: string;
   options: string[];
   unavailableOptions?: string[];
@@ -25,6 +22,7 @@ interface Props {
 
 export const SearchableSelect = ({
   label,
+  error,
   value,
   options,
   unavailableOptions,
@@ -40,9 +38,13 @@ export const SearchableSelect = ({
   const [addingCustom, setAddingCustom] = useState(false);
   const { colors } = useTheme();
 
+  // Fuzzy match against the option list (typo-tolerant, ranked by relevance);
+  // an empty query keeps the full list in its original order.
+  const fuse = useMemo(() => new Fuse(options, { threshold: 0.4 }), [options]);
   const filteredOptions = useMemo(
-    () => options.filter((o) => o.toLowerCase().includes(query.toLowerCase())),
-    [options, query],
+    () =>
+      query.trim() === "" ? options : fuse.search(query).map((r) => r.item),
+    [fuse, query, options],
   );
 
   const trimmed = query.trim();
@@ -92,19 +94,16 @@ export const SearchableSelect = ({
 
   return (
     <>
-      {/* The field is display-only — render a real (non-editable) Paper input
-          so its value sits exactly where an editable AppTextInput's does, and
-          capture taps with an overlay (a custom Text render mis-aligned the
-          value vertically). The input is pointer-transparent so the overlay
-          gets the press. */}
+      {/* The field is display-only — a non-editable AppTextInput supplies the
+          outline + floating label (and its blurred-value truncation, since a
+          read-only field is never focused), while a Pressable over the top
+          captures taps. The input is pointer-transparent so the press lands. */}
       <View>
         <View pointerEvents="none">
-          <TextInput
-            style={{ height: INPUT_HEIGHT }}
-            outlineStyle={{ borderRadius: RADIUS.md }}
+          <AppTextInput
             label={label}
-            mode="outlined"
             value={value}
+            error={error}
             editable={false}
             disabled={disabled}
           />
@@ -128,11 +127,13 @@ export const SearchableSelect = ({
           <Searchbar
             testID="select-search"
             style={{ marginHorizontal: SPACING.md, marginBottom: SPACING.sm }}
-            inputStyle={{ color: "black" }}
+            inputStyle={{ color: colors.text }}
             placeholderTextColor={colors.textDisabled}
             value={query}
             onChangeText={setQuery}
-            placeholder={placeholder ?? "Search..."}
+            placeholder={
+              placeholder ?? (canAddCustom ? "Enter or add..." : "Enter...")
+            }
             autoFocus
             autoCapitalize="none"
           />
@@ -162,7 +163,12 @@ export const SearchableSelect = ({
                   testID="select-add-custom"
                   title={
                     addingCustom ? (
-                      <ActivityIndicator color={colors.primary} size="small" />
+                      <View style={{ paddingVertical: SPACING.xs }}>
+                        <ActivityIndicator
+                          color={colors.primary}
+                          size="small"
+                        />
+                      </View>
                     ) : isUnavailable ? (
                       `"${trimmed}" is unavailable`
                     ) : (

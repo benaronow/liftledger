@@ -14,8 +14,8 @@ export const EMPTY_PROGRAM: Program = {
             apparatus: "",
             sets: [
               {
-                reps: 0,
-                weight: 0,
+                reps: null,
+                weight: null,
                 completed: false,
                 note: "",
               },

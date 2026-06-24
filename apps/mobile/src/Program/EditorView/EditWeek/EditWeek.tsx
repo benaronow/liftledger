@@ -12,7 +12,7 @@ import { DatePickerInput } from "react-native-paper-dates";
 import { SearchableSelect } from "../../../components/SearchableSelect";
 import { PaperProvider, useTheme } from "../../../paper";
 import { AddRow } from "../../../components/AddRow";
-import { AppTextInput } from "../../../components/inputs";
+import { AppTextInput, NumberInput } from "../../../components/inputs";
 import { SectionCard } from "../../../components/SectionCard";
 import { INPUT_HEIGHT, RADIUS, SPACING } from "../../../theme";
 import { useTemplate } from "../../TemplateProvider";
@@ -116,7 +116,7 @@ export const EditWeek = () => {
           name: "",
           apparatus: "",
           gym: templateProgram.primaryGym || "",
-          sets: [{ reps: 0, weight: 0, completed: false, note: "" }],
+          sets: [{ reps: null, weight: null, completed: false, note: "" }],
           weightType: curProgram ? "lbs" : "",
         },
       ],
@@ -131,11 +131,11 @@ export const EditWeek = () => {
     });
   };
 
-  const handleLengthInput = (text: string) => {
-    setTemplateProgram({
-      ...templateProgram,
-      length: parseInt(text) || 0,
-    });
+  // An empty field commits null, which we ignore so clearing it mid-edit
+  // doesn't reset the length to 0 — it snaps back on blur.
+  const handleLengthInput = (length: number | null) => {
+    if (length == null) return;
+    setTemplateProgram({ ...templateProgram, length });
   };
 
   const handleDateInput = (date: Date | undefined) => {
@@ -157,6 +157,7 @@ export const EditWeek = () => {
         <AppTextInput
           label="Name"
           value={templateProgram.name}
+          error={templateErrors.program.name}
           onChangeText={(text) =>
             setTemplateProgram({ ...templateProgram, name: text })
           }
@@ -181,20 +182,21 @@ export const EditWeek = () => {
             />
           </PaperProvider>
         </View>
-        <AppTextInput
+        <NumberInput
           label="Weeks"
-          value={String(templateProgram.length)}
-          onChangeText={handleLengthInput}
-          keyboardType="number-pad"
+          value={templateProgram.length}
+          error={templateErrors.program.length}
+          onChangeValue={handleLengthInput}
         />
         <SearchableSelect
           label="Primary Gym"
+          error={templateErrors.program.primaryGym}
           value={templateProgram.primaryGym ?? ""}
           options={curUser?.gyms || []}
           onSelect={setPrimaryGym}
           onAddCustom={handleAddGym}
           canAddCustom
-          placeholder="Enter gym..."
+          placeholder="Enter or add a gym..."
         />
       </SectionCard>
 
@@ -205,7 +207,7 @@ export const EditWeek = () => {
             <DayInfo
               day={day}
               dIdx={idx}
-              hasErrors={templateErrors.includes(day.name)}
+              errors={templateErrors.days[idx]}
               onRequestDelete={setDeletingDayIdx}
             />
           </Fragment>

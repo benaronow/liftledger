@@ -72,10 +72,10 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
 
       if (lastCompletedSet) {
         const repDiff = exercise.sets[setIdx]
-          ? exercise.sets[setIdx].reps - lastCompletedSet.reps
+          ? (exercise.sets[setIdx].reps ?? 0) - (lastCompletedSet.reps ?? 0)
           : 0;
         const weightDiff = exercise.sets[setIdx]
-          ? exercise.sets[setIdx].weight - lastCompletedSet.weight
+          ? (exercise.sets[setIdx].weight ?? 0) - (lastCompletedSet.weight ?? 0)
           : 0;
         return { repDiff, weightDiff };
       }
@@ -121,14 +121,14 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: SPACING.sm }}>
                 <Text style={{ color: "white", fontWeight: "700", fontSize: FONT.sm }}>
-                  {`${set.reps} rep${set.reps !== 1 ? "s" : ""}`}
+                  {`${set.reps ?? 0} rep${(set.reps ?? 0) !== 1 ? "s" : ""}`}
                   {set.completed
                     ? ` (${getProgressString(diffs.repDiff)})`
                     : ""}
                 </Text>
                 <MaterialCommunityIcons name="close" size={12} color="white" />
                 <Text style={{ color: "white", fontWeight: "700", fontSize: FONT.sm }}>
-                  {`${set.weight}${exercise.weightType}`}
+                  {`${set.weight ?? 0}${exercise.weightType}`}
                   {set.completed
                     ? ` (${getProgressString(diffs.weightDiff)})`
                     : ""}

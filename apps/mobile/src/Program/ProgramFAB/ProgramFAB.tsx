@@ -5,6 +5,7 @@ import { FAB, useTheme } from "../../paper";
 import { RADIUS, SPACING } from "../../theme";
 import { FAB_EDGE, FAB_GAP, FAB_SIZE, FAB_TOP } from "../../layout";
 import { useTemplate } from "../TemplateProvider";
+import { hasAnyError } from "../validateTemplate";
 import { QuitProgramDialog } from "./QuitProgramDialog";
 import { SaveProgramDialog } from "./SaveProgramDialog";
 
@@ -17,6 +18,7 @@ export const ProgramFAB = () => {
   const [quitDialogOpen, setQuitDialogOpen] = useState(false);
 
   const isEditingDay = editingDayIdx !== -1;
+  const saveDisabled = !isEditingDay && hasAnyError(templateErrors);
 
   return (
     <>
@@ -52,8 +54,13 @@ export const ProgramFAB = () => {
           size="small"
           customSize={FAB_SIZE}
           color="white"
-          disabled={!isEditingDay && templateErrors.length > 0}
-          style={{ backgroundColor: colors.primary, borderRadius: RADIUS.lg }}
+          disabled={saveDisabled}
+          style={{
+            backgroundColor: saveDisabled
+              ? colors.primaryDisabled
+              : colors.primary,
+            borderRadius: RADIUS.lg,
+          }}
           onPress={() =>
             isEditingDay ? setEditingDayIdx(-1) : setSaveDialogOpen(true)
           }

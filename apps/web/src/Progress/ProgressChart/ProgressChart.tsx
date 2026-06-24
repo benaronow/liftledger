@@ -47,7 +47,9 @@ export const ProgressChart = ({ selectedName, selectedApparatus }: Props) => {
     () =>
       chartExercises.map((e: CompletedExercise) => {
         const maxSetWeight: number = Math.max(
-          ...e.sets.filter((s: Set) => s.completed).map((s: Set) => s.weight),
+          ...e.sets
+            .filter((s: Set) => s.completed)
+            .map((s: Set) => s.weight ?? 0),
         );
         const date = dayjs(e.completedDate).format("YYYY-MM-DD");
 

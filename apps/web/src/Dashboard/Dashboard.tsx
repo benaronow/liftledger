@@ -33,8 +33,8 @@ export const Dashboard = () => {
                   (accWeight: number, curSet: Set) =>
                     accWeight +
                     (curSet.completed
-                      ? curSet.reps *
-                        curSet.weight *
+                      ? (curSet.reps ?? 0) *
+                        (curSet.weight ?? 0) *
                         (curEx.weightType === type
                           ? 1
                           : curEx.weightType === "kgs"
