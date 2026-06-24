@@ -39,8 +39,8 @@ export const EditDay = () => {
       gym: templateProgram.primaryGym || "",
       sets: [
         {
-          reps: 0,
-          weight: 0,
+          reps: null,
+          weight: null,
           completed: false,
           note: "",
         },

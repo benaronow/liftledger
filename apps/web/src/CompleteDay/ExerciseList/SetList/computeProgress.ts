@@ -10,8 +10,8 @@ export const computeProgress = (
 
   for (const e of history) {
     if (isSameExercise(e, exercise) && e.sets[setIdx]?.completed) {
-      prevWeight = e.sets[setIdx].weight;
-      prevReps = e.sets[setIdx].reps;
+      prevWeight = e.sets[setIdx].weight ?? 0;
+      prevReps = e.sets[setIdx].reps ?? 0;
       break;
     }
   }
@@ -19,8 +19,8 @@ export const computeProgress = (
   if (prevWeight === undefined || prevReps === undefined) return undefined;
 
   const cur = exercise.sets[setIdx];
-  const weightDiff = cur ? cur.weight - prevWeight : 0;
-  const repDiff = cur ? cur.reps - prevReps : 0;
+  const weightDiff = cur ? (cur.weight ?? 0) - prevWeight : 0;
+  const repDiff = cur ? (cur.reps ?? 0) - prevReps : 0;
 
   if (weightDiff > 0 || (repDiff > 0 && weightDiff === 0)) return 1;
   if (weightDiff < 0 || (repDiff < 0 && weightDiff === 0)) return -1;

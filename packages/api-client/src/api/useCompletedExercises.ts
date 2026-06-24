@@ -68,8 +68,8 @@ export const getNewSetsFromLatest = (
   const sets: Set[] =
     latestOccurrenceSameGymSets ??
     Array(latestOccurrenceAllGymsSetNum).fill({
-      reps: 0,
-      weight: 0,
+      reps: null,
+      weight: null,
       note: "",
       completed: false,
     });

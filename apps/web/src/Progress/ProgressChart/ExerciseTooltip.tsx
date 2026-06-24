@@ -54,8 +54,8 @@ export const ExerciseTooltip = ({ active, payload, label }: Props) => {
             {exercise.sets.map((set, idx) => (
               <div key={idx} className="d-flex " style={{ fontSize: 12 }}>
                 <span>
-                  Set {idx + 1}: {set.weight} {exercise.weightType} × {set.reps}{" "}
-                  reps
+                  Set {idx + 1}: {set.weight ?? 0} {exercise.weightType} ×{" "}
+                  {set.reps ?? 0} reps
                 </span>
               </div>
             ))}

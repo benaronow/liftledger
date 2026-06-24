@@ -1,4 +1,4 @@
-import { Exercise } from "@liftledger/shared";
+import { Exercise, Set } from "@liftledger/shared";
 import { Dispatch, SetStateAction, useMemo } from "react";
 import { View } from "react-native";
 import { Text } from "../../../../paper";
@@ -7,7 +7,7 @@ import {
   useCompletedExercises,
   useMe,
 } from "@liftledger/api-client";
-import { AppTextInput } from "../../../../components/inputs";
+import { AppTextInput, NumberInput } from "../../../../components/inputs";
 import { FONT, SPACING } from "../../../../theme";
 
 interface Props {
@@ -20,6 +20,8 @@ export const EditSet = ({ exerciseState, setExerciseState, setIdx }: Props) => {
   const { data: curUser } = useMe();
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
 
+  const curSet = exerciseState?.sets[setIdx];
+
   const latestPreviousSetNote = useMemo(() => {
     return findLatestOccurrence(
       completedExercises,
@@ -30,54 +32,42 @@ export const EditSet = ({ exerciseState, setExerciseState, setIdx }: Props) => {
     )?.sets[setIdx].note;
   }, [exerciseState, setIdx, completedExercises]);
 
-  const handleChange = (text: string, type: "reps" | "weight" | "note") => {
+  const updateSet = (update: Partial<Set>) => {
     if (!exerciseState) return;
 
     setExerciseState({
       ...exerciseState,
       sets: exerciseState.sets.toSpliced(setIdx, 1, {
         ...exerciseState.sets[setIdx],
-        reps:
-          type === "reps"
-            ? parseInt(text) || 0
-            : exerciseState.sets[setIdx].reps,
-        weight:
-          type === "weight"
-            ? parseFloat(text) || 0
-            : exerciseState.sets[setIdx].weight,
-        note: type === "note" ? text : exerciseState.sets[setIdx].note,
+        ...update,
       }),
     });
   };
-
-  const curSet = exerciseState?.sets[setIdx];
 
   return (
     <View style={{ width: "100%", gap: SPACING.sm }}>
       {!!latestPreviousSetNote && (
         <Text style={{ color: "white", fontSize: FONT.sm }}>{`Previous note: ${latestPreviousSetNote}`}</Text>
       )}
-      <AppTextInput
+      <NumberInput
         label="Reps"
         testID="set-input-reps"
-        value={curSet?.reps ? String(curSet.reps) : ""}
-        keyboardType="number-pad"
-        onChangeText={(text) => handleChange(text, "reps")}
+        value={curSet?.reps ?? null}
+        onChangeValue={(reps) => updateSet({ reps })}
       />
-      <AppTextInput
+      <NumberInput
         label="Weight"
         testID="set-input-weight"
-        value={curSet?.weight ? String(curSet.weight) : ""}
-        keyboardType="decimal-pad"
-        onChangeText={(text) => handleChange(text, "weight")}
+        value={curSet?.weight ?? null}
+        decimal
+        onChangeValue={(weight) => updateSet({ weight })}
       />
       <AppTextInput
         label="Note"
         testID="set-input-note"
         value={curSet?.note}
-        onChangeText={(text) => handleChange(text, "note")}
+        onChangeText={(note) => updateSet({ note })}
       />
     </View>
   );
 };
-

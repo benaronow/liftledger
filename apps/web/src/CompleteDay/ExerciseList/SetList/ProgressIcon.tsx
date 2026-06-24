@@ -13,7 +13,7 @@ interface Props {
 
 export const ProgressIcon = ({ sign, isSetComplete, isSetSkipped }: Props) => {
   const background = useMemo(() => {
-    if (!isSetComplete && !isSetSkipped) return DARK_COLORS.container;
+    if (!isSetComplete && !isSetSkipped) return DARK_COLORS.darkContainer;
     if (sign === undefined || isSetSkipped) return DARK_COLORS.background;
     if (sign === 0) return DARK_COLORS.warning;
     return sign > 0 ? DARK_COLORS.success : DARK_COLORS.danger;

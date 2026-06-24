@@ -61,12 +61,12 @@ export const SetList = ({
 
   const getBackground = (set: Set, nextSet: boolean) =>
     set.completed
-      ? DARK_COLORS.primary
+      ? colors.primary
       : set.skipped
-        ? DARK_COLORS.primaryDark
+        ? DARK_COLORS.darkContainer
         : nextSet
-          ? DARK_COLORS.secondary
-          : DARK_COLORS.primaryDisabled;
+          ? colors.secondary
+          : colors.primaryDisabled;
 
   const getDiffs = useCallback(
     (setIdx: number) => {
@@ -89,10 +89,10 @@ export const SetList = ({
 
       if (lastCompletedSet) {
         const repDiff = exercise.sets[setIdx]
-          ? exercise.sets[setIdx].reps - lastCompletedSet.reps
+          ? (exercise.sets[setIdx].reps ?? 0) - (lastCompletedSet.reps ?? 0)
           : 0;
         const weightDiff = exercise.sets[setIdx]
-          ? exercise.sets[setIdx].weight - lastCompletedSet.weight
+          ? (exercise.sets[setIdx].weight ?? 0) - (lastCompletedSet.weight ?? 0)
           : 0;
         return { repDiff, weightDiff };
       }
@@ -121,7 +121,7 @@ export const SetList = ({
     <div
       className="d-flex flex-column w-100 text-white p-2 gap-2"
       style={{
-        background: colors.container,
+        background: colors.lightContainer,
       }}
     >
       {exercise.sets.map((set, i) => (
@@ -143,14 +143,14 @@ export const SetList = ({
             {set.completed ? (
               <span className="d-flex gap-2 text-white align-items-center">
                 <span className="fw-bold">
-                  <span className="me-1">{`${set.reps} rep${
-                    set.reps !== 1 ? "s" : ""
+                  <span className="me-1">{`${set.reps ?? 0} rep${
+                    (set.reps ?? 0) !== 1 ? "s" : ""
                   }`}</span>
                   <span>{`(${getProgressString(getDiffs(i).repDiff)})`}</span>
                 </span>
                 <FaTimes />
                 <span className="fw-bold">
-                  <span className="me-1">{`${set.weight}${exercise.weightType}`}</span>
+                  <span className="me-1">{`${set.weight ?? 0}${exercise.weightType}`}</span>
                   <span>{`(${getProgressString(
                     getDiffs(i).weightDiff,
                   )})`}</span>
@@ -158,11 +158,11 @@ export const SetList = ({
               </span>
             ) : (
               <span className="d-flex gap-2 text-white align-items-center">
-                <span className="fw-bold">{`${set.reps} rep${
-                  set.reps !== 1 ? "s" : ""
+                <span className="fw-bold">{`${set.reps ?? 0} rep${
+                  (set.reps ?? 0) !== 1 ? "s" : ""
                 }`}</span>
                 <FaTimes />
-                <span className="fw-bold">{`${set.weight}${exercise.weightType}`}</span>
+                <span className="fw-bold">{`${set.weight ?? 0}${exercise.weightType}`}</span>
               </span>
             )}
           </span>

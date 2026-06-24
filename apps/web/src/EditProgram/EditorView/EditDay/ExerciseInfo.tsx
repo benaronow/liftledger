@@ -19,6 +19,14 @@ import { LabeledTextInput, LabeledSelect } from "@/components/inputs";
 
 export type ExerciseInfoName = "name" | "apparatus" | "weightType";
 
+// Empty input → null; an unparseable string → null. Reps are whole numbers,
+// weight allows decimals.
+const commitNumber = (text: string, kind: "reps" | "weight"): number | null => {
+  if (text.trim() === "") return null;
+  const n = kind === "weight" ? parseFloat(text) : parseInt(text, 10);
+  return Number.isNaN(n) ? null : n;
+};
+
 interface Props {
   exercise: Exercise;
   eIdx: number;
@@ -86,24 +94,25 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
     e: ChangeEvent<HTMLInputElement>,
     type: "sets" | "reps" | "weight",
   ) => {
-    const parsed =
-      type === "weight" ? parseFloat(e.target.value) : parseInt(e.target.value);
-    const value = parsed
-      ? type === "sets"
-        ? Math.min(parsed, 999)
-        : parsed
-      : 0;
+    if (type === "sets") {
+      // Sets is a list length, not a Set value: empty means "0 sets".
+      const parsed = parseInt(e.target.value);
+      const value = parsed ? Math.min(parsed, 999) : 0;
+      updateExercise({
+        ...exercise,
+        sets: getNewSetsFromLatest(completedExercises, exercise, value),
+      });
+      return;
+    }
 
+    const value = commitNumber(e.target.value, type);
     updateExercise({
       ...exercise,
-      sets:
-        type === "sets"
-          ? getNewSetsFromLatest(completedExercises, exercise, value)
-          : exercise.sets.map((set: Set) => ({
-              ...set,
-              reps: type === "reps" ? value : exercise.sets[0].reps,
-              weight: type === "weight" ? value : exercise.sets[0].weight,
-            })),
+      sets: exercise.sets.map((set: Set) => ({
+        ...set,
+        reps: type === "reps" ? value : exercise.sets[0].reps,
+        weight: type === "weight" ? value : exercise.sets[0].weight,
+      })),
     });
   };
 

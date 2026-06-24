@@ -63,8 +63,8 @@ export const ExerciseTooltip = ({
                 key={setIdx}
                 style={{ color: colors.text, fontSize: FONT.xs }}
               >
-                Set {setIdx + 1}: {set.weight} {exercise.weightType} ×{" "}
-                {set.reps} reps
+                Set {setIdx + 1}: {set.weight ?? 0} {exercise.weightType} ×{" "}
+                {set.reps ?? 0} reps
               </Text>
             ))}
           </View>
