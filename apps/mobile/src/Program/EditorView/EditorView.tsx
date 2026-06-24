@@ -1,7 +1,12 @@
 import { EditDay } from "./EditDay/EditDay";
 import { EditWeek } from "./EditWeek/EditWeek";
 import { useTemplate } from "../TemplateProvider";
-import { ScrollView, View } from "react-native";
+import {
+  Keyboard,
+  ScrollView,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { floatingTabBarClearance } from "../../RootNavigator/TabNavigator/FloatingTabBar";
 import { useTheme } from "../../paper";
@@ -25,17 +30,23 @@ export const EditorView = () => {
       keyboardShouldPersistTaps="handled"
       automaticallyAdjustKeyboardInsets
     >
-      <EditorTitle />
-      <View
-        style={{
-          paddingHorizontal: SPACING.lg,
-          paddingTop: SPACING.md,
-          paddingBottom: SPACING.xl,
-          alignItems: "center",
-        }}
-      >
-        {editingDayIdx === -1 ? <EditWeek /> : <EditDay />}
-      </View>
+      {/* Tapping any empty area dismisses the keyboard / blurs the focused
+          input, matching Profile and the set-submit form. */}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View>
+          <EditorTitle />
+          <View
+            style={{
+              paddingHorizontal: SPACING.lg,
+              paddingTop: SPACING.md,
+              paddingBottom: SPACING.xl,
+              alignItems: "center",
+            }}
+          >
+            {editingDayIdx === -1 ? <EditWeek /> : <EditDay />}
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
     </ScrollView>
   );
 };

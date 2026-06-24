@@ -194,7 +194,7 @@ export const EditWeek = () => {
           onSelect={setPrimaryGym}
           onAddCustom={handleAddGym}
           canAddCustom
-          placeholder="Enter gym..."
+          placeholder="Enter or add a gym..."
         />
       </SectionCard>
 

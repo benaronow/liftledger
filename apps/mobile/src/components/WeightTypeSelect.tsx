@@ -16,6 +16,6 @@ export const WeightTypeSelect = ({ value, onSelect, label }: Props) => (
     value={value}
     options={WEIGHT_TYPES}
     onSelect={onSelect}
-    placeholder="Select weight type..."
+    placeholder="Enter weight type..."
   />
 );

@@ -44,6 +44,7 @@ export const ExerciseApparatusSelect = ({
       onSelect={onSelect}
       onAddCustom={addCustomExerciseApparatus}
       canAddCustom
+      placeholder="Enter or add an apparatus..."
     />
   );
 };
