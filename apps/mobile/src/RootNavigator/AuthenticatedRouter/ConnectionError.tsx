@@ -2,9 +2,6 @@ import { View } from "react-native";
 import { Button, Text, useTheme } from "../../paper";
 import { FONT, RADIUS, SPACING } from "../../theme";
 
-// Shown when the authenticated DB-user fetch fails for a reason other than a
-// genuine 404 (server down / network outage). Distinct from CreateAccount,
-// which is only correct when the user truly has no account yet.
 export const ConnectionError = ({ onRetry }: { onRetry: () => void }) => {
   const { colors } = useTheme();
 

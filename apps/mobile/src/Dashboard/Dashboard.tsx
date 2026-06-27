@@ -107,7 +107,8 @@ export const Dashboard = () => {
     { metric: "Total Weight Lifted", value: getTotalWeight() },
   ];
 
-  if (!curUser || curProgramLoading) return <LogoSpinner />;
+  if (!curUser || curProgramLoading || (curUser.curProgram && !curProgram))
+    return <LogoSpinner />;
 
   return (
     <ScrollView

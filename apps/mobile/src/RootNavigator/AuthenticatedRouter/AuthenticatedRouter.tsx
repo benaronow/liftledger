@@ -54,17 +54,23 @@ export const AuthenticatedRouter = () => {
     ?.response?.status;
   const accountMissing = status === 404;
 
+  // User is authenticated but Auth0 token/profile have not loaded
   if (!tokenVerified && !profile) return <LogoSpinner />;
 
+  // Auth0 profile loaded but email is not verified
   if (!emailVerified) return <VerifyEmail onRefresh={refreshProfile} />;
 
+  // Verified Auth0 profile loaded but db user has not loaded 
   if (userLoading && !curUser && !userError) return <LogoSpinner />;
 
+  // Verified Auth0 profile loaded but db user has error
   if (userError && !accountMissing)
     return <ConnectionError onRetry={refreshMe} />;
   
+  // Verified Auth0 profile loaded but db user doesn't exist
   if (!curUser) return <CreateAccount />;
 
+  // Verified Auth0 profile and db user both loaded
   return (
     <>
       <Stack.Navigator
