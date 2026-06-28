@@ -1,6 +1,6 @@
 import { useProgram, useMe } from "@liftledger/api-client";
 import { ScrollView, View } from "react-native";
-import { Text, useTheme } from "../../paper";
+import { Text, useTheme } from "react-native-paper";
 import { LogoSpinner } from "../../components/LogoSpinner";
 import { FONT, RADIUS, SPACING } from "../../theme";
 import { CompletedProgram } from "./CompletedProgram";
@@ -39,7 +39,7 @@ export const History = () => {
             width: "100%",
             marginBottom: SPACING.lg,
             fontSize: FONT.sm,
-            color: colors.textDisabled,
+            color: colors.onSurfaceDisabled,
             textAlign: "center",
           }}
         >

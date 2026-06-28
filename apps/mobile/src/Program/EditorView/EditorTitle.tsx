@@ -1,6 +1,6 @@
 import { useProgram, useMe } from "@liftledger/api-client";
 import { View } from "react-native";
-import { Text, useTheme } from "../../paper";
+import { Text, useTheme } from "react-native-paper";
 import { FONT } from "../../theme";
 import { FAB_EDGE, FAB_SIZE, FAB_TOP, titleRightInset } from "../../layout";
 import { useTemplate } from "../TemplateProvider";
@@ -34,7 +34,7 @@ export const EditorTitle = () => {
       <View style={{ height: FAB_SIZE, justifyContent: "center" }}>
         <Text
           numberOfLines={1}
-          style={{ fontSize: FONT.xl, fontWeight: "700", color: colors.text }}
+          style={{ fontSize: FONT.xl, fontWeight: "700", color: colors.onSurface }}
         >
           {title}
         </Text>

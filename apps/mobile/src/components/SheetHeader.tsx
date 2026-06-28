@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Button, Text, useTheme } from "../paper";
+import { Button, Text, useTheme } from "react-native-paper";
 import { FONT, SPACING } from "../theme";
 
 export interface SheetAction {
@@ -35,7 +35,7 @@ export const SheetHeader = ({ title, actions }: Props) => {
       }}
     >
       <Text
-        style={{ color: colors.text, fontSize: FONT.lg, fontWeight: "600" }}
+        style={{ color: colors.onSurface, fontSize: FONT.lg, fontWeight: "600" }}
       >
         {title}
       </Text>

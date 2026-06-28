@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, View } from "react-native";
 import { useCurrentDay, useMe, useTimerEnd } from "@liftledger/api-client";
 import { FAB_EDGE, FAB_GAP, FAB_SIZE, FAB_TOP } from "../../layout";
-import { FAB, useTheme } from "../../paper";
+import { FAB, useTheme } from "react-native-paper";
 import { RADIUS, SPACING } from "../../theme";
 import { EditExercisesModal } from "./EditExercisesModal/EditExercisesModal";
 import { EditGymDialog } from "./EditGymDialog";

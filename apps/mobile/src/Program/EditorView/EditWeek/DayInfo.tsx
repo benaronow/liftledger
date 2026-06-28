@@ -1,6 +1,6 @@
 import { useProgram, useMe } from "@liftledger/api-client";
 import { Day } from "@liftledger/shared";
-import { Text, useTheme } from "../../../paper";
+import { Text, useTheme } from "react-native-paper";
 import { FONT } from "../../../theme";
 import { Info, InfoAction } from "../../../components/Info";
 import { DayErrors } from "../../validateTemplate";
@@ -120,12 +120,12 @@ export const DayInfo = ({ day, dIdx, errors, onRequestDelete }: Props) => {
         day.exercises
           .filter((ex) => !ex.addedOn)
           .map((ex, i) => (
-            <Text style={lineStyle(colors.text)} key={ex._id ?? i}>
+            <Text style={lineStyle(colors.onSurface)} key={ex._id ?? i}>
               {`${i + 1}. ${ex.name} [${ex.sets.filter((s) => !s.addedOn).length}]`}
             </Text>
           ))}
       {errorLines.map((line, i) => (
-        <Text key={i} style={errorStyle(colors.danger)}>
+        <Text key={i} style={errorStyle(colors.error)}>
           {line}
         </Text>
       ))}

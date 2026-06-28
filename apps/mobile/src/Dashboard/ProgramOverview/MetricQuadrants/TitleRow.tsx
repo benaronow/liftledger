@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Text, useTheme } from "../../../paper";
+import { Text, useTheme } from "react-native-paper";
 import { FONT, SPACING } from "../../../theme";
 import { Align } from "./quadrants/Quadrant";
 
@@ -18,7 +18,7 @@ export const TitleRow = ({ label, value, align }: Props) => {
         fontSize: FONT.xs,
         fontWeight: "800",
         letterSpacing: 1,
-        color: colors.textDisabled,
+        color: colors.onSurfaceDisabled,
       }}
     >
       {label}
@@ -31,7 +31,7 @@ export const TitleRow = ({ label, value, align }: Props) => {
         flexShrink: 1,
         fontSize: FONT.lg,
         fontWeight: "900",
-        color: colors.text,
+        color: colors.onSurface,
       }}
     >
       {value}

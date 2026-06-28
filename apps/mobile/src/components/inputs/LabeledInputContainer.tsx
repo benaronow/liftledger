@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { StyleProp, View, ViewStyle } from "react-native";
-import { HelperText, Text } from "../../paper";
+import { HelperText, Text } from "react-native-paper";
 import { SPACING } from "../../theme";
 
 interface Props {

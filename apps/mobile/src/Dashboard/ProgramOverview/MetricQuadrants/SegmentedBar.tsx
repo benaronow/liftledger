@@ -1,4 +1,4 @@
-import { useTheme } from "../../../paper";
+import { useTheme } from "react-native-paper";
 import { View } from "react-native";
 
 const SEG_GAP = 3;
@@ -24,7 +24,7 @@ export const SegmentedBar = ({
                 ? colors.primary
                 : i === filled
                   ? colors.secondary
-                  : colors.container,
+                  : colors.surface,
           }}
         />
       ))}

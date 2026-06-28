@@ -1,11 +1,11 @@
 import { View, type ViewStyle } from "react-native";
-import { useTheme } from "../../../../paper";
+import { useTheme } from "react-native-paper";
 import { RADIUS, SPACING } from "../../../../theme";
 import { TitleRow } from "../TitleRow";
 import { ReactNode } from "react";
 
 const BAR_INSET = SPACING.sm;
-const OUTER_RADIUS = RADIUS.xl;
+const OUTER_RADIUS = RADIUS.md;
 
 export type Corner = "tl" | "tr" | "bl" | "br";
 export type Align = "left" | "right";
@@ -30,8 +30,7 @@ export const Quadrant = ({ corner, label, value, bar }: Props) => {
   const bottom = corner === "bl" || corner === "br";
   const align: Align = right ? "right" : "left";
   const title = <TitleRow label={label} value={value} align={align} />;
-  // Inset the bar so the dark card shows as a frame "containing" it. The side
-  // touching the title already has the title's padding as its frame.
+
   const barFrame = (
     <View
       style={{
@@ -48,7 +47,7 @@ export const Quadrant = ({ corner, label, value, bar }: Props) => {
   return (
     <View
       style={[
-        { flex: 1, backgroundColor: colors.dark, overflow: "hidden" },
+        { flex: 1, backgroundColor: colors.surfaceVariant, overflow: "hidden" },
         cornerRadii[corner],
       ]}
     >

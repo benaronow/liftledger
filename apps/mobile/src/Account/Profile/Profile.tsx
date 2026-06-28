@@ -6,7 +6,7 @@ import {
   View,
 } from "react-native";
 import { LogoSpinner } from "../../components/LogoSpinner";
-import { useTheme } from "../../paper";
+import { useTheme } from "react-native-paper";
 import { SPACING } from "../../theme";
 import { DangerZone } from "./DangerZone/DangerZone";
 import { PersonalInfo } from "./PersonalInfo";

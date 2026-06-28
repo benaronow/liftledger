@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { LogoSpinner } from "../components/LogoSpinner";
 import type { RootStackParamList } from "../RootNavigator/types";
-import { useTheme } from "../paper";
+import { useTheme } from "react-native-paper";
 import { CompleteDayFAB } from "./CompleteDayFAB/CompleteDayFAB";
 import { ExercisePager } from "./ExercisePager/ExercisePager";
 import { PagerBar } from "./ExercisePager/PagerBar";

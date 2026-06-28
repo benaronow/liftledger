@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { View } from "react-native";
 import { useAuth0, WebAuthError, WebAuthErrorCodes } from "react-native-auth0";
-import { Button, Text } from "../paper";
+import { Button, Text } from "react-native-paper";
 import { env } from "../config/env";
 import { useSnackbar } from "../providers/SnackbarProvider";
 import { FONT, RADIUS, SPACING } from "../theme";

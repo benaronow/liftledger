@@ -2,7 +2,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { DARK_COLORS } from "@liftledger/shared";
 import { useMemo } from "react";
 import { View } from "react-native";
-import { useTheme } from "../../../paper";
+import { useTheme } from "react-native-paper";
 
 interface Props {
   sign?: number;
@@ -21,8 +21,8 @@ export const ProgressIcon = ({ sign, isSetComplete, isSetSkipped }: Props) => {
     // and the icon looks identical in light and dark mode.
     if (!isSetComplete && !isSetSkipped) return DARK_COLORS.lightContainer;
     if (sign === undefined || isSetSkipped) return DARK_COLORS.background;
-    if (sign === 0) return colors.warning;
-    return sign > 0 ? colors.success : colors.danger;
+    if (sign === 0) return colors.tertiaryContainer;
+    return sign > 0 ? colors.tertiary : colors.error;
   }, [sign, isSetComplete, isSetSkipped, colors]);
 
   const icon = useMemo(() => {

@@ -7,7 +7,7 @@ import {
 import { useProgram, useMe } from "@liftledger/api-client";
 import { useCallback, useMemo } from "react";
 import { View } from "react-native";
-import { Text, TouchableRipple, useTheme } from "../../../paper";
+import { Text, TouchableRipple, useTheme } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../../../theme";
 import { computeProgress } from "./computeProgress";
 import { ProgressIcon } from "./ProgressIcon";
@@ -46,10 +46,10 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
     set.completed
       ? colors.primary
       : set.skipped
-        ? colors.primaryDark
+        ? colors.inversePrimary
         : nextSet
           ? colors.secondary
-          : colors.primaryDisabled;
+          : colors.surfaceDisabled;
 
   const getDiffs = useCallback(
     (setIdx: number) => {

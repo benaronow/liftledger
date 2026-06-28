@@ -2,7 +2,7 @@ import Fuse from "fuse.js";
 import { useMemo, useState } from "react";
 import { FlatList, Modal, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ActivityIndicator, List, Searchbar, useTheme } from "../paper";
+import { ActivityIndicator, List, Searchbar, useTheme } from "react-native-paper";
 import { FONT, SPACING } from "../theme";
 import { AppTextInput } from "./inputs";
 import { Sheet } from "./Sheet";
@@ -127,8 +127,8 @@ export const SearchableSelect = ({
           <Searchbar
             testID="select-search"
             style={{ marginHorizontal: SPACING.md, marginBottom: SPACING.sm }}
-            inputStyle={{ color: colors.text }}
-            placeholderTextColor={colors.textDisabled}
+            inputStyle={{ color: colors.onSurface }}
+            placeholderTextColor={colors.onSurfaceDisabled}
             value={query}
             onChangeText={setQuery}
             placeholder={
@@ -149,10 +149,10 @@ export const SearchableSelect = ({
               <List.Item
                 title={item}
                 testID={`select-option-${item}`}
-                titleStyle={{ color: colors.text }}
+                titleStyle={{ color: colors.onSurface }}
                 style={{
                   backgroundColor:
-                    item === value ? colors.primary : colors.dark,
+                    item === value ? colors.primary : colors.surfaceVariant,
                 }}
                 onPress={() => handleSelect(item)}
               />

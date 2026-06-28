@@ -11,7 +11,7 @@ import {
 import { AddRow } from "../../../components/AddRow";
 import { Badge } from "../../../components/Badge";
 import { Sheet } from "../../../components/Sheet";
-import { IconButton, Surface, Text, useTheme } from "../../../paper";
+import { IconButton, Surface, Text, useTheme } from "react-native-paper";
 import { useSnackbar } from "../../../providers/SnackbarProvider";
 import { FONT, RADIUS, SPACING } from "../../../theme";
 import { EditExercise } from "./EditExercise";
@@ -153,7 +153,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                     width: "100%",
                     borderRadius: RADIUS.md,
                     marginBottom: SPACING.md,
-                    backgroundColor: colors.container,
+                    backgroundColor: colors.surface,
                   }}
                 >
                   <View
@@ -171,7 +171,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                       <Text
                         numberOfLines={1}
                         style={{
-                          color: colors.text,
+                          color: colors.onSurface,
                           fontWeight: "700",
                           fontSize: FONT.base,
                         }}
@@ -180,7 +180,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                       </Text>
                       <Text
                         style={{
-                          color: colors.textDisabled,
+                          color: colors.onSurfaceDisabled,
                           fontWeight: "600",
                           fontSize: FONT.sm,
                         }}
@@ -196,7 +196,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                       }}
                     >
                       {exercise.addedOn && (
-                        <Badge label="ADD-ON" background={colors.dark} />
+                        <Badge label="ADD-ON" background={colors.surfaceVariant} />
                       )}
                       <IconButton
                         style={{ margin: 0 }}
@@ -204,10 +204,10 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                         mode="contained"
                         size={18}
                         containerColor={
-                          started ? colors.primaryDisabled : colors.primary
+                          started ? colors.surfaceDisabled : colors.primary
                         }
                         iconColor={
-                          started ? colors.textDisabled : colors.onPrimary
+                          started ? colors.onSurfaceDisabled : colors.onPrimary
                         }
                         disabled={started}
                         onPress={() => startEdit(idx)}
@@ -238,7 +238,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
               label: "Cancel",
               onPress: () => setEditor(undefined),
               disabled: saving,
-              textColor: colors.danger,
+              textColor: colors.error,
             },
             {
               label: editor?.type === "edit" ? "Save" : "Add",

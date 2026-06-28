@@ -1,7 +1,7 @@
 import { useProgram, useMe } from "@liftledger/api-client";
 import { useState } from "react";
 import { View } from "react-native";
-import { FAB, useTheme } from "../../paper";
+import { FAB, useTheme } from "react-native-paper";
 import { RADIUS, SPACING } from "../../theme";
 import { FAB_EDGE, FAB_GAP, FAB_SIZE, FAB_TOP } from "../../layout";
 import { useTemplate } from "../TemplateProvider";
@@ -41,7 +41,7 @@ export const ProgramFAB = () => {
             size="small"
             customSize={FAB_SIZE}
             color="white"
-            style={{ backgroundColor: colors.danger, borderRadius: RADIUS.lg }}
+            style={{ backgroundColor: colors.error, borderRadius: RADIUS.lg }}
             onPress={() => setQuitDialogOpen(true)}
           />
         )}
@@ -57,7 +57,7 @@ export const ProgramFAB = () => {
           disabled={saveDisabled}
           style={{
             backgroundColor: saveDisabled
-              ? colors.primaryDisabled
+              ? colors.surfaceDisabled
               : colors.primary,
             borderRadius: RADIUS.lg,
           }}

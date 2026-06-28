@@ -1,7 +1,7 @@
 import { Exercise, Set } from "@liftledger/shared";
 import { Dispatch, SetStateAction, useMemo } from "react";
 import { View } from "react-native";
-import { Text } from "../../../../paper";
+import { Text } from "react-native-paper";
 import {
   findLatestOccurrence,
   useCompletedExercises,

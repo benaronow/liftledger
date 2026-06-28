@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { DatePickerInput } from "react-native-paper-dates";
-import { PaperProvider, useTheme } from "../../../paper";
+import { PaperProvider, useTheme } from "react-native-paper";
 import { INPUT_HEIGHT, RADIUS } from "../../../theme";
 import { ProfileInputContainer } from "./ProfileInputContainer";
 
@@ -35,7 +35,7 @@ export const ProfileDateInput = ({
     colors: {
       ...colors,
       surface: colors.background,
-      surfaceDisabled: colors.textDisabled,
+      surfaceDisabled: colors.onSurfaceDisabled,
     },
   };
 

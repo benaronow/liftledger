@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated, Easing, Pressable, View } from "react-native";
-import { Text, useTheme } from "../paper";
+import { Text, useTheme } from "react-native-paper";
 import { History } from "./History";
 import { Profile } from "./Profile";
 import { Settings } from "./Settings/";
@@ -36,7 +36,7 @@ export const Account = () => {
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View
-        style={{ backgroundColor: colors.dark }}
+        style={{ backgroundColor: colors.surfaceVariant }}
         onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
       >
         <View style={{ flexDirection: "row" }}>
@@ -57,7 +57,7 @@ export const Account = () => {
                   style={{
                     fontSize: FONT.base,
                     fontWeight: active ? "700" : "500",
-                    color: active ? colors.primary : colors.primaryDisabled,
+                    color: active ? colors.primary : colors.surfaceDisabled,
                   }}
                 >
                   {t.label}

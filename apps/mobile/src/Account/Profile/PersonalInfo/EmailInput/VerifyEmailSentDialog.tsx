@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { useAuth0 } from "react-native-auth0";
 import { useState } from "react";
-import { Text, useTheme } from "../../../../paper";
+import { Text, useTheme } from "react-native-paper";
 import { ConfirmationDialog } from "../../../../components/ConfirmationDialog";
 import { FONT, SPACING } from "../../../../theme";
 
@@ -29,11 +29,11 @@ export const VerifyEmailSentDialog = ({ open, email }: Props) => {
       action="Log Out"
     >
       <View style={{ gap: SPACING.sm }}>
-        <Text style={{ color: colors.text, fontSize: FONT.base }}>
+        <Text style={{ color: colors.onSurface, fontSize: FONT.base }}>
           We sent a verification link to{" "}
           <Text style={{ fontWeight: "700" }}>{email}</Text>.
         </Text>
-        <Text style={{ color: colors.text, fontSize: FONT.base }}>
+        <Text style={{ color: colors.onSurface, fontSize: FONT.base }}>
           You&apos;ll need to verify it and sign back in before continuing.
         </Text>
       </View>

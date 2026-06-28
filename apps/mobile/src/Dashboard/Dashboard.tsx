@@ -1,7 +1,7 @@
 import { useProgram, useMe } from "@liftledger/api-client";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "../paper";
+import { useTheme } from "react-native-paper";
 import { LogoSpinner } from "../components/LogoSpinner";
 import { floatingTabBarClearance } from "../RootNavigator/TabNavigator/FloatingTabBar";
 import { SPACING } from "../theme";
@@ -28,8 +28,8 @@ export const Dashboard = () => {
         alignItems: "center",
         justifyContent: "center",
         paddingHorizontal: SPACING.lg,
-        paddingTop: SPACING.lg,
-        paddingBottom: floatingTabBarClearance(insets.bottom),
+        paddingTop: SPACING.xl,
+        paddingBottom: floatingTabBarClearance(insets.bottom + SPACING.xl),
       }}
     >
       {curProgram ? (

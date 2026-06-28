@@ -15,7 +15,7 @@ import {
   Text,
   TextInput,
   useTheme,
-} from "../paper";
+} from "react-native-paper";
 import { useThemePreference } from "../providers/ThemeProvider";
 import { AppTextInput } from "../components/inputs";
 import { INPUT_HEIGHT, RADIUS, SPACING } from "../theme";
@@ -97,7 +97,7 @@ export const CreateAccount = () => {
     colors: {
       ...colors,
       surface: colors.background,
-      surfaceDisabled: colors.textDisabled,
+      surfaceDisabled: colors.onSurfaceDisabled,
     },
   };
 
@@ -134,7 +134,7 @@ export const CreateAccount = () => {
               disabled
               theme={{
                 colors: {
-                  surfaceDisabled: scheme === "dark" ? colors.dark : "white",
+                  surfaceDisabled: scheme === "dark" ? colors.surfaceVariant : "white",
                 },
               }}
             />
@@ -154,7 +154,7 @@ export const CreateAccount = () => {
               }
               theme={{
                 colors: {
-                  surfaceDisabled: scheme === "dark" ? colors.dark : "white",
+                  surfaceDisabled: scheme === "dark" ? colors.surfaceVariant : "white",
                 },
               }}
             />
@@ -173,7 +173,7 @@ export const CreateAccount = () => {
               </PaperProvider>
             </View>
             {error !== "" && (
-              <Text style={{ color: colors.danger, textAlign: "center" }}>
+              <Text style={{ color: colors.error, textAlign: "center" }}>
                 {error}
               </Text>
             )}
@@ -186,7 +186,7 @@ export const CreateAccount = () => {
               >
                 Create account
               </Button>
-              <Button mode="text" textColor={colors.danger} onPress={logout}>
+              <Button mode="text" textColor={colors.error} onPress={logout}>
                 Log out
               </Button>
             </View>

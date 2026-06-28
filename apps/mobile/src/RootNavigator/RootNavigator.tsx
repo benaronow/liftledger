@@ -5,7 +5,7 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth0 } from "react-native-auth0";
-import { useTheme } from "../paper";
+import { useTheme } from "react-native-paper";
 import { LogoSpinner } from "../components/LogoSpinner";
 import { useThemePreference } from "../providers/ThemeProvider";
 import { Welcome } from "../Welcome";
@@ -27,9 +27,9 @@ export const RootNavigator = () => {
       ...baseNavTheme.colors,
       primary: colors.primary,
       background: colors.background,
-      card: colors.dark,
-      text: colors.text,
-      border: colors.dark,
+      card: colors.surfaceVariant,
+      text: colors.onSurface,
+      border: colors.surfaceVariant,
       notification: colors.secondary,
     },
   };

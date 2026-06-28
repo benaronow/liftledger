@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Badge } from "../../components/Badge";
 import { Info, InfoAction } from "../../components/Info";
 import { FAB_SIZE, FAB_TOP, titleRightInset } from "../../layout";
-import { Text, useTheme } from "../../paper";
+import { Text, useTheme } from "react-native-paper";
 import { ProgressChart } from "../../Progress/ProgressChart";
 import type { RootStackParamList } from "../../RootNavigator/types";
 import { FONT, SPACING } from "../../theme";
@@ -96,7 +96,7 @@ export const ExercisePage = ({
               flexShrink: 1,
               fontSize: FONT.xl,
               fontWeight: "700",
-              color: colors.text,
+              color: colors.onSurface,
             }}
           >
             {exercise.name}
@@ -105,7 +105,7 @@ export const ExercisePage = ({
             <MaterialCommunityIcons
               name="check-circle"
               size={22}
-              color={colors.success}
+              color={colors.tertiary}
             />
           )}
           {exercise.addedOn && <Badge label="ADD-ON" />}
@@ -114,7 +114,7 @@ export const ExercisePage = ({
           style={{
             fontSize: FONT.base,
             fontWeight: "600",
-            color: colors.textDisabled,
+            color: colors.onSurfaceDisabled,
           }}
         >
           {exercise.apparatus}

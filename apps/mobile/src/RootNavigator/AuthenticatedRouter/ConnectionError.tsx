@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Button, Text, useTheme } from "../../paper";
+import { Button, Text, useTheme } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../../theme";
 
 export const ConnectionError = ({ onRetry }: { onRetry: () => void }) => {

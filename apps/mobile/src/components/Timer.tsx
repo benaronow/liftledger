@@ -2,7 +2,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useClearTimerEnd, useMe, useTimerEnd } from "@liftledger/api-client";
 import { useEffect, useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Surface, Text, TouchableRipple, useTheme } from "../paper";
+import { Surface, Text, TouchableRipple, useTheme } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../theme";
 
 const buttonStyle = {
@@ -62,7 +62,7 @@ export const Timer = () => {
         borderRadius: RADIUS.md,
         zIndex: 100,
         top: insets.top + 50,
-        backgroundColor: colors.container,
+        backgroundColor: colors.surface,
       }}
     >
       {open ? (
@@ -92,7 +92,7 @@ export const Timer = () => {
               ...buttonStyle,
               borderTopRightRadius: RADIUS.md,
               borderBottomRightRadius: RADIUS.md,
-              backgroundColor: colors.danger,
+              backgroundColor: colors.error,
             }}
             onPress={() => curUser?._id && triggerClearTimerEnd(curUser._id)}
           >
@@ -105,7 +105,7 @@ export const Timer = () => {
             ...buttonStyle,
             borderRadius: RADIUS.md,
             backgroundColor:
-              timeString === "00 : 00" ? colors.success : colors.primary,
+              timeString === "00 : 00" ? colors.tertiary : colors.primary,
           }}
           onPress={() => setOpen(true)}
         >

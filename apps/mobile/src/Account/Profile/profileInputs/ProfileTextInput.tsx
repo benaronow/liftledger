@@ -1,4 +1,4 @@
-import { useTheme } from "../../../paper";
+import { useTheme } from "react-native-paper";
 import { INPUT_HEIGHT, RADIUS } from "../../../theme";
 import { ProfileInputContainer } from "./ProfileInputContainer";
 import { TextInput } from "react-native-paper";
@@ -48,7 +48,7 @@ export const ProfileTextInput = ({
           mode="outlined"
           disabled={disabled}
           theme={{
-            colors: { surfaceDisabled: colors.textDisabled },
+            colors: { surfaceDisabled: colors.onSurfaceDisabled },
           }}
           onFocus={onFocus}
           onBlur={onBlur}

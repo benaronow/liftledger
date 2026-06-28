@@ -7,7 +7,7 @@ import {
 } from "@liftledger/api-client";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
-import { Button, IconButton, Text, useTheme } from "../paper";
+import { Button, IconButton, Text, useTheme } from "react-native-paper";
 import { LabeledSelect } from "../components/inputs";
 import { FONT, RADIUS, SPACING } from "../theme";
 

@@ -1,6 +1,6 @@
 import { Image, View } from "react-native";
 import { useAuth0 } from "react-native-auth0";
-import { useTheme } from "../../paper";
+import { useTheme } from "react-native-paper";
 
 export const ProfilePicture = () => {
   const { user: auth0User } = useAuth0();

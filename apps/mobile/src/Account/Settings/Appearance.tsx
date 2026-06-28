@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
 import { Animated, Pressable, View } from "react-native";
-import { Text, useTheme } from "../../paper";
+import { Text, useTheme } from "react-native-paper";
 import { SectionCard } from "../../components/SectionCard";
 import {
   ThemePreference,
@@ -66,7 +66,7 @@ export const Appearance = () => {
               left: 0,
               width: segmentWidth,
               borderRadius: RADIUS.md,
-              backgroundColor: colors.dark,
+              backgroundColor: colors.surfaceVariant,
               transform: [{ translateX: thumbX }],
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 1 },
@@ -95,12 +95,12 @@ export const Appearance = () => {
               <MaterialCommunityIcons
                 name={opt.icon}
                 size={24}
-                color={selected ? colors.primary : colors.textDisabled}
+                color={selected ? colors.primary : colors.onSurfaceDisabled}
               />
               <Text
                 style={{
                   fontSize: FONT.sm,
-                  color: selected ? colors.primary : colors.text,
+                  color: selected ? colors.primary : colors.onSurface,
                   fontWeight: selected ? "700" : "400",
                 }}
               >

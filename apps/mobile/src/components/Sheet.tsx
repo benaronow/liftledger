@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "../paper";
+import { useTheme } from "react-native-paper";
 import { SPACING } from "../theme";
 import { SheetAction, SheetHeader } from "./SheetHeader";
 
@@ -26,7 +26,7 @@ export const Sheet = ({ title, actions, children, keyboardAvoiding }: Props) => 
     <View
       style={{
         flex: 1,
-        backgroundColor: colors.dark,
+        backgroundColor: colors.surfaceVariant,
         paddingTop: (Platform.OS === "android" ? insets.top : 0) + SPACING.md,
       }}
     >
@@ -37,7 +37,7 @@ export const Sheet = ({ title, actions, children, keyboardAvoiding }: Props) => 
 
   return keyboardAvoiding ? (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: colors.dark }}
+      style={{ flex: 1, backgroundColor: colors.surfaceVariant }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       {body}

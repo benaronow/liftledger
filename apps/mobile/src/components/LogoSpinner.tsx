@@ -1,7 +1,7 @@
 import { HeaderHeightContext } from "@react-navigation/elements";
 import { useContext, useEffect, useRef } from "react";
 import { Animated, Easing, View } from "react-native";
-import { useTheme } from "../paper";
+import { useTheme } from "react-native-paper";
 
 export const LogoSpinner = () => {
   const spin = useRef(new Animated.Value(0)).current;

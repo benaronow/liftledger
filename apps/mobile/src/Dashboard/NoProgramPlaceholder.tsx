@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Button, Text, useTheme } from "../paper";
+import { Button, Text, useTheme } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../theme";
 import { TabNav } from "../RootNavigator/types";
 
@@ -15,7 +15,7 @@ export const NoProgramPlaceholder = () => {
           fontSize: FONT.base,
           fontWeight: "900",
           textAlign: "center",
-          color: colors.text,
+          color: colors.onSurface,
         }}
       >
         Create a training program to get started!

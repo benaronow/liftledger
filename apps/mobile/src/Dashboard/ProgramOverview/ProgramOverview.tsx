@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Text, useTheme } from "../../paper";
+import { Text, useTheme } from "react-native-paper";
 import { FONT, SPACING } from "../../theme";
 import { Program } from "@liftledger/shared";
 import { MetricQuadrants } from "./MetricQuadrants";
@@ -18,8 +18,6 @@ export const ProgramOverview = ({ program }: Props) => {
         alignSelf: "stretch",
         alignItems: "center",
         gap: SPACING.xl,
-        paddingTop: SPACING.md,
-        paddingBottom: SPACING.xl,
       }}
     >
       <View style={{ alignItems: "center" }}>
@@ -28,12 +26,14 @@ export const ProgramOverview = ({ program }: Props) => {
             fontSize: FONT.base,
             fontWeight: "900",
             marginBottom: SPACING.xs,
-            color: colors.text,
+            color: colors.onSurface,
           }}
         >
           Currently Completing:
         </Text>
-        <Text style={{ fontSize: 24, fontWeight: "900", color: colors.text }}>
+        <Text
+          style={{ fontSize: 24, fontWeight: "900", color: colors.onSurface }}
+        >
           {program.name}
         </Text>
       </View>

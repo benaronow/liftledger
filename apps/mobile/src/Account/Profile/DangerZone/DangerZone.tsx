@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useTheme } from "../../../paper";
+import { useTheme } from "react-native-paper";
 import { SectionCard } from "../../../components/SectionCard";
 import { DeleteAccountDialog } from "./DeleteAccountDialog";
 import { Button } from "react-native-paper";
@@ -12,7 +12,7 @@ export const DangerZone = () => {
     <>
       <SectionCard
         title="Danger Zone"
-        background={colors.danger}
+        background={colors.error}
         titleColor="white"
       >
         <Button
@@ -22,7 +22,7 @@ export const DangerZone = () => {
             justifyContent: "center",
           }}
           buttonColor="white"
-          textColor={colors.danger}
+          textColor={colors.error}
           mode="contained"
           icon="delete"
           onPress={() => setOpen(true)}

@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ReactNode } from "react";
 import { View } from "react-native";
-import { IconButton, PaperProvider, Surface, Text, useTheme } from "../paper";
+import { IconButton, PaperProvider, Surface, Text, useTheme } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../theme";
 
 export type InfoActionVariant = "primary" | "danger";
@@ -44,10 +44,10 @@ export const Info = ({
   const containerColor = (action: InfoAction) =>
     action.variant === "danger"
       ? action.disabled
-        ? colors.dangerDisabled
-        : colors.danger
+        ? colors.errorContainer
+        : colors.error
       : action.disabled
-        ? colors.primaryDisabled
+        ? colors.surfaceDisabled
         : colors.primary;
 
   return (
@@ -67,12 +67,12 @@ export const Info = ({
             gap: SPACING.md,
             paddingVertical: SPACING.md,
             paddingHorizontal: SPACING.md,
-            backgroundColor: colors.container,
+            backgroundColor: colors.surface,
           }}
         >
           <Text
             style={{
-              color: colors.text,
+              color: colors.onSurface,
               fontSize: FONT.base,
               fontWeight: "800",
               alignSelf: "flex-start",
@@ -125,7 +125,7 @@ export const Info = ({
                       mode="contained"
                       containerColor={containerColor(action)}
                       iconColor={
-                        action.disabled ? colors.textDisabled : colors.onPrimary
+                        action.disabled ? colors.onSurfaceDisabled : colors.onPrimary
                       }
                       disabled={action.disabled}
                       onPress={action.onPress}
@@ -163,7 +163,7 @@ export const Info = ({
               <MaterialCommunityIcons
                 name="alert"
                 size={26}
-                color={colors.danger}
+                color={colors.error}
               />
             </View>
             <Text

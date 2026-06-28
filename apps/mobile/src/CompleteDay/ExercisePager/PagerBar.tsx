@@ -3,7 +3,7 @@ import type { Exercise } from "@liftledger/shared";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomBlur } from "../../components/BottomBlur";
-import { IconButton, useTheme } from "../../paper";
+import { IconButton, useTheme } from "react-native-paper";
 import { SPACING } from "../../theme";
 
 const BAR_HEIGHT = 56;
@@ -35,7 +35,7 @@ export const PagerBar = ({ pageIdx, onPageChange, onFinish }: Props) => {
   const dotColor = (exercise: Exercise, idx: number) => {
     if (idx === pageIdx) return colors.secondary;
     if (isExerciseComplete(exercise)) return colors.primary;
-    return colors.textDisabled;
+    return colors.onSurfaceDisabled;
   };
 
   return (
@@ -96,9 +96,9 @@ export const PagerBar = ({ pageIdx, onPageChange, onFinish }: Props) => {
             accessibilityLabel="Finish day"
             mode="contained"
             containerColor={
-              isDayComplete ? colors.success : colors.primaryDisabled
+              isDayComplete ? colors.tertiary : colors.surfaceDisabled
             }
-            iconColor={isDayComplete ? "white" : colors.textDisabled}
+            iconColor={isDayComplete ? "white" : colors.onSurfaceDisabled}
             disabled={!isDayComplete}
             onPress={onFinish}
           />

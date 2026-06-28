@@ -1,5 +1,5 @@
 import { View, type LayoutChangeEvent } from "react-native";
-import { useTheme } from "../../../paper";
+import { useTheme } from "react-native-paper";
 
 type Props = {
   fillPercent: number;
@@ -22,7 +22,7 @@ export const ContinuousBar = ({
       style={{
         flex: 1,
         justifyContent: "flex-end",
-        backgroundColor: background ?? colors.container,
+        backgroundColor: background ?? colors.surface,
         overflow: "hidden",
       }}
     >

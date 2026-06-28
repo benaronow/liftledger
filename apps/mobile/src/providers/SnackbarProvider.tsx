@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import { View } from "react-native";
-import { Icon, Snackbar, Text, useTheme } from "../paper";
+import { Icon, Snackbar, Text, useTheme } from "react-native-paper";
 import { SPACING } from "../theme";
 
 type SnackbarVariant = "success" | "error";
@@ -39,7 +39,7 @@ export const SnackbarProvider = ({ children }: PropsWithChildren) => {
   );
 
   const icon = variant === "success" ? "check-circle" : "alert-circle";
-  const iconColor = variant === "success" ? colors.success : colors.danger;
+  const iconColor = variant === "success" ? colors.tertiary : colors.error;
 
   return (
     <SnackbarContext.Provider value={{ showSnackbar }}>

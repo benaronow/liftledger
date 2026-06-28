@@ -1,7 +1,7 @@
 import { useRequestPasswordReset } from "@liftledger/api-client";
 import { AxiosError } from "axios";
 import { View } from "react-native";
-import { Text, useTheme } from "../../../../paper";
+import { Text, useTheme } from "react-native-paper";
 import { ConfirmationDialog } from "../../../../components/ConfirmationDialog";
 import { useSnackbar } from "../../../../providers/SnackbarProvider";
 import { FONT, SPACING } from "../../../../theme";
@@ -42,7 +42,7 @@ export const ResetPasswordDialog = ({ open, onClose }: Props) => {
       <View style={{ gap: SPACING.sm, width: "100%" }}>
         <Text
           style={{
-            color: colors.text,
+            color: colors.onSurface,
             fontSize: FONT.base,
           }}
         >
@@ -50,7 +50,7 @@ export const ResetPasswordDialog = ({ open, onClose }: Props) => {
         </Text>
         <Text
           style={{
-            color: colors.text,
+            color: colors.onSurface,
             fontSize: FONT.base,
             fontWeight: "700",
           }}

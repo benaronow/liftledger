@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { LayoutChangeEvent, View } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
 import { LogoSpinner } from "../../components/LogoSpinner";
-import { Text, useTheme } from "../../paper";
+import { Text, useTheme } from "react-native-paper";
 import { FONT, SPACING } from "../../theme";
 import { ExerciseTooltip } from "./ExerciseTooltip";
 import { NoDataPlaceholder } from "./NoDataPlaceholder";
@@ -52,7 +52,7 @@ export const ProgressChart = ({
   // One color per gym line, cycled if there are more gyms than colors (web
   // parity). Theme-derived so the lines track the active light/dark palette.
   const gymColors = useMemo(
-    () => [colors.primary, colors.secondary, colors.success, colors.warning],
+    () => [colors.primary, colors.secondary, colors.tertiary, colors.tertiaryContainer],
     [colors],
   );
 
@@ -223,17 +223,14 @@ export const ProgressChart = ({
             maxValue={maxValue || undefined}
             noOfSections={4}
             rulesType="dashed"
-            rulesColor={colors.textDisabled}
-            yAxisColor={colors.textDisabled}
-            xAxisColor={colors.textDisabled}
-            yAxisTextStyle={{ color: colors.text, fontSize: 11 }}
+            rulesColor={colors.onSurfaceDisabled}
+            yAxisColor={colors.onSurfaceDisabled}
+            xAxisColor={colors.onSurfaceDisabled}
+            yAxisTextStyle={{ color: colors.onSurface, fontSize: 11 }}
             color={gymColors[0]}
             dataPointsRadius={4}
             pointerConfig={{
               pointerColor: colors.primary,
-              // One focus-dot color per dataSet, in the same order
-              // (carrier first, then each gym line) so the highlighted point
-              // matches its own line's color instead of the global default.
               pointerColorsForDataSet: [
                 "transparent",
                 ...gyms.map((_, i) => gymColors[i % gymColors.length]),
@@ -242,11 +239,6 @@ export const ProgressChart = ({
               showPointerStrip: true,
               pointerStripColor: "white",
               pointerStripWidth: 2,
-              // We keep gifted's vertical auto-adjust (flips above a low point),
-              // but override the horizontal: it otherwise throws the label fully
-              // to one side near the edges. We want it centered over the point,
-              // clamped to the plot. translateX converts gifted's offset into
-              // that. pointerLabelHeight is needed for the vertical flip.
               pointerLabelWidth: TOOLTIP_WIDTH,
               pointerLabelHeight: TOOLTIP_HEIGHT,
               autoAdjustPointerLabelPosition: true,
@@ -257,16 +249,8 @@ export const ProgressChart = ({
                 index: number,
               ) => {
                 const W = TOOLTIP_WIDTH;
-                // True point center, and gifted's internal pointerX (offset left
-                // by pointerRadius + 1; see LineChart setPointerX). The label is
-                // positioned at `giftedLeft + gPx`, where giftedLeft comes from
-                // gifted's auto-adjust branch (which also keys off gPx).
                 const px = pointerXAt(index);
                 const gPx = px - (POINTER_RADIUS + 1);
-                // gifted's right-edge branch keys off its totalWidth, which sums
-                // spacing over ALL n points (= initialSpacing + n*spacing +
-                // endSpacing), NOT plotWidth — so we must use the same value or
-                // the "flip left" decision diverges for near-right points.
                 const giftedTotalWidth =
                   firstSpacing + chartExercises.length * spacing + END_SPACING;
                 const giftedLeft =
@@ -275,7 +259,6 @@ export const ProgressChart = ({
                     : gPx > giftedTotalWidth - W / 2
                       ? -W - 4
                       : -W / 2 + 5;
-                // Center the box on the true point, clamped to the plot.
                 const desiredLeft = Math.max(
                   0,
                   Math.min(px - W / 2, plotWidth - W),
@@ -321,7 +304,7 @@ export const ProgressChart = ({
               />
               <Text
                 style={{
-                  color: colors.text,
+                  color: colors.onSurface,
                   fontSize: FONT.base,
                   fontWeight: "700",
                 }}

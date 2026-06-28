@@ -3,7 +3,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { View, type LayoutChangeEvent } from "react-native";
 import { useCurrentDay } from "@liftledger/api-client";
-import { Text, TouchableRipple, useTheme } from "../../../paper";
+import { Text, TouchableRipple, useTheme } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../../../theme";
 import { TabNav } from "../../../RootNavigator/types";
 import {
@@ -67,7 +67,7 @@ export const MetricQuadrants = ({ program }: Props) => {
           marginTop: -DARK_RING_DIAMETER / 2,
           marginLeft: -DARK_RING_DIAMETER / 2,
           borderRadius: RADIUS.pill,
-          backgroundColor: colors.dark,
+          backgroundColor: colors.surfaceVariant,
         }}
       />
 

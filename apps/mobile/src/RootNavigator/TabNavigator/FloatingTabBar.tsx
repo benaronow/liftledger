@@ -2,7 +2,7 @@ import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useEffect, useRef } from "react";
 import { Animated, Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "../../paper";
+import { useTheme } from "react-native-paper";
 import { SPACING } from "../../theme";
 
 const TAB_BAR_HEIGHT = 68;
@@ -66,7 +66,7 @@ export const FloatingTabBar = ({
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.3,
           shadowRadius: 8,
-          backgroundColor: colors.dark,
+          backgroundColor: colors.surfaceVariant,
         }}
       >
         {/* Single circle that slides to sit behind the focused tab. */}
@@ -92,7 +92,7 @@ export const FloatingTabBar = ({
           const label =
             typeof options.title === "string" ? options.title : route.name;
           const isFocused = state.index === index;
-          const color = isFocused ? colors.secondary : colors.textDisabled;
+          const color = isFocused ? colors.secondary : colors.onSurfaceDisabled;
 
           const onPress = () => {
             const event = navigation.emit({

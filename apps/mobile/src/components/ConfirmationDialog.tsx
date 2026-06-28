@@ -7,7 +7,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { Button, Dialog, Portal, Text, useTheme } from "../paper";
+import { Button, Dialog, Portal, Text, useTheme } from "react-native-paper";
 import { FONT, SPACING } from "../theme";
 
 interface Props {
@@ -59,7 +59,7 @@ export const ConfirmationDialog = ({
           onDismiss={onClose}
           dismissable={!confirming}
           dismissableBackButton={!confirming}
-          style={{ backgroundColor: colors.dark}}
+          style={{ backgroundColor: colors.surfaceVariant}}
         >
           <TouchableWithoutFeedback
             onPress={Keyboard.dismiss}
@@ -87,21 +87,21 @@ export const ConfirmationDialog = ({
                   <MaterialCommunityIcons
                     name={icon as keyof typeof MaterialCommunityIcons.glyphMap}
                     size={24}
-                    color={destructive ? colors.danger : colors.primary}
+                    color={destructive ? colors.error : colors.primary}
                   />
                 )}
               </View>
               <Dialog.Content style={{ paddingBottom: SPACING.sm }}>
                 <View style={{ width: "100%", gap: SPACING.sm }}>
                   {description && (
-                    <Text style={{ color: colors.text, fontSize: FONT.base }}>
+                    <Text style={{ color: colors.onSurface, fontSize: FONT.base }}>
                       {description}
                     </Text>
                   )}
                   {emphasis && (
                     <Text
                       style={{
-                        color: colors.text,
+                        color: colors.onSurface,
                         fontSize: FONT.base,
                         fontWeight: "700",
                       }}
@@ -123,7 +123,7 @@ export const ConfirmationDialog = ({
             }}
           >
             <Button
-              textColor={colors.danger}
+              textColor={colors.error}
               onPress={onClose}
               disabled={confirming}
             >

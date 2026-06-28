@@ -5,7 +5,7 @@ import {
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth0 } from "react-native-auth0";
 import { useAuth0Profile, useMe } from "@liftledger/api-client";
-import { useTheme } from "../../paper";
+import { useTheme } from "react-native-paper";
 import { AvatarButton } from "./AvatarButton";
 import { ConnectionError } from "./ConnectionError";
 import { LogoutButton } from "./LogoutButton";
@@ -75,7 +75,7 @@ export const AuthenticatedRouter = () => {
     <>
       <Stack.Navigator
         screenOptions={{
-          headerStyle: { backgroundColor: colors.dark },
+          headerStyle: { backgroundColor: colors.surfaceVariant },
           headerShadowVisible: false,
           headerTintColor: scheme === "dark" ? "white" : "black",
           headerBackButtonDisplayMode: "minimal",

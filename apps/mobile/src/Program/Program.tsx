@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { LogoSpinner } from "../components/LogoSpinner";
 import type { TabParamList } from "../RootNavigator/types";
-import { useTheme } from "../paper";
+import { useTheme } from "react-native-paper";
 import { ProgramFAB } from "./ProgramFAB";
 import { EditorView } from "./EditorView";
 import { EMPTY_PROGRAM } from "./emptyProgram";

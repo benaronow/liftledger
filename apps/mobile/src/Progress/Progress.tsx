@@ -6,24 +6,22 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LogoSpinner } from "../components/LogoSpinner";
 import { floatingTabBarClearance } from "../RootNavigator/TabNavigator/FloatingTabBar";
 import type { TabParamList } from "../RootNavigator/types";
-import { Surface, Text, useTheme } from "../paper";
-import { FONT, RADIUS, SPACING } from "../theme";
+import { useTheme } from "react-native-paper";
+import { SPACING } from "../theme";
 import { ExerciseSelector } from "./ExerciseSelector";
 import { ProgressChart } from "./ProgressChart";
+import { SectionCard } from "../components/SectionCard";
 
 export const Progress = () => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { params } = useRoute<RouteProp<TabParamList, "Progress">>();
 
-  // Seed from route params when deep-linked (CompleteDay's "full progress"),
-  // otherwise useExerciseSelection seeds to the first exercise with history.
   const [selectedName, setSelectedName] = useState(params?.name ?? "");
   const [selectedApparatus, setSelectedApparatus] = useState(
     params?.apparatus ?? "",
   );
 
-  // Re-apply params when navigated here again while the tab is already mounted.
   useEffect(() => {
     if (params?.name) {
       setSelectedName(params.name);
@@ -43,14 +41,14 @@ export const Progress = () => {
     <View
       style={{
         flex: 1,
-        paddingBottom: floatingTabBarClearance(insets.bottom),
+        paddingBottom: floatingTabBarClearance(insets.bottom + SPACING.xl),
         backgroundColor: colors.background,
       }}
     >
       <View
         style={{
           flexDirection: "column",
-          backgroundColor: colors.dark,
+          backgroundColor: colors.surfaceVariant,
           marginBottom: SPACING.lg,
         }}
       >
@@ -65,33 +63,18 @@ export const Progress = () => {
         style={{
           flex: 1,
           paddingHorizontal: SPACING.lg,
-          marginBottom: SPACING.sm,
         }}
       >
-        <Surface
-          style={{
-            flex: 1,
-            paddingTop: SPACING.lg,
-            paddingBottom: SPACING.sm,
-            borderRadius: RADIUS.lg,
-          }}
+        <SectionCard
+          title="All Progress"
+          background={colors.secondaryContainer}
+          style={{ flex: 1 }}
         >
-          <Text
-            style={{
-              paddingHorizontal: SPACING.lg,
-              marginBottom: SPACING.sm,
-              color: colors.text,
-              fontSize: FONT.base,
-              fontWeight: "800",
-            }}
-          >
-            All Progress
-          </Text>
           <ProgressChart
             selectedName={selectedName}
             selectedApparatus={selectedApparatus}
           />
-        </Surface>
+        </SectionCard>
       </View>
     </View>
   );

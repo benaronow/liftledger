@@ -10,7 +10,7 @@ import { Fragment, useEffect, useState } from "react";
 import { View } from "react-native";
 import { DatePickerInput } from "react-native-paper-dates";
 import { SearchableSelect } from "../../../components/SearchableSelect";
-import { PaperProvider, useTheme } from "../../../paper";
+import { PaperProvider, useTheme } from "react-native-paper";
 import { AddRow } from "../../../components/AddRow";
 import { AppTextInput, NumberInput } from "../../../components/inputs";
 import { SectionCard } from "../../../components/SectionCard";
@@ -147,7 +147,7 @@ export const EditWeek = () => {
     colors: {
       ...colors,
       surface: colors.background,
-      surfaceDisabled: colors.textDisabled,
+      surfaceDisabled: colors.onSurfaceDisabled,
     },
   };
 

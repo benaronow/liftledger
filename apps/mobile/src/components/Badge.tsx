@@ -1,9 +1,9 @@
-import { Text, useTheme } from "../paper";
+import { Text, useTheme } from "react-native-paper";
 import { RADIUS, SPACING } from "../theme";
 
 interface Props {
   label: string;
-  // Defaults to colors.container; pass an explicit color to keep contrast
+  // Defaults to colors.surface; pass an explicit color to keep contrast
   // against a surface that already uses the container color.
   background?: string;
 }
@@ -19,8 +19,8 @@ export const Badge = ({ label, background }: Props) => {
         fontSize: 10,
         fontWeight: "600",
         letterSpacing: 0.5,
-        color: colors.text,
-        backgroundColor: background ?? colors.container,
+        color: colors.onSurface,
+        backgroundColor: background ?? colors.surface,
         borderRadius: RADIUS.sm,
         overflow: "hidden",
       }}

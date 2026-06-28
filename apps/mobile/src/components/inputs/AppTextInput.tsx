@@ -1,6 +1,6 @@
 import { ComponentProps, useState } from "react";
 import { StyleSheet, TextInput as NativeTextInput, View } from "react-native";
-import { HelperText, Text, TextInput } from "../../paper";
+import { HelperText, Text, TextInput } from "react-native-paper";
 import { INPUT_HEIGHT, RADIUS } from "../../theme";
 
 // `error` is a validation message (string), not Paper's boolean — it both

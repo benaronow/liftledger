@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
-import { Button, Dialog, Portal, Text, useTheme } from "../../paper";
+import { Button, Dialog, Portal, Text, useTheme } from "react-native-paper";
 import { SPACING } from "../../theme";
 import { TimerSettings } from "../TimerSettings";
 

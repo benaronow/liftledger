@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Divider, IconButton, useTheme } from "../paper";
+import { Divider, IconButton, useTheme } from "react-native-paper";
 import { SPACING } from "../theme";
 
 interface Props {

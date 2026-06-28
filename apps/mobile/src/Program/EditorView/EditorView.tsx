@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { floatingTabBarClearance } from "../../RootNavigator/TabNavigator/FloatingTabBar";
-import { useTheme } from "../../paper";
+import { useTheme } from "react-native-paper";
 import { SPACING } from "../../theme";
 import { EditorTitle } from "./EditorTitle";
 
