@@ -20,7 +20,7 @@ export const PercentQuadrant = ({ program }: Props) => {
       corner="bl"
       label="COMPLETE"
       value={`${Math.round(percent * 100)}%`}
-      bar={<ContinuousBar fillPercent={percent} />}
+      bar={<ContinuousBar fillPercent={percent} pulse />}
     />
   );
 };
