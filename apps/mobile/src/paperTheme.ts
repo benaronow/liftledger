@@ -54,15 +54,12 @@ const buildColors = (p: ColorPalette, base: MD3Theme): AppColors => ({
     level4: p.lightContainer,
     level5: p.lightContainer,
   },
-  // The muted fill behind a skipped set chip (its only use). Pinned to the dark
-  // palette so it stays a dark gray with legible white text in both schemes —
-  // p.background would turn white in light mode and hide the chip's label.
   primaryDark: DARK_COLORS.background,
   dangerDisabled: p.dangerDisabled,
   warning: p.warning,
   success: p.success,
-  container: p.lightContainer,
-  dark: p.darkContainer,
+  container: p.darkContainer,
+  dark: p.lightContainer,
   text: p.text,
   textDisabled: p.textDisabled,
   danger: p.danger,
