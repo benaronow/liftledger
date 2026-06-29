@@ -1,6 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
-  DARK_COLORS,
   Exercise,
   Set,
   getCompletedSessionsInProgram,
@@ -46,7 +45,7 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
     set.completed
       ? colors.primary
       : set.skipped
-        ? DARK_COLORS.secondaryContainer
+        ? "#7D7D82"
         : nextSet
           ? colors.secondary
           : colors.surfaceDisabled;
@@ -212,6 +211,7 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
       })}
       <TouchableRipple
         testID="add-set"
+        accessibilityLabel="Add set"
         disabled={!canAddSet}
         style={{
           flexDirection: "row",

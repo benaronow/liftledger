@@ -30,11 +30,15 @@ export const TimerSettings = ({ onTimerStarted }: Props) => {
   const { trigger: triggerSetTimerEnd } = useSetTimerEnd();
   const { trigger: triggerUpdateTimerPresets } = useUpdateTimerPresets();
 
-  const [presetsState, setPresetsState] = useState<TimerPresets>();
+  const [presetsState, setPresetsState] = useState<TimerPresets | undefined>(
+    () => timerPresetsData?.timerPresets,
+  );
   const [presetEditIdx, setPresetEditIdx] = useState<number>();
 
   useEffect(() => {
-    setPresetsState(timerPresetsData?.timerPresets);
+    if (timerPresetsData?.timerPresets) {
+      setPresetsState(timerPresetsData.timerPresets);
+    }
   }, [timerPresetsData?.timerPresets]);
 
   const updatePresetsState = (idx: number, totalSeconds: number) => {
@@ -58,7 +62,9 @@ export const TimerSettings = ({ onTimerStarted }: Props) => {
   if (!curUser || !presetsState) return null;
 
   return (
-    <View style={{ width: "100%", gap: SPACING.md, paddingVertical: SPACING.xs }}>
+    <View
+      style={{ width: "100%", gap: SPACING.md, paddingVertical: SPACING.xs }}
+    >
       {Object.values(presetsState).map((preset, idx) => {
         const presetMins = Math.floor(preset / 60)
           .toString()
@@ -66,9 +72,27 @@ export const TimerSettings = ({ onTimerStarted }: Props) => {
         const presetSecs = (preset % 60).toString().padStart(2, "0");
         const isEditing = presetEditIdx === idx;
         return (
-          <View style={{ flexDirection: "row", alignItems: "center", width: "100%" }} key={idx}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              width: "100%",
+            }}
+            key={idx}
+          >
             {isEditing ? (
-              <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: SPACING.xs, paddingHorizontal: SPACING.xs, backgroundColor: "white", borderTopLeftRadius: 8, borderBottomLeftRadius: 8 }}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: SPACING.xs,
+                  paddingHorizontal: SPACING.xs,
+                  backgroundColor: "white",
+                  borderTopLeftRadius: 8,
+                  borderBottomLeftRadius: 8,
+                }}
+              >
                 <View style={cellStyle}>
                   <LabeledSelect
                     value={presetMins}

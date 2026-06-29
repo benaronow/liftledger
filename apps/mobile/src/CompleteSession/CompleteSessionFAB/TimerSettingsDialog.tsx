@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { KeyboardAvoidingView, Platform, View } from "react-native";
-import { Button, Dialog, Portal, Text, useTheme } from "react-native-paper";
+import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
+import { Button, Text, useTheme } from "react-native-paper";
+import { TopSheet } from "../../components/TopSheet";
 import { SPACING } from "../../theme";
 import { TimerSettings } from "../TimerSettings";
 
@@ -9,23 +10,13 @@ interface Props {
   onClose: () => void;
 }
 
-// A centered, solid dialog wrapping the timer presets. Mirrors
-// ConfirmationDialog's header row (title + inline icon) and content/action
-// spacing so it reads as part of the same dialog family; it stays bespoke
-// because its only action is Close (the presets self-dismiss on tap).
 export const TimerSettingsDialog = ({ open, onClose }: Props) => {
   const { colors } = useTheme();
 
-  if (!open) return null;
-
   return (
-    <Portal>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1, justifyContent: "center" }}
-        pointerEvents="box-none"
-      >
-        <Dialog visible={open} onDismiss={onClose}>
+    <TopSheet open={open} onClose={onClose}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={{ paddingHorizontal: SPACING.lg }}>
           <View
             style={{
               flexDirection: "row",
@@ -37,7 +28,10 @@ export const TimerSettingsDialog = ({ open, onClose }: Props) => {
               paddingHorizontal: SPACING.lg,
             }}
           >
-            <Text variant="headlineSmall" style={{ flexShrink: 1, textAlign: "center" }}>
+            <Text
+              variant="headlineSmall"
+              style={{ flexShrink: 1, textAlign: "center" }}
+            >
               Rest Timer
             </Text>
             <MaterialCommunityIcons
@@ -46,21 +40,21 @@ export const TimerSettingsDialog = ({ open, onClose }: Props) => {
               color={colors.primary}
             />
           </View>
-          <Dialog.Content style={{ paddingBottom: SPACING.sm }}>
+          <View style={{ paddingVertical: SPACING.md }}>
             <TimerSettings onTimerStarted={onClose} />
-          </Dialog.Content>
-          <Dialog.Actions
+          </View>
+          <View
             style={{
-              gap: SPACING.sm,
-              paddingTop: 0,
-              paddingHorizontal: SPACING.lg,
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              paddingTop: SPACING.sm,
               paddingBottom: SPACING.md,
             }}
           >
             <Button onPress={onClose}>Close</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </KeyboardAvoidingView>
-    </Portal>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    </TopSheet>
   );
 };

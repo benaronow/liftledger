@@ -1,14 +1,14 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 import {
   Animated,
+  BackHandler,
   Easing,
   LayoutChangeEvent,
-  Modal,
   Pressable,
   StyleSheet,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "react-native-paper";
+import { Portal, useTheme } from "react-native-paper";
 import { RADIUS, SPACING } from "../theme";
 
 interface Props {
@@ -21,12 +21,6 @@ interface Props {
 
 const DURATION = 250;
 
-// A content-height sheet that slides DOWN from the top edge of the screen
-// (as opposed to the OS pageSheet, which slides up from the bottom). It runs in
-// its own transparent full-screen Modal so it always covers the whole screen —
-// even when opened from inside another modal — letting it drop from the real top
-// rather than being clipped to a parent's bounds. It measures its own height so
-// it travels exactly its height and settles flush against the top.
 export const TopSheet = ({
   open,
   onClose,
@@ -57,8 +51,15 @@ export const TopSheet = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // Start the entrance only once we've measured the panel, so it slides in from
-  // fully off-screen rather than flashing at the top for a frame.
+  useEffect(() => {
+    if (!mounted) return;
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (dismissable) onClose();
+      return true;
+    });
+    return () => sub.remove();
+  }, [mounted, dismissable, onClose]);
+
   const onLayout = (e: LayoutChangeEvent) => {
     const next = e.nativeEvent.layout.height;
     if (next !== height) setHeight(next);
@@ -78,15 +79,8 @@ export const TopSheet = ({
     outputRange: [-(height + insets.top), 0],
   });
 
-  return (
-    <Modal
-      visible={mounted}
-      transparent
-      animationType="none"
-      onRequestClose={() => {
-        if (dismissable) onClose();
-      }}
-    >
+  return mounted ? (
+    <Portal>
       <Animated.View
         pointerEvents={open ? "auto" : "none"}
         style={[
@@ -101,7 +95,6 @@ export const TopSheet = ({
       </Animated.View>
       <Animated.View
         onLayout={onLayout}
-        // Invisible until measured (height === 0) to avoid a pre-animation flash.
         style={{
           position: "absolute",
           top: 0,
@@ -117,6 +110,6 @@ export const TopSheet = ({
       >
         {children}
       </Animated.View>
-    </Modal>
-  );
+    </Portal>
+  ) : null;
 };

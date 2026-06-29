@@ -1,5 +1,4 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { DARK_COLORS } from "@liftledger/shared";
 import { useMemo } from "react";
 import { View } from "react-native";
 import { useTheme } from "react-native-paper";
@@ -13,9 +12,9 @@ interface Props {
 export const ProgressIcon = ({ sign, isSetComplete, isSetSkipped }: Props) => {
   const { colors } = useTheme();
   const background = useMemo(() => {
-    if (!isSetComplete && !isSetSkipped) return DARK_COLORS.secondaryContainer;
+    if (!isSetComplete && !isSetSkipped) return "#7D7D82";
 
-    if (sign === undefined || isSetSkipped) return DARK_COLORS.secondaryContainer;
+    if (sign === undefined || isSetSkipped) return "#7D7D82";
 
     if (sign === 0) return colors.tertiaryContainer;
 
