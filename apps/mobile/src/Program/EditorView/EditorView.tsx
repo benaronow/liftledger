@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import { EditDay } from "./EditDay/EditDay";
-import { EditWeek } from "./EditWeek/EditWeek";
+import { EditSession } from "./EditSession/EditSession";
+import { EditRotation } from "./EditRotation/EditRotation";
 import { useTemplate } from "../TemplateProvider";
 import {
   Keyboard,
@@ -10,21 +10,21 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { floatingTabBarClearance } from "../../RootNavigator/TabNavigator/FloatingTabBar";
-import { useTheme } from "../../paper";
+import { useTheme } from "react-native-paper";
 import { SPACING } from "../../theme";
 import { EditorTitle } from "./EditorTitle";
 
 export const EditorView = () => {
-  const { editingDayIdx } = useTemplate();
+  const { editingSessionIdx } = useTemplate();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const scrollRef = useRef<ScrollView>(null);
 
-  // Toggling between week- and day-editing swaps the whole view, so snap back
+  // Toggling between rotation- and session-editing swaps the whole view, so snap back
   // to the top instantly rather than carrying over the previous scroll offset.
   useEffect(() => {
     scrollRef.current?.scrollTo({ y: 0, animated: false });
-  }, [editingDayIdx]);
+  }, [editingSessionIdx]);
 
   return (
     <ScrollView
@@ -47,7 +47,7 @@ export const EditorView = () => {
               alignItems: "center",
             }}
           >
-            {editingDayIdx === -1 ? <EditWeek /> : <EditDay />}
+            {editingSessionIdx === -1 ? <EditRotation /> : <EditSession />}
           </View>
         </View>
       </TouchableWithoutFeedback>

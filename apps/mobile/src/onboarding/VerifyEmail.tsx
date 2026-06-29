@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { View } from "react-native";
 import { useAuth0 } from "react-native-auth0";
 import { useResendVerification } from "@liftledger/api-client";
-import { Button, Text, useTheme } from "../paper";
+import { Button, Text, useTheme } from "react-native-paper";
 import { SPACING } from "../theme";
 import { useSnackbar } from "../providers/SnackbarProvider";
 import { useLogout } from "../RootNavigator/AuthenticatedRouter/useLogout";
@@ -59,19 +59,19 @@ export const VerifyEmail = ({ onRefresh }: Props) => {
         Verify your email
       </Text>
       <View style={{ alignItems: "center", gap: SPACING.xs }}>
-        <Text style={{ textAlign: "center", color: colors.textDisabled }}>
+        <Text style={{ textAlign: "center", color: colors.onSurfaceDisabled }}>
           We sent a verification link to
         </Text>
         <Text
           style={{
             textAlign: "center",
             fontWeight: "600",
-            color: colors.text,
+            color: colors.onSurface,
           }}
         >
           {user?.email}
         </Text>
-        <Text style={{ textAlign: "center", color: colors.textDisabled }}>
+        <Text style={{ textAlign: "center", color: colors.onSurfaceDisabled }}>
           Open it, then tap the button below.
         </Text>
       </View>
@@ -94,7 +94,7 @@ export const VerifyEmail = ({ onRefresh }: Props) => {
       </Button>
       <Button
         mode="text"
-        textColor={colors.danger}
+        textColor={colors.error}
         onPress={logout}
         compact
         labelStyle={{ marginVertical: 0 }}

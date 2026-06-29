@@ -1,1 +1,0 @@
-export { CompleteDayFooter } from "./CompleteDayFooter";

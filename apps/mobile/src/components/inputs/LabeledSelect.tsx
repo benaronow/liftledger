@@ -9,7 +9,7 @@ import {
   Text,
   TouchableRipple,
   useTheme,
-} from "../../paper";
+} from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FONT, RADIUS, SPACING } from "../../theme";
 import { LabeledInputContainer } from "./LabeledInputContainer";
@@ -59,7 +59,7 @@ export const LabeledSelect = ({
           flex: 1,
           borderRadius: RADIUS.md,
           height: height ?? 35,
-          backgroundColor: disabled ? colors.textDisabled : "white",
+          backgroundColor: disabled ? colors.onSurfaceDisabled : "white",
           justifyContent: "center",
           ...(renderEnd
             ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
@@ -79,7 +79,7 @@ export const LabeledSelect = ({
           <Text style={{ flex: 1, fontSize: FONT.base, color: "black" }} numberOfLines={1}>
             {value || EMPTY_LABEL}
           </Text>
-          <MaterialCommunityIcons name="chevron-down" size={16} color={colors.container} />
+          <MaterialCommunityIcons name="chevron-down" size={16} color={colors.surface} />
         </View>
       </TouchableRipple>
 
@@ -96,7 +96,7 @@ export const LabeledSelect = ({
                   borderTopRightRadius: RADIUS.xl,
                   paddingVertical: SPACING.md,
                   maxHeight: "60%",
-                  backgroundColor: colors.container,
+                  backgroundColor: colors.surface,
                 }}
               >
                 {label && (
@@ -118,7 +118,7 @@ export const LabeledSelect = ({
                     <List.Item
                       title={item || EMPTY_LABEL}
                       titleStyle={{
-                        color: item === value ? colors.primary : colors.text,
+                        color: item === value ? colors.primary : colors.onSurface,
                         fontWeight: item === value ? "700" : "400",
                       }}
                       onPress={() => select(item)}

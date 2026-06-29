@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { StyleProp, ViewStyle } from "react-native";
-import { Surface, Text, useTheme } from "../paper";
+import { Surface, Text, useTheme } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../theme";
 
 interface Props {
@@ -22,7 +22,7 @@ export const SectionCard = ({
 
   return (
     <Surface
-      elevation={1}
+      elevation={0}
       style={[
         {
           width: "100%",
@@ -30,7 +30,7 @@ export const SectionCard = ({
           gap: SPACING.md,
           paddingVertical: SPACING.md,
           paddingHorizontal: SPACING.md,
-          backgroundColor: background ?? colors.container,
+          backgroundColor: background ?? colors.primaryContainer,
         },
         style,
       ]}
@@ -38,7 +38,7 @@ export const SectionCard = ({
       {title && (
         <Text
           style={{
-            color: titleColor ?? colors.text,
+            color: titleColor ?? colors.onSurface,
             fontSize: FONT.base,
             fontWeight: "800",
             alignSelf: "flex-start",

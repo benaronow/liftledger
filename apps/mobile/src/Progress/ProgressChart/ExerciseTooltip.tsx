@@ -1,9 +1,8 @@
 import dayjs from "dayjs";
 import { View } from "react-native";
-import { Text, useTheme } from "../../paper";
+import { Text, useTheme } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../../theme";
 import type { ChartPoint } from "./types";
-import { useThemePreference } from "../../providers/ThemeProvider";
 
 export const ExerciseTooltip = ({
   items,
@@ -15,7 +14,6 @@ export const ExerciseTooltip = ({
   translateX: number;
 }) => {
   const { colors } = useTheme();
-  const { scheme } = useThemePreference();
   const present = items.filter((item) => item.exercise);
   if (present.length === 0) return null;
 
@@ -24,7 +22,7 @@ export const ExerciseTooltip = ({
   return (
     <View
       style={{
-        backgroundColor: scheme === "dark" ? colors.dark : colors.background,
+        backgroundColor: colors.background,
         borderRadius: RADIUS.sm,
         paddingVertical: SPACING.xs,
         paddingHorizontal: SPACING.sm,
@@ -35,7 +33,7 @@ export const ExerciseTooltip = ({
       {date && (
         <Text
           style={{
-            color: colors.text,
+            color: colors.onSurface,
             fontSize: 13,
             fontWeight: "700",
             marginBottom: 4,
@@ -53,7 +51,7 @@ export const ExerciseTooltip = ({
                 fontSize: FONT.sm,
                 fontWeight: "700",
                 marginBottom: 4,
-                color: item.color ?? colors.text,
+                color: item.color ?? colors.onSurface,
               }}
             >
               {item.gym}
@@ -61,7 +59,7 @@ export const ExerciseTooltip = ({
             {exercise.sets.map((set, setIdx) => (
               <Text
                 key={setIdx}
-                style={{ color: colors.text, fontSize: FONT.xs }}
+                style={{ color: colors.onSurface, fontSize: FONT.xs }}
               >
                 Set {setIdx + 1}: {set.weight ?? 0} {exercise.weightType} ×{" "}
                 {set.reps ?? 0} reps

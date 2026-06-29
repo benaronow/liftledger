@@ -1,5 +1,5 @@
 import { ScrollView } from "react-native";
-import { useTheme } from "../../paper";
+import { useTheme } from "react-native-paper";
 import { SPACING } from "../../theme";
 import { Appearance } from "./Appearance";
 

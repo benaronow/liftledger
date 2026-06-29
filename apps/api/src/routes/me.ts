@@ -107,7 +107,9 @@ const meRoutes = async (app: FastifyInstance) => {
         };
         return reply
           .code(res.status)
-          .send({ error: error.message ?? "Failed to send verification email" });
+          .send({
+            error: error.message ?? "Failed to send verification email",
+          });
       }
 
       return { ok: true };
@@ -149,6 +151,9 @@ const meRoutes = async (app: FastifyInstance) => {
       }
 
       try {
+        await ProgramModel.deleteMany({
+          _id: { $in: me.programs as unknown as string[] },
+        });
         await UserModel.findOneAndDelete({ _id: me._id });
       } catch (dbErr) {
         console.error(
@@ -356,8 +361,7 @@ const meRoutes = async (app: FastifyInstance) => {
 
       const trimmedName =
         typeof fullName === "string" ? fullName.trim() : undefined;
-      if (!trimmedName)
-        return reply.code(400).send({ error: "Invalid name" });
+      if (!trimmedName) return reply.code(400).send({ error: "Invalid name" });
 
       const tokenResult = await getAuth0Token();
       if (!tokenResult.ok)

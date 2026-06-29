@@ -5,7 +5,7 @@ appId: app.liftledger.mobile
     id: "set-row-${SET}"
 - extendedWaitUntil:
     visible:
-      text: "Skip Set"
+      id: "set-input-reps"
     timeout: 5000
 - waitForAnimationToEnd
 - tapOn: "Skip Set"

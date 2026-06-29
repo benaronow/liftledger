@@ -7,11 +7,10 @@ import type {
   Exercise,
   User,
 } from "@liftledger/shared";
-import { getCompletedDaysInProgram } from "@liftledger/shared";
+import { getCompletedSessionsInProgram } from "@liftledger/shared";
 import { authorizeCaller } from "../auth";
 
 const UPDATABLE_FIELDS = [
-  "birthday",
   "timerPresets",
   "gyms",
   "customExerciseNames",
@@ -95,19 +94,19 @@ const userByIdRoutes = async (app: FastifyInstance) => {
         const previousCompletedExercises: CompletedExercise[] = programs
           .flatMap((program) => {
             if (program._id === curProgram?._id) {
-              return getCompletedDaysInProgram(program).flatMap((day) =>
-                day.exercises.map((exercise) => ({
+              return getCompletedSessionsInProgram(program).flatMap((session) =>
+                session.exercises.map((exercise) => ({
                   ...exercise,
-                  completedDate: day.completedDate!,
+                  completedDate: session.completedDate!,
                 })),
               );
             }
 
-            return program.weeks.flatMap((week) =>
-              week.flatMap((day) =>
-                day.exercises.map((exercise) => ({
+            return program.rotations.flatMap((rotation) =>
+              rotation.flatMap((session) =>
+                session.exercises.map((exercise) => ({
                   ...exercise,
-                  completedDate: day.completedDate!,
+                  completedDate: session.completedDate!,
                 })),
               ),
             );
@@ -115,7 +114,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
           .reverse();
 
         const currentCompletedExercises: Exercise[] = curProgram
-          ? curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx].exercises
+          ? curProgram.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx].exercises
               .slice()
               .reverse()
           : [];
@@ -198,13 +197,13 @@ const userByIdRoutes = async (app: FastifyInstance) => {
           .code(400)
           .send({ error: "User does not have a current program" });
 
-      const weeks = program.weeks.slice(0, program.curWeekIdx + 1);
+      const rotations = program.rotations.slice(0, program.curRotationIdx + 1);
       const endDate = new Date();
 
       try {
         await ProgramModel.findOneAndUpdate(
           { _id: user.curProgram },
-          { $set: { weeks, endDate } },
+          { $set: { rotations, endDate } },
         );
       } catch (error) {
         return reply
@@ -216,7 +215,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
         try {
           await ProgramModel.findOneAndUpdate(
             { _id: user.curProgram },
-            { $set: { weeks: program.weeks }, $unset: { endDate: "" } },
+            { $set: { rotations: program.rotations }, $unset: { endDate: "" } },
           );
         } catch (revertErr) {
           console.error(

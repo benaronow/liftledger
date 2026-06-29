@@ -1,3 +1,3 @@
-export * from "./useCurrentDay";
+export * from "./useCurrentSession";
 export * from "./useExerciseOptions";
 export * from "./useExerciseSelection";

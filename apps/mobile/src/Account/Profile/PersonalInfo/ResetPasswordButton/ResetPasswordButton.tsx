@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, useTheme } from "../../../../paper";
+import { Button, useTheme } from "react-native-paper";
 import { ResetPasswordDialog } from "./ResetPasswordDialog";
 import { SPACING } from "../../../../theme";
 
@@ -23,7 +23,7 @@ export const ResetPasswordButton = ({ isConnectionUser }: Props) => {
           justifyContent: "center",
         }}
         buttonColor="white"
-        textColor={colors.danger}
+        textColor={colors.error}
         mode="contained"
         icon="lock-outline"
         onPress={() => setOpen(true)}

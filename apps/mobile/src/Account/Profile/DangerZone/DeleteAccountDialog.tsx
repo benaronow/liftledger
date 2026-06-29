@@ -2,7 +2,7 @@ import { useDeleteMe, useMe } from "@liftledger/api-client";
 import { useState } from "react";
 import { View } from "react-native";
 import { useAuth0 } from "react-native-auth0";
-import { Text, useTheme } from "../../../paper";
+import { Text, useTheme } from "react-native-paper";
 import { ConfirmationDialog } from "../../../components/ConfirmationDialog";
 import { FONT, SPACING } from "../../../theme";
 
@@ -45,7 +45,7 @@ export const DeleteAccountDialog = ({ open, onClose }: Props) => {
       <View style={{ gap: SPACING.sm, width: "100%" }}>
         <Text
           style={{
-            color: colors.text,
+            color: colors.onSurface,
             fontSize: FONT.base,
           }}
         >
@@ -53,7 +53,7 @@ export const DeleteAccountDialog = ({ open, onClose }: Props) => {
         </Text>
         <Text
           style={{
-            color: colors.text,
+            color: colors.onSurface,
             fontSize: FONT.base,
             fontWeight: "700",
           }}
@@ -62,7 +62,7 @@ export const DeleteAccountDialog = ({ open, onClose }: Props) => {
           lost.
         </Text>
         {error !== "" && (
-          <Text style={{ color: colors.danger, fontSize: FONT.sm }}>
+          <Text style={{ color: colors.error, fontSize: FONT.sm }}>
             {error}
           </Text>
         )}

@@ -5,7 +5,7 @@ import {
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth0 } from "react-native-auth0";
 import { useAuth0Profile, useMe } from "@liftledger/api-client";
-import { useTheme } from "../../paper";
+import { useTheme } from "react-native-paper";
 import { AvatarButton } from "./AvatarButton";
 import { ConnectionError } from "./ConnectionError";
 import { LogoutButton } from "./LogoutButton";
@@ -13,7 +13,7 @@ import { LogoSpinner } from "../../components/LogoSpinner";
 import { Timer } from "../../components/Timer";
 import { Account } from "../../Account";
 import { useThemePreference } from "../../providers/ThemeProvider";
-import { CompleteDay } from "../../CompleteDay";
+import { CompleteSession } from "../../CompleteSession";
 import { VerifyEmail } from "../../onboarding/VerifyEmail";
 import { CreateAccount } from "../../onboarding/CreateAccount";
 import { TabNavigator } from "../TabNavigator";
@@ -54,22 +54,28 @@ export const AuthenticatedRouter = () => {
     ?.response?.status;
   const accountMissing = status === 404;
 
+  // User is authenticated but Auth0 token/profile have not loaded
   if (!tokenVerified && !profile) return <LogoSpinner />;
 
+  // Auth0 profile loaded but email is not verified
   if (!emailVerified) return <VerifyEmail onRefresh={refreshProfile} />;
 
+  // Verified Auth0 profile loaded but db user has not loaded
   if (userLoading && !curUser && !userError) return <LogoSpinner />;
 
+  // Verified Auth0 profile loaded but db user has error
   if (userError && !accountMissing)
     return <ConnectionError onRetry={refreshMe} />;
-  
+
+  // Verified Auth0 profile loaded but db user doesn't exist
   if (!curUser) return <CreateAccount />;
 
+  // Verified Auth0 profile and db user both loaded
   return (
     <>
       <Stack.Navigator
         screenOptions={{
-          headerStyle: { backgroundColor: colors.dark },
+          headerStyle: { backgroundColor: colors.primaryContainer },
           headerShadowVisible: false,
           headerTintColor: scheme === "dark" ? "white" : "black",
           headerBackButtonDisplayMode: "minimal",
@@ -86,8 +92,8 @@ export const AuthenticatedRouter = () => {
           })}
         />
         <Stack.Screen
-          name="CompleteDay"
-          component={CompleteDay}
+          name="CompleteSession"
+          component={CompleteSession}
           // Disable swipe-to-go-back: a horizontal drag on the progress chart
           // (gifted-charts pointer) otherwise gets grabbed by the pop gesture and
           // slides back to the dashboard. The header back button still works.

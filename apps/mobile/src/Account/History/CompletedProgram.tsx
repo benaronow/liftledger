@@ -2,7 +2,7 @@ import { Program } from "@liftledger/shared";
 import dayjs from "dayjs";
 import { View } from "react-native";
 import { SPACING, RADIUS, FONT } from "../../theme";
-import { IconButton, Text, useTheme } from "../../paper";
+import { IconButton, Text, useTheme } from "react-native-paper";
 import { RootStackParamList } from "../../RootNavigator/types";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -20,9 +20,9 @@ export const CompletedProgram = ({ program, idx, disabled }: Props) => {
 
   const completedDate = () => {
     if (program.endDate) return program.endDate;
-    const finalWeek = program.weeks[program.weeks.length - 1];
-    const finalDay = finalWeek[finalWeek.length - 1];
-    return finalDay.completedDate;
+    const finalRotation = program.rotations[program.rotations.length - 1];
+    const finalSession = finalRotation[finalRotation.length - 1];
+    return finalSession.completedDate;
   };
 
   return (
@@ -38,11 +38,11 @@ export const CompletedProgram = ({ program, idx, disabled }: Props) => {
         borderRadius: RADIUS.sm,
         paddingLeft: SPACING.sm,
         overflow: "hidden",
-        backgroundColor: colors.container,
+        backgroundColor: colors.surface,
       }}
     >
       <Text
-        style={{ flex: 1, fontSize: FONT.sm, color: colors.text }}
+        style={{ flex: 1, fontSize: FONT.sm, color: colors.onSurface }}
         numberOfLines={1}
       >
         <Text style={{ fontWeight: "700" }}>{`${idx + 1}. ${program.name}`}</Text>
@@ -54,8 +54,8 @@ export const CompletedProgram = ({ program, idx, disabled }: Props) => {
         mode="contained"
         icon="content-copy"
         size={20}
-        containerColor={disabled ? colors.primaryDisabled : colors.primary}
-        iconColor={disabled ? colors.textDisabled : "white"}
+        containerColor={disabled ? colors.surfaceDisabled : colors.primary}
+        iconColor={disabled ? colors.onSurfaceDisabled : "white"}
         style={{
           width: 35,
           height: 35,

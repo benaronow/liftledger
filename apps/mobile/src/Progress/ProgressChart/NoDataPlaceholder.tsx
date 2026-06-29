@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { View } from "react-native";
-import { Text, useTheme } from "../../paper";
+import { Text, useTheme } from "react-native-paper";
 import { FONT, SPACING } from "../../theme";
 
 export const NoDataPlaceholder = () => {
@@ -17,10 +17,10 @@ export const NoDataPlaceholder = () => {
       <MaterialCommunityIcons
         name="chart-bar"
         size={96}
-        color={colors.textDisabled}
+        color={colors.onSurfaceDisabled}
         style={{ opacity: 0.5 }}
       />
-      <Text style={{ fontSize: FONT.lg, color: colors.textDisabled }}>No data for this exercise</Text>
+      <Text style={{ fontSize: FONT.lg, color: colors.onSurfaceDisabled }}>No data for this exercise</Text>
     </View>
   );
 };

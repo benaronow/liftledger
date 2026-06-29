@@ -48,13 +48,13 @@ export const EditProgram = () => {
   const initialTemplate = duplicateFromId
     ? templateFromProgram(sourceProgram!, completedExercises!)
     : (curProgram ?? EMPTY_PROGRAM);
-  const initialWeekIdx = duplicateFromId ? 0 : (curProgram?.curWeekIdx ?? 0);
+  const initialRotationIdx = duplicateFromId ? 0 : (curProgram?.curRotationIdx ?? 0);
 
   return (
     <TemplateProvider
       key={duplicateFromId ?? "default"}
       initialTemplate={initialTemplate}
-      initialWeekIdx={initialWeekIdx}
+      initialRotationIdx={initialRotationIdx}
     >
       <div
         className="d-flex flex-column align-items-center h-100 w-100 overflow-y-scroll"

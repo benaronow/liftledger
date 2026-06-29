@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated, View } from "react-native";
-import { HelperText, useTheme } from "../../../paper";
+import { HelperText, useTheme } from "react-native-paper";
 import { INPUT_HEIGHT, RADIUS, SPACING } from "../../../theme";
 import { IconButton } from "react-native-paper";
 import { TextInput as RNTextInput } from "react-native";

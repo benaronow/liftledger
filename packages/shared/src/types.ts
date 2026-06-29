@@ -26,7 +26,7 @@ export interface CompletedExercise {
   completedDate?: Date;
 }
 
-export interface Day {
+export interface Session {
   _id?: string;
   name: string;
   gym?: string;
@@ -40,10 +40,13 @@ export interface Program {
   startDate: Date;
   length: number;
   primaryGym?: string;
-  weeks: Day[][];
-  curWeekIdx: number;
-  curDayIdx: number;
+  rotations: Session[][];
+  curRotationIdx: number;
+  curSessionIdx: number;
   endDate?: Date;
+  // Per-rotation streak "keep-alive" budget: this many missed days are allowed
+  // within a rotation before the streak breaks. Rest days don't add to the streak.
+  restDays?: number;
 }
 
 export interface TimerPresets {
@@ -60,7 +63,6 @@ export interface User {
   auth0Id: string;
   username: string;
   fullName: string;
-  birthday: string;
   programs: Program[];
   curProgram?: string;
   timerEnd?: Date;

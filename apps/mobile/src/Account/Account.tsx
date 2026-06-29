@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated, Easing, Pressable, View } from "react-native";
-import { Text, useTheme } from "../paper";
+import { Text, useTheme } from "react-native-paper";
 import { History } from "./History";
 import { Profile } from "./Profile";
 import { Settings } from "./Settings/";
@@ -20,8 +20,6 @@ export const Account = () => {
   const [barWidth, setBarWidth] = useState(0);
   const tabWidth = barWidth / TABS.length;
 
-  // Slide the underline to the active tab. Driven by translateX so it can run
-  // on the native thread; recomputed when the bar is (re)measured.
   const indicatorX = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     const index = TABS.findIndex((t) => t.value === tab);
@@ -36,7 +34,7 @@ export const Account = () => {
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View
-        style={{ backgroundColor: colors.dark }}
+        style={{ backgroundColor: colors.primaryContainer }}
         onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
       >
         <View style={{ flexDirection: "row" }}>
@@ -57,7 +55,7 @@ export const Account = () => {
                   style={{
                     fontSize: FONT.base,
                     fontWeight: active ? "700" : "500",
-                    color: active ? colors.primary : colors.primaryDisabled,
+                    color: active ? colors.primary : colors.surfaceDisabled,
                   }}
                 >
                   {t.label}

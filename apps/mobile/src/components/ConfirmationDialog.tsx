@@ -1,14 +1,9 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ReactNode } from "react";
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
-import { Button, Dialog, Portal, Text, useTheme } from "../paper";
+import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
+import { Button, Text, useTheme } from "react-native-paper";
 import { FONT, SPACING } from "../theme";
+import { TopSheet } from "./TopSheet";
 
 interface Props {
   children?: ReactNode;
@@ -48,82 +43,72 @@ export const ConfirmationDialog = ({
   const { colors } = useTheme();
 
   return (
-    <Portal>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1, justifyContent: "center" }}
-        pointerEvents="box-none"
-      >
-        <Dialog
-          visible={open}
-          onDismiss={onClose}
-          dismissable={!confirming}
-          dismissableBackButton={!confirming}
-          style={{ backgroundColor: colors.dark}}
-        >
-          <TouchableWithoutFeedback
-            onPress={Keyboard.dismiss}
-            accessible={false}
-          >
-            <View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: SPACING.sm,
-                  marginTop: SPACING.lg,
-                  marginBottom: SPACING.md,
-                  paddingHorizontal: SPACING.lg,
-                }}
-              >
-                <Text
-                  variant="headlineSmall"
-                  style={{ flexShrink: 1, textAlign: "center" }}
-                >
-                  {title}
-                </Text>
-                {icon && (
-                  <MaterialCommunityIcons
-                    name={icon as keyof typeof MaterialCommunityIcons.glyphMap}
-                    size={24}
-                    color={destructive ? colors.danger : colors.primary}
-                  />
-                )}
-              </View>
-              <Dialog.Content style={{ paddingBottom: SPACING.sm }}>
-                <View style={{ width: "100%", gap: SPACING.sm }}>
-                  {description && (
-                    <Text style={{ color: colors.text, fontSize: FONT.base }}>
-                      {description}
-                    </Text>
-                  )}
-                  {emphasis && (
-                    <Text
-                      style={{
-                        color: colors.text,
-                        fontSize: FONT.base,
-                        fontWeight: "700",
-                      }}
-                    >
-                      {emphasis}
-                    </Text>
-                  )}
-                  {children}
-                </View>
-              </Dialog.Content>
-            </View>
-          </TouchableWithoutFeedback>
-          <Dialog.Actions
+    <TopSheet open={open} onClose={onClose} dismissable={!confirming}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={{ paddingHorizontal: SPACING.lg }}>
+          <View
             style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
               gap: SPACING.sm,
-              paddingTop: 0,
+              marginTop: SPACING.lg,
+              marginBottom: SPACING.md,
               paddingHorizontal: SPACING.lg,
+            }}
+          >
+            <Text
+              variant="headlineSmall"
+              style={{ flexShrink: 1, textAlign: "center" }}
+            >
+              {title}
+            </Text>
+            {icon && (
+              <MaterialCommunityIcons
+                name={icon as keyof typeof MaterialCommunityIcons.glyphMap}
+                size={24}
+                color={destructive ? colors.error : colors.primary}
+              />
+            )}
+          </View>
+          {(description || emphasis || children) && (
+            <View
+              style={{
+                width: "100%",
+                gap: SPACING.sm,
+                paddingVertical: SPACING.md,
+              }}
+            >
+              {description && (
+                <Text style={{ color: colors.onSurface, fontSize: FONT.base }}>
+                  {description}
+                </Text>
+              )}
+              {emphasis && (
+                <Text
+                  style={{
+                    color: colors.onSurface,
+                    fontSize: FONT.base,
+                    fontWeight: "700",
+                  }}
+                >
+                  {emphasis}
+                </Text>
+              )}
+              {children}
+            </View>
+          )}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              gap: SPACING.sm,
+              paddingTop: SPACING.sm,
               paddingBottom: SPACING.md,
             }}
           >
             <Button
-              textColor={colors.danger}
+              textColor={colors.error}
               onPress={onClose}
               disabled={confirming}
             >
@@ -143,9 +128,9 @@ export const ConfirmationDialog = ({
                 {secondaryAction}
               </Button>
             )}
-          </Dialog.Actions>
-        </Dialog>
-      </KeyboardAvoidingView>
-    </Portal>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    </TopSheet>
   );
 };

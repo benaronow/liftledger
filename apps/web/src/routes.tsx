@@ -5,7 +5,7 @@ import { Dashboard } from "./Dashboard";
 import { History } from "./History";
 import { Progress } from "./Progress";
 import { Profile } from "./Profile";
-import { CompleteDay } from "./CompleteDay";
+import { CompleteSession } from "./CompleteSession";
 import { EditProgram } from "./EditProgram";
 
 export const router = createBrowserRouter([
@@ -15,7 +15,7 @@ export const router = createBrowserRouter([
     children: [
       { path: "welcome", element: <Welcome /> },
       { path: "dashboard", element: <Dashboard /> },
-      { path: "complete-day", element: <CompleteDay /> },
+      { path: "complete-session", element: <CompleteSession /> },
       { path: "edit-program", element: <EditProgram /> },
       { path: "history", element: <History /> },
       { path: "progress", element: <Progress /> },

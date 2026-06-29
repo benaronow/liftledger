@@ -10,17 +10,17 @@ import { QuitProgramDialog } from "./QuitProgramDialog";
 export const EditProgramFooter = () => {
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { editingDayIdx, setEditingDayIdx, templateErrors } = useTemplate();
+  const { editingSessionIdx, setEditingSessionIdx, templateErrors } = useTemplate();
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [quitDialogOpen, setQuitDialogOpen] = useState(false);
 
   const footerActions: FooterAction[] =
-    editingDayIdx !== -1
+    editingSessionIdx !== -1
       ? [
           {
             icon: <MdArrowBackIosNew style={{ fontSize: "20px" }} />,
-            label: "Return to week",
-            onClick: () => setEditingDayIdx(-1),
+            label: "Return to rotation",
+            onClick: () => setEditingSessionIdx(-1),
             variant: "primary",
           },
         ]

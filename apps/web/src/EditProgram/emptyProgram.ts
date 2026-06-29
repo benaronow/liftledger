@@ -4,10 +4,10 @@ export const EMPTY_PROGRAM: Program = {
   name: "",
   startDate: new Date(),
   length: 0,
-  weeks: [
+  rotations: [
     [
       {
-        name: "Day 1",
+        name: "Session 1",
         exercises: [
           {
             name: "",
@@ -27,6 +27,6 @@ export const EMPTY_PROGRAM: Program = {
       },
     ],
   ],
-  curDayIdx: 0,
-  curWeekIdx: 0,
+  curSessionIdx: 0,
+  curRotationIdx: 0,
 };

@@ -2,7 +2,12 @@ import Fuse from "fuse.js";
 import { useMemo, useState } from "react";
 import { FlatList, Modal, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ActivityIndicator, List, Searchbar, useTheme } from "../paper";
+import {
+  ActivityIndicator,
+  List,
+  Searchbar,
+  useTheme,
+} from "react-native-paper";
 import { FONT, SPACING } from "../theme";
 import { AppTextInput } from "./inputs";
 import { Sheet } from "./Sheet";
@@ -38,8 +43,6 @@ export const SearchableSelect = ({
   const [addingCustom, setAddingCustom] = useState(false);
   const { colors } = useTheme();
 
-  // Fuzzy match against the option list (typo-tolerant, ranked by relevance);
-  // an empty query keeps the full list in its original order.
   const fuse = useMemo(() => new Fuse(options, { threshold: 0.4 }), [options]);
   const filteredOptions = useMemo(
     () =>
@@ -94,10 +97,6 @@ export const SearchableSelect = ({
 
   return (
     <>
-      {/* The field is display-only — a non-editable AppTextInput supplies the
-          outline + floating label (and its blurred-value truncation, since a
-          read-only field is never focused), while a Pressable over the top
-          captures taps. The input is pointer-transparent so the press lands. */}
       <View>
         <View pointerEvents="none">
           <AppTextInput
@@ -127,8 +126,8 @@ export const SearchableSelect = ({
           <Searchbar
             testID="select-search"
             style={{ marginHorizontal: SPACING.md, marginBottom: SPACING.sm }}
-            inputStyle={{ color: colors.text }}
-            placeholderTextColor={colors.textDisabled}
+            inputStyle={{ color: colors.onSurface }}
+            placeholderTextColor={colors.onSurfaceDisabled}
             value={query}
             onChangeText={setQuery}
             placeholder={
@@ -149,10 +148,10 @@ export const SearchableSelect = ({
               <List.Item
                 title={item}
                 testID={`select-option-${item}`}
-                titleStyle={{ color: colors.text }}
+                titleStyle={{ color: colors.onSurface }}
                 style={{
                   backgroundColor:
-                    item === value ? colors.primary : colors.dark,
+                    item === value ? colors.primary : colors.primaryContainer,
                 }}
                 onPress={() => handleSelect(item)}
               />

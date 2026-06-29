@@ -21,17 +21,17 @@ onFlowComplete:
 # row into ONE accessibility label, e.g. "10 reps, ✕, 50lbs, ⋯" — there is no
 # standalone "50lbs" element. Maestro matches the label by FULL regex, so a bare
 # "50lbs" fails. We wrap set reps/weight checks as ".*<value>.*" to match within
-# the coalesced row label. (Exercise names, "Lift!", buttons, etc. are real
+# the coalesced row label. (Exercise names, "Workout", buttons, etc. are real
 # standalone elements and stay bare.)
 - clearKeychain
 - launchApp:
     clearState: true
 - runFlow: ../subflows/login.yaml
-# Seeded program loaded -> dashboard shows the "Lift!" CTA.
-- assertVisible: "Lift!"
+# Seeded program loaded -> dashboard shows the "Workout" CTA.
+- assertVisible: ".*Workout.*"
 
-# ============================ Day 1 (Gym 1) ============================
-- tapOn: "Lift!"
+# ============================ Session 1 (Gym 1) ============================
+- tapOn: ".*Workout.*"
 # BB Bench: 100x10 e, 100x10 e
 - runFlow:
     file: ../subflows/logSet.yaml
@@ -55,12 +55,12 @@ onFlowComplete:
 - runFlow:
     file: ../subflows/skipSet.yaml
     env: { SET: "1" }
-- tapOn: "Finish day"
+- tapOn: "Finish session"
 - tapOn: "Confirm"
-- assertVisible: "Lift!"
+- assertVisible: ".*Workout.*"
 
-# ============================ Day 2 (Gym 1) ============================
-- tapOn: "Lift!"
+# ============================ Session 2 (Gym 1) ============================
+- tapOn: ".*Workout.*"
 # BB Row: 200x8 e, 200x8 e
 - runFlow:
     file: ../subflows/logSet.yaml
@@ -84,12 +84,12 @@ onFlowComplete:
 - runFlow:
     file: ../subflows/logSet.yaml
     env: { SET: "1", WEIGHT: "25", REPS: "12" }
-- tapOn: "Finish day"
+- tapOn: "Finish session"
 - tapOn: "Confirm"
-- assertVisible: "Lift!"
+- assertVisible: ".*Workout.*"
 
-# ============================ Day 3 (Gym 1) ============================
-- tapOn: "Lift!"
+# ============================ Session 3 (Gym 1) ============================
+- tapOn: ".*Workout.*"
 # BB Squat: Skip, Skip
 - runFlow:
     file: ../subflows/skipSet.yaml
@@ -113,16 +113,16 @@ onFlowComplete:
 - runFlow:
     file: ../subflows/logSet.yaml
     env: { SET: "1", WEIGHT: "350", REPS: "14" }
-- tapOn: "Finish day"
+- tapOn: "Finish session"
 - tapOn: "Confirm"
-- assertVisible: "Lift!"
+- assertVisible: ".*Workout.*"
 
 # ############################## WEEK 2 ##############################
 # The app generated W2-I by carrying W1-A forward. Each day below first asserts
 # those carried "Initial" values, then logs the "W2-A" Actuals.
 
-# ============================ Day 1 (Gym 1) ============================
-- tapOn: "Lift!"
+# ============================ Session 1 (Gym 1) ============================
+- tapOn: ".*Workout.*"
 # W2-I BB Bench carried from W1-A 100x10 (reps 8 -> 10).
 - assertVisible: ".*10 reps.*"
 - assertVisible: ".*100lbs.*"
@@ -155,12 +155,12 @@ onFlowComplete:
 - runFlow:
     file: ../subflows/logSet.yaml
     env: { SET: "1", WEIGHT: "35", REPS: "10" }
-- tapOn: "Finish day"
+- tapOn: "Finish session"
 - tapOn: "Confirm"
-- assertVisible: "Lift!"
+- assertVisible: ".*Workout.*"
 
-# ============================ Day 2 (Gym 1) ============================
-- tapOn: "Lift!"
+# ============================ Session 2 (Gym 1) ============================
+- tapOn: ".*Workout.*"
 # W2-I BB Row carried from W1-A 200x8 (reps 10 -> 8).
 - assertVisible: ".*8 reps.*"
 - assertVisible: ".*200lbs.*"
@@ -195,12 +195,12 @@ onFlowComplete:
 - runFlow:
     file: ../subflows/addSet.yaml
     env: { WEIGHT: "30", REPS: "12" }
-- tapOn: "Finish day"
+- tapOn: "Finish session"
 - tapOn: "Confirm"
-- assertVisible: "Lift!"
+- assertVisible: ".*Workout.*"
 
-# ============================ Day 3 (Gym 1) ============================
-- tapOn: "Lift!"
+# ============================ Session 3 (Gym 1) ============================
+- tapOn: ".*Workout.*"
 # Add the Adductors add-on exercise before Calf Raise (insert position 2 of the
 # 3-exercise day), then log everything in order.
 - runFlow:
@@ -255,6 +255,6 @@ onFlowComplete:
 - runFlow:
     file: ../subflows/skipSet.yaml
     env: { SET: "1" }
-- tapOn: "Finish day"
+- tapOn: "Finish session"
 - tapOn: "Confirm"
-- assertVisible: "Lift!"
+- assertVisible: ".*Workout.*"

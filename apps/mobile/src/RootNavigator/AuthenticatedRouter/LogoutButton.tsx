@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { TouchableRipple, useTheme } from "../../paper";
+import { TouchableRipple, useTheme } from "react-native-paper";
 import { RADIUS } from "../../theme";
 import { useThemePreference } from "../../providers/ThemeProvider";
 import { useLogout } from "./useLogout";
@@ -11,7 +11,7 @@ export const LogoutButton = () => {
 
   return (
     <TouchableRipple
-      rippleColor={colors.danger}
+      rippleColor={colors.error}
       onPress={handleLogout}
       style={{
         borderRadius: RADIUS.md,

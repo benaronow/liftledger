@@ -20,12 +20,12 @@ const isAuthorized = (req: FastifyRequest): boolean => {
 };
 
 // --- E2E seed data ---------------------------------------------------------
-// The Week-1 "Initial" program from the manual LiftLedger test doc (Test 1),
+// The Rotation-1 "Initial" program from the manual LiftLedger test doc (Test 1),
 // used to put the regression user in a known starting state before the Maestro
-// logging flow runs. A real program holds only the weeks created so far (one to
+// logging flow runs. A real program holds only the rotations created so far (one to
 // start) with `length` as the target; the API's update route generates and
-// appends each next week from the previous one as a week is completed. So we
-// seed a SINGLE week and let the app produce weeks 2-5 via its own progression,
+// appends each next rotation from the previous one as a rotation is completed. So we
+// seed a SINGLE rotation and let the app produce rotations 2-5 via its own progression,
 // exactly as the doc was produced.
 const LBS = "lbs";
 const GYM1 = "Gym 1";
@@ -56,7 +56,7 @@ const plannedExercise = (
 
 const test1Week = () => [
   {
-    name: "Day 1",
+    name: "Session 1",
     gym: GYM1,
     completedDate: undefined,
     exercises: [
@@ -66,7 +66,7 @@ const test1Week = () => [
     ],
   },
   {
-    name: "Day 2",
+    name: "Session 2",
     gym: GYM1,
     completedDate: undefined,
     exercises: [
@@ -76,7 +76,7 @@ const test1Week = () => [
     ],
   },
   {
-    name: "Day 3",
+    name: "Session 3",
     gym: GYM1,
     completedDate: undefined,
     exercises: [
@@ -92,10 +92,10 @@ const buildTest1Program = () => ({
   startDate: new Date(),
   length: TEST1_PROGRAM_LENGTH,
   primaryGym: GYM1,
-  curWeekIdx: 0,
-  curDayIdx: 0,
-  // Only week 1 exists at seed time; the API appends weeks 2-5 as each completes.
-  weeks: [test1Week()],
+  curRotationIdx: 0,
+  curSessionIdx: 0,
+  // Only rotation 1 exists at seed time; the API appends rotations 2-5 as each completes.
+  rotations: [test1Week()],
 });
 
 // Routes consumed by trusted server-to-server callers (e.g. Auth0 actions),
@@ -173,7 +173,7 @@ const internalRoutes = async (app: FastifyInstance) => {
     }
   });
 
-  // E2E setup: install the Test-1 Week-1 program for the regression user so the
+  // E2E setup: install the Test-1 Rotation-1 program for the regression user so the
   // Maestro logging flow starts from a known program. Same secret + allowlist
   // guard as reset; wipes the user's existing programs first so it's re-runnable.
   app.post("/internal/e2e/seed-program", async (req, reply) => {

@@ -1,1 +1,0 @@
-export { CompleteDay } from "./CompleteDay";

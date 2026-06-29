@@ -1,4 +1,4 @@
-import type { Program, Day, Exercise } from "./types";
+import type { Program, Session, Exercise } from "./types";
 
 /**
  * Returns true if two exercises refer to the same exercise slot
@@ -8,17 +8,17 @@ export const isSameExercise = (a: Exercise, b: Exercise): boolean =>
   a.name === b.name && a.apparatus === b.apparatus && a.gym === b.gym;
 
 /**
- * Returns all completed days in a program up to (but not including) the
- * current day, in chronological order (oldest first).
+ * Returns all completed sessions in a program up to (but not including) the
+ * current session, in chronological order (oldest first).
  */
-export const getCompletedDaysInProgram = (program: Program): Day[] => {
-  const days: Day[] = [];
-  program.weeks.forEach((week, wIdx) => {
-    if (wIdx > program.curWeekIdx) return;
-    week.forEach((day, dIdx) => {
-      if (wIdx === program.curWeekIdx && dIdx >= program.curDayIdx) return;
-      days.push(day);
+export const getCompletedSessionsInProgram = (program: Program): Session[] => {
+  const sessions: Session[] = [];
+  program.rotations.forEach((rotation, wIdx) => {
+    if (wIdx > program.curRotationIdx) return;
+    rotation.forEach((session, dIdx) => {
+      if (wIdx === program.curRotationIdx && dIdx >= program.curSessionIdx) return;
+      sessions.push(session);
     });
   });
-  return days;
+  return sessions;
 };

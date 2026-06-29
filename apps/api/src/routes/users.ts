@@ -33,11 +33,11 @@ const usersRoutes = async (app: FastifyInstance) => {
         const trimmedName =
           typeof incoming.fullName === "string" ? incoming.fullName.trim() : "";
 
-        // All four are required by the schema; reject up front with a clear
+        // All three are required by the schema; reject up front with a clear
         // message rather than letting Mongoose validation throw a 500.
-        if (!trimmedName || !trimmedUsername || !incoming.email || !incoming.birthday)
+        if (!trimmedName || !trimmedUsername || !incoming.email)
           return reply.code(400).send({
-            error: "Full name, username, email, and birthday are required",
+            error: "Full name, username, and email are required",
           });
         incoming.username = trimmedUsername;
         incoming.fullName = trimmedName;

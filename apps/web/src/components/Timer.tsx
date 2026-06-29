@@ -7,7 +7,7 @@ import { RiTimerLine } from "react-icons/ri";
 
 // Floating countdown that lives in the layout. Opening the timer-settings
 // dialog is the responsibility of whichever component wants to trigger it
-// (e.g. CompleteDayFooter, SubmitSetDialog) — they render their own
+// (e.g. CompleteSessionFooter, SubmitSetDialog) — they render their own
 // <TimerSettingsDialog>.
 export const Timer = () => {
   const { data: curUser } = useMe();

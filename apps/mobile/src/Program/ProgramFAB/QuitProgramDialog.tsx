@@ -15,7 +15,7 @@ export const QuitProgramDialog = ({ open, onClose }: Props) => {
   const navigation = useNavigation<TabNav<"Program">>();
   const { data: curUser } = useMe();
   const { trigger: triggerQuitProgram, isMutating: quitting } = useQuitProgram();
-  const { unsetTemplateProgram, setEditingWeekIdx } = useTemplate();
+  const { unsetTemplateProgram, setEditingRotationIdx } = useTemplate();
   const { setTransitioning } = useProgramTransition();
   const { showSnackbar } = useSnackbar();
 
@@ -28,7 +28,7 @@ export const QuitProgramDialog = ({ open, onClose }: Props) => {
     try {
       await triggerQuitProgram(curUser._id);
       unsetTemplateProgram();
-      setEditingWeekIdx(0);
+      setEditingRotationIdx(0);
       navigation.setParams({ duplicateFrom: undefined });
       navigation.navigate("Dashboard");
     } catch (e: unknown) {
@@ -47,7 +47,7 @@ export const QuitProgramDialog = ({ open, onClose }: Props) => {
       onConfirm={handleQuit}
       confirming={quitting}
       description="Are you sure you want to quit this program?"
-      emphasis="The program will be saved to your history with the weeks completed so far."
+      emphasis="The program will be saved to your history with the rotations completed so far."
     />
   );
 };
