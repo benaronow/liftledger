@@ -26,7 +26,7 @@ export const Sheet = ({ title, actions, children, keyboardAvoiding }: Props) => 
     <View
       style={{
         flex: 1,
-        backgroundColor: colors.surfaceVariant,
+        backgroundColor: colors.primaryContainer,
         paddingTop: (Platform.OS === "android" ? insets.top : 0) + SPACING.md,
       }}
     >
@@ -37,7 +37,7 @@ export const Sheet = ({ title, actions, children, keyboardAvoiding }: Props) => 
 
   return keyboardAvoiding ? (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: colors.surfaceVariant }}
+      style={{ flex: 1, backgroundColor: colors.primaryContainer }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       {body}

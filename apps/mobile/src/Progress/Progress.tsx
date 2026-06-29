@@ -48,7 +48,7 @@ export const Progress = () => {
       <View
         style={{
           flexDirection: "column",
-          backgroundColor: colors.surfaceVariant,
+          backgroundColor: colors.primaryContainer,
           marginBottom: SPACING.lg,
         }}
       >
@@ -65,11 +65,7 @@ export const Progress = () => {
           paddingHorizontal: SPACING.lg,
         }}
       >
-        <SectionCard
-          title="All Progress"
-          background={colors.secondaryContainer}
-          style={{ flex: 1 }}
-        >
+        <SectionCard title="All Progress" style={{ flex: 1 }}>
           <ProgressChart
             selectedName={selectedName}
             selectedApparatus={selectedApparatus}

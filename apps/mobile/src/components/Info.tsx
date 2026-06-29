@@ -53,6 +53,7 @@ export const Info = ({ title, actions, children }: Props) => {
                 flexDirection: "row",
                 alignItems: "center",
                 gap: SPACING.sm,
+                marginTop: SPACING.sm,
               }}
             >
               {actions.map((action, idx) => (

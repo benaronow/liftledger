@@ -67,7 +67,7 @@ export const MetricQuadrants = ({ program }: Props) => {
           marginTop: -DARK_RING_DIAMETER / 2,
           marginLeft: -DARK_RING_DIAMETER / 2,
           borderRadius: RADIUS.pill,
-          backgroundColor: colors.surfaceVariant,
+          backgroundColor: colors.primaryContainer,
         }}
       />
 

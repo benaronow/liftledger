@@ -38,7 +38,7 @@ export const StreakFlame = ({
   const span = Math.max(0, width - TONGUE_WIDTH);
   const count = Math.max(2, Math.ceil(span / TONGUE_STEP) + 1);
 
-  if (fill === 0) return null;
+  if (fill === 0 || barHeight === 0) return null;
 
   return (
     <View

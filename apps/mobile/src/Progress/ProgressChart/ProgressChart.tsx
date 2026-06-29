@@ -6,7 +6,7 @@ import { LayoutChangeEvent, View } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
 import { LogoSpinner } from "../../components/LogoSpinner";
 import { Text, useTheme } from "react-native-paper";
-import { FONT, SPACING } from "../../theme";
+import { FONT, RADIUS, SPACING } from "../../theme";
 import { ExerciseTooltip } from "./ExerciseTooltip";
 import { NoDataPlaceholder } from "./NoDataPlaceholder";
 import type { ChartPoint } from "./types";
@@ -14,24 +14,15 @@ import type { ChartPoint } from "./types";
 interface Props {
   selectedName: string;
   selectedApparatus: string;
-  // When set, restrict the chart to a single gym's sessions (CompleteSession shows
-  // only the current session's gym). Hides the legend too, since it's redundant.
   gym?: string;
 }
 
 const fmtKey = (d?: Date) => dayjs(d).format("YYYY-MM-DD");
 
-// Tooltip box size. The chart needs these to position the label clear of its
-// edges; HEIGHT is a generous upper bound (date + gym + a few set lines).
 const TOOLTIP_WIDTH = 180;
 const TOOLTIP_HEIGHT = 150;
 
-// Chart geometry. yAxisWidth is the label gutter on the left; leftPad/rightPad
-// are the margins between the drawing and the screen edges. initial/endSpacing
-// inset the first/last points from the plot edges.
 const Y_AXIS_WIDTH = 40;
-// Left/right margins between the drawing and the screen edges. LEFT_PAD matches
-// the selector/legend inset (SPACING.lg) so the y-axis labels line up with them.
 const LEFT_PAD = 16;
 const RIGHT_PAD = 16;
 const INITIAL_SPACING = 12;
@@ -49,15 +40,16 @@ export const ProgressChart = ({
   const [size, setSize] = useState({ width: 0, height: 0 });
   const { colors } = useTheme();
 
-  // One color per gym line, cycled if there are more gyms than colors (web
-  // parity). Theme-derived so the lines track the active light/dark palette.
   const gymColors = useMemo(
-    () => [colors.primary, colors.secondary, colors.tertiary, colors.tertiaryContainer],
+    () => [
+      colors.primary,
+      colors.secondary,
+      colors.tertiary,
+      colors.tertiaryContainer,
+    ],
     [colors],
   );
 
-  // Completed occurrences of this exercise, oldest → newest (web reverses the
-  // newest-first API order).
   const chartExercises = useMemo<CompletedExercise[]>(
     () =>
       (completedExercises?.previous ?? [])
@@ -88,8 +80,6 @@ export const ProgressChart = ({
     const gymLines = gyms.map((lineGym, gymIdx) => {
       const color = gymColors[gymIdx % gymColors.length];
 
-      // This gym's real sessions, with their chronological index in the
-      // shared x-axis and their plotted value.
       const reals = chartExercises
         .map((e, i) => ({ i, e, v: maxWeight(e) }))
         .filter(({ e }) => (e.gym ?? "Gym Unknown") === lineGym);
@@ -97,13 +87,6 @@ export const ProgressChart = ({
       const lastIdx = reals[reals.length - 1].i;
       const realByIdx = new Map(reals.map((r) => [r.i, r]));
 
-      // Lines in a dataSet share one x-axis indexed by position, so every line
-      // must carry a point at every session index. For the gaps between this
-      // gym's sessions we interpolate along the straight line joining the
-      // bracketing real points (and hide those points) — so the drawn line is a
-      // clean segment through the gym's sessions instead of the old flat hold.
-      // startIndex/endIndex then clip it to the gym's own span, leaving true
-      // chronological gaps before its first and after its last session.
       const interpAt = (i: number) => {
         if (i <= firstIdx) return reals[0].v;
         if (i >= lastIdx) return reals[reals.length - 1].v;
@@ -130,8 +113,7 @@ export const ProgressChart = ({
             color,
           };
         }
-        // hidePointer keeps the focus pointer from dropping a dot on this gym's
-        // invisible interpolated line when another gym's point is selected.
+
         return {
           value: interpAt(i),
           hideDataPoint: true,
@@ -151,14 +133,6 @@ export const ProgressChart = ({
       };
     });
 
-    // Invisible carrier line with a real point at every session. gifted keys
-    // the pointer's index/x off dataSet[0], skipping the update when that
-    // point has hidePointer — which would otherwise freeze the tooltip's
-    // position whenever the dragged index lands on a gym line's hidden
-    // interpolated point. The carrier (drawn first, so it's dataSet[0]) keeps
-    // the pointer advancing across every point; `hidePointers` stops it drawing
-    // its own focus dot, and it filters out of the tooltip since it has no
-    // `exercise`.
     const carrier = {
       data: chartExercises.map((e) => ({ value: maxWeight(e) })),
       color: "transparent",
@@ -181,35 +155,38 @@ export const ProgressChart = ({
     };
   }, [chartExercises]);
 
-  if (isUserLoading || completedExercisesLoading) return <LogoSpinner />;
+  if (isUserLoading || completedExercisesLoading) return <LogoSpinner inline />;
   if (!chartExercises.length) return <NoDataPlaceholder />;
 
   const onLayout = (e: LayoutChangeEvent) =>
     setSize({
-      width: e.nativeEvent.layout.width,
-      height: e.nativeEvent.layout.height,
+      width: e.nativeEvent.layout.width - SPACING.sm,
+      height: e.nativeEvent.layout.height - SPACING.sm,
     });
 
-  // Plot width = container minus the y-axis gutter, the left/right margins, and
-  // endSpacing (gifted draws the rules at width + endSpacing, so we subtract it
-  // here to land the rules' right edge exactly RIGHT_PAD from the screen edge).
   const plotWidth = Math.max(
     0,
     size.width - Y_AXIS_WIDTH - LEFT_PAD - RIGHT_PAD - END_SPACING,
   );
   const singlePoint = chartExercises.length <= 1;
-  // Explicit (non-adjustToWidth) spacing so point x positions are deterministic
-  // — the tooltip math below relies on knowing each point's x.
   const spacing = singlePoint
     ? 0
     : (plotWidth - INITIAL_SPACING - END_SPACING) / (chartExercises.length - 1);
-  // A lone point can't be spread, so center it; otherwise inset from the edge.
   const firstSpacing = singlePoint ? plotWidth / 2 : INITIAL_SPACING;
   const pointerXAt = (index: number) => firstSpacing + index * spacing;
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flex: 1 }} onLayout={onLayout}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.secondaryContainer,
+          paddingTop: SPACING.sm,
+          paddingLeft: SPACING.sm,
+          borderRadius: RADIUS.sm,
+        }}
+        onLayout={onLayout}
+      >
         {size.width > 0 && (
           <LineChart
             dataSet={dataSet}

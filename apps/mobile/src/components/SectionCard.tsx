@@ -30,7 +30,7 @@ export const SectionCard = ({
           gap: SPACING.md,
           paddingVertical: SPACING.md,
           paddingHorizontal: SPACING.md,
-          backgroundColor: background ?? colors.secondaryContainer,
+          backgroundColor: background ?? colors.primaryContainer,
         },
         style,
       ]}

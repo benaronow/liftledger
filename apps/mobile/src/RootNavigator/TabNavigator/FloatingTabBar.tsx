@@ -21,8 +21,6 @@ export const FloatingTabBar = ({
   const { colors } = useTheme();
   const { bottom } = useSafeAreaInsets();
 
-  // Drives the sliding selection circle. Tracks the focused tab index and
-  // animates toward it whenever the active tab changes.
   const indicatorIndex = useRef(new Animated.Value(state.index)).current;
 
   useEffect(() => {
@@ -34,8 +32,6 @@ export const FloatingTabBar = ({
     }).start();
   }, [state.index, indicatorIndex]);
 
-  // Circle is centered within each TAB_WIDTH slot, so its left edge sits at
-  // index * TAB_WIDTH + (TAB_WIDTH - CIRCLE_SIZE) / 2.
   const translateX = indicatorIndex.interpolate({
     inputRange: [0, 1],
     outputRange: [
@@ -66,7 +62,7 @@ export const FloatingTabBar = ({
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.3,
           shadowRadius: 8,
-          backgroundColor: colors.surfaceVariant,
+          backgroundColor: colors.secondaryContainer,
         }}
       >
         {/* Single circle that slides to sit behind the focused tab. */}

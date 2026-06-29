@@ -60,13 +60,13 @@ export const AuthenticatedRouter = () => {
   // Auth0 profile loaded but email is not verified
   if (!emailVerified) return <VerifyEmail onRefresh={refreshProfile} />;
 
-  // Verified Auth0 profile loaded but db user has not loaded 
+  // Verified Auth0 profile loaded but db user has not loaded
   if (userLoading && !curUser && !userError) return <LogoSpinner />;
 
   // Verified Auth0 profile loaded but db user has error
   if (userError && !accountMissing)
     return <ConnectionError onRetry={refreshMe} />;
-  
+
   // Verified Auth0 profile loaded but db user doesn't exist
   if (!curUser) return <CreateAccount />;
 
@@ -75,7 +75,7 @@ export const AuthenticatedRouter = () => {
     <>
       <Stack.Navigator
         screenOptions={{
-          headerStyle: { backgroundColor: colors.surfaceVariant },
+          headerStyle: { backgroundColor: colors.primaryContainer },
           headerShadowVisible: false,
           headerTintColor: scheme === "dark" ? "white" : "black",
           headerBackButtonDisplayMode: "minimal",

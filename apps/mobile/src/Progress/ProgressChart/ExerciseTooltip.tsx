@@ -3,7 +3,6 @@ import { View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../../theme";
 import type { ChartPoint } from "./types";
-import { useThemePreference } from "../../providers/ThemeProvider";
 
 export const ExerciseTooltip = ({
   items,
@@ -15,7 +14,6 @@ export const ExerciseTooltip = ({
   translateX: number;
 }) => {
   const { colors } = useTheme();
-  const { scheme } = useThemePreference();
   const present = items.filter((item) => item.exercise);
   if (present.length === 0) return null;
 
@@ -24,7 +22,7 @@ export const ExerciseTooltip = ({
   return (
     <View
       style={{
-        backgroundColor: scheme === "dark" ? colors.surfaceVariant : colors.background,
+        backgroundColor: colors.background,
         borderRadius: RADIUS.sm,
         paddingVertical: SPACING.xs,
         paddingHorizontal: SPACING.sm,

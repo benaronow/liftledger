@@ -6,7 +6,6 @@ import { BarPulse } from "./BarPulse";
 type Props = {
   fillPercent: number;
   color?: string;
-  background?: string;
   pulse?: boolean;
   onLayout?: (e: LayoutChangeEvent) => void;
 };
@@ -14,7 +13,6 @@ type Props = {
 export const ContinuousBar = ({
   fillPercent,
   color,
-  background,
   pulse,
   onLayout,
 }: Props) => {
@@ -27,7 +25,7 @@ export const ContinuousBar = ({
       style={{
         flex: 1,
         justifyContent: "flex-end",
-        backgroundColor: background ?? colors.surface,
+        backgroundColor: colors.secondaryContainer,
         overflow: "hidden",
       }}
     >

@@ -69,7 +69,7 @@ export const SegmentedBar = ({
             key={i}
             style={{
               flex: 1,
-              backgroundColor: i < filled ? colors.primary : colors.surface,
+              backgroundColor: i < filled ? colors.primary : colors.secondaryContainer,
             }}
           />
         ),

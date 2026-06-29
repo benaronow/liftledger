@@ -47,7 +47,11 @@ export const Quadrant = ({ corner, label, value, bar }: Props) => {
   return (
     <View
       style={[
-        { flex: 1, backgroundColor: colors.surfaceVariant, overflow: "hidden" },
+        {
+          flex: 1,
+          backgroundColor: colors.primaryContainer,
+          overflow: "hidden",
+        },
         cornerRadii[corner],
       ]}
     >

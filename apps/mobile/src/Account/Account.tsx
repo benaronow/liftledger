@@ -36,7 +36,7 @@ export const Account = () => {
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View
-        style={{ backgroundColor: colors.surfaceVariant }}
+        style={{ backgroundColor: colors.primaryContainer }}
         onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
       >
         <View style={{ flexDirection: "row" }}>
