@@ -92,7 +92,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           backgroundColor: "#ffffff",
           dark: {
             image: "./assets/logo.png",
-            backgroundColor: "#3c3c3e",
+            backgroundColor: "#131314",
           },
         },
       ],
