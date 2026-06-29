@@ -10,15 +10,13 @@ import {
 } from "@liftledger/api-client";
 import { AddRow } from "../../../components/AddRow";
 import { Badge } from "../../../components/Badge";
+import { ConfirmationDialog } from "../../../components/ConfirmationDialog";
 import { Sheet } from "../../../components/Sheet";
 import { IconButton, Surface, Text, useTheme } from "react-native-paper";
 import { useSnackbar } from "../../../providers/SnackbarProvider";
 import { FONT, RADIUS, SPACING } from "../../../theme";
 import { EditExercise } from "./EditExercise";
 
-// The add/edit form opens as its own page sheet stacked over the list, rather
-// than swapping the list sheet's content. `idx` is the insert position (add) or
-// the exercise being repointed (edit).
 type Editor = { type: "add"; idx: number } | { type: "edit"; idx: number };
 
 interface Props {
@@ -26,9 +24,6 @@ interface Props {
   onClose: () => void;
 }
 
-// The session's edit pop-up: the exercise lineup with insert rows between entries to
-// add an add-on exercise at any position, and an edit button to repoint an
-// exercise's name / apparatus / weight type (until its sets are logged).
 export const EditExercisesModal = ({ open, onClose }: Props) => {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -40,10 +35,12 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
   const { showSnackbar } = useSnackbar();
 
   const [editor, setEditor] = useState<Editor>();
+  const [deletingIdx, setDeletingIdx] = useState<number>();
 
   const curGym = useMemo(
     () =>
-      curProgram?.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx].gym || "",
+      curProgram?.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx]
+        .gym || "",
     [curProgram],
   );
   const defaultNewExercise: Exercise = useMemo(
@@ -61,6 +58,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
 
   const close = () => {
     setEditor(undefined);
+    setDeletingIdx(undefined);
     onClose();
   };
 
@@ -76,17 +74,21 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
 
   const saveExercises = async (updated: Exercise[]) => {
     if (!curUser?._id || !curProgram) return;
-    const newSessions: Session[] = curProgram.rotations[curProgram.curRotationIdx].toSpliced(
-      curProgram.curSessionIdx,
-      1,
-      {
-        ...curProgram.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx],
-        exercises: updated,
-      },
-    );
+    const newSessions: Session[] = curProgram.rotations[
+      curProgram.curRotationIdx
+    ].toSpliced(curProgram.curSessionIdx, 1, {
+      ...curProgram.rotations[curProgram.curRotationIdx][
+        curProgram.curSessionIdx
+      ],
+      exercises: updated,
+    });
     const newProgram: Program = {
       ...curProgram,
-      rotations: curProgram.rotations.toSpliced(curProgram.curRotationIdx, 1, newSessions),
+      rotations: curProgram.rotations.toSpliced(
+        curProgram.curRotationIdx,
+        1,
+        newSessions,
+      ),
     };
     await triggerUpdateUserProgram({
       userId: curUser._id,
@@ -109,6 +111,16 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
           ? "Failed to add exercise. Please try again."
           : "Failed to edit exercise. Please try again.",
       );
+    }
+  };
+
+  const handleDelete = async () => {
+    if (deletingIdx === undefined) return;
+    try {
+      await saveExercises(exercises.toSpliced(deletingIdx, 1));
+      setDeletingIdx(undefined);
+    } catch {
+      showSnackbar("Failed to delete exercise. Please try again.");
     }
   };
 
@@ -136,8 +148,6 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
           }}
         >
           {exercises.map((exercise, idx) => {
-            // Repointing an exercise re-seeds its sets from the target's
-            // history, so it's off the table once any set is logged.
             const started = exercise.sets.some(
               (set) => set.completed || set.skipped,
             );
@@ -153,7 +163,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                     width: "100%",
                     borderRadius: RADIUS.md,
                     marginBottom: SPACING.md,
-                    backgroundColor: colors.surface,
+                    backgroundColor: colors.background,
                   }}
                 >
                   <View
@@ -196,7 +206,27 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                       }}
                     >
                       {exercise.addedOn && (
-                        <Badge label="ADD-ON" background={colors.surfaceVariant} />
+                        <Badge
+                          label="ADD-ON"
+                          background={colors.surfaceVariant}
+                        />
+                      )}
+                      {exercise.addedOn && (
+                        <IconButton
+                          style={{ margin: 0 }}
+                          icon="delete"
+                          mode="contained"
+                          size={18}
+                          containerColor={
+                            started ? colors.surfaceDisabled : colors.error
+                          }
+                          iconColor={
+                            started ? colors.onSurfaceDisabled : colors.onError
+                          }
+                          disabled={started}
+                          onPress={() => setDeletingIdx(idx)}
+                          accessibilityLabel={`delete-exercise-${idx}`}
+                        />
                       )}
                       <IconButton
                         style={{ margin: 0 }}
@@ -225,37 +255,32 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
         </ScrollView>
       </Sheet>
 
-      <Modal
-        visible={!!editor}
-        onRequestClose={() => setEditor(undefined)}
-        animationType="slide"
-        presentationStyle="pageSheet"
+      <ConfirmationDialog
+        open={!!editor}
+        onClose={() => setEditor(undefined)}
+        title={editor?.type === "edit" ? "Edit Exercise" : "Add Exercise"}
+        action={editor?.type === "edit" ? "Save" : "Add"}
+        onConfirm={handleSave}
+        confirming={saving}
+        confirmationDisabled={exerciseIncomplete}
       >
-        <Sheet
-          title={editor?.type === "edit" ? "Edit Exercise" : "Add Exercise"}
-          actions={[
-            {
-              label: "Cancel",
-              onPress: () => setEditor(undefined),
-              disabled: saving,
-              textColor: colors.error,
-            },
-            {
-              label: editor?.type === "edit" ? "Save" : "Add",
-              onPress: handleSave,
-              loading: saving,
-              disabled: saving || exerciseIncomplete,
-            },
-          ]}
-        >
-          <View style={{ padding: SPACING.lg }}>
-            <EditExercise
-              newExercise={newExercise}
-              setNewExercise={setNewExercise}
-            />
-          </View>
-        </Sheet>
-      </Modal>
+        <EditExercise
+          newExercise={newExercise}
+          setNewExercise={setNewExercise}
+        />
+      </ConfirmationDialog>
+
+      <ConfirmationDialog
+        open={deletingIdx !== undefined}
+        onClose={() => setDeletingIdx(undefined)}
+        title="Delete Exercise"
+        icon="alert"
+        destructive
+        onConfirm={handleDelete}
+        confirming={saving}
+        description="Are you sure you want to delete this exercise?"
+        emphasis="This action cannot be undone."
+      />
     </Modal>
   );
 };

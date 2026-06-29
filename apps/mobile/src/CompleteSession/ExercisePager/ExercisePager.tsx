@@ -1,53 +1,61 @@
 import { useCurrentSession } from "@liftledger/api-client";
-import type { Exercise } from "@liftledger/shared";
-import { useEffect, useRef } from "react";
-import { FlatList, useWindowDimensions } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollView,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { ExercisePage } from "./ExercisePage";
 
 interface Props {
   pageIdx: number;
+  onPageChange: (idx: number) => void;
 }
 
-// One exercise per page. Paging is driven entirely by the PagerBar arrows
-// (swiping is disabled — it fought the progress chart's pointer gesture), so
-// this just slides the list to whatever page the screen says is active. Every
-// exercise is browsable; pages ahead of the workout are read-only until it
-// catches up (their sets can't be logged out of order).
-export const ExercisePager = ({ pageIdx }: Props) => {
+export const ExercisePager = ({ pageIdx, onPageChange }: Props) => {
   const { exercises, currentExIdx } = useCurrentSession();
   const { width } = useWindowDimensions();
-  const listRef = useRef<FlatList<Exercise>>(null);
+  const scrollRef = useRef<ScrollView>(null);
+  const isFirstSync = useRef(true);
+  const initialOffset = useRef({ x: pageIdx * width, y: 0 }).current;
+  const [swipeEnabled, setSwipeEnabled] = useState(true);
 
-  // Slide to the active page when the arrows move it — and re-sync if the
-  // page list shrinks under us (an add-on deleted from the edit modal).
   useEffect(() => {
-    listRef.current?.scrollToIndex({
-      index: Math.min(pageIdx, exercises.length - 1),
-      animated: true,
+    scrollRef.current?.scrollTo({
+      x: pageIdx * width,
+      animated: !isFirstSync.current,
     });
-  }, [pageIdx, exercises.length]);
+    isFirstSync.current = false;
+  }, [pageIdx, width, exercises.length]);
+
+  const onMomentumScrollEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const idx = Math.round(e.nativeEvent.contentOffset.x / width);
+    if (idx !== pageIdx) onPageChange(idx);
+  };
 
   return (
-    <FlatList
-      ref={listRef}
-      data={exercises}
+    <ScrollView
+      ref={scrollRef}
       horizontal
-      scrollEnabled={false}
+      pagingEnabled
+      scrollEnabled={swipeEnabled}
       showsHorizontalScrollIndicator={false}
-      keyExtractor={(_, idx) => String(idx)}
-      getItemLayout={(_, index) => ({
-        length: width,
-        offset: width * index,
-        index,
-      })}
-      initialScrollIndex={pageIdx}
-      renderItem={({ item, index }) => (
-        <ExercisePage
-          exercise={item}
-          isCurrentExercise={index === currentExIdx}
-          width={width}
-        />
-      )}
-    />
+      contentOffset={initialOffset}
+      onMomentumScrollEnd={onMomentumScrollEnd}
+      style={{ flex: 1 }}
+    >
+      {exercises.map((exercise, index) => (
+        <View key={index} style={{ width, height: "100%" }}>
+          <ExercisePage
+            exercise={exercise}
+            isCurrentExercise={index === currentExIdx}
+            onChartTouchStart={() => setSwipeEnabled(false)}
+            onChartTouchEnd={() => setSwipeEnabled(true)}
+          />
+        </View>
+      ))}
+    </ScrollView>
   );
 };

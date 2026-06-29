@@ -1,16 +1,19 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
+  DARK_COLORS,
   Exercise,
   Set,
   getCompletedSessionsInProgram,
 } from "@liftledger/shared";
-import { useProgram, useMe } from "@liftledger/api-client";
-import { useCallback, useMemo } from "react";
-import { View } from "react-native";
+import { isExerciseComplete, useProgram, useMe } from "@liftledger/api-client";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ScrollView, View } from "react-native";
 import { Text, TouchableRipple, useTheme } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../../../theme";
 import { computeProgress } from "./computeProgress";
 import { ProgressIcon } from "./ProgressIcon";
+
+const ROW_HEIGHT = 40;
 
 interface Props {
   exercise: Exercise;
@@ -23,9 +26,6 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { colors } = useTheme();
 
-  // Progress icons compare against history *within this program only*. Using
-  // completedExercises.previous (which spans all programs) was making a freshly
-  // duplicated program's icons match against the source program's data.
   const intraProgramPrevious = useMemo<Exercise[]>(() => {
     if (!curProgram) return [];
     return getCompletedSessionsInProgram(curProgram)
@@ -46,16 +46,13 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
     set.completed
       ? colors.primary
       : set.skipped
-        ? colors.inversePrimary
+        ? DARK_COLORS.secondaryContainer
         : nextSet
           ? colors.secondary
           : colors.surfaceDisabled;
 
   const getDiffs = useCallback(
     (setIdx: number) => {
-      // Same predicate as findLatestOccurrence, but scoped to intra-program
-      // history only — fresh duplicate programs would otherwise show "+0/+0"
-      // diffs against the source program.
       let lastCompletedSet: Set | undefined;
       for (const e of intraProgramPrevious) {
         if (
@@ -95,8 +92,44 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
     [exercise, intraProgramPrevious],
   );
 
+  const canAddSet =
+    isExerciseComplete(exercise) && !exercise.sets.some((set) => set.skipped);
+
+  const scrollRef = useRef<ScrollView>(null);
+  const scrollY = useRef(0);
+  const [viewportH, setViewportH] = useState(0);
+  const focusIdx = nextSetIdx >= 0 ? nextSetIdx : exercise.sets.length;
+
+  useEffect(() => {
+    if (!viewportH) return;
+    const top = SPACING.sm + focusIdx * (ROW_HEIGHT + SPACING.sm);
+    const bottom = top + ROW_HEIGHT;
+    if (top < scrollY.current) {
+      scrollRef.current?.scrollTo({ y: top, animated: true });
+    } else if (bottom > scrollY.current + viewportH) {
+      scrollRef.current?.scrollTo({ y: bottom - viewportH, animated: true });
+    }
+  }, [focusIdx, viewportH]);
+
   return (
-    <View style={{ width: "100%", gap: SPACING.sm }}>
+    <ScrollView
+      ref={scrollRef}
+      onLayout={(e) => setViewportH(e.nativeEvent.layout.height)}
+      onScroll={(e) => {
+        scrollY.current = e.nativeEvent.contentOffset.y;
+      }}
+      scrollEventThrottle={16}
+      style={{
+        flex: 1,
+        width: "100%",
+        borderRadius: RADIUS.sm,
+        backgroundColor: colors.secondaryContainer,
+      }}
+      contentContainerStyle={{
+        gap: SPACING.sm,
+        padding: SPACING.sm,
+      }}
+    >
       {exercise.sets.map((set, i) => {
         const diffs = getDiffs(i);
         return (
@@ -118,16 +151,41 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
                 : undefined
             }
           >
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: SPACING.sm }}>
-                <Text style={{ color: "white", fontWeight: "700", fontSize: FONT.sm }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: SPACING.sm,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "700",
+                    fontSize: FONT.sm,
+                  }}
+                >
                   {`${set.reps ?? 0} rep${(set.reps ?? 0) !== 1 ? "s" : ""}`}
                   {set.completed
                     ? ` (${getProgressString(diffs.repDiff)})`
                     : ""}
                 </Text>
                 <MaterialCommunityIcons name="close" size={12} color="white" />
-                <Text style={{ color: "white", fontWeight: "700", fontSize: FONT.sm }}>
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "700",
+                    fontSize: FONT.sm,
+                  }}
+                >
                   {`${set.weight ?? 0}${exercise.weightType}`}
                   {set.completed
                     ? ` (${getProgressString(diffs.weightDiff)})`
@@ -152,6 +210,25 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
           </TouchableRipple>
         );
       })}
-    </View>
+      <TouchableRipple
+        testID="add-set"
+        disabled={!canAddSet}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          height: 40,
+          borderRadius: RADIUS.md,
+          backgroundColor: canAddSet ? colors.primary : colors.surfaceDisabled,
+        }}
+        onPress={() => onEditSet(exercise.sets.length)}
+      >
+        <MaterialCommunityIcons
+          name="plus"
+          size={20}
+          color={canAddSet ? colors.onPrimary : colors.onSurfaceDisabled}
+        />
+      </TouchableRipple>
+    </ScrollView>
   );
 };

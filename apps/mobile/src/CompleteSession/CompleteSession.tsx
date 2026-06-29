@@ -47,7 +47,7 @@ export const CompleteSession = () => {
         <LogoSpinner />
       ) : (
         <>
-          <ExercisePager pageIdx={clampedPageIdx} />
+          <ExercisePager pageIdx={clampedPageIdx} onPageChange={setPageIdx} />
           <PagerBar
             pageIdx={clampedPageIdx}
             onPageChange={setPageIdx}

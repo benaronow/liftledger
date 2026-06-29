@@ -149,9 +149,15 @@ export const ProgressChart = ({
       e.sets.filter((s) => s.completed).map((s) => s.weight ?? 0),
     );
     if (!values.length) return { yAxisOffset: 0, maxValue: 0 };
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    // Pad equally above/below the data so points sit centered. gifted-charts
+    // plots each point as (value - yAxisOffset) / maxValue, so maxValue must be
+    // expressed relative to the offset, not as the absolute top value.
+    const offset = Math.max(0, Math.floor(min - 5));
     return {
-      yAxisOffset: Math.max(0, Math.floor(Math.min(...values) - 5)),
-      maxValue: Math.ceil(Math.max(...values) + 5),
+      yAxisOffset: offset,
+      maxValue: Math.ceil(max + 5) - offset,
     };
   }, [chartExercises]);
 
@@ -258,8 +264,7 @@ export const ProgressChart = ({
             flexDirection: "row",
             flexWrap: "wrap",
             gap: SPACING.md,
-            paddingHorizontal: SPACING.lg,
-            paddingVertical: SPACING.md,
+            paddingTop: SPACING.md,
           }}
         >
           {gyms.map((g, i) => (

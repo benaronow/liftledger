@@ -22,10 +22,13 @@ interface Props {
     onPress: () => void;
     accessibilityLabel?: string;
   };
+  // Stretch the card to fill its parent, letting the children area flex (and
+  // scroll) while any actions stay pinned at the bottom.
+  fill?: boolean;
   children: ReactNode;
 }
 
-export const Info = ({ title, actions, children }: Props) => {
+export const Info = ({ title, actions, fill, children }: Props) => {
   const theme = useTheme();
   const { colors } = theme;
 
@@ -39,10 +42,19 @@ export const Info = ({ title, actions, children }: Props) => {
         : colors.primary;
 
   return (
-    <SectionCard title={title} style={{ marginBottom: SPACING.lg }}>
-      <View style={{ borderRadius: RADIUS.md, overflow: "hidden" }}>
+    <SectionCard
+      title={title}
+      style={{ marginBottom: SPACING.lg, ...(fill && { flex: 1 }) }}
+    >
+      <View
+        style={[
+          { borderRadius: RADIUS.md, overflow: "hidden" },
+          fill && { flex: 1 },
+        ]}
+      >
         <View
           style={{
+            flex: fill ? 1 : undefined,
             gap: SPACING.md,
           }}
         >
