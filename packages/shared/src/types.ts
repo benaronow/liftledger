@@ -60,7 +60,6 @@ export interface User {
   auth0Id: string;
   username: string;
   fullName: string;
-  birthday: string;
   programs: Program[];
   curProgram?: string;
   timerEnd?: Date;

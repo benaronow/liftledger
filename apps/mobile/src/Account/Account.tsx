@@ -20,8 +20,6 @@ export const Account = () => {
   const [barWidth, setBarWidth] = useState(0);
   const tabWidth = barWidth / TABS.length;
 
-  // Slide the underline to the active tab. Driven by translateX so it can run
-  // on the native thread; recomputed when the bar is (re)measured.
   const indicatorX = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     const index = TABS.findIndex((t) => t.value === tab);

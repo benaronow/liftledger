@@ -5,7 +5,6 @@ import { EmailInput } from "./EmailInput";
 import { NameInput } from "./NameInput";
 import { UsernameInput } from "./UsernameInput";
 import { ResetPasswordButton } from "./ResetPasswordButton";
-import { BirthdayInput } from "./BirthdayInput";
 
 export const PersonalInfo = () => {
   const { user: auth0User } = useAuth0();
@@ -18,9 +17,8 @@ export const PersonalInfo = () => {
   return (
     <SectionCard title="Personal Info">
       <NameInput />
-      <UsernameInput />
-      <BirthdayInput />
       <EmailInput isConnectionUser={isConnectionUser} />
+      <UsernameInput />
       <ResetPasswordButton isConnectionUser={isConnectionUser} />
     </SectionCard>
   );

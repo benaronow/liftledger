@@ -11,7 +11,6 @@ import { getCompletedSessionsInProgram } from "@liftledger/shared";
 import { authorizeCaller } from "../auth";
 
 const UPDATABLE_FIELDS = [
-  "birthday",
   "timerPresets",
   "gyms",
   "customExerciseNames",

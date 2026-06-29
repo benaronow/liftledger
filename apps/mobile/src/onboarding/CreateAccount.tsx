@@ -6,19 +6,17 @@ import {
   View,
 } from "react-native";
 import { useAuth0 } from "react-native-auth0";
-import { DatePickerInput } from "react-native-paper-dates";
 import { useAuth0Profile, useCreateUser } from "@liftledger/api-client";
 import {
   ActivityIndicator,
   Button,
-  PaperProvider,
   Text,
   TextInput,
   useTheme,
 } from "react-native-paper";
 import { useThemePreference } from "../providers/ThemeProvider";
 import { AppTextInput } from "../components/inputs";
-import { INPUT_HEIGHT, RADIUS, SPACING } from "../theme";
+import { SPACING } from "../theme";
 import { useSnackbar } from "../providers/SnackbarProvider";
 import { useLogout } from "../RootNavigator/AuthenticatedRouter/useLogout";
 import { SectionCard } from "../components/SectionCard";
@@ -33,8 +31,7 @@ const errorMessage = (e: unknown, fallback: string): string => {
 
 export const CreateAccount = () => {
   const { user } = useAuth0();
-  const theme = useTheme();
-  const { colors } = theme;
+  const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
   const logout = useLogout();
   const { trigger: createUser, isMutating: creating } = useCreateUser();
@@ -50,7 +47,6 @@ export const CreateAccount = () => {
   const email = user?.email ?? "";
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
-  const [birthday, setBirthday] = useState<Date | undefined>(undefined);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -61,11 +57,10 @@ export const CreateAccount = () => {
     fullName.trim() !== "" &&
     username.trim() !== "" &&
     email !== "" &&
-    !!birthday &&
     !creating;
 
   const handleCreate = useCallback(async () => {
-    if (!user?.sub || !birthday) return;
+    if (!user?.sub) return;
     setError("");
     try {
       await createUser({
@@ -73,33 +68,14 @@ export const CreateAccount = () => {
         email,
         username: username.trim(),
         fullName: fullName.trim(),
-        birthday: birthday.toISOString(),
         timerPresets: DEFAULT_TIMER_PRESETS,
       });
-      // Success writes the meKey cache, so the router swaps to the main app.
     } catch (e: unknown) {
       const msg = errorMessage(e, "Failed to create account");
       setError(msg);
       showSnackbar(msg, "error");
     }
-  }, [
-    user?.sub,
-    email,
-    username,
-    fullName,
-    birthday,
-    createUser,
-    showSnackbar,
-  ]);
-
-  const modalTheme = {
-    ...theme,
-    colors: {
-      ...colors,
-      surface: colors.background,
-      surfaceDisabled: colors.onSurfaceDisabled,
-    },
-  };
+  }, [user?.sub, email, username, fullName, createUser, showSnackbar]);
 
   return (
     <ScrollView
@@ -134,7 +110,8 @@ export const CreateAccount = () => {
               disabled
               theme={{
                 colors: {
-                  surfaceDisabled: scheme === "dark" ? colors.surfaceVariant : "white",
+                  surfaceDisabled:
+                    scheme === "dark" ? colors.surfaceVariant : "white",
                 },
               }}
             />
@@ -154,24 +131,11 @@ export const CreateAccount = () => {
               }
               theme={{
                 colors: {
-                  surfaceDisabled: scheme === "dark" ? colors.surfaceVariant : "white",
+                  surfaceDisabled:
+                    scheme === "dark" ? colors.surfaceVariant : "white",
                 },
               }}
             />
-            <View>
-              <PaperProvider theme={modalTheme}>
-                <DatePickerInput
-                  style={{ height: INPUT_HEIGHT }}
-                  outlineStyle={{ borderRadius: RADIUS.md }}
-                  mode="outlined"
-                  locale="en"
-                  label="Birthday"
-                  value={birthday}
-                  onChange={setBirthday}
-                  inputMode="start"
-                />
-              </PaperProvider>
-            </View>
             {error !== "" && (
               <Text style={{ color: colors.error, textAlign: "center" }}>
                 {error}
