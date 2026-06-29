@@ -203,7 +203,12 @@ export const EditWeek = () => {
       <View style={{ width: "100%", alignItems: "center" }}>
         {week.map((day, idx) => (
           <Fragment key={idx}>
-            {week.length < 7 && <AddRow onPress={() => handleAddDay(idx)} />}
+            {week.length < 7 && (
+              <AddRow
+                onPress={() => handleAddDay(idx)}
+                disabled={!!curProgram && curProgram.curDayIdx > idx}
+              />
+            )}
             <DayInfo
               day={day}
               dIdx={idx}

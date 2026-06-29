@@ -1,8 +1,8 @@
 import { useProgram, useMe } from "@liftledger/api-client";
 import { View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { FONT } from "../../theme";
-import { FAB_EDGE, FAB_SIZE, FAB_TOP, titleRightInset } from "../../layout";
+import { FONT, SPACING } from "../../theme";
+import { FAB_SIZE, titleRightInset } from "../../layout";
 import { useTemplate } from "../TemplateProvider";
 
 export const EditorTitle = () => {
@@ -13,8 +13,6 @@ export const EditorTitle = () => {
 
   const isEditingDay = editingDayIdx !== -1;
 
-  // Mirror the FAB cluster: Save (+ Quit when a program exists) on the week
-  // view, a single Back button on the day view.
   const fabCount = isEditingDay ? 1 : curProgram ? 2 : 1;
 
   const title = isEditingDay
@@ -26,15 +24,19 @@ export const EditorTitle = () => {
   return (
     <View
       style={{
-        paddingTop: FAB_TOP,
-        paddingLeft: FAB_EDGE,
+        paddingTop: SPACING.md,
+        paddingLeft: SPACING.lg,
         paddingRight: titleRightInset(fabCount),
       }}
     >
       <View style={{ height: FAB_SIZE, justifyContent: "center" }}>
         <Text
           numberOfLines={1}
-          style={{ fontSize: FONT.xl, fontWeight: "700", color: colors.onSurface }}
+          style={{
+            fontSize: FONT.xl,
+            fontWeight: "700",
+            color: colors.onSurface,
+          }}
         >
           {title}
         </Text>

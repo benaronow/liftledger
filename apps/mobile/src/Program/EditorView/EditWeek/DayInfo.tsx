@@ -60,42 +60,40 @@ export const DayInfo = ({ day, dIdx, errors, onRequestDelete }: Props) => {
     });
   };
 
+  const isComplete = !!curProgram && curProgram.curDayIdx > dIdx;
+
   const infoActions: InfoAction[] = [
     {
       icon: "chevron-up",
-      disabled: dIdx === curProgram?.curDayIdx || dIdx === 0,
+      disabled: isComplete || dIdx === curProgram?.curDayIdx || dIdx === 0,
       onPress: () => handleMoveDay(day, dIdx, "up"),
       variant: "primary",
     },
     {
       icon: "chevron-down",
-      disabled: dIdx === week.length - 1,
+      disabled: isComplete || dIdx === week.length - 1,
       onPress: () => handleMoveDay(day, dIdx, "down"),
       variant: "primary",
     },
     {
       icon: "pencil",
+      disabled: isComplete,
       onPress: () => setEditingDayIdx(dIdx),
       variant: "primary",
     },
     {
       icon: "content-copy",
-      disabled: week.length > 6,
+      disabled: isComplete || week.length > 6,
       onPress: () => handleDuplicateDay(dIdx),
       variant: "primary",
     },
     {
       icon: "delete",
-      disabled: week.length === 1,
+      disabled: isComplete || week.length === 1,
       onPress: () => onRequestDelete(dIdx),
       variant: "danger",
     },
   ];
-
-  const disabledMessage =
-    curProgram && curProgram.curDayIdx > dIdx
-      ? "Day complete, cannot be edited or moved until next week."
-      : "";
 
   const hasListedExercises = day.exercises.some(
     (e) => e.name && e.apparatus && e.sets.length,
@@ -111,11 +109,7 @@ export const DayInfo = ({ day, dIdx, errors, onRequestDelete }: Props) => {
   ];
 
   return (
-    <Info
-      title={day.name}
-      actions={infoActions}
-      disabledMessage={disabledMessage}
-    >
+    <Info title={day.name} actions={infoActions}>
       {hasListedExercises &&
         day.exercises
           .filter((ex) => !ex.addedOn)

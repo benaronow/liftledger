@@ -17,8 +17,12 @@ interface Props {
 export const DayInfo = ({ day, dIdx, hasErrors, onRequestDelete }: Props) => {
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { templateProgram, setTemplateProgram, editingWeekIdx, setEditingDayIdx } =
-    useTemplate();
+  const {
+    templateProgram,
+    setTemplateProgram,
+    editingWeekIdx,
+    setEditingDayIdx,
+  } = useTemplate();
 
   const handleMoveDay = (day: Day, dayIdx: number, type: "up" | "down") => {
     if ((dayIdx !== 0 || type !== "up") && (dayIdx !== 6 || type !== "down")) {

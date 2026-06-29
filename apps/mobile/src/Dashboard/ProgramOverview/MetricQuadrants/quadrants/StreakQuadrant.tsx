@@ -19,7 +19,7 @@ export const StreakQuadrant = ({ program, onLayout }: Props) => {
   return (
     <Quadrant
       corner="br"
-      label="DAY STREAK"
+      label="STREAK"
       value={`${streak}`}
       bar={
         <ContinuousBar

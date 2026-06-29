@@ -29,7 +29,7 @@ export const TitleRow = ({ label, value, align }: Props) => {
       numberOfLines={1}
       style={{
         flexShrink: 1,
-        fontSize: FONT.lg,
+        fontSize: FONT.base,
         fontWeight: "900",
         color: colors.onSurface,
       }}
@@ -45,7 +45,7 @@ export const TitleRow = ({ label, value, align }: Props) => {
         gap: SPACING.sm,
         paddingHorizontal: SPACING.md,
         paddingVertical: SPACING.sm,
-        justifyContent: align === "right" ? "flex-end" : "flex-start",
+        justifyContent: "space-between",
       }}
     >
       {align === "right" ? (

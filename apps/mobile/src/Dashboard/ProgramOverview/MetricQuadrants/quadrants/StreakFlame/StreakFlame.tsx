@@ -23,7 +23,8 @@ export const StreakFlame = ({
   barHeight,
   keepOutRadius: R,
 }: Props) => {
-  const fill = Math.min(1, Math.max(0, getStreak(program) / STREAK_TARGET));
+  const streak = getStreak(program);
+  const fill = streak / STREAK_TARGET;
 
   const barEdgeOffset = GAP / 2 + BAR_INSET;
   const barRightOffset = barEdgeOffset + (grid.width - GAP) / 2 - BAR_INSET * 2;
@@ -37,7 +38,7 @@ export const StreakFlame = ({
   const span = Math.max(0, width - TONGUE_WIDTH);
   const count = Math.max(2, Math.ceil(span / TONGUE_STEP) + 1);
 
-  if (barHeight === 0) return null;
+  if (fill === 0) return null;
 
   return (
     <View

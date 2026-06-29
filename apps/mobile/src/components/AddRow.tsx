@@ -5,11 +5,14 @@ import { SPACING } from "../theme";
 interface Props {
   onPress: () => void;
   accessibilityLabel?: string;
+  disabled?: boolean;
 }
 
-export const AddRow = ({ onPress, accessibilityLabel }: Props) => {
+export const AddRow = ({ onPress, accessibilityLabel, disabled }: Props) => {
   const { colors } = useTheme();
-  const lineStyle = { flex: 1, height: 2, backgroundColor: colors.primary };
+  const lineColor = disabled ? colors.surfaceDisabled : colors.primary;
+  const lineStyle = { flex: 1, height: 2, backgroundColor: lineColor };
+
   return (
     <View
       style={{
@@ -27,8 +30,9 @@ export const AddRow = ({ onPress, accessibilityLabel }: Props) => {
         accessibilityLabel={accessibilityLabel}
         mode="contained"
         size={18}
-        containerColor={colors.primary}
+        containerColor={lineColor}
         iconColor={colors.onPrimary}
+        disabled={disabled}
         onPress={onPress}
       />
       <Divider style={lineStyle} />

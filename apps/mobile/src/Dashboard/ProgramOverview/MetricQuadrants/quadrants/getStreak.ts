@@ -29,5 +29,6 @@ export const getStreak = (program: Program): number => {
     streak += 1;
     cursor -= DAY_MS;
   }
+
   return streak;
 };
