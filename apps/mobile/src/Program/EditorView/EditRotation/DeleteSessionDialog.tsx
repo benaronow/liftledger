@@ -2,20 +2,20 @@ import { ConfirmationDialog } from "../../../components/ConfirmationDialog";
 import { useTemplate } from "../../TemplateProvider";
 
 interface Props {
-  deletingDayIdx: number | undefined;
+  deletingSessionIdx: number | undefined;
   onClose: () => void;
 }
 
-export const DeleteDayDialog = ({ deletingDayIdx, onClose }: Props) => {
-  const { templateProgram, setTemplateProgram, editingWeekIdx } = useTemplate();
+export const DeleteSessionDialog = ({ deletingSessionIdx, onClose }: Props) => {
+  const { templateProgram, setTemplateProgram, editingRotationIdx } = useTemplate();
 
-  const handleRemoveDay = () => {
+  const handleRemoveSession = () => {
     setTemplateProgram({
       ...templateProgram,
-      weeks: templateProgram.weeks.map((week, idx) =>
-        idx === editingWeekIdx && deletingDayIdx !== undefined
-          ? week.toSpliced(deletingDayIdx, 1)
-          : week,
+      rotations: templateProgram.rotations.map((rotation, idx) =>
+        idx === editingRotationIdx && deletingSessionIdx !== undefined
+          ? rotation.toSpliced(deletingSessionIdx, 1)
+          : rotation,
       ),
     });
     onClose();
@@ -23,13 +23,13 @@ export const DeleteDayDialog = ({ deletingDayIdx, onClose }: Props) => {
 
   return (
     <ConfirmationDialog
-      open={deletingDayIdx !== undefined}
+      open={deletingSessionIdx !== undefined}
       onClose={onClose}
-      title="Delete Day"
+      title="Delete Session"
       icon="alert"
       destructive
-      onConfirm={handleRemoveDay}
-      description="Are you sure you want to delete this day?"
+      onConfirm={handleRemoveSession}
+      description="Are you sure you want to delete this session?"
       emphasis="This action cannot be undone."
     />
   );

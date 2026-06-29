@@ -59,8 +59,8 @@ export const Program = () => {
     : duplicateFromId
       ? templateFromProgram(sourceProgram!, completedExercises!)
       : EMPTY_PROGRAM;
-  const initialWeekIdx = editingActiveProgram
-    ? (curProgram!.curWeekIdx ?? 0)
+  const initialRotationIdx = editingActiveProgram
+    ? (curProgram!.curRotationIdx ?? 0)
     : 0;
 
   return (
@@ -69,7 +69,7 @@ export const Program = () => {
         <TemplateProvider
           key={`${curUser.curProgram ?? "none"}:${duplicateFromId ?? "default"}`}
           initialTemplate={initialTemplate}
-          initialWeekIdx={initialWeekIdx}
+          initialRotationIdx={initialRotationIdx}
         >
           <View style={{ flex: 1, backgroundColor: colors.background }}>
             <EditorView />

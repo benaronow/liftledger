@@ -11,32 +11,32 @@ import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
 import { fullExerciseIndex } from "./moveExercise";
 import { ExerciseInfo } from "./ExerciseInfo";
 
-export const EditDay = () => {
+export const EditSession = () => {
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const {
     templateProgram,
     setTemplateProgram,
-    editingWeekIdx,
-    editingDayIdx,
+    editingRotationIdx,
+    editingSessionIdx,
     templateErrors,
   } = useTemplate();
   const [deletingExerciseIdx, setDeletingExerciseIdx] = useState<
     number | undefined
   >(undefined);
 
-  const day = templateProgram.weeks[editingWeekIdx][editingDayIdx];
-  const visibleExercises = day.exercises.filter((e) => !e.addedOn);
+  const session = templateProgram.rotations[editingRotationIdx][editingSessionIdx];
+  const visibleExercises = session.exercises.filter((e) => !e.addedOn);
 
-  const handleDayNameInput = (text: string) => {
+  const handleSessionNameInput = (text: string) => {
     setTemplateProgram({
       ...templateProgram,
-      weeks: templateProgram.weeks.map((week, wIdx) =>
-        wIdx === editingWeekIdx
-          ? week.map((d, dIdx) =>
-              dIdx === editingDayIdx ? { ...d, name: text } : d,
+      rotations: templateProgram.rotations.map((rotation, wIdx) =>
+        wIdx === editingRotationIdx
+          ? rotation.map((d, dIdx) =>
+              dIdx === editingSessionIdx ? { ...d, name: text } : d,
             )
-          : week,
+          : rotation,
       ),
     });
   };
@@ -52,29 +52,29 @@ export const EditDay = () => {
 
     setTemplateProgram({
       ...templateProgram,
-      weeks: templateProgram.weeks.map((week, wIdx) =>
-        wIdx === editingWeekIdx
-          ? week.map((d, dIdx) =>
-              dIdx === editingDayIdx
+      rotations: templateProgram.rotations.map((rotation, wIdx) =>
+        wIdx === editingRotationIdx
+          ? rotation.map((d, dIdx) =>
+              dIdx === editingSessionIdx
                 ? {
                     ...d,
                     exercises: d.exercises.toSpliced(idx, 0, newExercise),
                   }
                 : d,
             )
-          : week,
+          : rotation,
       ),
     });
   };
 
   return (
     <View style={{ width: "100%", alignItems: "center" }}>
-      <SectionCard title="Day Details" style={{ marginBottom: SPACING.lg }}>
+      <SectionCard title="Session Details" style={{ marginBottom: SPACING.lg }}>
         <AppTextInput
-          label="Day Name"
-          value={day.name}
-          error={templateErrors.days[editingDayIdx]?.name}
-          onChangeText={handleDayNameInput}
+          label="Session Name"
+          value={session.name}
+          error={templateErrors.sessions[editingSessionIdx]?.name}
+          onChangeText={handleSessionNameInput}
           autoCapitalize="none"
         />
       </SectionCard>
@@ -84,7 +84,7 @@ export const EditDay = () => {
               array, so a hidden addedOn exercise doesn't shift the insert. */}
           <AddRow
             onPress={() =>
-              handleAddExercise(fullExerciseIndex(day.exercises, idx))
+              handleAddExercise(fullExerciseIndex(session.exercises, idx))
             }
           />
           <ExerciseInfo
@@ -94,7 +94,7 @@ export const EditDay = () => {
           />
         </View>
       ))}
-      <AddRow onPress={() => handleAddExercise(day.exercises.length)} />
+      <AddRow onPress={() => handleAddExercise(session.exercises.length)} />
 
       <DeleteExerciseDialog
         deletingExerciseIdx={deletingExerciseIdx}

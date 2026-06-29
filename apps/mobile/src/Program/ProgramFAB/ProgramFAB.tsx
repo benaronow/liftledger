@@ -13,12 +13,12 @@ export const ProgramFAB = () => {
   const { colors } = useTheme();
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { editingDayIdx, setEditingDayIdx, templateErrors } = useTemplate();
+  const { editingSessionIdx, setEditingSessionIdx, templateErrors } = useTemplate();
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [quitDialogOpen, setQuitDialogOpen] = useState(false);
 
-  const isEditingDay = editingDayIdx !== -1;
-  const saveDisabled = !isEditingDay && hasAnyError(templateErrors);
+  const isEditingSession = editingSessionIdx !== -1;
+  const saveDisabled = !isEditingSession && hasAnyError(templateErrors);
 
   return (
     <>
@@ -26,7 +26,7 @@ export const ProgramFAB = () => {
         style={{
           position: "absolute",
           // Nudged down by the title's line leading so the buttons' tops line
-          // up with the editor title's glyph (matching CompleteDay's FAB).
+          // up with the editor title's glyph (matching CompleteSession's FAB).
           top: FAB_TOP + SPACING.xs,
           right: FAB_EDGE,
           flexDirection: "row",
@@ -34,7 +34,7 @@ export const ProgramFAB = () => {
           zIndex: 10,
         }}
       >
-        {!isEditingDay && curProgram && (
+        {!isEditingSession && curProgram && (
           <FAB
             key="stop"
             icon="stop-circle"
@@ -50,7 +50,7 @@ export const ProgramFAB = () => {
             FABs) lets Paper's CrossFadeIcon spin the icon in BOTH directions. */}
         <FAB
           key="primary"
-          icon={isEditingDay ? "arrow-left" : "content-save"}
+          icon={isEditingSession ? "arrow-left" : "content-save"}
           size="small"
           customSize={FAB_SIZE}
           color="white"
@@ -62,7 +62,7 @@ export const ProgramFAB = () => {
             borderRadius: RADIUS.lg,
           }}
           onPress={() =>
-            isEditingDay ? setEditingDayIdx(-1) : setSaveDialogOpen(true)
+            isEditingSession ? setEditingSessionIdx(-1) : setSaveDialogOpen(true)
           }
         />
       </View>

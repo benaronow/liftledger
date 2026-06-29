@@ -20,9 +20,9 @@ export const CompletedProgram = ({ program, idx, disabled }: Props) => {
 
   const completedDate = () => {
     if (program.endDate) return program.endDate;
-    const finalWeek = program.weeks[program.weeks.length - 1];
-    const finalDay = finalWeek[finalWeek.length - 1];
-    return finalDay.completedDate;
+    const finalRotation = program.rotations[program.rotations.length - 1];
+    const finalSession = finalRotation[finalRotation.length - 1];
+    return finalSession.completedDate;
   };
 
   return (

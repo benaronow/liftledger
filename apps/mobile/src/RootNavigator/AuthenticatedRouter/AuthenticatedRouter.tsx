@@ -13,7 +13,7 @@ import { LogoSpinner } from "../../components/LogoSpinner";
 import { Timer } from "../../components/Timer";
 import { Account } from "../../Account";
 import { useThemePreference } from "../../providers/ThemeProvider";
-import { CompleteDay } from "../../CompleteDay";
+import { CompleteSession } from "../../CompleteSession";
 import { VerifyEmail } from "../../onboarding/VerifyEmail";
 import { CreateAccount } from "../../onboarding/CreateAccount";
 import { TabNavigator } from "../TabNavigator";
@@ -92,8 +92,8 @@ export const AuthenticatedRouter = () => {
           })}
         />
         <Stack.Screen
-          name="CompleteDay"
-          component={CompleteDay}
+          name="CompleteSession"
+          component={CompleteSession}
           // Disable swipe-to-go-back: a horizontal drag on the progress chart
           // (gifted-charts pointer) otherwise gets grabbed by the pop gesture and
           // slides back to the dashboard. The header back button still works.

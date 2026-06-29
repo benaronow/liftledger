@@ -25,11 +25,11 @@ export const useCompletedExercises = (
 export const findLatestOccurrence = (
   completedExercises: CompletedExercisesResponse | undefined,
   checkerFunc: (e: Exercise) => boolean,
-  options?: { includeCurrentDay: boolean },
+  options?: { includeCurrentSession: boolean },
 ): CompletedExercise | undefined => {
   const data = completedExercises ?? EMPTY;
   const exercises: CompletedExercise[] = [
-    ...(options?.includeCurrentDay ? data.current : []),
+    ...(options?.includeCurrentSession ? data.current : []),
     ...data.previous,
   ];
 

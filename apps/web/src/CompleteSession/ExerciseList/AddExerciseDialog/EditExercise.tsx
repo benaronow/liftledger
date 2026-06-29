@@ -3,10 +3,10 @@ import { Dispatch, SetStateAction, useCallback } from "react";
 import {
   getUpdatedExercise,
   useCompletedExercises,
-  useCurrentDay,
+  useCurrentSession,
   useMe,
 } from "@liftledger/api-client";
-import { ExerciseInfoName } from "@/EditProgram/EditorView/EditDay/ExerciseInfo";
+import { ExerciseInfoName } from "@/EditProgram/EditorView/EditSession/ExerciseInfo";
 import { WEIGHT_TYPES } from "@liftledger/shared";
 import { ExerciseNameSelect } from "@/components/ExerciseNameSelect";
 import { ExerciseApparatusSelect } from "@/components/ExerciseApparatusSelect";
@@ -18,7 +18,7 @@ interface Props {
 }
 
 export const EditExercise = ({ newExercise, setNewExercise }: Props) => {
-  const { exercises } = useCurrentDay();
+  const { exercises } = useCurrentSession();
   const { data: curUser } = useMe();
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
 

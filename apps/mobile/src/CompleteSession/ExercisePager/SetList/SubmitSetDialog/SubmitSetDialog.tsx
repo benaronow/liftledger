@@ -1,10 +1,10 @@
-import { Program, Day, Exercise, Set } from "@liftledger/shared";
+import { Program, Session, Exercise, Set } from "@liftledger/shared";
 import { useEffect, useState } from "react";
 import {
   findLatestOccurrence,
   useProgram,
   useCompletedExercises,
-  useCurrentDay,
+  useCurrentSession,
   useMe,
   useUpdateUserProgram,
 } from "@liftledger/api-client";
@@ -25,7 +25,7 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
   const { trigger: triggerUpdateUserProgram } = useUpdateUserProgram();
   const { showSnackbar } = useSnackbar();
 
-  const { exercises } = useCurrentDay();
+  const { exercises } = useCurrentSession();
   const [submittingSet, setSubmittingSet] = useState(false);
   const [skippingSet, setSkippingSet] = useState(false);
 
@@ -47,21 +47,21 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
   const saveExercises = async (updatedExercises: Exercise[]) => {
     if (!curUser?._id || !curProgram) return;
 
-    const newDays: Day[] = curProgram.weeks[curProgram.curWeekIdx].toSpliced(
-      curProgram.curDayIdx,
+    const newSessions: Session[] = curProgram.rotations[curProgram.curRotationIdx].toSpliced(
+      curProgram.curSessionIdx,
       1,
       {
-        ...curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx],
+        ...curProgram.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx],
         exercises: updatedExercises,
       },
     );
 
-    const updatedLaterDays: Day[] = newDays.map((day: Day, idx) =>
-      idx <= curProgram.curDayIdx
-        ? day
+    const updatedLaterDays: Session[] = newSessions.map((session: Session, idx) =>
+      idx <= curProgram.curSessionIdx
+        ? session
         : {
-            ...day,
-            exercises: day.exercises.map((exercise: Exercise) => {
+            ...session,
+            exercises: session.exercises.map((exercise: Exercise) => {
               const completedExercise = updatedExercises.find(
                 (e: Exercise) =>
                   e.name === exercise.name &&
@@ -88,8 +88,8 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
 
     const newProgram: Program = {
       ...curProgram,
-      weeks: curProgram.weeks.toSpliced(
-        curProgram.curWeekIdx,
+      rotations: curProgram.rotations.toSpliced(
+        curProgram.curRotationIdx,
         1,
         updatedLaterDays,
       ),

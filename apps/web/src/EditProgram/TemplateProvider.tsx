@@ -15,10 +15,10 @@ interface TemplateContextModel {
   templateProgram: Program;
   setTemplateProgram: Dispatch<SetStateAction<Program>>;
   unsetTemplateProgram: () => void;
-  editingWeekIdx: number;
-  setEditingWeekIdx: Dispatch<SetStateAction<number>>;
-  editingDayIdx: number;
-  setEditingDayIdx: Dispatch<SetStateAction<number>>;
+  editingRotationIdx: number;
+  setEditingRotationIdx: Dispatch<SetStateAction<number>>;
+  editingSessionIdx: number;
+  setEditingSessionIdx: Dispatch<SetStateAction<number>>;
   templateErrors: string[];
 }
 
@@ -26,10 +26,10 @@ const defaultTemplateContext: TemplateContextModel = {
   templateProgram: EMPTY_PROGRAM,
   setTemplateProgram: () => {},
   unsetTemplateProgram: () => {},
-  editingWeekIdx: 0,
-  setEditingWeekIdx: () => {},
-  editingDayIdx: -1,
-  setEditingDayIdx: () => {},
+  editingRotationIdx: 0,
+  setEditingRotationIdx: () => {},
+  editingSessionIdx: -1,
+  setEditingSessionIdx: () => {},
   templateErrors: [],
 };
 
@@ -39,23 +39,23 @@ const TemplateContext = createContext<TemplateContextModel>(
 
 interface Props extends PropsWithChildren {
   initialTemplate: Program;
-  initialWeekIdx: number;
+  initialRotationIdx: number;
 }
 
 export const TemplateProvider = ({
   initialTemplate,
-  initialWeekIdx,
+  initialRotationIdx,
   children,
 }: Props) => {
   const [templateProgram, setTemplateProgram] = useState<Program>(initialTemplate);
-  const [editingWeekIdx, setEditingWeekIdx] = useState(initialWeekIdx);
-  const [editingDayIdx, setEditingDayIdx] = useState(-1);
+  const [editingRotationIdx, setEditingRotationIdx] = useState(initialRotationIdx);
+  const [editingSessionIdx, setEditingSessionIdx] = useState(-1);
 
   const unsetTemplateProgram = () => setTemplateProgram(EMPTY_PROGRAM);
 
   const templateErrors = useMemo(
-    () => validateTemplate(templateProgram, editingWeekIdx),
-    [templateProgram, editingWeekIdx],
+    () => validateTemplate(templateProgram, editingRotationIdx),
+    [templateProgram, editingRotationIdx],
   );
 
   return (
@@ -64,10 +64,10 @@ export const TemplateProvider = ({
         templateProgram,
         setTemplateProgram,
         unsetTemplateProgram,
-        editingWeekIdx,
-        setEditingWeekIdx,
-        editingDayIdx,
-        setEditingDayIdx,
+        editingRotationIdx,
+        setEditingRotationIdx,
+        editingSessionIdx,
+        setEditingSessionIdx,
         templateErrors,
       }}
     >

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { moveExercise } from "@/EditProgram/EditorView/EditDay/moveExercise";
+import { moveExercise } from "@/EditProgram/EditorView/EditSession/moveExercise";
 import { Exercise } from "@liftledger/shared";
 
 const makeExercise = (name: string, addedOn?: boolean): Exercise => ({
@@ -12,7 +12,7 @@ const makeExercise = (name: string, addedOn?: boolean): Exercise => ({
 
 const names = (exercises: Exercise[]) => exercises.map((e) => e.name);
 
-describe("moveExerciseInDay — no addons", () => {
+describe("moveExerciseInSession — no addons", () => {
   it("moves first exercise down", () => {
     const result = moveExercise(
       [makeExercise("A"), makeExercise("B"), makeExercise("C")],
@@ -56,7 +56,7 @@ describe("moveExerciseInDay — no addons", () => {
   });
 });
 
-describe("moveExerciseInDay — with addons", () => {
+describe("moveExerciseInSession — with addons", () => {
   it("moves exercise down with its trailing addons", () => {
     const result = moveExercise(
       [makeExercise("A"), makeExercise("A-addon", true), makeExercise("B")],

@@ -26,7 +26,7 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
   const { trigger: triggerUpdateUserProgram, isMutating: editingGym } =
     useUpdateUserProgram();
   const [gymName, setGymName] = useState<string>(
-    curProgram?.weeks[curProgram.curWeekIdx][curProgram.curDayIdx].gym ?? "",
+    curProgram?.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx].gym ?? "",
   );
 
   const handleEditGym = async (name: string) => {
@@ -36,14 +36,14 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
       userId: curUser._id,
       program: {
         ...curProgram,
-        weeks: curProgram.weeks.map((week, wIdx) =>
-          wIdx === curProgram.curWeekIdx
-            ? week.map((day, dIdx) =>
-                dIdx === curProgram.curDayIdx
+        rotations: curProgram.rotations.map((rotation, wIdx) =>
+          wIdx === curProgram.curRotationIdx
+            ? rotation.map((session, dIdx) =>
+                dIdx === curProgram.curSessionIdx
                   ? {
-                      ...day,
+                      ...session,
                       gym: name,
-                      exercises: day.exercises.map((exercise) =>
+                      exercises: session.exercises.map((exercise) =>
                         exercise.sets.some((s) => s.completed)
                           ? exercise
                           : {
@@ -56,9 +56,9 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
                             },
                       ),
                     }
-                  : day,
+                  : session,
               )
-            : week,
+            : rotation,
         ),
       },
     });
@@ -89,7 +89,7 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
       onClick: () => handleEditGym(gymName),
       disabled:
         gymName ===
-          curProgram?.weeks[curProgram.curWeekIdx][curProgram.curDayIdx].gym ||
+          curProgram?.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx].gym ||
         editingGym,
       variant: "primary",
     },

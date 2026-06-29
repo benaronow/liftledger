@@ -14,8 +14,9 @@ import { startDb, stopDb, clearDb, buildTestApp } from "./helpers";
 const makeUser = () => ({
   auth0Id: "auth0|test-user",
   email: "test@example.com",
-  firstName: "Test",
-  lastName: "User",
+  username: "testuser",
+  fullName: "Test User",
+  birthday: new Date("1990-01-01"),
   timerPresets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 },
   gyms: ["Gym A"],
   customExerciseNames: [],
@@ -34,8 +35,8 @@ const makeExercise = () => ({
   weightType: "lbs",
 });
 
-const makeDay = (completedDate?: Date) => ({
-  name: "Day 1",
+const makeSession = (completedDate?: Date) => ({
+  name: "Session 1",
   gym: "Gym A",
   exercises: [makeExercise()],
   completedDate,
@@ -46,9 +47,9 @@ const makeProgram = (overrides: Partial<Program> = {}): Partial<Program> => ({
   startDate: new Date("2024-01-01"),
   length: 4,
   primaryGym: "Gym A",
-  weeks: [[makeDay()]],
-  curWeekIdx: 0,
-  curDayIdx: 0,
+  rotations: [[makeSession()]],
+  curRotationIdx: 0,
+  curSessionIdx: 0,
   ...overrides,
 });
 
@@ -93,9 +94,9 @@ describe("GET /users/:id/programs/:programId", () => {
   });
 });
 
-describe("PUT /users/:id/programs/:programId — day progression", () => {
-  it("does not advance curDayIdx when curDay has no completedDate", async () => {
-    const program = await ProgramModel.create(makeProgram({ curDayIdx: 0 }));
+describe("PUT /users/:id/programs/:programId — session progression", () => {
+  it("does not advance curSessionIdx when curSession has no completedDate", async () => {
+    const program = await ProgramModel.create(makeProgram({ curSessionIdx: 0 }));
     const user = await UserModel.create(makeUser());
     const app = await buildTestApp();
 
@@ -103,19 +104,19 @@ describe("PUT /users/:id/programs/:programId — day progression", () => {
       method: "PUT",
       url: `/users/${user._id.toString()}/programs/${program._id.toString()}`,
       payload: {
-        program: { ...program.toObject(), curDayIdx: 0 },
+        program: { ...program.toObject(), curSessionIdx: 0 },
       },
     });
     const { program: updated } = res.json();
 
-    expect(updated.curDayIdx).toBe(0);
+    expect(updated.curSessionIdx).toBe(0);
 
     await app.close();
   });
 
-  it("advances curDayIdx when curDay has a completedDate", async () => {
+  it("advances curSessionIdx when curSession has a completedDate", async () => {
     const program = await ProgramModel.create(
-      makeProgram({ weeks: [[makeDay(new Date()), makeDay()]], curDayIdx: 0 }),
+      makeProgram({ rotations: [[makeSession(new Date()), makeSession()]], curSessionIdx: 0 }),
     );
     const user = await UserModel.create(makeUser());
     const app = await buildTestApp();
@@ -128,19 +129,19 @@ describe("PUT /users/:id/programs/:programId — day progression", () => {
     });
     const { program: updated } = res.json();
 
-    expect(updated.curDayIdx).toBe(1);
+    expect(updated.curSessionIdx).toBe(1);
 
     await app.close();
   });
 });
 
-describe("PUT /users/:id/programs/:programId — week progression", () => {
-  it("creates next week and advances curWeekIdx when last day of week is complete", async () => {
+describe("PUT /users/:id/programs/:programId — rotation progression", () => {
+  it("creates next rotation and advances curRotationIdx when last session of rotation is complete", async () => {
     const program = await ProgramModel.create(
       makeProgram({
-        weeks: [[makeDay(new Date())]],
-        curWeekIdx: 0,
-        curDayIdx: 0,
+        rotations: [[makeSession(new Date())]],
+        curRotationIdx: 0,
+        curSessionIdx: 0,
         length: 4,
       }),
     );
@@ -155,16 +156,16 @@ describe("PUT /users/:id/programs/:programId — week progression", () => {
     const { program: updated, done } = res.json();
 
     expect(done).toBe(false);
-    expect(updated.curWeekIdx).toBe(1);
-    expect(updated.curDayIdx).toBe(0);
-    expect(updated.weeks.length).toBe(2);
+    expect(updated.curRotationIdx).toBe(1);
+    expect(updated.curSessionIdx).toBe(0);
+    expect(updated.rotations.length).toBe(2);
 
     await app.close();
   });
 
-  it("copies exercise structure into the new week", async () => {
+  it("copies exercise structure into the new rotation", async () => {
     const program = await ProgramModel.create(
-      makeProgram({ weeks: [[makeDay(new Date())]], curWeekIdx: 0, length: 4 }),
+      makeProgram({ rotations: [[makeSession(new Date())]], curRotationIdx: 0, length: 4 }),
     );
     const user = await UserModel.create(makeUser());
     const app = await buildTestApp();
@@ -176,19 +177,19 @@ describe("PUT /users/:id/programs/:programId — week progression", () => {
     });
     const { program: updated } = res.json();
 
-    const newWeekDay = updated.weeks[1][0];
-    expect(newWeekDay.exercises[0].name).toBe("Bench Press");
-    expect(newWeekDay.exercises[0].sets.length).toBe(2);
-    expect(newWeekDay.exercises[0].sets[0].completed).toBe(false);
+    const newRotationSession = updated.rotations[1][0];
+    expect(newRotationSession.exercises[0].name).toBe("Bench Press");
+    expect(newRotationSession.exercises[0].sets.length).toBe(2);
+    expect(newRotationSession.exercises[0].sets[0].completed).toBe(false);
 
     await app.close();
   });
 });
 
 describe("PUT /users/:id/programs/:programId — program completion", () => {
-  it("returns done=true when last week's last day is complete", async () => {
+  it("returns done=true when last rotation's last session is complete", async () => {
     const program = await ProgramModel.create(
-      makeProgram({ weeks: [[makeDay(new Date())]], curWeekIdx: 0, length: 1 }),
+      makeProgram({ rotations: [[makeSession(new Date())]], curRotationIdx: 0, length: 1 }),
     );
     const user = await UserModel.create({
       ...makeUser(),
@@ -211,7 +212,7 @@ describe("PUT /users/:id/programs/:programId — program completion", () => {
 
   it("unsets curProgram on user when program is complete", async () => {
     const program = await ProgramModel.create(
-      makeProgram({ weeks: [[makeDay(new Date())]], curWeekIdx: 0, length: 1 }),
+      makeProgram({ rotations: [[makeSession(new Date())]], curRotationIdx: 0, length: 1 }),
     );
     const user = await UserModel.create({
       ...makeUser(),

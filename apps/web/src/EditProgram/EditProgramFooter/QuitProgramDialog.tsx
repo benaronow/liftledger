@@ -16,7 +16,7 @@ export const QuitProgramDialog = ({ open, onClose }: Props) => {
   const navigate = useNavigate();
   const { data: curUser } = useMe();
   const { trigger: triggerQuitProgram, isMutating: quitting } = useQuitProgram();
-  const { unsetTemplateProgram, setEditingWeekIdx } = useTemplate();
+  const { unsetTemplateProgram, setEditingRotationIdx } = useTemplate();
   const [error, setError] = useState("");
 
   const handleQuit = async () => {
@@ -25,7 +25,7 @@ export const QuitProgramDialog = ({ open, onClose }: Props) => {
     try {
       await triggerQuitProgram(curUser._id);
       unsetTemplateProgram();
-      setEditingWeekIdx(0);
+      setEditingRotationIdx(0);
       navigate("/dashboard");
     } catch (e: unknown) {
       setError((e as Error).message || "Failed to quit program");
@@ -65,7 +65,7 @@ export const QuitProgramDialog = ({ open, onClose }: Props) => {
           Are you sure you want to quit this program?
         </span>
         <strong className="text-white text-wrap">
-          The program will be saved to your history with the weeks completed so
+          The program will be saved to your history with the rotations completed so
           far.
         </strong>
       </div>

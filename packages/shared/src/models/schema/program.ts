@@ -6,7 +6,7 @@ const programSchema: Schema = new Schema(
     startDate: { type: Date, required: true },
     length: { type: Number, required: true },
     primaryGym: { type: String },
-    weeks: [
+    rotations: [
       [
         {
           name: String,
@@ -34,8 +34,8 @@ const programSchema: Schema = new Schema(
         },
       ],
     ],
-    curDayIdx: { type: Number, required: true },
-    curWeekIdx: { type: Number, required: true },
+    curSessionIdx: { type: Number, required: true },
+    curRotationIdx: { type: Number, required: true },
     endDate: { type: Date },
   },
   { collection: "Program" },

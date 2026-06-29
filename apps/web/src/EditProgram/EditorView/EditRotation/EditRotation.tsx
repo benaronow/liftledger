@@ -1,8 +1,8 @@
-import { Day } from "@liftledger/shared";
+import { Session } from "@liftledger/shared";
 import dayjs, { Dayjs } from "dayjs";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { AddButton } from "@/components/AddButton";
-import { DayInfo } from "./DayInfo";
+import { SessionInfo } from "./SessionInfo";
 import {
   getNewSetsFromLatest,
   useCompletedExercises,
@@ -10,19 +10,19 @@ import {
   useUpdateUser,
   useProgram,
 } from "@liftledger/api-client";
-import { DeleteDayDialog } from "./DeleteDayDialog";
+import { DeleteSessionDialog } from "./DeleteSessionDialog";
 import { SearchableSelect } from "@/components/SearchableSelect";
 import { useTemplate } from "../../TemplateProvider";
 import { LabeledTextInput, LabeledDateInput } from "@/components/inputs";
 
-export const EditWeek = () => {
+export const EditRotation = () => {
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
   const { trigger: triggerUpdateUser } = useUpdateUser();
-  const { templateProgram, setTemplateProgram, editingWeekIdx, templateErrors } =
+  const { templateProgram, setTemplateProgram, editingRotationIdx, templateErrors } =
     useTemplate();
-  const [deletingDayIdx, setDeletingDayIdx] = useState<number | undefined>(
+  const [deletingSessionIdx, setDeletingSessionIdx] = useState<number | undefined>(
     undefined,
   );
 
@@ -31,21 +31,21 @@ export const EditWeek = () => {
       setTemplateProgram({
         ...templateProgram,
         primaryGym: curUser.gyms[0],
-        weeks: templateProgram.weeks.map((week, wIdx) =>
-          wIdx === editingWeekIdx
-            ? week.map((day) => ({
-                ...day,
+        rotations: templateProgram.rotations.map((rotation, wIdx) =>
+          wIdx === editingRotationIdx
+            ? rotation.map((session) => ({
+                ...session,
                 gym: curUser.gyms[0],
-                exercises: day.exercises.map((exercise) => ({
+                exercises: session.exercises.map((exercise) => ({
                   ...exercise,
                   gym: curUser.gyms[0],
                 })),
               }))
-            : week,
+            : rotation,
         ),
       });
     }
-  }, [templateProgram, curUser?.gyms, editingWeekIdx, setTemplateProgram]);
+  }, [templateProgram, curUser?.gyms, editingRotationIdx, setTemplateProgram]);
 
   const handleProgramNameInput = (e: ChangeEvent<HTMLInputElement>) => {
     setTemplateProgram({ ...templateProgram, name: e.target.value });
@@ -57,27 +57,27 @@ export const EditWeek = () => {
   };
 
   const setPrimaryGym = (gym: string) => {
-    const curWeekIdx = curProgram?.curWeekIdx ?? 0;
-    const curDayIdx = curProgram?.curDayIdx ?? 0;
+    const curRotationIdx = curProgram?.curRotationIdx ?? 0;
+    const curSessionIdx = curProgram?.curSessionIdx ?? 0;
 
     setTemplateProgram({
       ...templateProgram,
       primaryGym: gym,
-      weeks: templateProgram.weeks.map((week, wIdx) => {
-        if (wIdx < curWeekIdx) return week;
+      rotations: templateProgram.rotations.map((rotation, wIdx) => {
+        if (wIdx < curRotationIdx) return rotation;
 
-        return week.map((day, dIdx) => {
-          if (wIdx === curWeekIdx && dIdx < curDayIdx) return day;
+        return rotation.map((session, dIdx) => {
+          if (wIdx === curRotationIdx && dIdx < curSessionIdx) return session;
 
-          const dayHasCompletedSets = day.exercises.some((ex) =>
+          const sessionHasCompletedSets = session.exercises.some((ex) =>
             ex.sets.some((s) => s.completed || s.skipped),
           );
-          if (dayHasCompletedSets) return day;
+          if (sessionHasCompletedSets) return session;
 
           return {
-            ...day,
+            ...session,
             gym,
-            exercises: day.exercises.map((exercise) => ({
+            exercises: session.exercises.map((exercise) => ({
               ...exercise,
               gym,
               sets: getNewSetsFromLatest(completedExercises, {
@@ -102,9 +102,9 @@ export const EditWeek = () => {
     setPrimaryGym(gym);
   };
 
-  const handleAddDay = (idx: number) => {
-    const newDay: Day = {
-      name: `Day ${templateProgram.weeks[editingWeekIdx].length + 1}`,
+  const handleAddSession = (idx: number) => {
+    const newSession: Session = {
+      name: `Session ${templateProgram.rotations[editingRotationIdx].length + 1}`,
       gym: templateProgram.primaryGym || "",
       exercises: [
         {
@@ -127,8 +127,8 @@ export const EditWeek = () => {
 
     setTemplateProgram({
       ...templateProgram,
-      weeks: templateProgram.weeks.map((week, wIdx) =>
-        wIdx === editingWeekIdx ? week.toSpliced(idx, 0, newDay) : week,
+      rotations: templateProgram.rotations.map((rotation, wIdx) =>
+        wIdx === editingRotationIdx ? rotation.toSpliced(idx, 0, newSession) : rotation,
       ),
     });
   };
@@ -162,7 +162,7 @@ export const EditWeek = () => {
             onChange={handleDateInput}
           />
           <LabeledTextInput
-            label="Weeks: "
+            label="Rotations: "
             value={templateProgram.length}
             onChange={handleLengthInput}
           />
@@ -177,31 +177,31 @@ export const EditWeek = () => {
           />
         </div>
         <div className="d-flex flex-column align-items-center gap-2 w-100">
-          {templateProgram.weeks[editingWeekIdx].map((day, idx) => (
+          {templateProgram.rotations[editingRotationIdx].map((session, idx) => (
             <React.Fragment key={idx}>
-              {templateProgram.weeks[editingWeekIdx].length < 7 && (
-                <AddButton onClick={() => handleAddDay(idx)} />
+              {templateProgram.rotations[editingRotationIdx].length < 7 && (
+                <AddButton onClick={() => handleAddSession(idx)} />
               )}
-              <DayInfo
-                day={day}
+              <SessionInfo
+                session={session}
                 dIdx={idx}
-                hasErrors={templateErrors.includes(day.name)}
-                onRequestDelete={setDeletingDayIdx}
+                hasErrors={templateErrors.includes(session.name)}
+                onRequestDelete={setDeletingSessionIdx}
               />
             </React.Fragment>
           ))}
         </div>
-        {templateProgram.weeks[editingWeekIdx].length < 7 && (
+        {templateProgram.rotations[editingRotationIdx].length < 7 && (
           <AddButton
             onClick={() =>
-              handleAddDay(templateProgram.weeks[editingWeekIdx].length)
+              handleAddSession(templateProgram.rotations[editingRotationIdx].length)
             }
           />
         )}
       </div>
-      <DeleteDayDialog
-        deletingDayIdx={deletingDayIdx}
-        onClose={() => setDeletingDayIdx(undefined)}
+      <DeleteSessionDialog
+        deletingSessionIdx={deletingSessionIdx}
+        onClose={() => setDeletingSessionIdx(undefined)}
       />
     </>
   );

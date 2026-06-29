@@ -1,4 +1,4 @@
-import { useCurrentDay } from "@liftledger/api-client";
+import { useCurrentSession } from "@liftledger/api-client";
 import type { Exercise } from "@liftledger/shared";
 import { useEffect, useRef } from "react";
 import { FlatList, useWindowDimensions } from "react-native";
@@ -14,7 +14,7 @@ interface Props {
 // exercise is browsable; pages ahead of the workout are read-only until it
 // catches up (their sets can't be logged out of order).
 export const ExercisePager = ({ pageIdx }: Props) => {
-  const { exercises, currentExIdx } = useCurrentDay();
+  const { exercises, currentExIdx } = useCurrentSession();
   const { width } = useWindowDimensions();
   const listRef = useRef<FlatList<Exercise>>(null);
 

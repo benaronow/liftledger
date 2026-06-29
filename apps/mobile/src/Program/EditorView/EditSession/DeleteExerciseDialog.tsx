@@ -11,25 +11,25 @@ export const DeleteExerciseDialog = ({
   deletingExerciseIdx,
   onClose,
 }: Props) => {
-  const { templateProgram, setTemplateProgram, editingWeekIdx, editingDayIdx } =
+  const { templateProgram, setTemplateProgram, editingRotationIdx, editingSessionIdx } =
     useTemplate();
 
   const handleRemoveExercise = () => {
-    const day = templateProgram.weeks[editingWeekIdx][editingDayIdx];
-    if (day.exercises.length > 1 && deletingExerciseIdx !== undefined) {
+    const session = templateProgram.rotations[editingRotationIdx][editingSessionIdx];
+    if (session.exercises.length > 1 && deletingExerciseIdx !== undefined) {
       // deletingExerciseIdx is the position in the *visible* list; map it to the
       // full-array index so a hidden addedOn exercise isn't deleted in its place.
-      const fullIdx = fullExerciseIndex(day.exercises, deletingExerciseIdx);
+      const fullIdx = fullExerciseIndex(session.exercises, deletingExerciseIdx);
       setTemplateProgram({
         ...templateProgram,
-        weeks: templateProgram.weeks.map((week, wIdx) =>
-          wIdx === editingWeekIdx
-            ? week.map((d, dIdx) =>
-                dIdx === editingDayIdx
+        rotations: templateProgram.rotations.map((rotation, wIdx) =>
+          wIdx === editingRotationIdx
+            ? rotation.map((d, dIdx) =>
+                dIdx === editingSessionIdx
                   ? { ...d, exercises: d.exercises.toSpliced(fullIdx, 1) }
                   : d,
               )
-            : week,
+            : rotation,
         ),
       });
     }

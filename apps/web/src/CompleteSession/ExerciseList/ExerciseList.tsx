@@ -5,7 +5,7 @@ import { SetList } from "./SetList";
 import { AddExerciseDialog } from "./AddExerciseDialog";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
 import { useState } from "react";
-import { isExerciseComplete, useCurrentDay } from "@liftledger/api-client";
+import { isExerciseComplete, useCurrentSession } from "@liftledger/api-client";
 import { useTheme } from "@/providers/ThemeProvider";
 
 interface Props {
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export const ExerciseList = ({ exercises, isEditing, containerRef }: Props) => {
-  const { currentExIdx } = useCurrentDay();
+  const { currentExIdx } = useCurrentSession();
   const [addExerciseIdx, setAddExerciseIdx] = useState<number>();
   const [deletingIdx, setDeletingIdx] = useState<number>();
   const { colors } = useTheme();

@@ -7,13 +7,13 @@ type Props = {
 };
 
 export const PercentQuadrant = ({ program }: Props) => {
-  const daysPerWeek = program.weeks[0]?.length ?? 0;
-  const totalDays = program.length * daysPerWeek;
-  const completedDays = program.weeks.reduce(
-    (sum, week) => sum + week.filter((day) => day.completedDate).length,
+  const sessionsPerRotation = program.rotations[0]?.length ?? 0;
+  const totalSessions = program.length * sessionsPerRotation;
+  const completedSessions = program.rotations.reduce(
+    (sum, rotation) => sum + rotation.filter((session) => session.completedDate).length,
     0,
   );
-  const percent = totalDays ? completedDays / totalDays : 0;
+  const percent = totalSessions ? completedSessions / totalSessions : 0;
 
   return (
     <Quadrant

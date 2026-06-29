@@ -14,7 +14,7 @@ interface Props {
   setFinishing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const FinishDayDialog = ({
+export const FinishSessionDialog = ({
   open,
   onClose,
   finishing,
@@ -27,16 +27,16 @@ export const FinishDayDialog = ({
   const { trigger: triggerUpdateUserProgram } = useUpdateUserProgram();
   const { showSnackbar } = useSnackbar();
 
-  const handleFinishDay = useCallback(async () => {
+  const handleFinishSession = useCallback(async () => {
     if (!curUser?._id || !curProgram) return;
 
     const newProgram: Program = {
       ...curProgram,
-      weeks: curProgram.weeks.toSpliced(
-        curProgram.curWeekIdx,
+      rotations: curProgram.rotations.toSpliced(
+        curProgram.curRotationIdx,
         1,
-        curProgram.weeks[curProgram.curWeekIdx].toSpliced(curProgram.curDayIdx, 1, {
-          ...curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx],
+        curProgram.rotations[curProgram.curRotationIdx].toSpliced(curProgram.curSessionIdx, 1, {
+          ...curProgram.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx],
           completedDate: new Date(),
         }),
       ),
@@ -47,10 +47,10 @@ export const FinishDayDialog = ({
       await triggerUpdateUserProgram({ userId: curUser._id, program: newProgram });
       onClose();
       // `pop: true` returns to the existing Tabs screen instead of pushing a new
-      // one on top of CompleteDay (RN7 navigate no longer pops back by default).
+      // one on top of CompleteSession (RN7 navigate no longer pops back by default).
       navigation.navigate("Tabs", { screen: "Dashboard" }, { pop: true });
     } catch {
-      showSnackbar("Failed to finish day. Please try again.");
+      showSnackbar("Failed to finish session. Please try again.");
     } finally {
       setFinishing(false);
     }
@@ -68,9 +68,9 @@ export const FinishDayDialog = ({
     <ConfirmationDialog
       open={open}
       onClose={onClose}
-      title="Finish Day"
+      title="Finish Session"
       icon="flag-checkered"
-      onConfirm={handleFinishDay}
+      onConfirm={handleFinishSession}
       confirming={finishing}
       description="Are you sure you want to finish today's workout?"
       emphasis="Once you finish, you can no longer edit exercises from this workout."

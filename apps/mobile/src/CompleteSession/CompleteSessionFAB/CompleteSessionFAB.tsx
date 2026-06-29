@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, View } from "react-native";
-import { useCurrentDay, useMe, useTimerEnd } from "@liftledger/api-client";
+import { useCurrentSession, useMe, useTimerEnd } from "@liftledger/api-client";
 import { FAB_EDGE, FAB_GAP, FAB_SIZE, FAB_TOP } from "../../layout";
 import { FAB, useTheme } from "react-native-paper";
 import { RADIUS, SPACING } from "../../theme";
@@ -17,12 +17,12 @@ interface Props {
 // its parts — a primary FAB that flips between dots/close, labeled small FABs
 // dropping down beneath it, and a dimming backdrop. Actions that aren't
 // currently available are omitted (the timer action while a timer runs, the
-// gym action once the day has started).
-export const CompleteDayFAB = ({ isFinishing }: Props) => {
+// gym action once the session has started).
+export const CompleteSessionFAB = ({ isFinishing }: Props) => {
   const { colors } = useTheme();
   const { data: curUser } = useMe();
   const { data: timerEndData } = useTimerEnd(curUser?._id);
-  const { isDayStarted } = useCurrentDay();
+  const { isSessionStarted } = useCurrentSession();
 
   const [open, setOpen] = useState(false);
   const [timerDialogOpen, setTimerDialogOpen] = useState(false);
@@ -52,7 +52,7 @@ export const CompleteDayFAB = ({ isFinishing }: Props) => {
           },
         ]
       : []),
-    ...(!isDayStarted
+    ...(!isSessionStarted
       ? [
           {
             icon: "office-building",

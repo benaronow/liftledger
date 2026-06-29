@@ -4,7 +4,7 @@ import {
   getNewSetsFromLatest,
 } from "@liftledger/api-client";
 
-// Builds a fresh template by duplicating the last week of an existing program.
+// Builds a fresh template by duplicating the last rotation of an existing program.
 // Used by /edit-program when the URL carries ?duplicateFrom=<programId>.
 export const templateFromProgram = (
   program: Program,
@@ -14,14 +14,14 @@ export const templateFromProgram = (
   startDate: new Date(),
   length: program.length,
   primaryGym: program.primaryGym,
-  weeks: [
-    // Use the LAST week that actually exists, not `program.length - 1`. Quitting
-    // truncates `weeks` to the weeks completed so far; the original `length`
-    // (the user's target) may be larger than what's in `weeks`.
-    program.weeks[program.weeks.length - 1].map((day) => ({
-      name: day.name,
+  rotations: [
+    // Use the LAST rotation that actually exists, not `program.length - 1`. Quitting
+    // truncates `rotations` to the rotations completed so far; the original `length`
+    // (the user's target) may be larger than what's in `rotations`.
+    program.rotations[program.rotations.length - 1].map((session) => ({
+      name: session.name,
       gym: program.primaryGym,
-      exercises: day.exercises
+      exercises: session.exercises
         .filter((ex) => !ex.addedOn)
         .map((exercise) => ({
           name: exercise.name,
@@ -36,6 +36,6 @@ export const templateFromProgram = (
       completedDate: undefined,
     })),
   ],
-  curDayIdx: 0,
-  curWeekIdx: 0,
+  curSessionIdx: 0,
+  curRotationIdx: 0,
 });

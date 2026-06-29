@@ -1,6 +1,6 @@
 import { useMe, useProgram } from "@liftledger/api-client";
 import dayjs from "dayjs";
-import { Day, Exercise, Set } from "@liftledger/shared";
+import { Session, Exercise, Set } from "@liftledger/shared";
 import { LogoSpinner } from "@/components/LogoSpinner";
 import { Link } from "react-router";
 import { RouteType } from "@/routeTypes";
@@ -20,13 +20,13 @@ export const Dashboard = () => {
   };
 
   const getTotalWeight = (type: "lbs" | "kgs") => {
-    return `${curProgram?.weeks.reduce((accWeek: number, curWeek: Day[]) => {
+    return `${curProgram?.rotations.reduce((accRotation: number, curRotation: Session[]) => {
       return (
-        accWeek +
-        curWeek.reduce((accDay: number, curDay: Day) => {
+        accRotation +
+        curRotation.reduce((accSession: number, curSession: Session) => {
           return (
-            accDay +
-            curDay.exercises.reduce((accEx: number, curEx: Exercise) => {
+            accSession +
+            curSession.exercises.reduce((accEx: number, curEx: Exercise) => {
               return (
                 accEx +
                 curEx.sets.reduce(
@@ -52,14 +52,14 @@ export const Dashboard = () => {
   };
 
   const getDaysSinceLast = () => {
-    if (!curProgram?.weeks[0][0].completedDate) return 0;
+    if (!curProgram?.rotations[0][0].completedDate) return 0;
 
     let lastWorkoutDate = new Date(0);
-    curProgram?.weeks.forEach((week) =>
-      week.forEach((day) =>
-        day.exercises.forEach((exercise) => {
-          const completionDate = day.completedDate
-            ? new Date(day.completedDate)
+    curProgram?.rotations.forEach((rotation) =>
+      rotation.forEach((session) =>
+        session.exercises.forEach((exercise) => {
+          const completionDate = session.completedDate
+            ? new Date(session.completedDate)
             : new Date();
           if (
             getExerciseCompleted(exercise) &&
@@ -76,8 +76,8 @@ export const Dashboard = () => {
     return daysDifference;
   };
 
-  const curDayName = curProgram
-    ? curProgram.weeks[curProgram.curWeekIdx].find((day) => !day.completedDate)
+  const curSessionName = curProgram
+    ? curProgram.rotations[curProgram.curRotationIdx].find((session) => !session.completedDate)
         ?.name || "Unavailable"
     : "Unavailable";
 
@@ -88,12 +88,12 @@ export const Dashboard = () => {
     },
     {
       metric: "Program Length:",
-      value: `${curProgram?.length} week${
+      value: `${curProgram?.length} rotation${
         (curProgram?.length || 0) > 1 ? "s" : ""
       }`,
     },
-    { metric: "Week:", value: `Week ${(curProgram?.curWeekIdx || 0) + 1}` },
-    { metric: "Day:", value: curDayName },
+    { metric: "Rotation:", value: `Rotation ${(curProgram?.curRotationIdx || 0) + 1}` },
+    { metric: "Session:", value: curSessionName },
     { metric: "Days Since Last Workout:", value: getDaysSinceLast() },
     { metric: "Total Weight Lifted:", value: getTotalWeight("lbs") },
   ];

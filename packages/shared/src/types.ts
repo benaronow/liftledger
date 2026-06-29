@@ -26,7 +26,7 @@ export interface CompletedExercise {
   completedDate?: Date;
 }
 
-export interface Day {
+export interface Session {
   _id?: string;
   name: string;
   gym?: string;
@@ -40,9 +40,9 @@ export interface Program {
   startDate: Date;
   length: number;
   primaryGym?: string;
-  weeks: Day[][];
-  curWeekIdx: number;
-  curDayIdx: number;
+  rotations: Session[][];
+  curRotationIdx: number;
+  curSessionIdx: number;
   endDate?: Date;
 }
 

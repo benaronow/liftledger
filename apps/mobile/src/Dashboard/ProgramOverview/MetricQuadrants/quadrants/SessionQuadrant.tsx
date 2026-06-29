@@ -6,17 +6,17 @@ type Props = {
   program: Program;
 };
 
-export const DayQuadrant = ({ program }: Props) => {
-  const week = program.weeks[program.curWeekIdx] ?? [];
-  const day = week[program.curDayIdx];
-  const dayName = day?.name?.trim() || `Day ${program.curDayIdx + 1}`;
+export const SessionQuadrant = ({ program }: Props) => {
+  const rotation = program.rotations[program.curRotationIdx] ?? [];
+  const session = rotation[program.curSessionIdx];
+  const sessionName = session?.name?.trim() || `Session ${program.curSessionIdx + 1}`;
 
   return (
     <Quadrant
       corner="tl"
       label="DAY"
-      value={dayName}
-      bar={<SegmentedBar count={week.length} filled={program.curDayIdx} />}
+      value={sessionName}
+      bar={<SegmentedBar count={rotation.length} filled={program.curSessionIdx} />}
     />
   );
 };

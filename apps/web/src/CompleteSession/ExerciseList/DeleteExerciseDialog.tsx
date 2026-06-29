@@ -1,7 +1,7 @@
 import { ActionDialog, DialogAction } from "@/components/ActionDialog";
-import { Program, Day, Exercise } from "@liftledger/shared";
+import { Program, Session, Exercise } from "@liftledger/shared";
 import {
-  useCurrentDay,
+  useCurrentSession,
   useMe,
   useUpdateUserProgram,
   useProgram,
@@ -20,21 +20,21 @@ export const DeleteExerciseDialog = ({ deletingIdx, onClose }: Props) => {
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { trigger: triggerUpdateUserProgram, isMutating: deletingExercise } =
     useUpdateUserProgram();
-  const { exercises } = useCurrentDay();
+  const { exercises } = useCurrentSession();
 
   const saveExercises = async (exercises: Exercise[]) => {
     if (!curUser?._id || !curProgram) return;
-    const newDays: Day[] = curProgram.weeks[curProgram.curWeekIdx].toSpliced(
-      curProgram.curDayIdx,
+    const newSessions: Session[] = curProgram.rotations[curProgram.curRotationIdx].toSpliced(
+      curProgram.curSessionIdx,
       1,
       {
-        ...curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx],
+        ...curProgram.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx],
         exercises,
       },
     );
     const newProgram: Program = {
       ...curProgram,
-      weeks: curProgram.weeks.toSpliced(curProgram.curWeekIdx, 1, newDays),
+      rotations: curProgram.rotations.toSpliced(curProgram.curRotationIdx, 1, newSessions),
     };
     await triggerUpdateUserProgram({ userId: curUser._id, program: newProgram });
   };

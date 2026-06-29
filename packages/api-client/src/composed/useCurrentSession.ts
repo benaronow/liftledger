@@ -7,14 +7,14 @@ export const isExerciseComplete = (exercise: Exercise) =>
   exercise.sets.length !== 0 &&
   exercise.sets.every((set: Set) => set.completed || (set.skipped ?? false));
 
-export const useCurrentDay = () => {
+export const useCurrentSession = () => {
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
 
   const exercises = useMemo<Exercise[]>(
     () =>
       curProgram
-        ? curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx].exercises
+        ? curProgram.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx].exercises
         : [],
     [curProgram],
   );
@@ -24,7 +24,7 @@ export const useCurrentDay = () => {
     [exercises],
   );
 
-  const isDayStarted = useMemo(
+  const isSessionStarted = useMemo(
     () =>
       exercises.some((exercise) =>
         exercise.sets.some((set) => set.completed || set.skipped),
@@ -32,10 +32,10 @@ export const useCurrentDay = () => {
     [exercises],
   );
 
-  const isDayComplete = useMemo(
+  const isSessionComplete = useMemo(
     () => exercises.every(isExerciseComplete),
     [exercises],
   );
 
-  return { exercises, currentExIdx, isDayStarted, isDayComplete };
+  return { exercises, currentExIdx, isSessionStarted, isSessionComplete };
 };

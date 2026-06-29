@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { LogoSpinner } from "@/components/LogoSpinner";
-import { useCurrentDay } from "@liftledger/api-client";
-import { CompleteDayFooter } from "./CompleteDayFooter";
+import { useCurrentSession } from "@liftledger/api-client";
+import { CompleteSessionFooter } from "./CompleteSessionFooter";
 import { useNavigate } from "react-router";
 import { ExerciseList } from "./ExerciseList/ExerciseList";
 
-export const CompleteDay = () => {
+export const CompleteSession = () => {
   const navigate = useNavigate();
-  const { exercises } = useCurrentDay();
+  const { exercises } = useCurrentSession();
   const [isEditing, setIsEditing] = useState(false);
 
   const pageContainerRef = useRef<HTMLDivElement>(null);
@@ -31,7 +31,7 @@ export const CompleteDay = () => {
           containerRef={pageContainerRef}
         />
       </div>
-      <CompleteDayFooter isEditing={isEditing} setIsEditing={setIsEditing} />
+      <CompleteSessionFooter isEditing={isEditing} setIsEditing={setIsEditing} />
     </>
   );
 };

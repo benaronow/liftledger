@@ -2,7 +2,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   Exercise,
   Set,
-  getCompletedDaysInProgram,
+  getCompletedSessionsInProgram,
 } from "@liftledger/shared";
 import { useProgram, useMe } from "@liftledger/api-client";
 import { useCallback, useMemo } from "react";
@@ -28,8 +28,8 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
   // duplicated program's icons match against the source program's data.
   const intraProgramPrevious = useMemo<Exercise[]>(() => {
     if (!curProgram) return [];
-    return getCompletedDaysInProgram(curProgram)
-      .flatMap((day) => day.exercises)
+    return getCompletedSessionsInProgram(curProgram)
+      .flatMap((session) => session.exercises)
       .reverse();
   }, [curProgram]);
 

@@ -1,101 +1,101 @@
 import { useProgram, useMe } from "@liftledger/api-client";
-import { Day } from "@liftledger/shared";
+import { Session } from "@liftledger/shared";
 import { Text, useTheme } from "react-native-paper";
 import { FONT } from "../../../theme";
 import { Info, InfoAction } from "../../../components/Info";
-import { DayErrors } from "../../validateTemplate";
+import { SessionErrors } from "../../validateTemplate";
 import { useTemplate } from "../../TemplateProvider";
 
 interface Props {
-  day: Day;
+  session: Session;
   dIdx: number;
-  errors: DayErrors | undefined;
+  errors: SessionErrors | undefined;
   onRequestDelete: (dIdx: number) => void;
 }
 
-export const DayInfo = ({ day, dIdx, errors, onRequestDelete }: Props) => {
+export const SessionInfo = ({ session, dIdx, errors, onRequestDelete }: Props) => {
   const { colors } = useTheme();
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const {
     templateProgram,
     setTemplateProgram,
-    editingWeekIdx,
-    setEditingDayIdx,
+    editingRotationIdx,
+    setEditingSessionIdx,
   } = useTemplate();
 
-  const week = templateProgram.weeks[editingWeekIdx];
+  const rotation = templateProgram.rotations[editingRotationIdx];
 
-  const handleMoveDay = (
-    movedDay: Day,
-    dayIdx: number,
+  const handleMoveSession = (
+    movedSession: Session,
+    sessionIdx: number,
     type: "up" | "down",
   ) => {
-    if ((dayIdx !== 0 || type !== "up") && (dayIdx !== 6 || type !== "down")) {
+    if ((sessionIdx !== 0 || type !== "up") && (sessionIdx !== 6 || type !== "down")) {
       setTemplateProgram({
         ...templateProgram,
-        weeks: templateProgram.weeks.map((w, idx) =>
-          idx === editingWeekIdx
+        rotations: templateProgram.rotations.map((w, idx) =>
+          idx === editingRotationIdx
             ? w
-                .toSpliced(dayIdx, 1)
-                .toSpliced(type === "up" ? dayIdx - 1 : dayIdx + 1, 0, movedDay)
+                .toSpliced(sessionIdx, 1)
+                .toSpliced(type === "up" ? sessionIdx - 1 : sessionIdx + 1, 0, movedSession)
             : w,
         ),
       });
     }
   };
 
-  const handleDuplicateDay = (dayIdx: number) => {
-    const copy: Day = {
-      ...templateProgram.weeks[templateProgram.weeks.length - 1][dayIdx],
-      name: `${templateProgram.weeks[0][dayIdx].name} (copy)`,
+  const handleDuplicateSession = (sessionIdx: number) => {
+    const copy: Session = {
+      ...templateProgram.rotations[templateProgram.rotations.length - 1][sessionIdx],
+      name: `${templateProgram.rotations[0][sessionIdx].name} (copy)`,
       completedDate: undefined,
     };
 
     setTemplateProgram({
       ...templateProgram,
-      weeks: templateProgram.weeks.map((w, idx) =>
-        idx === editingWeekIdx ? w.toSpliced(dayIdx + 1, 0, copy) : w,
+      rotations: templateProgram.rotations.map((w, idx) =>
+        idx === editingRotationIdx ? w.toSpliced(sessionIdx + 1, 0, copy) : w,
       ),
     });
   };
 
-  const isComplete = !!curProgram && curProgram.curDayIdx > dIdx;
+  const isComplete = !!curProgram && curProgram.curSessionIdx > dIdx;
 
   const infoActions: InfoAction[] = [
     {
       icon: "chevron-up",
-      disabled: isComplete || dIdx === curProgram?.curDayIdx || dIdx === 0,
-      onPress: () => handleMoveDay(day, dIdx, "up"),
+      disabled: isComplete || dIdx === curProgram?.curSessionIdx || dIdx === 0,
+      onPress: () => handleMoveSession(session, dIdx, "up"),
       variant: "primary",
     },
     {
       icon: "chevron-down",
-      disabled: isComplete || dIdx === week.length - 1,
-      onPress: () => handleMoveDay(day, dIdx, "down"),
+      disabled: isComplete || dIdx === rotation.length - 1,
+      onPress: () => handleMoveSession(session, dIdx, "down"),
       variant: "primary",
     },
     {
       icon: "pencil",
       disabled: isComplete,
-      onPress: () => setEditingDayIdx(dIdx),
+      onPress: () => setEditingSessionIdx(dIdx),
       variant: "primary",
     },
     {
       icon: "content-copy",
-      disabled: isComplete || week.length > 6,
-      onPress: () => handleDuplicateDay(dIdx),
+      disabled: isComplete || rotation.length > 6,
+      onPress: () => handleDuplicateSession(dIdx),
       variant: "primary",
     },
     {
       icon: "delete",
-      disabled: isComplete || week.length === 1,
+      disabled: isComplete || rotation.length === 1,
       onPress: () => onRequestDelete(dIdx),
       variant: "danger",
     },
   ];
 
-  const hasListedExercises = day.exercises.some(
+  const hasListedExercises = session.exercises.some(
     (e) => e.name && e.apparatus && e.sets.length,
   );
 
@@ -109,9 +109,9 @@ export const DayInfo = ({ day, dIdx, errors, onRequestDelete }: Props) => {
   ];
 
   return (
-    <Info title={day.name} actions={infoActions}>
+    <Info title={session.name} actions={infoActions}>
       {hasListedExercises &&
-        day.exercises
+        session.exercises
           .filter((ex) => !ex.addedOn)
           .map((ex, i) => (
             <Text style={lineStyle(colors.onSurface)} key={ex._id ?? i}>

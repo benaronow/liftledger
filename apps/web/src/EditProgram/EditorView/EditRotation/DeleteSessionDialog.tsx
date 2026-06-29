@@ -4,20 +4,20 @@ import { IoArrowBack } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 
 interface Props {
-  deletingDayIdx: number | undefined;
+  deletingSessionIdx: number | undefined;
   onClose: () => void;
 }
 
-export const DeleteDayDialog = ({ deletingDayIdx, onClose }: Props) => {
-  const { templateProgram, setTemplateProgram, editingWeekIdx } = useTemplate();
+export const DeleteSessionDialog = ({ deletingSessionIdx, onClose }: Props) => {
+  const { templateProgram, setTemplateProgram, editingRotationIdx } = useTemplate();
 
-  const handleRemoveDay = () => {
+  const handleRemoveSession = () => {
     setTemplateProgram({
       ...templateProgram,
-      weeks: templateProgram.weeks.map((week, idx) =>
-        idx === editingWeekIdx && deletingDayIdx !== undefined
-          ? week.toSpliced(deletingDayIdx, 1)
-          : week,
+      rotations: templateProgram.rotations.map((rotation, idx) =>
+        idx === editingRotationIdx && deletingSessionIdx !== undefined
+          ? rotation.toSpliced(deletingSessionIdx, 1)
+          : rotation,
       ),
     });
     onClose();
@@ -31,23 +31,23 @@ export const DeleteDayDialog = ({ deletingDayIdx, onClose }: Props) => {
     },
     {
       icon: <FaTrash fontSize={26} />,
-      onClick: handleRemoveDay,
+      onClick: handleRemoveSession,
       variant: "danger",
     },
   ];
 
   return (
     <>
-      {deletingDayIdx !== undefined && (
+      {deletingSessionIdx !== undefined && (
         <ActionDialog
-          open={deletingDayIdx !== undefined}
+          open={deletingSessionIdx !== undefined}
           onClose={onClose}
-          title="Delete Day"
+          title="Delete Session"
           actions={deleteActions}
         >
           <div className="d-flex flex-column">
             <span className="text-white text-wrap mb-4">
-              Are you sure you want to delete this day?
+              Are you sure you want to delete this session?
             </span>
             <strong className="text-white text-wrap">
               This action cannot be undone.

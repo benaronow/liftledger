@@ -1,4 +1,4 @@
-import { isExerciseComplete, useCurrentDay } from "@liftledger/api-client";
+import { isExerciseComplete, useCurrentSession } from "@liftledger/api-client";
 import type { Exercise } from "@liftledger/shared";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -23,10 +23,10 @@ interface Props {
 
 // Floating pager controls at the bottom of the workout, sitting directly on
 // the BottomBlur: page dots flanked by circular prev/next buttons. Any page
-// can be visited; on the last exercise the right arrow becomes the finish-day
+// can be visited; on the last exercise the right arrow becomes the finish-session
 // checkmark, which unlocks once every set is logged.
 export const PagerBar = ({ pageIdx, onPageChange, onFinish }: Props) => {
-  const { exercises, isDayComplete } = useCurrentDay();
+  const { exercises, isSessionComplete } = useCurrentSession();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
@@ -93,13 +93,13 @@ export const PagerBar = ({ pageIdx, onPageChange, onFinish }: Props) => {
           <IconButton
             style={{ margin: 0 }}
             icon="check"
-            accessibilityLabel="Finish day"
+            accessibilityLabel="Finish session"
             mode="contained"
             containerColor={
-              isDayComplete ? colors.tertiary : colors.surfaceDisabled
+              isSessionComplete ? colors.tertiary : colors.surfaceDisabled
             }
-            iconColor={isDayComplete ? "white" : colors.onSurfaceDisabled}
-            disabled={!isDayComplete}
+            iconColor={isSessionComplete ? "white" : colors.onSurfaceDisabled}
+            disabled={!isSessionComplete}
             onPress={onFinish}
           />
         ) : (

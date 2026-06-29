@@ -32,70 +32,70 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
   const {
     templateProgram,
     setTemplateProgram,
-    editingWeekIdx,
-    editingDayIdx,
+    editingRotationIdx,
+    editingSessionIdx,
     templateErrors,
   } = useTemplate();
 
-  const errors = templateErrors.days[editingDayIdx]?.exercises[eIdx] ?? {};
+  const errors = templateErrors.sessions[editingSessionIdx]?.exercises[eIdx] ?? {};
 
-  const curDayExercises = useMemo(
-    () => templateProgram.weeks[editingWeekIdx][editingDayIdx].exercises,
-    [templateProgram, editingWeekIdx, editingDayIdx],
+  const curSessionExercises = useMemo(
+    () => templateProgram.rotations[editingRotationIdx][editingSessionIdx].exercises,
+    [templateProgram, editingRotationIdx, editingSessionIdx],
   );
 
   const visibleExerciseCount = useMemo(
-    () => curDayExercises.filter((e) => !e.addedOn).length,
-    [curDayExercises],
+    () => curSessionExercises.filter((e) => !e.addedOn).length,
+    [curSessionExercises],
   );
 
   const updateExercise = useCallback(
     (exerciseUpdate: Exercise) => {
       // eIdx is the position in the *visible* list; map it to the full-array
       // index so hidden addedOn exercises don't shift the target.
-      const fullIdx = fullExerciseIndex(curDayExercises, eIdx);
+      const fullIdx = fullExerciseIndex(curSessionExercises, eIdx);
       setTemplateProgram({
         ...templateProgram,
-        weeks: templateProgram.weeks.map((week, wIdx) =>
-          wIdx === editingWeekIdx
-            ? week.map((day, dIdx) =>
-                dIdx === editingDayIdx
+        rotations: templateProgram.rotations.map((rotation, wIdx) =>
+          wIdx === editingRotationIdx
+            ? rotation.map((session, dIdx) =>
+                dIdx === editingSessionIdx
                   ? {
-                      ...day,
-                      exercises: day.exercises.map((ex, idx) =>
+                      ...session,
+                      exercises: session.exercises.map((ex, idx) =>
                         idx === fullIdx ? exerciseUpdate : ex,
                       ),
                     }
-                  : day,
+                  : session,
               )
-            : week,
+            : rotation,
         ),
       });
     },
     [
       templateProgram,
       setTemplateProgram,
-      editingWeekIdx,
-      editingDayIdx,
+      editingRotationIdx,
+      editingSessionIdx,
       eIdx,
-      curDayExercises,
+      curSessionExercises,
     ],
   );
 
   const handleMoveExercise = (type: "up" | "down") => {
     setTemplateProgram({
       ...templateProgram,
-      weeks: templateProgram.weeks.map((week, wIdx) =>
-        wIdx === editingWeekIdx
-          ? week.map((day, dIdx) =>
-              dIdx !== editingDayIdx
-                ? day
+      rotations: templateProgram.rotations.map((rotation, wIdx) =>
+        wIdx === editingRotationIdx
+          ? rotation.map((session, dIdx) =>
+              dIdx !== editingSessionIdx
+                ? session
                 : {
-                    ...day,
-                    exercises: moveExercise(day.exercises, eIdx, type),
+                    ...session,
+                    exercises: moveExercise(session.exercises, eIdx, type),
                   },
             )
-          : week,
+          : rotation,
       ),
     });
   };
@@ -152,7 +152,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
     },
     {
       icon: "delete",
-      disabled: curDayExercises.length === 1,
+      disabled: curSessionExercises.length === 1,
       onPress: () => onRequestDelete(eIdx),
       variant: "danger",
     },
@@ -166,14 +166,14 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
         label="Exercise"
         error={errors.name}
         curExercise={exercise}
-        reservedExercises={curDayExercises}
+        reservedExercises={curSessionExercises}
         onSelect={(value) => switchExercise(value, "name")}
       />
       <ExerciseApparatusSelect
         label="Apparatus"
         error={errors.apparatus}
         curExercise={exercise}
-        reservedExercises={curDayExercises}
+        reservedExercises={curSessionExercises}
         onSelect={(value) => switchExercise(value, "apparatus")}
       />
       <View style={rowStyle}>

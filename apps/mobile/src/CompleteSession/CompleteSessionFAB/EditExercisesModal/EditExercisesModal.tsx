@@ -1,10 +1,10 @@
-import { Program, Day, Exercise } from "@liftledger/shared";
+import { Program, Session, Exercise } from "@liftledger/shared";
 import { useMemo, useState } from "react";
 import { Modal, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   useProgram,
-  useCurrentDay,
+  useCurrentSession,
   useMe,
   useUpdateUserProgram,
 } from "@liftledger/api-client";
@@ -26,7 +26,7 @@ interface Props {
   onClose: () => void;
 }
 
-// The day's edit pop-up: the exercise lineup with insert rows between entries to
+// The session's edit pop-up: the exercise lineup with insert rows between entries to
 // add an add-on exercise at any position, and an edit button to repoint an
 // exercise's name / apparatus / weight type (until its sets are logged).
 export const EditExercisesModal = ({ open, onClose }: Props) => {
@@ -36,14 +36,14 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { trigger: triggerUpdateUserProgram, isMutating: saving } =
     useUpdateUserProgram();
-  const { exercises } = useCurrentDay();
+  const { exercises } = useCurrentSession();
   const { showSnackbar } = useSnackbar();
 
   const [editor, setEditor] = useState<Editor>();
 
   const curGym = useMemo(
     () =>
-      curProgram?.weeks[curProgram.curWeekIdx][curProgram.curDayIdx].gym || "",
+      curProgram?.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx].gym || "",
     [curProgram],
   );
   const defaultNewExercise: Exercise = useMemo(
@@ -76,17 +76,17 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
 
   const saveExercises = async (updated: Exercise[]) => {
     if (!curUser?._id || !curProgram) return;
-    const newDays: Day[] = curProgram.weeks[curProgram.curWeekIdx].toSpliced(
-      curProgram.curDayIdx,
+    const newSessions: Session[] = curProgram.rotations[curProgram.curRotationIdx].toSpliced(
+      curProgram.curSessionIdx,
       1,
       {
-        ...curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx],
+        ...curProgram.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx],
         exercises: updated,
       },
     );
     const newProgram: Program = {
       ...curProgram,
-      weeks: curProgram.weeks.toSpliced(curProgram.curWeekIdx, 1, newDays),
+      rotations: curProgram.rotations.toSpliced(curProgram.curRotationIdx, 1, newSessions),
     };
     await triggerUpdateUserProgram({
       userId: curUser._id,

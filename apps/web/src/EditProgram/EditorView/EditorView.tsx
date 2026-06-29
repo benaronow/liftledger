@@ -1,9 +1,9 @@
-import { EditDay } from "./EditDay";
-import { EditWeek } from "./EditWeek";
+import { EditSession } from "./EditSession";
+import { EditRotation } from "./EditRotation";
 import { useTemplate } from "../TemplateProvider";
 
 export const EditorView = () => {
-  const { editingDayIdx } = useTemplate();
+  const { editingSessionIdx } = useTemplate();
 
-  return editingDayIdx === -1 ? <EditWeek /> : <EditDay />;
+  return editingSessionIdx === -1 ? <EditRotation /> : <EditSession />;
 };

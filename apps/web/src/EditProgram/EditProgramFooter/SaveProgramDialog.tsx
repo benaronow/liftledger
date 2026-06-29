@@ -25,7 +25,7 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
     useUpdateUserProgram();
   const saving = starting || updating;
 
-  const { templateProgram, unsetTemplateProgram, setEditingWeekIdx } =
+  const { templateProgram, unsetTemplateProgram, setEditingRotationIdx } =
     useTemplate();
 
   const handleSave = async () => {
@@ -41,7 +41,7 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
     }
 
     unsetTemplateProgram();
-    setEditingWeekIdx(0);
+    setEditingRotationIdx(0);
     navigate("/dashboard");
   };
 

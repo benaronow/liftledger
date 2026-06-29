@@ -1,1 +1,1 @@
-export { CompleteDay } from "./CompleteDay";
+export { CompleteSession } from "./CompleteSession";

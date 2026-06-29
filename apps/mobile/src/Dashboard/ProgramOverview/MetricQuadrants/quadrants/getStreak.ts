@@ -10,10 +10,10 @@ const startOfDay = (date: Date): number => {
 
 export const getStreak = (program: Program): number => {
   const completedDays = new Set<number>();
-  program.weeks.forEach((week) =>
-    week.forEach((day) => {
-      if (day.completedDate)
-        completedDays.add(startOfDay(new Date(day.completedDate)));
+  program.rotations.forEach((rotation) =>
+    rotation.forEach((session) => {
+      if (session.completedDate)
+        completedDays.add(startOfDay(new Date(session.completedDate)));
     }),
   );
   if (completedDays.size === 0) return 0;

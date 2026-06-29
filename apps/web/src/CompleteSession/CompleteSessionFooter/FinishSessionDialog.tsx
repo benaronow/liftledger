@@ -16,24 +16,24 @@ interface Props {
   onClose: () => void;
 }
 
-export const FinishDayDialog = ({ open, onClose }: Props) => {
+export const FinishSessionDialog = ({ open, onClose }: Props) => {
   const navigate = useNavigate();
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { trigger: triggerUpdateUserProgram } = useUpdateUserProgram();
   const [finishing, setFinishing] = useState(false);
 
-  const handleFinishDay = useCallback(async () => {
+  const handleFinishSession = useCallback(async () => {
     if (!curUser?._id || !curProgram) return;
 
     setFinishing(true);
     const newProgram: Program = {
       ...curProgram,
-      weeks: curProgram.weeks.toSpliced(
-        curProgram.curWeekIdx,
+      rotations: curProgram.rotations.toSpliced(
+        curProgram.curRotationIdx,
         1,
-        curProgram.weeks[curProgram.curWeekIdx].toSpliced(curProgram.curDayIdx, 1, {
-          ...curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx],
+        curProgram.rotations[curProgram.curRotationIdx].toSpliced(curProgram.curSessionIdx, 1, {
+          ...curProgram.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx],
           completedDate: new Date(),
         }),
       ),
@@ -57,7 +57,7 @@ export const FinishDayDialog = ({ open, onClose }: Props) => {
       ) : (
         <IoMdCheckmark style={{ fontSize: "26px" }} />
       ),
-      onClick: handleFinishDay,
+      onClick: handleFinishSession,
       variant: "primary",
       disabled: finishing,
     },
@@ -69,7 +69,7 @@ export const FinishDayDialog = ({ open, onClose }: Props) => {
     <ActionDialog
       open={open}
       onClose={onClose}
-      title="Finish Day"
+      title="Finish Session"
       actions={actions}
     >
       <div className="d-flex flex-column">

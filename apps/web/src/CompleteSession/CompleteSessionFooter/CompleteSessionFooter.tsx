@@ -4,39 +4,39 @@ import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import { LuWarehouse } from "react-icons/lu";
 import { RiTimerLine } from "react-icons/ri";
 import { BiSolidEdit } from "react-icons/bi";
-import { useCurrentDay, useMe, useTimerEnd } from "@liftledger/api-client";
+import { useCurrentSession, useMe, useTimerEnd } from "@liftledger/api-client";
 import { TimerSettingsDialog } from "./TimerSettingsDialog";
 import { EditGymDialog } from "./EditGymDialog";
-import { FinishDayDialog } from "./FinishDayDialog";
+import { FinishSessionDialog } from "./FinishSessionDialog";
 
 interface Props {
   isEditing: boolean;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const CompleteDayFooter = ({ isEditing, setIsEditing }: Props) => {
+export const CompleteSessionFooter = ({ isEditing, setIsEditing }: Props) => {
   const { data: curUser } = useMe();
   const { data: timerEndData } = useTimerEnd(curUser?._id);
   const [timerDialogOpen, setTimerDialogOpen] = useState(false);
   const [editGymDialogOpen, setEditGymDialogOpen] = useState(false);
-  const [finishDayDialogOpen, setFinishDayDialogOpen] = useState(false);
+  const [finishSessionDialogOpen, setFinishSessionDialogOpen] = useState(false);
 
-  const { isDayStarted, isDayComplete } = useCurrentDay();
+  const { isSessionStarted, isSessionComplete } = useCurrentSession();
 
   const defaultFooterActions: FooterAction[] = useMemo(
     () => [
       {
         icon: <IoMdCheckmark style={{ fontSize: "20px" }} />,
         label: "Finish",
-        onClick: () => setFinishDayDialogOpen(true),
-        disabled: !isDayComplete,
+        onClick: () => setFinishSessionDialogOpen(true),
+        disabled: !isSessionComplete,
         variant: "primary",
       },
       {
         icon: <LuWarehouse fontSize={20} />,
         label: "Gym",
         onClick: () => setEditGymDialogOpen(true),
-        disabled: isDayStarted,
+        disabled: isSessionStarted,
         variant: "primary",
       },
       {
@@ -53,7 +53,7 @@ export const CompleteDayFooter = ({ isEditing, setIsEditing }: Props) => {
         variant: "primary",
       },
     ],
-    [setIsEditing, isDayComplete, isDayStarted, timerEndData?.timerEnd],
+    [setIsEditing, isSessionComplete, isSessionStarted, timerEndData?.timerEnd],
   );
 
   const editingFooterActions: FooterAction[] = [
@@ -78,9 +78,9 @@ export const CompleteDayFooter = ({ isEditing, setIsEditing }: Props) => {
         open={editGymDialogOpen}
         onClose={() => setEditGymDialogOpen(false)}
       />
-      <FinishDayDialog
-        open={finishDayDialogOpen}
-        onClose={() => setFinishDayDialogOpen(false)}
+      <FinishSessionDialog
+        open={finishSessionDialogOpen}
+        onClose={() => setFinishSessionDialogOpen(false)}
       />
     </>
   );

@@ -37,32 +37,32 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
-  const { templateProgram, setTemplateProgram, editingWeekIdx, editingDayIdx } =
+  const { templateProgram, setTemplateProgram, editingRotationIdx, editingSessionIdx } =
     useTemplate();
-  const curDayExercises = useMemo(
-    () => templateProgram.weeks[editingWeekIdx][editingDayIdx].exercises,
-    [templateProgram, editingWeekIdx, editingDayIdx],
+  const curSessionExercises = useMemo(
+    () => templateProgram.rotations[editingRotationIdx][editingSessionIdx].exercises,
+    [templateProgram, editingRotationIdx, editingSessionIdx],
   );
 
   const visibleExerciseCount = useMemo(
-    () => curDayExercises.filter((e) => !e.addedOn).length,
-    [curDayExercises],
+    () => curSessionExercises.filter((e) => !e.addedOn).length,
+    [curSessionExercises],
   );
 
   const handleMoveExercise = (type: "up" | "down") => {
     setTemplateProgram({
       ...templateProgram,
-      weeks: templateProgram.weeks.map((week, wIdx) =>
-        wIdx === editingWeekIdx
-          ? week.map((day, dIdx) =>
-              dIdx !== editingDayIdx
-                ? day
+      rotations: templateProgram.rotations.map((rotation, wIdx) =>
+        wIdx === editingRotationIdx
+          ? rotation.map((session, dIdx) =>
+              dIdx !== editingSessionIdx
+                ? session
                 : {
-                    ...day,
-                    exercises: moveExercise(day.exercises, eIdx, type),
+                    ...session,
+                    exercises: moveExercise(session.exercises, eIdx, type),
                   },
             )
-          : week,
+          : rotation,
       ),
     });
   };
@@ -71,23 +71,23 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
     (exerciseUpdate: Exercise) => {
       setTemplateProgram({
         ...templateProgram,
-        weeks: templateProgram.weeks.map((week, wIdx) =>
-          wIdx === editingWeekIdx
-            ? week.map((day, dIdx) =>
-                dIdx === editingDayIdx
+        rotations: templateProgram.rotations.map((rotation, wIdx) =>
+          wIdx === editingRotationIdx
+            ? rotation.map((session, dIdx) =>
+                dIdx === editingSessionIdx
                   ? {
-                      ...day,
-                      exercises: day.exercises.map((exercise, idx) =>
+                      ...session,
+                      exercises: session.exercises.map((exercise, idx) =>
                         eIdx === idx ? exerciseUpdate : exercise,
                       ),
                     }
-                  : day,
+                  : session,
               )
-            : week,
+            : rotation,
         ),
       });
     },
-    [templateProgram, setTemplateProgram, editingWeekIdx, editingDayIdx, eIdx],
+    [templateProgram, setTemplateProgram, editingRotationIdx, editingSessionIdx, eIdx],
   );
 
   const handleNumberInput = (
@@ -141,7 +141,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
     },
     {
       icon: <FaTrash fontSize="medium" />,
-      disabled: curDayExercises.length === 1,
+      disabled: curSessionExercises.length === 1,
       onClick: () => onRequestDelete(eIdx),
       variant: "danger",
     },
@@ -170,14 +170,14 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
       <ExerciseNameSelect
         label="Exercise:"
         curExercise={exercise}
-        reservedExercises={curDayExercises}
+        reservedExercises={curSessionExercises}
         onSelect={(value) => switchExercise(value, "name")}
         className="mb-0"
       />
       <ExerciseApparatusSelect
         label="Apparatus:"
         curExercise={exercise}
-        reservedExercises={curDayExercises}
+        reservedExercises={curSessionExercises}
         onSelect={(value) => switchExercise(value, "apparatus")}
         className="mb-0"
       />

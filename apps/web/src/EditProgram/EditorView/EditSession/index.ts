@@ -1,1 +1,1 @@
-export { EditDay } from "./EditDay";
+export { EditSession } from "./EditSession";

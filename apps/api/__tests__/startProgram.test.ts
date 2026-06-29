@@ -13,8 +13,9 @@ import { startDb, stopDb, clearDb, buildTestApp } from "./helpers";
 const makeUser = () => ({
   auth0Id: "auth0|test-user",
   email: "test@example.com",
-  firstName: "Test",
-  lastName: "User",
+  username: "testuser",
+  fullName: "Test User",
+  birthday: new Date("1990-01-01"),
   timerPresets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 },
   gyms: ["Gym A"],
   customExerciseNames: [],
@@ -27,10 +28,10 @@ const makeProgram = () => ({
   startDate: new Date("2024-01-01"),
   length: 4,
   primaryGym: "Gym A",
-  weeks: [
+  rotations: [
     [
       {
-        name: "Day 1",
+        name: "Session 1",
         gym: "Gym A",
         exercises: [
           {
@@ -45,8 +46,8 @@ const makeProgram = () => ({
       },
     ],
   ],
-  curWeekIdx: 0,
-  curDayIdx: 0,
+  curRotationIdx: 0,
+  curSessionIdx: 0,
 });
 
 beforeAll(startDb);

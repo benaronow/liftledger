@@ -12,27 +12,27 @@ export const DeleteExerciseDialog = ({
   deletingExerciseIdx,
   onClose,
 }: Props) => {
-  const { templateProgram, setTemplateProgram, editingWeekIdx, editingDayIdx } =
+  const { templateProgram, setTemplateProgram, editingRotationIdx, editingSessionIdx } =
     useTemplate();
 
   const handleRemoveExercise = () => {
-    if (templateProgram.weeks[editingWeekIdx][editingDayIdx].exercises.length > 1)
+    if (templateProgram.rotations[editingRotationIdx][editingSessionIdx].exercises.length > 1)
       setTemplateProgram({
         ...templateProgram,
-        weeks: templateProgram.weeks.map((week, wIdx) =>
-          wIdx === editingWeekIdx
-            ? week.map((day, dIdx) =>
-                dIdx === editingDayIdx && deletingExerciseIdx !== undefined
+        rotations: templateProgram.rotations.map((rotation, wIdx) =>
+          wIdx === editingRotationIdx
+            ? rotation.map((session, dIdx) =>
+                dIdx === editingSessionIdx && deletingExerciseIdx !== undefined
                   ? {
-                      ...day,
-                      exercises: day.exercises.toSpliced(
+                      ...session,
+                      exercises: session.exercises.toSpliced(
                         deletingExerciseIdx,
                         1,
                       ),
                     }
-                  : day,
+                  : session,
               )
-            : week,
+            : rotation,
         ),
       });
     onClose();

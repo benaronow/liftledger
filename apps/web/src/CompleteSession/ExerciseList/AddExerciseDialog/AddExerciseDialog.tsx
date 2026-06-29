@@ -1,9 +1,9 @@
 import { DialogAction, ActionDialog } from "@/components/ActionDialog";
 import { EditExercise } from "./EditExercise";
 import { useEffect, useMemo, useState } from "react";
-import { Program, Day, Exercise } from "@liftledger/shared";
+import { Program, Session, Exercise } from "@liftledger/shared";
 import {
-  useCurrentDay,
+  useCurrentSession,
   useMe,
   useUpdateUserProgram,
   useProgram,
@@ -22,10 +22,10 @@ export const AddExerciseDialog = ({ addExerciseIdx, onClose }: Props) => {
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { trigger: triggerUpdateUserProgram, isMutating: addingExercise } =
     useUpdateUserProgram();
-  const { exercises } = useCurrentDay();
+  const { exercises } = useCurrentSession();
 
   const curGym = useMemo(
-    () => curProgram?.weeks[curProgram.curWeekIdx][curProgram.curDayIdx].gym || "",
+    () => curProgram?.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx].gym || "",
     [curProgram],
   );
   const defaultNewExercise: Exercise = useMemo(
@@ -47,18 +47,18 @@ export const AddExerciseDialog = ({ addExerciseIdx, onClose }: Props) => {
 
   const saveExercises = async (exercises: Exercise[]) => {
     if (!curUser?._id || !curProgram) return;
-    const newDays: Day[] = curProgram.weeks[curProgram.curWeekIdx].toSpliced(
-      curProgram.curDayIdx,
+    const newSessions: Session[] = curProgram.rotations[curProgram.curRotationIdx].toSpliced(
+      curProgram.curSessionIdx,
       1,
       {
-        ...curProgram.weeks[curProgram.curWeekIdx][curProgram.curDayIdx],
+        ...curProgram.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx],
         exercises,
       },
     );
 
     const newProgram: Program = {
       ...curProgram,
-      weeks: curProgram?.weeks.toSpliced(curProgram.curWeekIdx, 1, newDays),
+      rotations: curProgram?.rotations.toSpliced(curProgram.curRotationIdx, 1, newSessions),
     };
 
     await triggerUpdateUserProgram({ userId: curUser._id, program: newProgram });

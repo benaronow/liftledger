@@ -15,29 +15,29 @@ export interface ExerciseErrors {
   sets?: string;
 }
 
-export interface DayErrors {
+export interface SessionErrors {
   name?: string;
-  // Parallel to the day's VISIBLE (!addedOn) exercises, by eIdx.
+  // Parallel to the session's VISIBLE (!addedOn) exercises, by eIdx.
   exercises: ExerciseErrors[];
 }
 
 export interface TemplateErrors {
   program: ProgramErrors;
-  days: DayErrors[]; // parallel to weeks[editingWeekIdx], by day index
+  sessions: SessionErrors[]; // parallel to rotations[editingRotationIdx], by session index
 }
 
 export const validateTemplate = (
   program: Program,
-  editingWeekIdx: number,
+  editingRotationIdx: number,
 ): TemplateErrors => {
   const programErrors: ProgramErrors = {};
   if (!program.name) programErrors.name = "Enter a program name";
-  if (program.length === 0) programErrors.length = "Must be at least 1 week";
+  if (program.length === 0) programErrors.length = "Must be at least 1 rotation";
   if (!program.primaryGym) programErrors.primaryGym = "Select a primary gym";
 
-  const days: DayErrors[] = program.weeks[editingWeekIdx].map((day) => ({
-    name: !day.name ? "Enter a day name" : undefined,
-    exercises: day.exercises
+  const sessions: SessionErrors[] = program.rotations[editingRotationIdx].map((session) => ({
+    name: !session.name ? "Enter a session name" : undefined,
+    exercises: session.exercises
       .filter((e) => !e.addedOn)
       .map((exercise) => {
         const errors: ExerciseErrors = {};
@@ -49,12 +49,12 @@ export const validateTemplate = (
       }),
   }));
 
-  return { program: programErrors, days };
+  return { program: programErrors, sessions };
 };
 
 export const hasAnyError = (errors: TemplateErrors): boolean =>
   Object.keys(errors.program).length > 0 ||
-  errors.days.some(
+  errors.sessions.some(
     (d) =>
       d.name !== undefined ||
       d.exercises.some((ex) => Object.keys(ex).length > 0),

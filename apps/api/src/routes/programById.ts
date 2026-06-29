@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import UserModel from "@liftledger/shared/models/user";
 import ProgramModel from "@liftledger/shared/models/program";
-import type { Program, Day, Exercise, Set } from "@liftledger/shared";
+import type { Program, Session, Exercise, Set } from "@liftledger/shared";
 import { isSameExercise } from "@liftledger/shared";
 import { authorizeCaller } from "../auth";
 
@@ -37,22 +37,22 @@ const programByIdRoutes = async (app: FastifyInstance) => {
 
       const { program } = req.body;
 
-      const curDay: Day = program.weeks[program.curWeekIdx][program.curDayIdx];
+      const curSession: Session = program.rotations[program.curRotationIdx][program.curSessionIdx];
 
-      const isCurWeekDone =
-        !!program.weeks[program.curWeekIdx][
-          program.weeks[program.curWeekIdx].length - 1
+      const isCurRotationDone =
+        !!program.rotations[program.curRotationIdx][
+          program.rotations[program.curRotationIdx].length - 1
         ].completedDate;
 
       const isCurProgramDone =
-        program.curWeekIdx >= program.length - 1 && isCurWeekDone;
+        program.curRotationIdx >= program.length - 1 && isCurRotationDone;
 
       const getLatestSet = (exercise: Exercise, idx: number): Set | null => {
-        for (let w = program.weeks.length - 1; w >= 0; w--) {
-          const week = program.weeks[w];
-          for (let d = week.length - 1; d >= 0; d--) {
-            const day = week[d];
-            for (const e of day.exercises) {
+        for (let w = program.rotations.length - 1; w >= 0; w--) {
+          const rotation = program.rotations[w];
+          for (let d = rotation.length - 1; d >= 0; d--) {
+            const session = rotation[d];
+            for (const e of session.exercises) {
               if (isSameExercise(e, exercise) && idx < e.sets.length) {
                 return e.sets[idx];
               }
@@ -62,11 +62,11 @@ const programByIdRoutes = async (app: FastifyInstance) => {
         return null;
       };
 
-      const createNextWeek = (): Day[] => {
-        return program.weeks[program.curWeekIdx].map((day) => ({
-          name: day.name,
+      const createNextRotation = (): Session[] => {
+        return program.rotations[program.curRotationIdx].map((session) => ({
+          name: session.name,
           gym: program.primaryGym,
-          exercises: day.exercises
+          exercises: session.exercises
             .filter((exercise) => !exercise.addedOn)
             .map((exercise) => {
               return {
@@ -91,16 +91,16 @@ const programByIdRoutes = async (app: FastifyInstance) => {
 
       const programToSet = isCurProgramDone
         ? program
-        : isCurWeekDone
+        : isCurRotationDone
           ? {
               ...program,
-              weeks: [...program.weeks, createNextWeek()],
-              curDayIdx: 0,
-              curWeekIdx: program.curWeekIdx + 1,
+              rotations: [...program.rotations, createNextRotation()],
+              curSessionIdx: 0,
+              curRotationIdx: program.curRotationIdx + 1,
             }
           : {
               ...program,
-              curDayIdx: program.curDayIdx + (curDay.completedDate ? 1 : 0),
+              curSessionIdx: program.curSessionIdx + (curSession.completedDate ? 1 : 0),
             };
 
       let newProgram;

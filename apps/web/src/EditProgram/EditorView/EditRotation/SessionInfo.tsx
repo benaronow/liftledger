@@ -1,4 +1,4 @@
-import { Day } from "@liftledger/shared";
+import { Session } from "@liftledger/shared";
 import { MdArrowBackIosNew, MdControlPointDuplicate } from "react-icons/md";
 import { BiSolidEdit } from "react-icons/bi";
 import { FaTrash } from "react-icons/fa";
@@ -8,48 +8,48 @@ import { useMemo } from "react";
 import { useTemplate } from "../../TemplateProvider";
 
 interface Props {
-  day: Day;
+  session: Session;
   dIdx: number;
   hasErrors: boolean;
   onRequestDelete: (dIdx: number) => void;
 }
 
-export const DayInfo = ({ day, dIdx, hasErrors, onRequestDelete }: Props) => {
+export const SessionInfo = ({ session, dIdx, hasErrors, onRequestDelete }: Props) => {
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const {
     templateProgram,
     setTemplateProgram,
-    editingWeekIdx,
-    setEditingDayIdx,
+    editingRotationIdx,
+    setEditingSessionIdx,
   } = useTemplate();
 
-  const handleMoveDay = (day: Day, dayIdx: number, type: "up" | "down") => {
-    if ((dayIdx !== 0 || type !== "up") && (dayIdx !== 6 || type !== "down")) {
+  const handleMoveSession = (session: Session, sessionIdx: number, type: "up" | "down") => {
+    if ((sessionIdx !== 0 || type !== "up") && (sessionIdx !== 6 || type !== "down")) {
       setTemplateProgram({
         ...templateProgram,
-        weeks: templateProgram.weeks.map((week, idx) =>
-          idx === editingWeekIdx
-            ? week
-                .toSpliced(dayIdx, 1)
-                .toSpliced(type === "up" ? dayIdx - 1 : dayIdx + 1, 0, day)
-            : week,
+        rotations: templateProgram.rotations.map((rotation, idx) =>
+          idx === editingRotationIdx
+            ? rotation
+                .toSpliced(sessionIdx, 1)
+                .toSpliced(type === "up" ? sessionIdx - 1 : sessionIdx + 1, 0, session)
+            : rotation,
         ),
       });
     }
   };
 
-  const handleDuplicateDay = (dayIdx: number) => {
-    const day: Day = {
-      ...templateProgram.weeks[templateProgram.weeks.length - 1][dayIdx],
-      name: `${templateProgram.weeks[0][dayIdx].name} (copy)`,
+  const handleDuplicateSession = (sessionIdx: number) => {
+    const session: Session = {
+      ...templateProgram.rotations[templateProgram.rotations.length - 1][sessionIdx],
+      name: `${templateProgram.rotations[0][sessionIdx].name} (copy)`,
       completedDate: undefined,
     };
 
     setTemplateProgram({
       ...templateProgram,
-      weeks: templateProgram.weeks.map((week, idx) =>
-        idx === editingWeekIdx ? week.toSpliced(dayIdx + 1, 0, day) : week,
+      rotations: templateProgram.rotations.map((rotation, idx) =>
+        idx === editingRotationIdx ? rotation.toSpliced(sessionIdx + 1, 0, session) : rotation,
       ),
     });
   };
@@ -59,63 +59,63 @@ export const DayInfo = ({ day, dIdx, hasErrors, onRequestDelete }: Props) => {
       icon: (
         <MdArrowBackIosNew size={24} style={{ transform: "rotate(90deg)" }} />
       ),
-      disabled: dIdx === curProgram?.curDayIdx || dIdx === 0,
-      onClick: () => handleMoveDay(day, dIdx, "up"),
+      disabled: dIdx === curProgram?.curSessionIdx || dIdx === 0,
+      onClick: () => handleMoveSession(session, dIdx, "up"),
       variant: "primary",
     },
     {
       icon: (
         <MdArrowBackIosNew size={24} style={{ transform: "rotate(270deg)" }} />
       ),
-      disabled: dIdx === templateProgram.weeks[editingWeekIdx].length - 1,
-      onClick: () => handleMoveDay(day, dIdx, "down"),
+      disabled: dIdx === templateProgram.rotations[editingRotationIdx].length - 1,
+      onClick: () => handleMoveSession(session, dIdx, "down"),
       variant: "primary",
     },
     {
       icon: (
         <BiSolidEdit style={{ transform: "rotate(90deg)", fontSize: "22px" }} />
       ),
-      onClick: () => setEditingDayIdx(dIdx),
+      onClick: () => setEditingSessionIdx(dIdx),
       variant: "primary",
     },
     {
       icon: <MdControlPointDuplicate size={24} />,
-      disabled: templateProgram.weeks[editingWeekIdx].length > 6,
-      onClick: () => handleDuplicateDay(dIdx),
+      disabled: templateProgram.rotations[editingRotationIdx].length > 6,
+      onClick: () => handleDuplicateSession(dIdx),
       variant: "primary",
     },
     {
       icon: <FaTrash fontSize="medium" />,
-      disabled: templateProgram.weeks[editingWeekIdx].length === 1,
+      disabled: templateProgram.rotations[editingRotationIdx].length === 1,
       onClick: () => onRequestDelete(dIdx),
       variant: "danger",
     },
   ];
 
   const disabledMessage = useMemo(() => {
-    const isDisabled = curProgram ? curProgram?.curDayIdx > dIdx : false;
+    const isDisabled = curProgram ? curProgram?.curSessionIdx > dIdx : false;
     return isDisabled
-      ? "Day complete, cannot be edited or moved until next week."
+      ? "Session complete, cannot be edited or moved until next rotation."
       : "";
   }, [curProgram, dIdx]);
 
   return (
     <Info
-      title={`Day ${dIdx + 1}`}
+      title={`Session ${dIdx + 1}`}
       actions={infoActions}
       disabledMessage={disabledMessage}
     >
       <strong className="text-white" style={{ fontSize: "14px" }}>
-        {`Name: ${day.name} [${day.exercises.reduce(
+        {`Name: ${session.name} [${session.exercises.reduce(
           (acc, cur) =>
             acc + (cur.addedOn ? 0 : cur.sets.filter((s) => !s.addedOn).length),
           0,
         )}]`}
       </strong>
-      {templateProgram.weeks[editingWeekIdx][dIdx].exercises.some(
+      {templateProgram.rotations[editingRotationIdx][dIdx].exercises.some(
         (e) => e.name && e.apparatus && e.sets.length,
       ) &&
-        templateProgram.weeks[editingWeekIdx][dIdx].exercises
+        templateProgram.rotations[editingRotationIdx][dIdx].exercises
           .filter((ex) => !ex.addedOn)
           .map((ex, i) => (
             <span

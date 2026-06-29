@@ -23,10 +23,10 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
   const { trigger: triggerUpdateUserProgram, isMutating: editingGym } =
     useUpdateUserProgram();
   const currentGym =
-    curProgram?.weeks[curProgram.curWeekIdx]?.[curProgram.curDayIdx]?.gym ?? "";
+    curProgram?.rotations[curProgram.curRotationIdx]?.[curProgram.curSessionIdx]?.gym ?? "";
   const [gymName, setGymName] = useState<string>(currentGym);
 
-  // Re-sync to the day's gym each time the dialog opens. The component stays
+  // Re-sync to the session's gym each time the dialog opens. The component stays
   // mounted across opens, so the useState initializer only runs once — without
   // this, a reopen would show a stale (or empty, after a prior save) selection.
   useEffect(() => {
@@ -41,14 +41,14 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
         userId: curUser._id,
         program: {
           ...curProgram,
-          weeks: curProgram.weeks.map((week, wIdx) =>
-            wIdx === curProgram.curWeekIdx
-              ? week.map((day, dIdx) =>
-                  dIdx === curProgram.curDayIdx
+          rotations: curProgram.rotations.map((rotation, wIdx) =>
+            wIdx === curProgram.curRotationIdx
+              ? rotation.map((session, dIdx) =>
+                  dIdx === curProgram.curSessionIdx
                     ? {
-                        ...day,
+                        ...session,
                         gym: name,
-                        exercises: day.exercises.map((exercise) =>
+                        exercises: session.exercises.map((exercise) =>
                           exercise.sets.some((s) => s.completed)
                             ? exercise
                             : {
@@ -61,9 +61,9 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
                               },
                         ),
                       }
-                    : day,
+                    : session,
                 )
-              : week,
+              : rotation,
           ),
         },
       });

@@ -14,8 +14,8 @@ import type { ChartPoint } from "./types";
 interface Props {
   selectedName: string;
   selectedApparatus: string;
-  // When set, restrict the chart to a single gym's sessions (CompleteDay shows
-  // only the current day's gym). Hides the legend too, since it's redundant.
+  // When set, restrict the chart to a single gym's sessions (CompleteSession shows
+  // only the current session's gym). Hides the legend too, since it's redundant.
   gym?: string;
 }
 

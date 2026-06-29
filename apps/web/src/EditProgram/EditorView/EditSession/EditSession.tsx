@@ -7,27 +7,27 @@ import { useTemplate } from "../../TemplateProvider";
 import { DeleteExerciseDialog } from "./DeleteExerciseDialog";
 import { LabeledTextInput } from "@/components/inputs";
 
-export const EditDay = () => {
+export const EditSession = () => {
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { templateProgram, setTemplateProgram, editingWeekIdx, editingDayIdx } =
+  const { templateProgram, setTemplateProgram, editingRotationIdx, editingSessionIdx } =
     useTemplate();
   const [deletingExerciseIdx, setDeletingExerciseIdx] = useState<
     number | undefined
   >(undefined);
 
-  const handleDayNameInput = (
+  const handleSessionNameInput = (
     e: ChangeEvent<HTMLInputElement>,
-    dayIdx: number,
+    sessionIdx: number,
   ) => {
     setTemplateProgram({
       ...templateProgram,
-      weeks: templateProgram.weeks.map((week, idx) =>
-        idx === editingWeekIdx
-          ? week.map((day, idx) =>
-              idx === dayIdx ? { ...day, name: e.target.value } : day,
+      rotations: templateProgram.rotations.map((rotation, idx) =>
+        idx === editingRotationIdx
+          ? rotation.map((session, idx) =>
+              idx === sessionIdx ? { ...session, name: e.target.value } : session,
             )
-          : week,
+          : rotation,
       ),
     });
   };
@@ -50,17 +50,17 @@ export const EditDay = () => {
 
     setTemplateProgram({
       ...templateProgram,
-      weeks: templateProgram.weeks.map((week, wIdx) =>
-        wIdx === editingWeekIdx
-          ? week.map((day, dIdx) =>
-              dIdx === editingDayIdx
+      rotations: templateProgram.rotations.map((rotation, wIdx) =>
+        wIdx === editingRotationIdx
+          ? rotation.map((session, dIdx) =>
+              dIdx === editingSessionIdx
                 ? {
-                    ...day,
-                    exercises: day.exercises.toSpliced(idx, 0, newExercise),
+                    ...session,
+                    exercises: session.exercises.toSpliced(idx, 0, newExercise),
                   }
-                : day,
+                : session,
             )
-          : week,
+          : rotation,
       ),
     });
   };
@@ -74,13 +74,13 @@ export const EditDay = () => {
         <div className="w-100" style={{ marginBottom: "20px" }}>
           <LabeledTextInput
             label="Name:"
-            value={templateProgram.weeks[editingWeekIdx][editingDayIdx].name}
+            value={templateProgram.rotations[editingRotationIdx][editingSessionIdx].name}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              handleDayNameInput(e, editingDayIdx)
+              handleSessionNameInput(e, editingSessionIdx)
             }
           />
         </div>
-        {templateProgram.weeks[editingWeekIdx][editingDayIdx].exercises
+        {templateProgram.rotations[editingRotationIdx][editingSessionIdx].exercises
           .filter((e) => !e.addedOn)
           .map((exercise, idx) => (
             <div
@@ -98,7 +98,7 @@ export const EditDay = () => {
         <AddButton
           onClick={() =>
             handleAddExercise(
-              templateProgram.weeks[editingWeekIdx][editingDayIdx].exercises
+              templateProgram.rotations[editingRotationIdx][editingSessionIdx].exercises
                 .length,
             )
           }

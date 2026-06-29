@@ -2,13 +2,13 @@ import { Program } from "@liftledger/shared";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { View, type LayoutChangeEvent } from "react-native";
-import { useCurrentDay } from "@liftledger/api-client";
+import { useCurrentSession } from "@liftledger/api-client";
 import { Text, TouchableRipple, useTheme } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../../../theme";
 import { TabNav } from "../../../RootNavigator/types";
 import {
-  DayQuadrant,
-  WeekQuadrant,
+  SessionQuadrant,
+  RotationQuadrant,
   PercentQuadrant,
   StreakQuadrant,
 } from "./quadrants";
@@ -26,7 +26,7 @@ type Props = {
 
 export const MetricQuadrants = ({ program }: Props) => {
   const { colors } = useTheme();
-  const { isDayStarted } = useCurrentDay();
+  const { isSessionStarted } = useCurrentSession();
   const navigation = useNavigation<TabNav<"Dashboard">>();
 
   const [areaSize, setAreaSize] = useState({ width: 0, height: 0 });
@@ -37,8 +37,8 @@ export const MetricQuadrants = ({ program }: Props) => {
   return (
     <View style={{ flex: 1, width: "100%" }} onLayout={onLayout}>
       <View style={{ flex: 1, flexDirection: "row", gap: GAP }}>
-        <DayQuadrant program={program} />
-        <WeekQuadrant program={program} />
+        <SessionQuadrant program={program} />
+        <RotationQuadrant program={program} />
       </View>
       <View
         style={{
@@ -124,7 +124,7 @@ export const MetricQuadrants = ({ program }: Props) => {
             shadowRadius: 8,
             elevation: 8,
           }}
-          onPress={() => navigation.navigate("CompleteDay")}
+          onPress={() => navigation.navigate("CompleteSession")}
         >
           <View style={{ alignItems: "center" }}>
             <Text
@@ -135,7 +135,7 @@ export const MetricQuadrants = ({ program }: Props) => {
                 letterSpacing: 1,
               }}
             >
-              {isDayStarted ? "Resume" : "Start"}
+              {isSessionStarted ? "Resume" : "Start"}
             </Text>
             <Text
               style={{

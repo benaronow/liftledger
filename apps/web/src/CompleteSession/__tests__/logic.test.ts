@@ -22,15 +22,15 @@ const makeExercise = (
   })),
 });
 
-// Inline mirrors of the computed values from CompleteDayProvider
+// Inline mirrors of the computed values from CompleteSessionProvider
 const isExerciseComplete = (exercise: Exercise) =>
   exercise.sets.length !== 0 &&
   exercise.sets.every((s) => s.completed || (s.skipped ?? false));
 
-const isDayStarted = (exercises: Exercise[]) =>
+const isSessionStarted = (exercises: Exercise[]) =>
   exercises.some((ex) => ex.sets.some((s) => s.completed || s.skipped));
 
-const isDayComplete = (exercises: Exercise[]) =>
+const isSessionComplete = (exercises: Exercise[]) =>
   exercises.every((ex) => isExerciseComplete(ex));
 
 const getCurrentExIdx = (exercises: Exercise[]) =>
@@ -72,32 +72,32 @@ describe("isExerciseComplete", () => {
   });
 });
 
-describe("isDayStarted", () => {
+describe("isSessionStarted", () => {
   it("returns false when no sets are done", () => {
-    expect(isDayStarted([makeExercise([{ completed: false }])])).toBe(false);
+    expect(isSessionStarted([makeExercise([{ completed: false }])])).toBe(false);
   });
 
   it("returns true when one set is completed", () => {
-    expect(isDayStarted([makeExercise([{ completed: true }])])).toBe(true);
+    expect(isSessionStarted([makeExercise([{ completed: true }])])).toBe(true);
   });
 
   it("returns true when one set is skipped", () => {
-    expect(isDayStarted([makeExercise([{ skipped: true }])])).toBe(true);
+    expect(isSessionStarted([makeExercise([{ skipped: true }])])).toBe(true);
   });
 
   it("returns false for empty exercises list", () => {
-    expect(isDayStarted([])).toBe(false);
+    expect(isSessionStarted([])).toBe(false);
   });
 });
 
-describe("isDayComplete", () => {
+describe("isSessionComplete", () => {
   it("returns true for empty exercises list (vacuous truth)", () => {
-    expect(isDayComplete([])).toBe(true);
+    expect(isSessionComplete([])).toBe(true);
   });
 
   it("returns true when all exercises are complete", () => {
     expect(
-      isDayComplete([
+      isSessionComplete([
         makeExercise([{ completed: true }]),
         makeExercise([{ skipped: true }]),
       ]),
@@ -106,7 +106,7 @@ describe("isDayComplete", () => {
 
   it("returns false when one exercise is incomplete", () => {
     expect(
-      isDayComplete([
+      isSessionComplete([
         makeExercise([{ completed: true }]),
         makeExercise([{ completed: false }]),
       ]),
@@ -114,7 +114,7 @@ describe("isDayComplete", () => {
   });
 
   it("returns false when an exercise has no sets", () => {
-    expect(isDayComplete([makeExercise([])])).toBe(false);
+    expect(isSessionComplete([makeExercise([])])).toBe(false);
   });
 });
 

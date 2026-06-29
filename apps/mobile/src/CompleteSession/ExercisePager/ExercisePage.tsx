@@ -40,7 +40,7 @@ export const ExercisePage = ({
   const [editingSetIdx, setEditingSetIdx] = useState<number>();
 
   // Jump to the full Progress page (all gyms) for this exercise, replacing
-  // CompleteDay so there's no back stack (pop), like the dashboard bounce.
+  // CompleteSession so there's no back stack (pop), like the dashboard bounce.
   const openFullProgress = () =>
     navigation.navigate(
       "Tabs",

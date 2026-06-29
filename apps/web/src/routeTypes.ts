@@ -6,5 +6,5 @@ export enum RouteType {
   Add = "/edit-program",
   Profile = "/profile",
   Settings = "/settings",
-  Workout = "/complete-day",
+  Workout = "/complete-session",
 }

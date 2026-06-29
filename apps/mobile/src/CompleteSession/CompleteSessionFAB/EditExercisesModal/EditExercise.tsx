@@ -4,7 +4,7 @@ import { View } from "react-native";
 import {
   getUpdatedExercise,
   useCompletedExercises,
-  useCurrentDay,
+  useCurrentSession,
   useMe,
 } from "@liftledger/api-client";
 import { ExerciseApparatusSelect } from "../../../components/ExerciseApparatusSelect";
@@ -20,7 +20,7 @@ interface Props {
 }
 
 export const EditExercise = ({ newExercise, setNewExercise }: Props) => {
-  const { exercises } = useCurrentDay();
+  const { exercises } = useCurrentSession();
   const { data: curUser } = useMe();
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
 

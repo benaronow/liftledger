@@ -9,14 +9,14 @@ export const EditorTitle = () => {
   const { colors } = useTheme();
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { editingDayIdx } = useTemplate();
+  const { editingSessionIdx } = useTemplate();
 
-  const isEditingDay = editingDayIdx !== -1;
+  const isEditingSession = editingSessionIdx !== -1;
 
-  const fabCount = isEditingDay ? 1 : curProgram ? 2 : 1;
+  const fabCount = isEditingSession ? 1 : curProgram ? 2 : 1;
 
-  const title = isEditingDay
-    ? `Edit Day ${editingDayIdx + 1}`
+  const title = isEditingSession
+    ? `Edit Session ${editingSessionIdx + 1}`
     : curProgram
       ? "Edit Program"
       : "Create Program";

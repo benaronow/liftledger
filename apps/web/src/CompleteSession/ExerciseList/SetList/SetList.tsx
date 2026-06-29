@@ -2,7 +2,7 @@ import {
   Exercise,
   Set,
   DARK_COLORS,
-  getCompletedDaysInProgram,
+  getCompletedSessionsInProgram,
 } from "@liftledger/shared";
 import { RefObject, useCallback, useEffect, useMemo, useState } from "react";
 import { BiPlusCircle } from "react-icons/bi";
@@ -35,8 +35,8 @@ export const SetList = ({
   // duplicated program's icons match against the source program's data.
   const intraProgramPrevious = useMemo<Exercise[]>(() => {
     if (!curProgram) return [];
-    return getCompletedDaysInProgram(curProgram)
-      .flatMap((day) => day.exercises)
+    return getCompletedSessionsInProgram(curProgram)
+      .flatMap((session) => session.exercises)
       .reverse();
   }, [curProgram]);
 

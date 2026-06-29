@@ -1,1 +1,1 @@
-export { EditWeek } from "./EditWeek";
+export { EditRotation } from "./EditRotation";

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computeProgress } from "@/CompleteDay/ExerciseList/SetList/computeProgress";
+import { computeProgress } from "@/CompleteSession/ExerciseList/SetList/computeProgress";
 import { Exercise } from "@liftledger/shared";
 
 const done = (weight: number, reps: number) => ({
@@ -270,7 +270,7 @@ describe("getProgressSign — W2-A (second completion, W1-A in history)", () => 
   });
 });
 
-describe("getProgressSign — W3-A (gym switch to Gym 2 for days 1 & 2)", () => {
+describe("getProgressSign — W3-A (gym switch to Gym 2 for sessions 1 & 2)", () => {
   it("BB Bench set[0] at Gym 2: e (first visit, only Gym 1 history)", () => {
     const history = [
       ex("BB Bench", "Gym 1", [done(100, 11), done(100, 11)]),
@@ -301,8 +301,8 @@ describe("getProgressSign — W3-A (gym switch to Gym 2 for days 1 & 2)", () => 
 });
 
 describe("getProgressSign — W4-A (extra addon sets added mid-program)", () => {
-  // Day 1: BB Bench now has 4 sets. Sets[0] and [1] existed before; [2] and [3] are new.
-  // Last Gym 1 BB Bench completion was W2-A (W3-A day 1 was Gym 2).
+  // Session 1: BB Bench now has 4 sets. Sets[0] and [1] existed before; [2] and [3] are new.
+  // Last Gym 1 BB Bench completion was W2-A (W3-A session 1 was Gym 2).
 
   it("BB Bench set[0] at Gym 1: = (no change from W2-A)", () => {
     const history = [
@@ -354,7 +354,7 @@ describe("getProgressSign — W4-A (extra addon sets added mid-program)", () => 
     expect(computeProgress(1, current, history)).toBe(-1);
   });
 
-  it("BB Squat at Gym 2: e (first Gym 2 visit for day 3)", () => {
+  it("BB Squat at Gym 2: e (first Gym 2 visit for session 3)", () => {
     const history = [ex("BB Squat", "Gym 1", [done(290, 7), done(290, 7)])];
     const current = ex("BB Squat", "Gym 2", [pending(13, 13), pending(14, 14)]);
     expect(computeProgress(0, current, history)).toBeUndefined();
@@ -367,7 +367,7 @@ describe("getProgressSign — W4-A (extra addon sets added mid-program)", () => 
   });
 });
 
-describe("getProgressSign — W5-A (second Gym 2 visit for days 1 & 2)", () => {
+describe("getProgressSign — W5-A (second Gym 2 visit for sessions 1 & 2)", () => {
   // W3-A was the first Gym 2 visit. W5-A compares against W3-A.
 
   it("BB Bench at Gym 2 set[0]: + (weight 1→2)", () => {
@@ -438,7 +438,7 @@ describe("getProgressSign — W5-A (second Gym 2 visit for days 1 & 2)", () => {
   });
 
   it("BB Squat at Gym 2 set[0]: = (weight and reps unchanged from W4-A)", () => {
-    // W4-A Gym 2 day 3: BB Squat weight=13, reps=13
+    // W4-A Gym 2 session 3: BB Squat weight=13, reps=13
     const history = [ex("BB Squat", "Gym 2", [done(13, 13), done(14, 14)])];
     const current = ex("BB Squat", "Gym 2", [pending(13, 13), pending(14, 14)]);
     expect(computeProgress(0, current, history)).toBe(0);
@@ -446,7 +446,7 @@ describe("getProgressSign — W5-A (second Gym 2 visit for days 1 & 2)", () => {
   });
 
   it("Hamstring Curl at Gym 2 set[0]: + (weight 15→16, reps 15→16)", () => {
-    // W4-A Gym 2 day 3: Hamstring Curl weight=15, reps=15
+    // W4-A Gym 2 session 3: Hamstring Curl weight=15, reps=15
     const history = [
       ex("Hamstring Curl", "Gym 2", [done(15, 15), done(16, 16)]),
     ];

@@ -31,7 +31,7 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
     templateProgram,
     setTemplateProgram,
     unsetTemplateProgram,
-    setEditingWeekIdx,
+    setEditingRotationIdx,
   } = useTemplate();
 
   const handleSave = async () => {
@@ -53,14 +53,14 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
         // web got this free by unmounting the route on navigate.
         if (res?.program) {
           setTemplateProgram(res.program);
-          setEditingWeekIdx(res.program.curWeekIdx ?? 0);
+          setEditingRotationIdx(res.program.curRotationIdx ?? 0);
         }
       } else {
         // Starting a program sets curUser.curProgram, which changes the screen's
         // remount key and re-reads the new program, so just clear local state.
         await triggerStartProgram({ userId: curUser._id, program: templateProgram });
         unsetTemplateProgram();
-        setEditingWeekIdx(0);
+        setEditingRotationIdx(0);
       }
 
       // Drop any lingering ?duplicateFrom so a later visit starts from curProgram.
