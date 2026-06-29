@@ -29,4 +29,5 @@ export const EMPTY_PROGRAM: Program = {
   ],
   curSessionIdx: 0,
   curRotationIdx: 0,
+  restDays: 0,
 };

@@ -138,6 +138,13 @@ export const EditRotation = () => {
     setTemplateProgram({ ...templateProgram, length });
   };
 
+  // Like length, an empty field commits null, which we ignore so clearing it
+  // mid-edit doesn't reset the value — it snaps back on blur.
+  const handleRestDaysInput = (restDays: number | null) => {
+    if (restDays == null) return;
+    setTemplateProgram({ ...templateProgram, restDays });
+  };
+
   const handleDateInput = (date: Date | undefined) => {
     if (date) setTemplateProgram({ ...templateProgram, startDate: date });
   };
@@ -187,6 +194,11 @@ export const EditRotation = () => {
           value={templateProgram.length}
           error={templateErrors.program.length}
           onChangeValue={handleLengthInput}
+        />
+        <NumberInput
+          label="Rest Days"
+          value={templateProgram.restDays ?? 0}
+          onChangeValue={handleRestDaysInput}
         />
         <SearchableSelect
           label="Primary Gym"

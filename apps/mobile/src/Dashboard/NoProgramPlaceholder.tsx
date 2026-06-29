@@ -27,7 +27,7 @@ export const NoProgramPlaceholder = () => {
         contentStyle={{ paddingVertical: SPACING.xs }}
         labelStyle={{ fontSize: FONT.base, fontWeight: "600" }}
       >
-        Go to Program
+        Create program
       </Button>
     </View>
   );

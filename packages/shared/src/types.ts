@@ -44,6 +44,9 @@ export interface Program {
   curRotationIdx: number;
   curSessionIdx: number;
   endDate?: Date;
+  // Per-rotation streak "keep-alive" budget: this many missed days are allowed
+  // within a rotation before the streak breaks. Rest days don't add to the streak.
+  restDays?: number;
 }
 
 export interface TimerPresets {

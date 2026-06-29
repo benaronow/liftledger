@@ -38,4 +38,5 @@ export const templateFromProgram = (
   ],
   curSessionIdx: 0,
   curRotationIdx: 0,
+  restDays: program.restDays ?? 0,
 });
