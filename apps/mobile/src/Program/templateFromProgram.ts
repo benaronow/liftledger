@@ -25,7 +25,7 @@ export const templateFromProgram = (
         .filter((ex) => !ex.addedOn)
         .map((exercise) => ({
           name: exercise.name,
-          apparatus: exercise.apparatus,
+          equipment: exercise.equipment,
           gym: program.primaryGym,
           sets: getNewSetsFromLatest(completedExercises, {
             ...exercise,

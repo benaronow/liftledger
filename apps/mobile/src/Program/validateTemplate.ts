@@ -10,7 +10,7 @@ export interface ProgramErrors {
 // valid. Keyed by field so each control can show its own error inline.
 export interface ExerciseErrors {
   name?: string;
-  apparatus?: string;
+  equipment?: string;
   weightType?: string;
   sets?: string;
 }
@@ -42,7 +42,7 @@ export const validateTemplate = (
       .map((exercise) => {
         const errors: ExerciseErrors = {};
         if (!exercise.name) errors.name = "Select an exercise";
-        if (!exercise.apparatus) errors.apparatus = "Select an apparatus";
+        if (!exercise.equipment) errors.equipment = "Select an equipment";
         if (!exercise.weightType) errors.weightType = "Select a weight type";
         if (exercise.sets.length === 0) errors.sets = "Add at least one set";
         return errors;

@@ -5,18 +5,18 @@ import { SPACING } from "../theme";
 
 interface Props {
   selectedName: string;
-  selectedApparatus: string;
+  selectedEquipment: string;
   setSelectedName: (name: string) => void;
-  setSelectedApparatus: (apparatus: string) => void;
+  setSelectedEquipment: (equipment: string) => void;
 }
 
 export const ExerciseSelector = ({
   selectedName,
-  selectedApparatus,
+  selectedEquipment,
   setSelectedName,
-  setSelectedApparatus,
+  setSelectedEquipment,
 }: Props) => {
-  const { allExerciseNameOptions, allExerciseApparatusOptions } =
+  const { allExerciseNameOptions, allExerciseEquipmentOptions } =
     useExerciseOptions();
 
   return (
@@ -39,11 +39,11 @@ export const ExerciseSelector = ({
       </View>
       <View style={{ flex: 1 }}>
         <SearchableSelect
-          label="Apparatus"
-          value={selectedApparatus}
-          options={allExerciseApparatusOptions}
-          onSelect={setSelectedApparatus}
-          placeholder="Enter apparatus..."
+          label="Equipment"
+          value={selectedEquipment}
+          options={allExerciseEquipmentOptions}
+          onSelect={setSelectedEquipment}
+          placeholder="Enter equipment..."
         />
       </View>
     </View>

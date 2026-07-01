@@ -14,7 +14,7 @@ const programSchema: Schema = new Schema(
           exercises: [
             {
               name: String,
-              apparatus: String,
+              equipment: String,
               gym: String,
               sets: [
                 {

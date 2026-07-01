@@ -18,7 +18,7 @@ const makeUser = () => ({
   timerPresets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 },
   gyms: ["Gym A"],
   customExerciseNames: [],
-  customExerciseApparatuses: [],
+  customExerciseEquipment: [],
   programs: [],
 });
 
@@ -35,7 +35,7 @@ const makeProgram = () => ({
         exercises: [
           {
             name: "Bench Press",
-            apparatus: "Barbell",
+            equipment: "Barbell",
             gym: "Gym A",
             sets: [{ reps: 10, weight: 100, note: "", completed: false }],
             weightType: "lbs",

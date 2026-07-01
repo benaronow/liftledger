@@ -44,7 +44,7 @@ export const EditSession = () => {
   const handleAddExercise = (idx: number) => {
     const newExercise: Exercise = {
       name: "",
-      apparatus: "",
+      equipment: "",
       gym: templateProgram.primaryGym || "",
       sets: [{ reps: null, weight: null, completed: false, note: "" }],
       weightType: curProgram ? "lbs" : "",

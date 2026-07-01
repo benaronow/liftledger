@@ -13,7 +13,7 @@ import type { ChartPoint } from "./types";
 
 interface Props {
   selectedName: string;
-  selectedApparatus: string;
+  selectedEquipment: string;
   gym?: string;
 }
 
@@ -31,7 +31,7 @@ const POINTER_RADIUS = 6;
 
 export const ProgressChart = ({
   selectedName,
-  selectedApparatus,
+  selectedEquipment,
   gym,
 }: Props) => {
   const { data: curUser, isLoading: isUserLoading } = useMe();
@@ -56,13 +56,13 @@ export const ProgressChart = ({
         .filter(
           (e) =>
             e.name === selectedName &&
-            e.apparatus === selectedApparatus &&
+            e.equipment === selectedEquipment &&
             (!gym || (e.gym ?? "Gym Unknown") === gym) &&
             e.completedDate &&
             e.sets.some((s) => s.completed),
         )
         .reverse(),
-    [selectedName, selectedApparatus, gym, completedExercises],
+    [selectedName, selectedEquipment, gym, completedExercises],
   );
 
   const gyms = useMemo(

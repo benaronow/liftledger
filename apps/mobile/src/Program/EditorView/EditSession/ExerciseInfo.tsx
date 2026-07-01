@@ -8,7 +8,7 @@ import {
 import { Exercise } from "@liftledger/shared";
 import { useCallback, useMemo } from "react";
 import { View } from "react-native";
-import { ExerciseApparatusSelect } from "../../../components/ExerciseApparatusSelect";
+import { ExerciseEquipmentSelect } from "../../../components/ExerciseEquipmentSelect";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
 import { WeightTypeSelect } from "../../../components/WeightTypeSelect";
 import { SPACING } from "../../../theme";
@@ -17,7 +17,7 @@ import { Info, InfoAction } from "../../../components/Info";
 import { useTemplate } from "../../TemplateProvider";
 import { fullExerciseIndex, moveExercise } from "./moveExercise";
 
-type ExerciseInfoName = "name" | "apparatus" | "weightType";
+type ExerciseInfoName = "name" | "equipment" | "weightType";
 
 interface Props {
   exercise: Exercise;
@@ -169,12 +169,12 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
         reservedExercises={curSessionExercises}
         onSelect={(value) => switchExercise(value, "name")}
       />
-      <ExerciseApparatusSelect
-        label="Apparatus"
-        error={errors.apparatus}
+      <ExerciseEquipmentSelect
+        label="Equipment"
+        error={errors.equipment}
         curExercise={exercise}
         reservedExercises={curSessionExercises}
-        onSelect={(value) => switchExercise(value, "apparatus")}
+        onSelect={(value) => switchExercise(value, "equipment")}
       />
       <View style={rowStyle}>
         <NumberInput

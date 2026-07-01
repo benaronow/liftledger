@@ -67,7 +67,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
   const defaultNewExercise: Exercise = useMemo(
     () => ({
       name: "",
-      apparatus: "",
+      equipment: "",
       gym: curGym,
       weightType: "",
       sets: [],
@@ -184,7 +184,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
 
   const exerciseIncomplete =
     newExercise.name === "" ||
-    newExercise.apparatus === "" ||
+    newExercise.equipment === "" ||
     newExercise.weightType === "";
 
   const translateY = progress.interpolate({
@@ -276,7 +276,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                             fontSize: FONT.sm,
                           }}
                         >
-                          {exercise.apparatus}
+                          {exercise.equipment}
                         </Text>
                       </View>
                       <View

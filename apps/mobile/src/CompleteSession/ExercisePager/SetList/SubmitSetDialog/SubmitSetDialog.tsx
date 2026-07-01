@@ -65,7 +65,7 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
               const completedExercise = updatedExercises.find(
                 (e: Exercise) =>
                   e.name === exercise.name &&
-                  e.apparatus === exercise.apparatus &&
+                  e.equipment === exercise.equipment &&
                   e.gym === exercise.gym,
               );
 
@@ -114,7 +114,7 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       completedExercises,
       (e: Exercise) =>
         e.name === exercise?.name &&
-        e.apparatus === exercise?.apparatus &&
+        e.equipment === exercise?.equipment &&
         e.gym === exercise.gym &&
         !!e.sets[setIdx],
     )?.sets[setIdx];
@@ -138,7 +138,7 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
     const exerciseIdx = exercises.findIndex(
       (e: Exercise) =>
         e.name === updatedExercise.name &&
-        e.apparatus === updatedExercise.apparatus &&
+        e.equipment === updatedExercise.equipment &&
         e.gym === updatedExercise.gym,
     );
 

@@ -1,4 +1,4 @@
-export const EXERCISE_APPARATUSES: string[] = [
+export const EXERCISE_EQUIPMENT: string[] = [
   "Band",
   "Barbell",
   "Bodyweight",

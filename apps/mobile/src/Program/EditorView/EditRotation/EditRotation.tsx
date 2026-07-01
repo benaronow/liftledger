@@ -114,7 +114,7 @@ export const EditRotation = () => {
       exercises: [
         {
           name: "",
-          apparatus: "",
+          equipment: "",
           gym: templateProgram.primaryGym || "",
           sets: [{ reps: null, weight: null, completed: false, note: "" }],
           weightType: curProgram ? "lbs" : "",

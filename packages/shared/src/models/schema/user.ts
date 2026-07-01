@@ -16,7 +16,7 @@ const userSchema: Schema = new Schema(
     },
     gyms: { type: [String] },
     customExerciseNames: { type: [String], default: [] },
-    customExerciseApparatuses: { type: [String], default: [] },
+    customExerciseEquipment: { type: [String], default: [] },
   },
   { collection: "User" },
 );

@@ -27,7 +27,7 @@ export const EditSet = ({ exerciseState, setExerciseState, setIdx }: Props) => {
       completedExercises,
       (e: Exercise) =>
         e.name === exerciseState?.name &&
-        e.apparatus === exerciseState?.apparatus &&
+        e.equipment === exerciseState?.equipment &&
         !!e.sets[setIdx],
     )?.sets[setIdx].note;
   }, [exerciseState, setIdx, completedExercises]);

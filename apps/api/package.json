@@ -9,6 +9,7 @@
     "start": "tsx src/index.ts",
     "start:local": "tsx --env-file=.env.local src/index.ts",
     "migrate:rotations": "tsx --env-file=.env.local scripts/migrate-rename-rotations.ts",
+    "migrate:apparatus": "tsx --env-file=.env.local scripts/migrate-rename-apparatus.ts",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "test": "vitest",

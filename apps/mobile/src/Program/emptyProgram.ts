@@ -11,7 +11,7 @@ export const EMPTY_PROGRAM: Program = {
         exercises: [
           {
             name: "",
-            apparatus: "",
+            equipment: "",
             sets: [
               {
                 reps: null,

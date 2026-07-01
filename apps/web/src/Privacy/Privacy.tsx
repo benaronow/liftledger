@@ -55,7 +55,7 @@ export const Privacy = () => (
     <ul>
       <li>Workout programs and their schedules</li>
       <li>
-        Exercises (names, equipment/apparatus, and any custom exercise names you
+        Exercises (names, equipment, and any custom exercise names you
         create)
       </li>
       <li>Sets, repetitions, weights, and notes you log</li>

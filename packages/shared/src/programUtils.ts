@@ -2,10 +2,10 @@ import type { Program, Session, Exercise } from "./types";
 
 /**
  * Returns true if two exercises refer to the same exercise slot
- * (same name, apparatus, and gym).
+ * (same name, equipment, and gym).
  */
 export const isSameExercise = (a: Exercise, b: Exercise): boolean =>
-  a.name === b.name && a.apparatus === b.apparatus && a.gym === b.gym;
+  a.name === b.name && a.equipment === b.equipment && a.gym === b.gym;
 
 /**
  * Returns all completed sessions in a program up to (but not including) the

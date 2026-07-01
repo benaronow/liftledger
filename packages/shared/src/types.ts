@@ -10,7 +10,7 @@ export interface Set {
 export interface Exercise {
   _id?: string;
   name: string;
-  apparatus: string;
+  equipment: string;
   gym?: string;
   sets: Set[];
   weightType: string;
@@ -19,7 +19,7 @@ export interface Exercise {
 
 export interface CompletedExercise {
   name: string;
-  apparatus: string;
+  equipment: string;
   gym?: string;
   sets: Set[];
   weightType: string;
@@ -69,5 +69,5 @@ export interface User {
   timerPresets: TimerPresets;
   gyms: string[];
   customExerciseNames: string[];
-  customExerciseApparatuses: string[];
+  customExerciseEquipment: string[];
 }

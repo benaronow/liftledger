@@ -14,7 +14,7 @@ const UPDATABLE_FIELDS = [
   "timerPresets",
   "gyms",
   "customExerciseNames",
-  "customExerciseApparatuses",
+  "customExerciseEquipment",
 ] as const satisfies readonly (keyof User)[];
 
 type UpdatableField = (typeof UPDATABLE_FIELDS)[number];

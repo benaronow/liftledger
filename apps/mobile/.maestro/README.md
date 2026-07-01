@@ -116,7 +116,7 @@ from reusable, parameterized subflows:
 - `subflows/skipSet.yaml` (`SET`) — skip a set
 - `subflows/addSet.yaml` (`WEIGHT`, `REPS`) — add an add-on set (the "+" after an
   exercise is fully complete)
-- `subflows/addExercise.yaml` (`POS`, `NAME`, `APPARATUS`, `WEIGHT_TYPE`) — add an
+- `subflows/addExercise.yaml` (`POS`, `NAME`, `EQUIPMENT`, `WEIGHT_TYPE`) — add an
   add-on exercise via FAB → Edit Exercises, inserted at position `POS`
 
 Still to come: **gym switches** (W3+, FAB → Change Gym) need a `switchGym`
@@ -126,7 +126,7 @@ subflow, plus the W3–W5 driver sections.
 
 W2 was authored without a simulator in the loop, so expect to adjust:
 - `addExercise.yaml` is the least-validated — the three `SearchableSelect`
-  modals (name custom-add, apparatus/weight-type pick) and the insert-row
+  modals (name custom-add, equipment/weight-type pick) and the insert-row
   targeting (`insert-exercise-<n>`) are the likeliest to need tuning.
 - Progression assertions match the set-row text (`"10 reps"`, `"100lbs"`); if the
   rendered format differs, adjust those `assertVisible`s.

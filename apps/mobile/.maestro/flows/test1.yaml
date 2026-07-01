@@ -208,7 +208,7 @@ onFlowComplete:
     env:
       POS: "2"
       NAME: "Adductors"
-      APPARATUS: "Machine"
+      EQUIPMENT: "Machine"
       WEIGHT_TYPE: "lbs"
 # Adductors is now exercise 3 of 4, but the pager sits on the first page (BB
 # Squat) after the edit sheet closes — its name only renders on its own page,

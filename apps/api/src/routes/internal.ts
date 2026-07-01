@@ -42,12 +42,12 @@ const plannedSet = (weight: number, reps: number) => ({
 
 const plannedExercise = (
   name: string,
-  apparatus: string,
+  equipment: string,
   weight: number,
   reps: number,
 ) => ({
   name,
-  apparatus,
+  equipment,
   gym: GYM1,
   weightType: LBS,
   addedOn: false,
@@ -159,7 +159,7 @@ const internalRoutes = async (app: FastifyInstance) => {
           $set: {
             programs: [],
             customExerciseNames: [],
-            customExerciseApparatuses: [],
+            customExerciseEquipment: [],
             gyms: [],
           },
           $unset: { curProgram: "", timerEnd: "" },
@@ -200,7 +200,7 @@ const internalRoutes = async (app: FastifyInstance) => {
             programs: [program._id],
             curProgram: program._id,
             // Pre-populate the option lists the add-exercise selects read from,
-            // so apparatuses like "Machine" are selectable (not custom-add).
+            // so equipment like "Machine" are selectable (not custom-add).
             // "Adductors"/"Leg Raises"/"Crunch" are intentionally omitted — the
             // test adds them as custom names, mirroring the doc.
             customExerciseNames: [
@@ -214,7 +214,7 @@ const internalRoutes = async (app: FastifyInstance) => {
               "Hamstring Curl",
               "Calf Raise",
             ],
-            customExerciseApparatuses: ["Barbell", "Dumbbell", "Cable", "Machine"],
+            customExerciseEquipment: ["Barbell", "Dumbbell", "Cable", "Machine"],
             gyms: [GYM1],
           },
           $unset: { timerEnd: "" },

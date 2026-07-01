@@ -7,8 +7,8 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 export type TabParamList = {
   // CompleteSession's "full progress" button deep-links here with a preset
-  // exercise/apparatus.
-  Progress: { name?: string; apparatus?: string } | undefined;
+  // exercise/equipment.
+  Progress: { name?: string; equipment?: string } | undefined;
   Dashboard: undefined;
   Program: { duplicateFrom?: string } | undefined;
 };

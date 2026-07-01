@@ -18,21 +18,21 @@ export const Progress = () => {
   const { params } = useRoute<RouteProp<TabParamList, "Progress">>();
 
   const [selectedName, setSelectedName] = useState(params?.name ?? "");
-  const [selectedApparatus, setSelectedApparatus] = useState(
-    params?.apparatus ?? "",
+  const [selectedEquipment, setSelectedEquipment] = useState(
+    params?.equipment ?? "",
   );
 
   useEffect(() => {
     if (params?.name) {
       setSelectedName(params.name);
-      setSelectedApparatus(params.apparatus ?? "");
+      setSelectedEquipment(params.equipment ?? "");
     }
-  }, [params?.name, params?.apparatus]);
+  }, [params?.name, params?.equipment]);
   const { selectName, isLoading } = useExerciseSelection({
     selectedName,
-    selectedApparatus,
+    selectedEquipment,
     setSelectedName,
-    setSelectedApparatus,
+    setSelectedEquipment,
   });
 
   if (isLoading) return <LogoSpinner />;
@@ -54,9 +54,9 @@ export const Progress = () => {
       >
         <ExerciseSelector
           selectedName={selectedName}
-          selectedApparatus={selectedApparatus}
+          selectedEquipment={selectedEquipment}
           setSelectedName={selectName}
-          setSelectedApparatus={setSelectedApparatus}
+          setSelectedEquipment={setSelectedEquipment}
         />
       </View>
       <View
@@ -68,7 +68,7 @@ export const Progress = () => {
         <SectionCard title="All Progress" style={{ flex: 1 }}>
           <ProgressChart
             selectedName={selectedName}
-            selectedApparatus={selectedApparatus}
+            selectedEquipment={selectedEquipment}
           />
         </SectionCard>
       </View>

@@ -40,7 +40,7 @@ export const ExercisePage = ({
       "Tabs",
       {
         screen: "Progress",
-        params: { name: exercise.name, apparatus: exercise.apparatus },
+        params: { name: exercise.name, equipment: exercise.equipment },
       },
       { pop: true },
     );
@@ -95,7 +95,7 @@ export const ExercisePage = ({
             color: colors.onSurfaceDisabled,
           }}
         >
-          {exercise.apparatus}
+          {exercise.equipment}
         </Text>
       </View>
       <Info title="Sets" fill>
@@ -122,7 +122,7 @@ export const ExercisePage = ({
         >
           <ProgressChart
             selectedName={exercise.name}
-            selectedApparatus={exercise.apparatus}
+            selectedEquipment={exercise.equipment}
             gym={exercise.gym}
           />
         </View>
