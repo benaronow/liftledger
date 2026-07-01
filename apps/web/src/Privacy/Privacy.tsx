@@ -1,8 +1,7 @@
 import { Container } from "react-bootstrap";
 
-// Fill these in before submitting to the App Store.
-const EFFECTIVE_DATE = "[INSERT DATE]";
-const CONTACT_EMAIL = "[INSERT CONTACT EMAIL]";
+const EFFECTIVE_DATE = "07/01/2026";
+const CONTACT_EMAIL = "liftledgerteam@gmail.com";
 
 export const Privacy = () => (
   <Container style={{ maxWidth: 760, padding: "3.5rem 1rem 4rem" }}>
@@ -20,8 +19,7 @@ export const Privacy = () => (
 
     <h2>Information We Collect</h2>
     <p>
-      We collect only the information needed to provide the app's
-      functionality:
+      We collect only the information needed to provide the app's functionality:
     </p>
 
     <h3>Account Information</h3>
@@ -50,7 +48,10 @@ export const Privacy = () => (
     </p>
 
     <h3>Workout Data</h3>
-    <p>When you use the app, we store the workout information you enter, including:</p>
+    <p>
+      When you use the app, we store the workout information you enter,
+      including:
+    </p>
     <ul>
       <li>Workout programs and their schedules</li>
       <li>
@@ -82,8 +83,8 @@ export const Privacy = () => (
     <h2>How Your Information Is Stored and Shared</h2>
     <ul>
       <li>
-        <strong>Authentication data</strong> is processed by <strong>Auth0</strong>,
-        our third-party authentication provider.
+        <strong>Authentication data</strong> is processed by{" "}
+        <strong>Auth0</strong>, our third-party authentication provider.
       </li>
       <li>
         <strong>Your account and workout data</strong> are stored in our
@@ -114,9 +115,7 @@ export const Privacy = () => (
       <li>Correct inaccurate information</li>
       <li>Delete your account and associated data</li>
     </ul>
-    <p>
-      To make any of these requests, contact us at the email address below.
-    </p>
+    <p>To make any of these requests, contact us at the email address below.</p>
 
     <h2>Children's Privacy</h2>
     <p>
@@ -136,9 +135,9 @@ export const Privacy = () => (
 
     <h2>Changes to This Policy</h2>
     <p>
-      We may update this Privacy Policy from time to time. Changes will be posted
-      here with an updated effective date. Continued use of the app after changes
-      are posted constitutes acceptance of the revised policy.
+      We may update this Privacy Policy from time to time. Changes will be
+      posted here with an updated effective date. Continued use of the app after
+      changes are posted constitutes acceptance of the revised policy.
     </p>
 
     <h2>Contact Us</h2>
