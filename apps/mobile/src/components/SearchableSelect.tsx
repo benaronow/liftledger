@@ -1,5 +1,5 @@
 import Fuse from "fuse.js";
-import { useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { FlatList, Modal, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -11,6 +11,10 @@ import {
 import { FONT, SPACING } from "../theme";
 import { AppTextInput } from "./inputs";
 import { Sheet } from "./Sheet";
+
+export const SelectModalContext = createContext<{
+  register: () => () => void;
+} | null>(null);
 
 interface Props {
   label?: string;
@@ -42,6 +46,12 @@ export const SearchableSelect = ({
   const [query, setQuery] = useState("");
   const [addingCustom, setAddingCustom] = useState(false);
   const { colors } = useTheme();
+
+  const selectModal = useContext(SelectModalContext);
+  useEffect(() => {
+    if (!open || !selectModal) return;
+    return selectModal.register();
+  }, [open, selectModal]);
 
   const fuse = useMemo(() => new Fuse(options, { threshold: 0.4 }), [options]);
   const filteredOptions = useMemo(
