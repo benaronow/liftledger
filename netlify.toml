@@ -1,0 +1,15 @@
+# Netlify build config for the LiftLedger marketing site (apps/web).
+# This is a yarn workspace monorepo, so the build runs from the repo root and
+# publishes the Vite output in apps/web/dist.
+[build]
+  command = "yarn web:build"
+  publish = "apps/web/dist"
+  environment = { NODE_VERSION = "22" }
+
+# The site uses client-side routing (react-router createBrowserRouter). Serve
+# index.html for any path so deep links like /privacy work on direct load and
+# refresh instead of 404ing.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
