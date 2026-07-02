@@ -1,4 +1,6 @@
 import { Schema } from "mongoose";
+import { DEFAULT_EXERCISE_NAMES } from "../../exerciseNames";
+import { DEFAULT_EXERCISE_EQUIPMENT } from "../../exerciseEquipment";
 
 const userSchema: Schema = new Schema(
   {
@@ -15,8 +17,14 @@ const userSchema: Schema = new Schema(
       required: true,
     },
     gyms: { type: [String] },
-    customExerciseNames: { type: [String], default: [] },
-    customExerciseEquipment: { type: [String], default: [] },
+    exerciseNames: {
+      type: [String],
+      default: () => [...DEFAULT_EXERCISE_NAMES],
+    },
+    exerciseEquipment: {
+      type: [String],
+      default: () => [...DEFAULT_EXERCISE_EQUIPMENT],
+    },
   },
   { collection: "User" },
 );

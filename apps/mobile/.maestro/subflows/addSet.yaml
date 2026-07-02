@@ -4,19 +4,21 @@ appId: app.liftledger.mobile
 # from the last set's values, so we erase before typing. Params: WEIGHT, REPS.
 ---
 - tapOn: "Add set"
+# No dialog-settle wait: the dialog doesn't animate under E2E. The wait after
+# tapping the field stays — the native keyboard slide still races erase/input.
 - extendedWaitUntil:
     visible:
       id: "set-input-reps"
     timeout: 5000
-- waitForAnimationToEnd
 - tapOn:
     id: "set-input-reps"
-- waitForAnimationToEnd
-- eraseText
+- waitForAnimationToEnd:
+    timeout: 300
+- eraseText: 8
 - inputText: "${REPS}"
 - tapOn:
     id: "set-input-weight"
-- eraseText
+- eraseText: 8
 - inputText: "${WEIGHT}"
 # Tap the (non-input) title to dismiss the number-pad and reveal Confirm.
 - tapOn: "Submit Set"
@@ -25,4 +27,3 @@ appId: app.liftledger.mobile
     notVisible:
       text: "Submit Set"
     timeout: 5000
-- waitForAnimationToEnd

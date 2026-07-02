@@ -17,10 +17,15 @@
     "api:build": "yarn workspace @liftledger/api build",
     "api:start": "yarn workspace @liftledger/api start",
     "api:start:local": "yarn workspace @liftledger/api start:local",
+    "api:start:e2e": "yarn workspace @liftledger/api start:e2e",
     "api:test": "yarn workspace @liftledger/api test",
+    "api:deploy": "fly deploy",
     "mobile:start": "yarn workspace @liftledger/mobile start",
     "mobile:ios": "yarn workspace @liftledger/mobile ios",
-    "mobile:typecheck": "yarn workspace @liftledger/mobile typecheck"
+    "mobile:build:ios": "yarn workspace @liftledger/mobile build:ios",
+    "mobile:build:ios:preview": "yarn workspace @liftledger/mobile build:ios:preview",
+    "mobile:typecheck": "yarn workspace @liftledger/mobile typecheck",
+    "mobile:e2e:program-completion": "yarn workspace @liftledger/mobile e2e:program-completion"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

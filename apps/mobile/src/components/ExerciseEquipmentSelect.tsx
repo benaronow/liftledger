@@ -19,7 +19,7 @@ export const ExerciseEquipmentSelect = ({
   error,
 }: Props) => {
   const {
-    addCustomExerciseEquipment,
+    addExerciseEquipment,
     allExerciseEquipmentOptions,
     getAvailableExerciseEquipmentOptions,
   } = useExerciseOptions();
@@ -45,9 +45,9 @@ export const ExerciseEquipmentSelect = ({
       options={availableEquipmentOptions}
       unavailableOptions={unavailableEquipmentOptions}
       onSelect={onSelect}
-      onAddCustom={addCustomExerciseEquipment}
+      onAddCustom={addExerciseEquipment}
       canAddCustom
-      placeholder="Enter or add an equipment..."
+      placeholder="Enter or add equipment..."
     />
   );
 };

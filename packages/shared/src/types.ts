@@ -68,6 +68,6 @@ export interface User {
   timerEnd?: Date;
   timerPresets: TimerPresets;
   gyms: string[];
-  customExerciseNames: string[];
-  customExerciseEquipment: string[];
+  exerciseNames: string[];
+  exerciseEquipment: string[];
 }

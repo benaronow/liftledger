@@ -5,33 +5,34 @@ appId: app.liftledger.mobile
 ---
 - tapOn:
     id: "set-row-${SET}"
-# The Submit Set dialog animates in; wait for the field AND let the dialog +
-# keyboard settle, or the erase/input below race the animation and get dropped
-# (leaving the planned value submitted instead of the edited one).
+# Wait for the dialog's reps field before interacting. The dialog no longer
+# animates under E2E (TopSheet duration 0), so no settle wait is needed here.
+# Keep the wait AFTER tapping the field though: the native keyboard slide-in
+# still races the erase/input below and would drop the typed value (leaving the
+# planned value submitted instead of the edited one).
 - extendedWaitUntil:
     visible:
       id: "set-input-reps"
     timeout: 5000
-- waitForAnimationToEnd
 - tapOn:
     id: "set-input-reps"
-- waitForAnimationToEnd
-- eraseText
+- waitForAnimationToEnd:
+    timeout: 300
+- eraseText: 8
 - inputText: "${REPS}"
 - tapOn:
     id: "set-input-weight"
-- eraseText
+- eraseText: 8
 - inputText: "${WEIGHT}"
 # The number-pad has no dismiss key and covers the dialog's actions. Tapping the
 # (non-input) title dismisses the keyboard via the dialog's tap-to-dismiss,
 # revealing Confirm.
 - tapOn: "Submit Set"
-# Submitting now closes the dialog outright (no auto rest-timer), so wait for it
-# to fully close before returning — otherwise the next set's row tap races the
-# close animation.
+# Submitting now closes the dialog outright (no auto rest-timer). notVisible only
+# passes once the sheet has unmounted (after its close), so it already covers the
+# close — no separate animation wait needed before the next set's row tap.
 - tapOn: "Confirm"
 - extendedWaitUntil:
     notVisible:
       text: "Submit Set"
     timeout: 5000
-- waitForAnimationToEnd

@@ -18,7 +18,8 @@ appId: app.liftledger.mobile
     visible:
       text: "Add Exercise"
     timeout: 5000
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 300
 
 # --- Name: typed + added as a custom option ---
 - tapOn: "Exercise"
@@ -64,4 +65,3 @@ appId: app.liftledger.mobile
     notVisible:
       text: "Edit Exercises"
     timeout: 5000
-- waitForAnimationToEnd

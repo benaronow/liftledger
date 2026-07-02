@@ -18,8 +18,8 @@ const makeUser = () => ({
   fullName: "Test User",
   timerPresets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 },
   gyms: ["Gym A"],
-  customExerciseNames: [],
-  customExerciseEquipment: [],
+  exerciseNames: [],
+  exerciseEquipment: [],
   programs: [],
 });
 

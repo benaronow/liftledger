@@ -19,7 +19,7 @@ export const ExerciseNameSelect = ({
   error,
 }: Props) => {
   const {
-    addCustomExerciseName,
+    addExerciseName,
     allExerciseNameOptions,
     getAvailableExerciseNameOptions,
   } = useExerciseOptions();
@@ -43,7 +43,7 @@ export const ExerciseNameSelect = ({
       options={availableNameOptions}
       unavailableOptions={unavailableNameOptions}
       onSelect={onSelect}
-      onAddCustom={addCustomExerciseName}
+      onAddCustom={addExerciseName}
       canAddCustom
       placeholder="Enter or add an exercise..."
     />

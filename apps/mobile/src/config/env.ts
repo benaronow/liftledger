@@ -10,4 +10,8 @@ export const env = {
   // password-realm sign-in shortcut for Maestro. Absent in release builds.
   e2eEmail: process.env.EXPO_PUBLIC_E2E_EMAIL ?? "",
   e2ePassword: process.env.EXPO_PUBLIC_E2E_PASSWORD ?? "",
+  // True only in dev builds configured for the Maestro regression suite (the
+  // E2E creds live solely in .env.local). Used to zero out UI animations so the
+  // tests don't wait on slide/settle transitions. Never true in release builds.
+  e2e: __DEV__ && !!process.env.EXPO_PUBLIC_E2E_EMAIL,
 };

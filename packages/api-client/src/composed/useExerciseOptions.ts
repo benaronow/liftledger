@@ -1,36 +1,25 @@
 import { Exercise } from "@liftledger/shared";
-import { EXERCISE_NAMES } from "@liftledger/shared";
-import { EXERCISE_EQUIPMENT } from "@liftledger/shared";
 import { useCallback, useMemo } from "react";
 import { useMe } from "../api/useMe";
 import { useUpdateUser } from "../api/useUser";
 
-const getAllOptions = (baseOptions: string[], customOptions?: string[]) => {
-  const filteredCustom =
-    customOptions?.filter(
-      (c) =>
-        !baseOptions.some((b: string) => b.toLowerCase() === c.toLowerCase()),
-    ) ?? [];
-
-  return [...baseOptions, ...filteredCustom].sort();
-};
+const sorted = (options?: string[]) => [...(options ?? [])].sort();
 
 export const useExerciseOptions = () => {
   const { data: curUser } = useMe();
   const { trigger: triggerUpdateUser } = useUpdateUser();
 
   const allExerciseNameOptions = useMemo<string[]>(
-    () => getAllOptions(EXERCISE_NAMES, curUser?.customExerciseNames),
+    () => sorted(curUser?.exerciseNames),
     [curUser],
   );
 
   const allExerciseEquipmentOptions = useMemo<string[]>(
-    () =>
-      getAllOptions(EXERCISE_EQUIPMENT, curUser?.customExerciseEquipment),
+    () => sorted(curUser?.exerciseEquipment),
     [curUser],
   );
 
-  const addCustomExerciseName = useCallback(
+  const addExerciseName = useCallback(
     async (value: string) => {
       if (
         !curUser ||
@@ -42,13 +31,13 @@ export const useExerciseOptions = () => {
 
       await triggerUpdateUser({
         ...curUser,
-        customExerciseNames: [...(curUser.customExerciseNames ?? []), value],
+        exerciseNames: [...(curUser.exerciseNames ?? []), value],
       });
     },
     [curUser, allExerciseNameOptions, triggerUpdateUser],
   );
 
-  const addCustomExerciseEquipment = useCallback(
+  const addExerciseEquipment = useCallback(
     async (value: string) => {
       if (
         !curUser ||
@@ -60,13 +49,36 @@ export const useExerciseOptions = () => {
 
       await triggerUpdateUser({
         ...curUser,
-        customExerciseEquipment: [
-          ...(curUser.customExerciseEquipment ?? []),
-          value,
-        ],
+        exerciseEquipment: [...(curUser.exerciseEquipment ?? []), value],
       });
     },
     [curUser, allExerciseEquipmentOptions, triggerUpdateUser],
+  );
+
+  const deleteExerciseName = useCallback(
+    async (value: string) => {
+      if (!curUser) return;
+      await triggerUpdateUser({
+        ...curUser,
+        exerciseNames: (curUser.exerciseNames ?? []).filter(
+          (o) => o !== value,
+        ),
+      });
+    },
+    [curUser, triggerUpdateUser],
+  );
+
+  const deleteExerciseEquipment = useCallback(
+    async (value: string) => {
+      if (!curUser) return;
+      await triggerUpdateUser({
+        ...curUser,
+        exerciseEquipment: (curUser.exerciseEquipment ?? []).filter(
+          (o) => o !== value,
+        ),
+      });
+    },
+    [curUser, triggerUpdateUser],
   );
 
   const getAvailableExerciseNameOptions = useCallback(
@@ -104,8 +116,10 @@ export const useExerciseOptions = () => {
   );
 
   return {
-    addCustomExerciseName,
-    addCustomExerciseEquipment,
+    addExerciseName,
+    addExerciseEquipment,
+    deleteExerciseName,
+    deleteExerciseEquipment,
     allExerciseNameOptions,
     getAvailableExerciseNameOptions,
     allExerciseEquipmentOptions,

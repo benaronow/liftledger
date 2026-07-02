@@ -2,7 +2,18 @@ import { timingSafeEqual } from "node:crypto";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import UserModel from "@liftledger/shared/models/user";
 import ProgramModel from "@liftledger/shared/models/program";
+import {
+  DEFAULT_EXERCISE_NAMES,
+  DEFAULT_EXERCISE_EQUIPMENT,
+} from "@liftledger/shared";
 import { env } from "../env";
+
+// Merge defaults with seed-specific extras, case-insensitively de-duped, so the
+// E2E user's option lists match what a real (default-seeded) user would see.
+const withDefaults = (defaults: string[], extras: string[]): string[] => {
+  const seen = new Set(defaults.map((d) => d.toLowerCase()));
+  return [...defaults, ...extras.filter((e) => !seen.has(e.toLowerCase()))];
+};
 
 // Constant-time comparison that also avoids leaking length via early return.
 const secretMatches = (provided: string, expected: string): boolean => {
@@ -158,8 +169,8 @@ const internalRoutes = async (app: FastifyInstance) => {
         {
           $set: {
             programs: [],
-            customExerciseNames: [],
-            customExerciseEquipment: [],
+            exerciseNames: [...DEFAULT_EXERCISE_NAMES],
+            exerciseEquipment: [...DEFAULT_EXERCISE_EQUIPMENT],
             gyms: [],
           },
           $unset: { curProgram: "", timerEnd: "" },
@@ -200,10 +211,12 @@ const internalRoutes = async (app: FastifyInstance) => {
             programs: [program._id],
             curProgram: program._id,
             // Pre-populate the option lists the add-exercise selects read from,
-            // so equipment like "Machine" are selectable (not custom-add).
-            // "Adductors"/"Leg Raises"/"Crunch" are intentionally omitted — the
-            // test adds them as custom names, mirroring the doc.
-            customExerciseNames: [
+            // so equipment like "Machine" are selectable (not custom-add). The
+            // defaults are seeded too (matching a real user); these extras are the
+            // test-specific abbreviations layered on top.
+            // "Adductors"/"Leg Raises"/"Crunch" are intentionally omitted here —
+            // the test adds them as custom names, mirroring the doc.
+            exerciseNames: withDefaults(DEFAULT_EXERCISE_NAMES, [
               "BB Bench",
               "DB OHP",
               "Tricep Pushdown",
@@ -213,8 +226,13 @@ const internalRoutes = async (app: FastifyInstance) => {
               "BB Squat",
               "Hamstring Curl",
               "Calf Raise",
-            ],
-            customExerciseEquipment: ["Barbell", "Dumbbell", "Cable", "Machine"],
+            ]),
+            exerciseEquipment: withDefaults(DEFAULT_EXERCISE_EQUIPMENT, [
+              "Barbell",
+              "Dumbbell",
+              "Cable",
+              "Machine",
+            ]),
             gyms: [GYM1],
           },
           $unset: { timerEnd: "" },

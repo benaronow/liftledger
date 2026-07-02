@@ -40,3 +40,27 @@ export const useUpdateUser = () =>
       return res.data;
     },
   );
+
+export interface RenameExerciseArg {
+  userId: string;
+  field: "name" | "equipment";
+  from: string;
+  to: string;
+  scope: "list" | "current" | "all";
+}
+
+export const useRenameExercise = () =>
+  useSWRMutation(
+    "mutation:renameExercise",
+    async (
+      _key: string,
+      { arg: { userId, ...body } }: { arg: RenameExerciseArg },
+    ): Promise<User> => {
+      const res = await getApiClient().put<User>(
+        `/users/${userId}/renameExercise`,
+        body,
+      );
+      await propagateUserToCaches(res.data);
+      return res.data;
+    },
+  );

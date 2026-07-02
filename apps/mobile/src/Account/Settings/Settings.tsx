@@ -1,7 +1,8 @@
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 import { useTheme } from "react-native-paper";
 import { SPACING } from "../../theme";
 import { Appearance } from "./Appearance";
+import { ExerciseLists } from "./ExerciseLists";
 
 export const Settings = () => {
   const { colors } = useTheme();
@@ -15,7 +16,10 @@ export const Settings = () => {
         paddingHorizontal: SPACING.lg,
       }}
     >
-      <Appearance />
+      <View style={{ gap: SPACING.lg }}>
+        <Appearance />
+        <ExerciseLists />
+      </View>
     </ScrollView>
   );
 };

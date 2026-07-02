@@ -7,7 +7,10 @@
     "start": "expo start --dev-client",
     "ios": "expo run:ios",
     "android": "expo run:android",
-    "typecheck": "tsc --noEmit"
+    "build:ios": "eas build --platform ios --profile production",
+    "build:ios:preview": "eas build --platform ios --profile preview",
+    "typecheck": "tsc --noEmit",
+    "e2e:program-completion": ".maestro/run.sh .maestro/flows/programCompletionTest.yaml"
   },
   "dependencies": {
     "@babel/core": "^7.29.0",

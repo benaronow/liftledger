@@ -10,6 +10,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Portal, useTheme } from "react-native-paper";
 import { RADIUS, SPACING } from "../theme";
+import { env } from "../config/env";
 
 interface Props {
   open: boolean;
@@ -19,7 +20,8 @@ interface Props {
   children: ReactNode;
 }
 
-const DURATION = 250;
+// Zero out the slide/fade under E2E so Maestro doesn't wait on the transition.
+const DURATION = env.e2e ? 0 : 250;
 
 export const TopSheet = ({
   open,

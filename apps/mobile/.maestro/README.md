@@ -48,13 +48,51 @@ xcrun simctl keychain booted add-root-cert <path-to-mkcert-rootCA.pem>
 ```
 
 ### 5. First login to onboard the test user
-Launch the app once and tap **E2E Sign In**, then complete onboarding manually.
-After that, `reset` keeps the account onboarded between runs.
+Only needed for the **prod-DB** path (`yarn api:start:local`) — the in-memory
+path (`yarn api:start:e2e`, see Running) seeds this user automatically. Launch
+the app once and tap **E2E Sign In**, then complete onboarding manually. After
+that, `reset` keeps the account onboarded between runs.
 
 ## Running
 
-Start the local API (`yarn api:start:local`) and boot the simulator, then run
-via the `run.sh` wrapper (NOT `maestro test` directly — see TLS note below):
+### 1. Start the API
+
+Prefer the **in-memory** API for the E2E suite — it's dramatically faster:
+
+```
+yarn api:start:e2e
+```
+
+Each set submission blocks the app UI on a program write plus a
+completed-exercises refetch; against the remote Atlas DB that's two internet
+round-trips per set (~30 sets), which dominates the run. `api:start:e2e` boots a
+throwaway `mongodb-memory-server` instead (see `apps/api/scripts/start-e2e.ts`),
+dropping each to sub-millisecond. It reuses everything else from `.env.local`
+(Auth0, TLS, `INTERNAL_API_SECRET`, `E2E_TEST_AUTH0_ID`) and serves the same
+`https://localhost:4000` with the same mkcert cert, so the flows and host-side
+scripts need no changes.
+
+Tradeoffs of the in-memory path:
+- The DB is **ephemeral** — recreated on every boot, so it never touches the
+  prod database. The launcher seeds the dedicated E2E user itself, so the
+  manual onboarding in setup step 5 is **not** needed here.
+- Login still uses real Auth0; the token is resolved against the locally-seeded
+  user by `auth0Id`.
+
+To instead run against the **prod** Atlas DB (the original behavior — requires
+the onboarded test user from step 5), use `yarn api:start:local`.
+
+### 2. Run the flow
+
+Boot the simulator, then run via the yarn wrapper (which points Maestro at the
+mkcert trust store — see the TLS note below):
+
+```
+yarn mobile:e2e:program-completion -e INTERNAL_SECRET=<INTERNAL_API_SECRET>
+```
+
+That resolves to the `run.sh` wrapper (NOT `maestro test` directly). To run a
+different flow or the whole suite, call the wrapper directly:
 
 ```
 apps/mobile/.maestro/run.sh apps/mobile/.maestro/flows/smoke.yaml \
@@ -96,17 +134,17 @@ maestro test apps/mobile/.maestro/subflows/reset.yaml \
 
 ## Regression flows (from LiftLedger Test.pdf)
 
-`flows/test1.yaml` is the first real regression flow: it seeds the Test-1
+`flows/programCompletionTest.yaml` is the first real regression flow: it seeds the Test-1
 Week-1 program (`POST /internal/e2e/seed-program`) and logs the "W1-A" actuals —
 completing sets with edited weight/reps and skipping sets — across all three
 days. It needs the same `-e` vars as reset (seed + teardown both use them):
 
 ```
-maestro test apps/mobile/.maestro/flows/test1.yaml \
+maestro test apps/mobile/.maestro/flows/programCompletionTest.yaml \
   -e INTERNAL_SECRET=<INTERNAL_API_SECRET>
 ```
 
-`test1.yaml` is **cumulative** and grows week by week: it logs each week's
+`programCompletionTest.yaml` is **cumulative** and grows week by week: it logs each week's
 Actuals and asserts the app's carried-forward Initial values at the start of the
 next week (the progression check). It currently covers **W1–W2**. It's built
 from reusable, parameterized subflows:
@@ -133,7 +171,7 @@ W2 was authored without a simulator in the loop, so expect to adjust:
 
 ## Layout
 
-- `flows/` — top-level flows (`basic.yaml` harness check, `test1.yaml`)
+- `flows/` — top-level flows (`basic.yaml` harness check, `programCompletionTest.yaml`)
 - `subflows/` — reusable pieces (`login`, `reset`, `logSet`, `skipSet`,
   `addSet`, `addExercise`)
 - `scripts/` — host-side JS (`reset.js`, `seed.js`)

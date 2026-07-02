@@ -50,7 +50,6 @@ export const Appearance = () => {
         onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
         style={{
           flexDirection: "row",
-          marginTop: SPACING.xs,
           padding: 0,
           borderRadius: RADIUS.lg,
           backgroundColor: colors.background,

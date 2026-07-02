@@ -7,12 +7,10 @@ appId: app.liftledger.mobile
     visible:
       id: "set-input-reps"
     timeout: 5000
-- waitForAnimationToEnd
 - tapOn: "Skip Set"
-# Skipping now closes the dialog outright; wait for it to close so the next row
-# tap doesn't race the animation.
+# Skipping now closes the dialog outright; notVisible only passes once the sheet
+# has unmounted, so it already covers the close before the next row tap.
 - extendedWaitUntil:
     notVisible:
       text: "Submit Set"
     timeout: 5000
-- waitForAnimationToEnd
