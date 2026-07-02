@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { FlatList, Pressable, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Divider,
@@ -42,6 +42,7 @@ export const LabeledSelect = ({
   renderEnd,
 }: Props) => {
   const insets = useSafeAreaInsets();
+  const { height: windowHeight } = useWindowDimensions();
   const [open, setOpen] = useState(false);
   const { colors } = useTheme();
 
@@ -95,7 +96,11 @@ export const LabeledSelect = ({
                   borderTopLeftRadius: RADIUS.xl,
                   borderTopRightRadius: RADIUS.xl,
                   paddingVertical: SPACING.md,
-                  maxHeight: "60%",
+                  // A px cap (not "60%") so the list is bounded and scrolls even
+                  // when opened from inside a Portal-based sheet, where a
+                  // percentage maxHeight has no definite parent to resolve
+                  // against and the list would otherwise overflow off-screen.
+                  maxHeight: windowHeight * 0.6,
                   backgroundColor: colors.surface,
                 }}
               >

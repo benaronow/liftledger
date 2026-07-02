@@ -21,7 +21,12 @@ import { useSnackbar } from "../providers/SnackbarProvider";
 import { useLogout } from "../RootNavigator/AuthenticatedRouter/useLogout";
 import { SectionCard } from "../components/SectionCard";
 
-const DEFAULT_TIMER_PRESETS = { 0: 120, 1: 150, 2: 180, 3: 210, 4: 240 };
+const DEFAULT_TIMER_SETTINGS = {
+  presets: { 0: 120, 1: 150, 2: 180, 3: 210, 4: 240 },
+  defaultEnabled: true,
+  defaultTime: 120,
+  exerciseOverrides: {},
+};
 
 const errorMessage = (e: unknown, fallback: string): string => {
   const data = (e as { response?: { data?: { error?: string } } })?.response
@@ -68,7 +73,7 @@ export const CreateAccount = () => {
         email,
         username: username.trim(),
         fullName: fullName.trim(),
-        timerPresets: DEFAULT_TIMER_PRESETS,
+        timerSettings: DEFAULT_TIMER_SETTINGS,
       });
     } catch (e: unknown) {
       const msg = errorMessage(e, "Failed to create account");

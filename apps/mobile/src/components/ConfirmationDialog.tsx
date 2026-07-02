@@ -1,4 +1,3 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ReactNode } from "react";
 import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
 import { Button, Text, useTheme } from "react-native-paper";
@@ -12,7 +11,6 @@ interface Props {
   open: boolean;
   onClose: () => void;
   title: string;
-  icon?: string;
   destructive?: boolean;
   onConfirm: () => void;
   confirming?: boolean;
@@ -30,7 +28,6 @@ export const ConfirmationDialog = ({
   open,
   onClose,
   title,
-  icon,
   destructive,
   onConfirm,
   confirming,
@@ -63,13 +60,6 @@ export const ConfirmationDialog = ({
             >
               {title}
             </Text>
-            {icon && (
-              <MaterialCommunityIcons
-                name={icon as keyof typeof MaterialCommunityIcons.glyphMap}
-                size={24}
-                color={destructive ? colors.error : colors.primary}
-              />
-            )}
           </View>
           {(description || emphasis || children) && (
             <View
@@ -115,6 +105,12 @@ export const ConfirmationDialog = ({
               Cancel
             </Button>
             <Button
+              // Destructive actions no longer have a warning icon, so the
+              // confirm button carries the danger cue as a filled red button.
+              mode={destructive ? "contained" : "text"}
+              buttonColor={destructive ? colors.error : undefined}
+              textColor={destructive ? colors.onError : undefined}
+              loading={confirming}
               onPress={onConfirm}
               disabled={confirming || confirmationDisabled}
             >

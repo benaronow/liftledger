@@ -175,8 +175,9 @@ const internalRoutes = async (app: FastifyInstance) => {
             weightTypes: [...DEFAULT_WEIGHT_TYPES],
             defaultWeightType: LBS,
             gyms: [],
+            "timerSettings.exerciseOverrides": {},
           },
-          $unset: { curProgram: "", timerEnd: "" },
+          $unset: { curProgram: "", "timerSettings.end": "" },
         },
       );
 
@@ -238,7 +239,7 @@ const internalRoutes = async (app: FastifyInstance) => {
             ]),
             gyms: [GYM1],
           },
-          $unset: { timerEnd: "" },
+          $unset: { "timerSettings.end": "" },
         },
       );
 

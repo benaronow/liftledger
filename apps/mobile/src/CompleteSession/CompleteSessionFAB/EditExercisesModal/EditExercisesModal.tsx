@@ -358,7 +358,6 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
         open={deletingIdx !== undefined}
         onClose={() => setDeletingIdx(undefined)}
         title="Delete Exercise"
-        icon="alert"
         destructive
         onConfirm={handleDelete}
         confirming={saving}

@@ -15,7 +15,7 @@ const makeUser = () => ({
   email: "test@example.com",
   username: "testuser",
   fullName: "Test User",
-  timerPresets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 },
+  timerSettings: { presets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 } },
   gyms: ["Gym A"],
   exerciseNames: [],
   exerciseEquipment: [],

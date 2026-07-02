@@ -69,7 +69,6 @@ export const FinishSessionDialog = ({
       open={open}
       onClose={onClose}
       title="Finish Session"
-      icon="flag-checkered"
       onConfirm={handleFinishSession}
       confirming={finishing}
       description="Are you sure you want to finish today's workout?"

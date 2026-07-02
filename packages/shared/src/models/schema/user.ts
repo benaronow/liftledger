@@ -11,11 +11,20 @@ const userSchema: Schema = new Schema(
     fullName: { type: String, required: true },
     programs: { type: [{ type: Schema.Types.ObjectId, ref: "Program" }] },
     curProgram: { type: Schema.Types.ObjectId, ref: "Program" },
-    timerEnd: { type: Date },
-    timerPresets: {
-      type: Map,
-      of: Number,
-      required: true,
+    timerSettings: {
+      end: { type: Date },
+      presets: {
+        type: Map,
+        of: Number,
+        required: true,
+      },
+      defaultEnabled: { type: Boolean, default: true },
+      defaultTime: { type: Number, default: 120 },
+      exerciseOverrides: {
+        type: Map,
+        of: Number,
+        default: () => ({}),
+      },
     },
     gyms: { type: [String] },
     exerciseNames: {

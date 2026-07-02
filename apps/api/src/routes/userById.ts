@@ -11,7 +11,7 @@ import { getCompletedSessionsInProgram } from "@liftledger/shared";
 import { authorizeCaller } from "../auth";
 
 const UPDATABLE_FIELDS = [
-  "timerPresets",
+  "timerSettings",
   "gyms",
   "exerciseNames",
   "exerciseEquipment",
@@ -346,53 +346,6 @@ const userByIdRoutes = async (app: FastifyInstance) => {
   );
 
   app.get<{ Params: IdParams }>(
-    "/users/:id/timerPresets",
-    { preHandler: app.authenticate },
-    async (req, reply) => {
-      const { id } = req.params;
-      const auth = await authorizeCaller(req, reply, id);
-      if (!auth.ok) return;
-
-      try {
-        const user = await UserModel.findOne({ _id: id });
-        if (!user) return reply.code(404).send({ error: "User not found" });
-        return { timerPresets: user.timerPresets };
-      } catch (error) {
-        console.error("Failed to fetch timer presets:", error);
-        return reply.code(500).send({ error: "Failed to fetch timer presets" });
-      }
-    },
-  );
-
-  app.put<{ Params: IdParams; Body: User["timerPresets"] }>(
-    "/users/:id/timerPresets",
-    { preHandler: app.authenticate },
-    async (req, reply) => {
-      const { id } = req.params;
-      const auth = await authorizeCaller(req, reply, id);
-      if (!auth.ok) return;
-
-      const timerPresets = req.body;
-
-      try {
-        const updatedUser = await UserModel.findOneAndUpdate(
-          { _id: id },
-          { $set: { timerPresets } },
-          { new: true },
-        );
-        if (!updatedUser)
-          return reply.code(404).send({ error: "User not found" });
-        return { timerPresets };
-      } catch (error) {
-        console.error("Failed to update timer presets:", error);
-        return reply
-          .code(500)
-          .send({ error: "Failed to update timer presets" });
-      }
-    },
-  );
-
-  app.get<{ Params: IdParams }>(
     "/users/:id/timerEnd",
     { preHandler: app.authenticate },
     async (req, reply) => {
@@ -403,7 +356,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
       try {
         const user = await UserModel.findOne({ _id: id });
         if (!user) return reply.code(404).send({ error: "User not found" });
-        return { timerEnd: user.timerEnd };
+        return { timerEnd: user.timerSettings?.end };
       } catch (error) {
         console.error("Failed to fetch timer end:", error);
         return reply.code(500).send({ error: "Failed to fetch timer end" });
@@ -424,7 +377,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
       try {
         const updatedUser = await UserModel.findOneAndUpdate(
           { _id: id },
-          { $set: { timerEnd } },
+          { $set: { "timerSettings.end": timerEnd } },
           { new: true },
         );
         if (!updatedUser)
@@ -448,7 +401,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
       try {
         const updatedUser = await UserModel.findOneAndUpdate(
           { _id: id },
-          { $unset: { timerEnd: null } },
+          { $unset: { "timerSettings.end": "" } },
           { new: true },
         );
         if (!updatedUser)

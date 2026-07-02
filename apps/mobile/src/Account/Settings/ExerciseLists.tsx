@@ -1,26 +1,27 @@
 import { useState } from "react";
 import { View } from "react-native";
-import { Button } from "react-native-paper";
+import { Button, useTheme } from "react-native-paper";
 import { ManageExerciseList } from "../../components/ManageExerciseList";
 import { SectionCard } from "../../components/SectionCard";
 import { SPACING } from "../../theme";
 
 export const ExerciseLists = () => {
   const [managing, setManaging] = useState<"name" | "equipment" | null>(null);
+  const { colors } = useTheme();
 
   return (
     <SectionCard title="Exercises">
       <View style={{ gap: SPACING.sm }}>
         <Button
-          mode="contained"
-          icon="arm-flex"
+          mode="outlined"
+          style={{ backgroundColor: colors.background }}
           onPress={() => setManaging("name")}
         >
           Edit exercises
         </Button>
         <Button
-          mode="contained"
-          icon="dumbbell"
+          mode="outlined"
+          style={{ backgroundColor: colors.background }}
           onPress={() => setManaging("equipment")}
         >
           Edit equipment

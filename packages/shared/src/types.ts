@@ -57,6 +57,14 @@ export interface TimerPresets {
   4: number;
 }
 
+export interface TimerSettings {
+  end?: Date;
+  presets: TimerPresets;
+  defaultEnabled: boolean;
+  defaultTime: number;
+  exerciseOverrides: Record<string, number>;
+}
+
 export interface User {
   _id?: string;
   email: string;
@@ -65,8 +73,7 @@ export interface User {
   fullName: string;
   programs: Program[];
   curProgram?: string;
-  timerEnd?: Date;
-  timerPresets: TimerPresets;
+  timerSettings: TimerSettings;
   gyms: string[];
   exerciseNames: string[];
   exerciseEquipment: string[];

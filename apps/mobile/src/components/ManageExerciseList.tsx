@@ -356,7 +356,6 @@ export const ManageExerciseList = ({ field, open, onClose }: Props) => {
         open={pendingDelete !== undefined}
         onClose={() => setPendingDelete(undefined)}
         title={`Delete ${singular}?`}
-        icon="alert"
         destructive
         action="Delete"
         onConfirm={handleDelete}

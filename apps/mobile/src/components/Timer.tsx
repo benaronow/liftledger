@@ -3,6 +3,7 @@ import { useClearTimerEnd, useMe, useTimerEnd } from "@liftledger/api-client";
 import { useEffect, useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Surface, Text, TouchableRipple, useTheme } from "react-native-paper";
+import { useSnackbar } from "../providers/SnackbarProvider";
 import { FONT, RADIUS, SPACING } from "../theme";
 
 const buttonStyle = {
@@ -18,6 +19,16 @@ export const Timer = () => {
   const { data: curUser } = useMe();
   const { data: timerEndData } = useTimerEnd(curUser?._id);
   const { trigger: triggerClearTimerEnd } = useClearTimerEnd();
+  const { showSnackbar } = useSnackbar();
+
+  const clearTimer = async () => {
+    if (!curUser?._id) return;
+    try {
+      await triggerClearTimerEnd(curUser._id);
+    } catch {
+      showSnackbar("Failed to hide timer.", "error");
+    }
+  };
 
   const timerEnd = useMemo(() => {
     const raw = timerEndData?.timerEnd;
@@ -94,7 +105,7 @@ export const Timer = () => {
               borderBottomRightRadius: RADIUS.md,
               backgroundColor: colors.error,
             }}
-            onPress={() => curUser?._id && triggerClearTimerEnd(curUser._id)}
+            onPress={clearTimer}
           >
             <MaterialCommunityIcons name="close" size={28} color="white" />
           </TouchableRipple>

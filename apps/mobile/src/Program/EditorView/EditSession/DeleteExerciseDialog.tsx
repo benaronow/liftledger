@@ -41,7 +41,6 @@ export const DeleteExerciseDialog = ({
       open={deletingExerciseIdx !== undefined}
       onClose={onClose}
       title="Delete Exercise"
-      icon="alert"
       destructive
       onConfirm={handleRemoveExercise}
       description="Are you sure you want to delete this exercise?"

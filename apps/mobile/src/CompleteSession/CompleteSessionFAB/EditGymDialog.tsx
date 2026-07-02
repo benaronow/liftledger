@@ -89,7 +89,6 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
       open={open}
       onClose={onClose}
       title="Change Gym"
-      icon="dumbbell"
       onConfirm={() => handleEditGym(gymName)}
       confirming={editingGym}
       confirmationDisabled={gymName === currentGym}

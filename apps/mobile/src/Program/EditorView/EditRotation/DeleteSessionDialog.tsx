@@ -26,7 +26,6 @@ export const DeleteSessionDialog = ({ deletingSessionIdx, onClose }: Props) => {
       open={deletingSessionIdx !== undefined}
       onClose={onClose}
       title="Delete Session"
-      icon="alert"
       destructive
       onConfirm={handleRemoveSession}
       description="Are you sure you want to delete this session?"

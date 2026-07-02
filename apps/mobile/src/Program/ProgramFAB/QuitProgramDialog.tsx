@@ -42,7 +42,6 @@ export const QuitProgramDialog = ({ open, onClose }: Props) => {
       open={open}
       onClose={onClose}
       title="Quit Program"
-      icon="alert"
       destructive
       onConfirm={handleQuit}
       confirming={quitting}

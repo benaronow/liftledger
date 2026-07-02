@@ -6,6 +6,8 @@ import {
   useCompletedExercises,
   useCurrentSession,
   useMe,
+  useSetTimerEnd,
+  useTimerSettings,
   useUpdateUserProgram,
 } from "@liftledger/api-client";
 import { ConfirmationDialog } from "../../../../components/ConfirmationDialog";
@@ -23,6 +25,8 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
   const { trigger: triggerUpdateUserProgram } = useUpdateUserProgram();
+  const { trigger: triggerSetTimerEnd } = useSetTimerEnd();
+  const { resolveDuration } = useTimerSettings();
   const { showSnackbar } = useSnackbar();
 
   const { exercises } = useCurrentSession();
@@ -162,10 +166,29 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       onClose();
     } catch {
       showSnackbar("Error submitting set. Please try again.");
-    } finally {
       setSkippingSet(false);
       setSubmittingSet(false);
+      return;
     }
+
+    // Auto-start the rest timer after a completed (non-skipped) set. Failure is
+    // non-blocking — the set was already saved — so it just surfaces a toast.
+    if (!options?.skip && curUser?._id) {
+      const duration = resolveDuration(updatedExercise.name);
+      if (duration !== undefined) {
+        try {
+          await triggerSetTimerEnd({
+            userId: curUser._id,
+            timerEnd: new Date(Date.now() + duration * 1000),
+          });
+        } catch {
+          showSnackbar("Failed to start rest timer.", "error");
+        }
+      }
+    }
+
+    setSkippingSet(false);
+    setSubmittingSet(false);
   };
 
   return (
@@ -173,7 +196,6 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       open={!!exercise && setIdx !== undefined}
       onClose={onClose}
       title="Submit Set"
-      icon="check-bold"
       onConfirm={handleSubmitSet}
       confirming={submittingSet || skippingSet}
       secondaryAction="Skip Set"
