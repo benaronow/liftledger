@@ -1,1 +1,1 @@
-export const WEIGHT_TYPES: string[] = ["lbs", "kgs"];
+export const DEFAULT_WEIGHT_TYPES: string[] = ["lbs", "kgs", "stone"];

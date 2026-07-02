@@ -15,6 +15,8 @@ const UPDATABLE_FIELDS = [
   "gyms",
   "exerciseNames",
   "exerciseEquipment",
+  "weightTypes",
+  "defaultWeightType",
 ] as const satisfies readonly (keyof User)[];
 
 type UpdatableField = (typeof UPDATABLE_FIELDS)[number];

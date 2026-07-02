@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { TemplateErrors, validateTemplate } from "./validateTemplate";
-import { EMPTY_PROGRAM } from "./emptyProgram";
+import { emptyProgram } from "./emptyProgram";
 
 interface TemplateContextModel {
   templateProgram: Program;
@@ -23,7 +23,7 @@ interface TemplateContextModel {
 }
 
 const defaultTemplateContext: TemplateContextModel = {
-  templateProgram: EMPTY_PROGRAM,
+  templateProgram: emptyProgram(),
   setTemplateProgram: () => {},
   unsetTemplateProgram: () => {},
   editingRotationIdx: 0,
@@ -52,7 +52,7 @@ export const TemplateProvider = ({
   const [editingRotationIdx, setEditingRotationIdx] = useState(initialRotationIdx);
   const [editingSessionIdx, setEditingSessionIdx] = useState(-1);
 
-  const unsetTemplateProgram = () => setTemplateProgram(EMPTY_PROGRAM);
+  const unsetTemplateProgram = () => setTemplateProgram(emptyProgram());
 
   const templateErrors = useMemo(
     () => validateTemplate(templateProgram, editingRotationIdx),

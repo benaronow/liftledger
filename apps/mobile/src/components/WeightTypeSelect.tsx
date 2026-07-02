@@ -1,4 +1,4 @@
-import { WEIGHT_TYPES } from "@liftledger/shared";
+import { useWeightTypeOptions } from "@liftledger/api-client";
 import { SearchableSelect } from "./SearchableSelect";
 
 interface Props {
@@ -8,13 +8,19 @@ interface Props {
   error?: string;
 }
 
-export const WeightTypeSelect = ({ value, onSelect, label, error }: Props) => (
-  <SearchableSelect
-    label={label}
-    error={error}
-    value={value}
-    options={WEIGHT_TYPES}
-    onSelect={onSelect}
-    placeholder="Enter weight type..."
-  />
-);
+export const WeightTypeSelect = ({ value, onSelect, label, error }: Props) => {
+  const { allWeightTypeOptions, addWeightType } = useWeightTypeOptions();
+
+  return (
+    <SearchableSelect
+      label={label}
+      error={error}
+      value={value}
+      options={allWeightTypeOptions}
+      onSelect={onSelect}
+      onAddCustom={addWeightType}
+      canAddCustom
+      placeholder="Enter or add a weight type..."
+    />
+  );
+};

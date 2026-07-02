@@ -70,4 +70,6 @@ export interface User {
   gyms: string[];
   exerciseNames: string[];
   exerciseEquipment: string[];
+  weightTypes: string[];
+  defaultWeightType: string;
 }

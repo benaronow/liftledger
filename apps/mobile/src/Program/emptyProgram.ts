@@ -1,6 +1,6 @@
 import { Program } from "@liftledger/shared";
 
-export const EMPTY_PROGRAM: Program = {
+export const emptyProgram = (weightType = ""): Program => ({
   name: "",
   startDate: new Date(),
   length: 0,
@@ -20,7 +20,7 @@ export const EMPTY_PROGRAM: Program = {
                 note: "",
               },
             ],
-            weightType: "",
+            weightType,
           },
         ],
         completedDate: undefined,
@@ -30,4 +30,4 @@ export const EMPTY_PROGRAM: Program = {
   curSessionIdx: 0,
   curRotationIdx: 0,
   restDays: 0,
-};
+});

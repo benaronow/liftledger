@@ -117,7 +117,7 @@ export const EditRotation = () => {
           equipment: "",
           gym: templateProgram.primaryGym || "",
           sets: [{ reps: null, weight: null, completed: false, note: "" }],
-          weightType: curProgram ? "lbs" : "",
+          weightType: curUser?.defaultWeightType ?? "",
         },
       ],
       completedDate: undefined,

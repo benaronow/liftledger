@@ -1,4 +1,4 @@
-import { useProgram, useMe } from "@liftledger/api-client";
+import { useMe } from "@liftledger/api-client";
 import { Exercise } from "@liftledger/shared";
 import { useState } from "react";
 import { View } from "react-native";
@@ -13,7 +13,6 @@ import { ExerciseInfo } from "./ExerciseInfo";
 
 export const EditSession = () => {
   const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const {
     templateProgram,
     setTemplateProgram,
@@ -47,7 +46,7 @@ export const EditSession = () => {
       equipment: "",
       gym: templateProgram.primaryGym || "",
       sets: [{ reps: null, weight: null, completed: false, note: "" }],
-      weightType: curProgram ? "lbs" : "",
+      weightType: curUser?.defaultWeightType ?? "",
     };
 
     setTemplateProgram({

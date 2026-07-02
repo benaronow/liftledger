@@ -5,6 +5,7 @@ import ProgramModel from "@liftledger/shared/models/program";
 import {
   DEFAULT_EXERCISE_NAMES,
   DEFAULT_EXERCISE_EQUIPMENT,
+  DEFAULT_WEIGHT_TYPES,
 } from "@liftledger/shared";
 import { env } from "../env";
 
@@ -171,6 +172,8 @@ const internalRoutes = async (app: FastifyInstance) => {
             programs: [],
             exerciseNames: [...DEFAULT_EXERCISE_NAMES],
             exerciseEquipment: [...DEFAULT_EXERCISE_EQUIPMENT],
+            weightTypes: [...DEFAULT_WEIGHT_TYPES],
+            defaultWeightType: LBS,
             gyms: [],
           },
           $unset: { curProgram: "", timerEnd: "" },
