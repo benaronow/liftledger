@@ -1,34 +1,18 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useClearTimerEnd, useMe, useTimerEnd } from "@liftledger/api-client";
-import { useEffect, useMemo, useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Surface, Text, TouchableRipple, useTheme } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { View } from "react-native";
+import { Text, TouchableRipple, useTheme } from "react-native-paper";
 import { useSnackbar } from "../providers/SnackbarProvider";
+import type { RootStackParamList } from "../RootNavigator/types";
 import { FONT, RADIUS, SPACING } from "../theme";
 
-const buttonStyle = {
-  width: 50,
-  height: 50,
-  alignItems: "center" as const,
-  justifyContent: "center" as const,
-};
-
-export const Timer = () => {
-  const insets = useSafeAreaInsets();
-  const { colors } = useTheme();
+export const useTimerCountdown = () => {
   const { data: curUser } = useMe();
   const { data: timerEndData } = useTimerEnd(curUser?._id);
   const { trigger: triggerClearTimerEnd } = useClearTimerEnd();
   const { showSnackbar } = useSnackbar();
-
-  const clearTimer = async () => {
-    if (!curUser?._id) return;
-    try {
-      await triggerClearTimerEnd(curUser._id);
-    } catch {
-      showSnackbar("Failed to hide timer.", "error");
-    }
-  };
 
   const timerEnd = useMemo(() => {
     const raw = timerEndData?.timerEnd;
@@ -36,97 +20,82 @@ export const Timer = () => {
     return raw instanceof Date ? raw : new Date(raw);
   }, [timerEndData?.timerEnd]);
 
-  const [open, setOpen] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
-
   useEffect(() => {
+    if (!timerEnd) return;
+    setCurrentTime(new Date());
     const intervalId = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [timerEnd]);
+
+  const secondsLeft = timerEnd
+    ? Math.max(
+        0,
+        Math.floor((timerEnd.getTime() - currentTime.getTime()) / 1000),
+      )
+    : 0;
 
   const timeString = useMemo(() => {
-    if (!timerEnd) return "00 : 00";
-
-    const totalSeconds = Math.max(
-      0,
-      Math.floor((timerEnd.getTime() - currentTime.getTime()) / 1000),
-    );
-    const mins = Math.floor(totalSeconds / 60)
+    const mins = Math.floor(secondsLeft / 60)
       .toString()
       .padStart(2, "0");
-    const secs = (totalSeconds % 60).toString().padStart(2, "0");
+    const secs = (secondsLeft % 60).toString().padStart(2, "0");
     return `${mins} : ${secs}`;
-  }, [timerEnd, currentTime]);
+  }, [secondsLeft]);
 
-  if (!timerEnd) return null;
+  const clearTimer = useCallback(async () => {
+    if (!curUser?._id) return;
+    try {
+      await triggerClearTimerEnd(curUser._id);
+    } catch {
+      showSnackbar("Failed to hide timer.", "error");
+    }
+  }, [curUser?._id, triggerClearTimerEnd, showSnackbar]);
+
+  return {
+    timerEnd,
+    isActive: !!timerEnd,
+    isDone: !!timerEnd && secondsLeft === 0,
+    timeString,
+    clearTimer,
+  };
+};
+
+export const HeaderTimer = () => {
+  const { colors } = useTheme();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { isActive, timeString } = useTimerCountdown();
+
+  if (!isActive) return null;
+
+  const tint = colors.onPrimaryContainer;
 
   return (
-    <Surface
-      elevation={3}
-      style={{
-        position: "absolute",
-        right: SPACING.md,
-        flexDirection: "row",
-        alignItems: "center",
-        gap: SPACING.sm,
-        height: 50,
-        borderRadius: RADIUS.md,
-        zIndex: 100,
-        top: insets.top + 50,
-        backgroundColor: colors.surface,
-      }}
+    <TouchableRipple
+      borderless
+      accessibilityRole="button"
+      accessibilityLabel="Open workout"
+      onPress={() => navigation.navigate("CompleteSession")}
+      style={{ borderRadius: RADIUS.pill }}
     >
-      {open ? (
-        <>
-          <TouchableRipple
-            style={{
-              ...buttonStyle,
-              borderTopLeftRadius: RADIUS.md,
-              borderBottomLeftRadius: RADIUS.md,
-              backgroundColor: colors.primary,
-            }}
-            onPress={() => setOpen(false)}
-          >
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={28}
-              color="white"
-            />
-          </TouchableRipple>
-          <Text
-            style={{ color: "white", fontWeight: "700", fontSize: FONT.lg }}
-          >
-            {timeString}
-          </Text>
-          <TouchableRipple
-            style={{
-              ...buttonStyle,
-              borderTopRightRadius: RADIUS.md,
-              borderBottomRightRadius: RADIUS.md,
-              backgroundColor: colors.error,
-            }}
-            onPress={clearTimer}
-          >
-            <MaterialCommunityIcons name="close" size={28} color="white" />
-          </TouchableRipple>
-        </>
-      ) : (
-        <TouchableRipple
+      <View
+        style={{
+          paddingHorizontal: SPACING.sm,
+          paddingVertical: SPACING.xs,
+        }}
+      >
+        <Text
           style={{
-            ...buttonStyle,
-            borderRadius: RADIUS.md,
-            backgroundColor:
-              timeString === "00 : 00" ? colors.tertiary : colors.primary,
+            fontSize: FONT.sm,
+            fontWeight: "600",
+            color: tint,
+            fontVariant: ["tabular-nums"],
           }}
-          onPress={() => setOpen(true)}
         >
-          <MaterialCommunityIcons
-            name="timer-outline"
-            size={28}
-            color="white"
-          />
-        </TouchableRipple>
-      )}
-    </Surface>
+          {timeString}
+        </Text>
+      </View>
+    </TouchableRipple>
   );
 };

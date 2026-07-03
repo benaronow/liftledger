@@ -7,7 +7,12 @@ import { useState } from "react";
 import { View } from "react-native";
 import { Badge } from "../../components/Badge";
 import { Info } from "../../components/Info";
-import { FAB_SIZE, FAB_TOP, titleRightInset } from "../../layout";
+import {
+  FAB_SIZE,
+  FAB_TOP,
+  timerTitleRightInset,
+  titleRightInset,
+} from "../../layout";
 import { Text, useTheme } from "react-native-paper";
 import { ProgressChart } from "../../Progress/ProgressChart";
 import type { RootStackParamList } from "../../RootNavigator/types";
@@ -18,6 +23,9 @@ import { SubmitSetDialog } from "./SetList/SubmitSetDialog/SubmitSetDialog";
 interface Props {
   exercise: Exercise;
   isCurrentExercise: boolean;
+  // Whether a rest timer is running — the FAB then morphs into a wider pill, so
+  // the title reserves more right-side space.
+  timerRunning: boolean;
   // Let the pager suspend swiping while the progress chart is being touched, so
   // its tooltip pan gesture doesn't fight the horizontal page swipe.
   onChartTouchStart?: () => void;
@@ -27,6 +35,7 @@ interface Props {
 export const ExercisePage = ({
   exercise,
   isCurrentExercise,
+  timerRunning,
   onChartTouchStart,
   onChartTouchEnd,
 }: Props) => {
@@ -58,7 +67,9 @@ export const ExercisePage = ({
       <View
         style={{
           marginBottom: SPACING.md,
-          paddingRight: titleRightInset(1) - SPACING.lg,
+          paddingRight:
+            (timerRunning ? timerTitleRightInset() : titleRightInset(1)) -
+            SPACING.lg,
         }}
       >
         <View

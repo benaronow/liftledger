@@ -10,11 +10,6 @@ import { useSnackbar } from "../../providers/SnackbarProvider";
 import { FONT, SPACING } from "../../theme";
 import { ExerciseTimerOverridesModal } from "./ExerciseTimerOverrides/ExerciseTimerOverridesModal";
 
-const formatTime = (totalSeconds: number) =>
-  `${Math.floor(totalSeconds / 60)
-    .toString()
-    .padStart(2, "0")} : ${(totalSeconds % 60).toString().padStart(2, "0")}`;
-
 export const DefaultTimer = () => {
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
@@ -83,7 +78,7 @@ export const DefaultTimer = () => {
         disabled={!defaultEnabled}
         onPress={openEdit}
       >
-        {`Edit default time   ${formatTime(defaultTime)}`}
+        Change default time
       </Button>
       <Button
         mode="outlined"

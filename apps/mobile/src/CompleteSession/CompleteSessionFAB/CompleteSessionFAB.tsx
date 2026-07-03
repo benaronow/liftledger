@@ -1,9 +1,17 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, View } from "react-native";
-import { useCurrentSession, useMe, useTimerEnd } from "@liftledger/api-client";
+import { useCurrentSession } from "@liftledger/api-client";
 import { FAB_EDGE, FAB_GAP, FAB_SIZE, FAB_TOP } from "../../layout";
-import { FAB, useTheme } from "react-native-paper";
-import { RADIUS, SPACING } from "../../theme";
+import {
+  FAB,
+  Surface,
+  Text,
+  TouchableRipple,
+  useTheme,
+} from "react-native-paper";
+import { FONT, RADIUS, SPACING } from "../../theme";
+import { useTimerCountdown } from "../../components/Timer";
 import { EditExercisesModal } from "./EditExercisesModal/EditExercisesModal";
 import { EditGymDialog } from "./EditGymDialog";
 import { TimerSettingsDialog } from "./TimerSettingsDialog";
@@ -13,20 +21,11 @@ interface Props {
   isFinishing: boolean;
 }
 
-// Zero out the speed-dial open/close fade under E2E so Maestro doesn't tap the
-// action FABs while they're still faded to ~0 opacity.
 const DURATION = env.e2e ? 0 : 200;
 
-// Pinned top-right speed dial, across from the exercise title. Paper's
-// FAB.Group only anchors bottom-right, so this rebuilds the same idea from
-// its parts — a primary FAB that flips between dots/close, labeled small FABs
-// dropping down beneath it, and a dimming backdrop. Actions that aren't
-// currently available are omitted (the timer action while a timer runs, the
-// gym action once the session has started).
 export const CompleteSessionFAB = ({ isFinishing }: Props) => {
   const { colors } = useTheme();
-  const { data: curUser } = useMe();
-  const { data: timerEndData } = useTimerEnd(curUser?._id);
+  const { isActive: timerActive, timeString, clearTimer } = useTimerCountdown();
   const { isSessionStarted } = useCurrentSession();
 
   const [open, setOpen] = useState(false);
@@ -47,17 +46,29 @@ export const CompleteSessionFAB = ({ isFinishing }: Props) => {
 
   const fabStyle = { backgroundColor: colors.primary, borderRadius: RADIUS.lg };
 
-  const actions = [
-    ...(!timerEndData?.timerEnd
-      ? [
-          {
-            icon: "timer-outline",
-            label: "Start Timer",
-            testID: "fab-start-timer",
-            onPress: () => setTimerDialogOpen(true),
-          },
-        ]
-      : []),
+  type FabAction = {
+    icon: string;
+    label: string;
+    testID: string;
+    onPress: () => void;
+    backgroundColor?: string;
+  };
+
+  const actions: FabAction[] = [
+    timerActive
+      ? {
+          icon: "timer-off-outline",
+          label: "Stop Timer",
+          testID: "fab-stop-timer",
+          backgroundColor: colors.error,
+          onPress: clearTimer,
+        }
+      : {
+          icon: "timer-outline",
+          label: "Start Timer",
+          testID: "fab-start-timer",
+          onPress: () => setTimerDialogOpen(true),
+        },
     ...(!isSessionStarted
       ? [
           {
@@ -94,9 +105,6 @@ export const CompleteSessionFAB = ({ isFinishing }: Props) => {
         pointerEvents="box-none"
         style={{
           position: "absolute",
-          // Nudged down by the title's line leading so the button's top lines
-          // up with the exercise name's glyph (which sits a few px below its
-          // box top) rather than with the box itself.
           top: FAB_TOP + SPACING.xs,
           right: FAB_EDGE,
           alignItems: "flex-end",
@@ -104,16 +112,58 @@ export const CompleteSessionFAB = ({ isFinishing }: Props) => {
           zIndex: 10,
         }}
       >
-        <FAB
-          icon={open ? "close" : "dots-vertical"}
-          accessibilityLabel={open ? "Close actions" : "More actions"}
-          testID="fab-more-actions"
-          size="small"
-          customSize={FAB_SIZE}
-          color="white"
-          style={fabStyle}
-          onPress={() => setOpen((o) => !o)}
-        />
+        {timerActive ? (
+          <Surface
+            elevation={3}
+            style={{
+              borderRadius: RADIUS.lg,
+              overflow: "hidden",
+              backgroundColor: colors.primary,
+            }}
+          >
+            <TouchableRipple
+              accessibilityLabel={open ? "Close actions" : "More actions"}
+              testID="fab-more-actions"
+              onPress={() => setOpen((o) => !o)}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: SPACING.xs,
+                height: FAB_SIZE,
+                paddingHorizontal: SPACING.md,
+              }}
+            >
+              <>
+                <MaterialCommunityIcons
+                  name="timer-outline"
+                  size={20}
+                  color="white"
+                />
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "700",
+                    fontSize: FONT.base,
+                    fontVariant: ["tabular-nums"],
+                  }}
+                >
+                  {timeString}
+                </Text>
+              </>
+            </TouchableRipple>
+          </Surface>
+        ) : (
+          <FAB
+            icon={open ? "close" : "dots-vertical"}
+            accessibilityLabel={open ? "Close actions" : "More actions"}
+            testID="fab-more-actions"
+            size="small"
+            customSize={FAB_SIZE}
+            color="white"
+            style={fabStyle}
+            onPress={() => setOpen((o) => !o)}
+          />
+        )}
         <Animated.View
           pointerEvents={open ? "box-none" : "none"}
           style={{
@@ -139,7 +189,11 @@ export const CompleteSessionFAB = ({ isFinishing }: Props) => {
               size="small"
               customSize={FAB_SIZE}
               color="white"
-              style={fabStyle}
+              style={
+                action.backgroundColor
+                  ? { ...fabStyle, backgroundColor: action.backgroundColor }
+                  : fabStyle
+              }
               onPress={() => {
                 setOpen(false);
                 action.onPress();
