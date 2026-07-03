@@ -4,7 +4,20 @@ appId: app.liftledger.mobile
 # "Initial" values at the start of each later week (progression check).
 #   W1: edited completes + skips.
 #   W2: + add-on set (DB Bicep Curl) and add-on exercise (Adductors).
-# Gym switches (W3+) are not reached yet.
+#   W3: + gym switch (sessions 1-2 -> Gym 2, fresh 0x0 sets) with add-on
+#       exercises/sets at the new gym; session 3 stays on Gym 1.
+#   W4: + gym switch on session 3 only, add-on set stacking on Gym 1.
+#   W5: + all sessions switch back to Gym 2, asserting each exercise repopulates
+#       from its OWN Gym-2 history (gym-scoped carry-forward), then completes the
+#       whole program (last rotation -> curProgram cleared -> "Create program").
+#
+# Two spots deviate from the PDF because the doc is inconsistent with actual app
+# behavior (verified against the progression code, not guessed):
+#   1. W5-I DB Bicep Curl set 2 is asserted as 30x12, not the doc's 25x12: the
+#      app carries the W4-A actual (that set was logged 30x12, up from 25x12).
+#   2. The doc's add-on "Skip" sets (W3-A DB Bicep Curl set c, W5-A Leg Raises
+#      set b) are omitted: the app disables Skip for a freshly-added set, and
+#      add-on sets never carry forward, so dropping them changes no assertion.
 #
 # Seed the program before the run and wipe it after. INTERNAL_SECRET must be
 # passed on the CLI (kept out of git); API_URL defaults to local below but a
@@ -258,3 +271,504 @@ onFlowComplete:
 - tapOn: "Finish session"
 - tapOn: "Confirm"
 - assertVisible: ".*Workout.*"
+
+# ############################## WEEK 3 ##############################
+# W3-I was generated from W2-A at the primary gym (Gym 1); W2 add-on exercises/
+# sets are dropped. Sessions 1-2 switch to Gym 2 (no history there yet -> blank
+# sets); session 3 stays on Gym 1. Add-ons on each day are inserted up front so
+# the pager order is known (opening Edit Exercises snaps the pager back to page 1).
+
+# ============================ Session 1 (Gym 1 -> Gym 2) ============================
+- tapOn: ".*Workout.*"
+# W3-I BB Bench carried from W2-A 100x11 (Gym 1) — assert before switching gyms.
+- assertVisible: ".*11 reps.*"
+- assertVisible: ".*100lbs.*"
+# Switch this session to Gym 2. No Gym-2 history yet -> each exercise resets to
+# blank (0 reps / 0lbs), keeping only its set count.
+- runFlow:
+    file: ../subflows/switchGym.yaml
+    env: { GYM: "Gym 2" }
+# Add the Leg Raises add-on exercise at the end (position 3 of the 3-exercise
+# day -> appends), at the current gym (Gym 2), before logging.
+- runFlow:
+    file: ../subflows/addExercise.yaml
+    env:
+      POS: "3"
+      NAME: "Leg Raises"
+      EQUIPMENT: "Machine"
+      WEIGHT_TYPE: "lbs"
+# Back on page 1 (BB Bench) — now blank at the new gym.
+- assertVisible: ".*0 reps.*"
+- assertVisible: ".*0lbs.*"
+# BB Bench: 1x1, 2x2
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "1", REPS: "1" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "2", REPS: "2" }
+- tapOn: "Next exercise"
+# DB OHP: 3x3, 4x4
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "3", REPS: "3" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "4", REPS: "4" }
+- tapOn: "Next exercise"
+# Tricep Pushdown: 5x5, 6x6
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "5", REPS: "5" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "6", REPS: "6" }
+- tapOn: "Next exercise"
+# Leg Raises (new add-on, one blank set): 0x14 (bodyweight -> weight 0).
+- assertVisible: "Leg Raises"
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "0", REPS: "14" }
+- tapOn: "Finish session"
+- tapOn: "Confirm"
+- assertVisible: ".*Workout.*"
+
+# ============================ Session 2 (Gym 1 -> Gym 2) ============================
+- tapOn: ".*Workout.*"
+# W3-I BB Row carried from W2-A 200x7 (Gym 1) — assert before switching gyms.
+- assertVisible: ".*7 reps.*"
+- assertVisible: ".*200lbs.*"
+- runFlow:
+    file: ../subflows/switchGym.yaml
+    env: { GYM: "Gym 2" }
+# BB Row now blank at Gym 2.
+- assertVisible: ".*0 reps.*"
+- assertVisible: ".*0lbs.*"
+# BB Row: 7x7, 8x8, + add-on set 9x9
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "7", REPS: "7" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "8", REPS: "8" }
+- runFlow:
+    file: ../subflows/addSet.yaml
+    env: { WEIGHT: "9", REPS: "9" }
+- tapOn: "Next exercise"
+# Lat Pulldown: 10x10, Skip
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "10", REPS: "10" }
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "1" }
+- tapOn: "Next exercise"
+# DB Bicep Curl: 11x11, 12x12. The doc's 3rd (add-on) "Skip" set is omitted —
+# the app disables Skip for a freshly-added set, and add-on sets never carry
+# forward, so it affects no later assertion.
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "11", REPS: "11" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "12", REPS: "12" }
+- tapOn: "Finish session"
+- tapOn: "Confirm"
+- assertVisible: ".*Workout.*"
+
+# ============================ Session 3 (Gym 1, no switch) ============================
+- tapOn: ".*Workout.*"
+# W3-I BB Squat carried from W2-A 290x7 (Gym 1) — no gym switch this session.
+- assertVisible: ".*7 reps.*"
+- assertVisible: ".*290lbs.*"
+# Re-add the Adductors add-on exercise at the end (position 3 -> appends after
+# Calf Raise), before logging. (It was dropped from W3-I as a W2 add-on.)
+- runFlow:
+    file: ../subflows/addExercise.yaml
+    env:
+      POS: "3"
+      NAME: "Adductors"
+      EQUIPMENT: "Machine"
+      WEIGHT_TYPE: "lbs"
+# BB Squat: Skip, Skip
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "0" }
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "1" }
+- tapOn: "Next exercise"
+# Hamstring Curl: Skip, Skip
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "0" }
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "1" }
+- tapOn: "Next exercise"
+# Calf Raise: Skip, Skip
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "0" }
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "1" }
+- tapOn: "Next exercise"
+# Re-adding Adductors at Gym 1 carries over its latest Gym-1 occurrence (W2-A had
+# two sets, and add-on sets on an add-on exercise are stored as regular sets), so
+# it starts with two carried sets — log both, don't add one. Set 0's planned
+# value carries W2's 100x10 (-> +1/+10), set 1's carries 110x11 (-> "=").
+- assertVisible: "Adductors"
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "110", REPS: "11" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "110", REPS: "11" }
+- tapOn: "Finish session"
+- tapOn: "Confirm"
+- assertVisible: ".*Workout.*"
+
+# ############################## WEEK 4 ##############################
+# W4-I was generated from W3 at Gym 1. Because progression is gym-scoped, the
+# Gym-2 work logged in W3 sessions 1-2 does NOT feed W4-I — each exercise falls
+# back to its latest Gym-1 completion (mostly W2-A). Sessions 1-2 stay on Gym 1;
+# session 3 switches to Gym 2 (fresh 0x0) and adds a Crunch up front.
+
+# ============================ Session 1 (Gym 1) ============================
+- tapOn: ".*Workout.*"
+# W4-I BB Bench carried 100x11 (latest Gym-1 completion = W2-A; W3 S1 was Gym 2).
+- assertVisible: ".*11 reps.*"
+- assertVisible: ".*100lbs.*"
+# BB Bench: 100x11, 100x11, + two add-on sets 100x11, 100x11
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "100", REPS: "11" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "100", REPS: "11" }
+- runFlow:
+    file: ../subflows/addSet.yaml
+    env: { WEIGHT: "100", REPS: "11" }
+- runFlow:
+    file: ../subflows/addSet.yaml
+    env: { WEIGHT: "100", REPS: "11" }
+- tapOn: "Next exercise"
+# W4-I DB OHP carried 55x10.
+- assertVisible: ".*10 reps.*"
+- assertVisible: ".*55lbs.*"
+# DB OHP: Skip, Skip
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "0" }
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "1" }
+- tapOn: "Next exercise"
+# W4-I Tricep Pushdown carried 35x10.
+- assertVisible: ".*10 reps.*"
+- assertVisible: ".*35lbs.*"
+# Tricep Pushdown: 35x10, 35x10
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "35", REPS: "10" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "35", REPS: "10" }
+- tapOn: "Finish session"
+- tapOn: "Confirm"
+- assertVisible: ".*Workout.*"
+
+# ============================ Session 2 (Gym 1) ============================
+- tapOn: ".*Workout.*"
+# W4-I BB Row carried 200x7.
+- assertVisible: ".*7 reps.*"
+- assertVisible: ".*200lbs.*"
+# BB Row: 210x8, 200x6
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "210", REPS: "8" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "200", REPS: "6" }
+- tapOn: "Next exercise"
+# W4-I Lat Pulldown carried 145x10.
+- assertVisible: ".*10 reps.*"
+- assertVisible: ".*145lbs.*"
+# Lat Pulldown: 145x10, 145x10, + add-on set 145x10
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "145", REPS: "10" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "145", REPS: "10" }
+- runFlow:
+    file: ../subflows/addSet.yaml
+    env: { WEIGHT: "145", REPS: "10" }
+- tapOn: "Next exercise"
+# W4-I DB Bicep Curl carried 30x11 / 25x12 (set 2 = 25x12).
+- assertVisible: ".*11 reps.*"
+- assertVisible: ".*30lbs.*"
+# DB Bicep Curl: 30x11, 30x12 (set 2 raised from planned 25x12), + add-on 35x12.
+# NB: logging set 2 as 30x12 is why W5-I set 2 becomes 30x12 (see header note 1).
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "30", REPS: "11" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "30", REPS: "12" }
+- runFlow:
+    file: ../subflows/addSet.yaml
+    env: { WEIGHT: "35", REPS: "12" }
+- tapOn: "Finish session"
+- tapOn: "Confirm"
+- assertVisible: ".*Workout.*"
+
+# ============================ Session 3 (Gym 1 -> Gym 2) ============================
+- tapOn: ".*Workout.*"
+# W4-I BB Squat carried 290x7 (from W3 S3, which stayed on Gym 1 and skipped).
+- assertVisible: ".*7 reps.*"
+- assertVisible: ".*290lbs.*"
+# Switch this session to Gym 2 — still no Gym-2 history for these three, so they
+# reset to blank.
+- runFlow:
+    file: ../subflows/switchGym.yaml
+    env: { GYM: "Gym 2" }
+# BB Squat now blank at Gym 2.
+- assertVisible: ".*0 reps.*"
+- assertVisible: ".*0lbs.*"
+# Add the Crunch add-on exercise at the FRONT (position 0 -> before BB Squat).
+- runFlow:
+    file: ../subflows/addExercise.yaml
+    env:
+      POS: "0"
+      NAME: "Crunch"
+      EQUIPMENT: "Machine"
+      WEIGHT_TYPE: "lbs"
+# Pager is back on page 1, which is now Crunch. Crunch (new, one blank set): 50x8
+- assertVisible: "Crunch"
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "50", REPS: "8" }
+- tapOn: "Next exercise"
+# BB Squat: 13x13, 14x14
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "13", REPS: "13" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "14", REPS: "14" }
+- tapOn: "Next exercise"
+# Hamstring Curl: 15x15, 16x16
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "15", REPS: "15" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "16", REPS: "16" }
+- tapOn: "Next exercise"
+# Calf Raise: 17x17, 18x18
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "17", REPS: "17" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "18", REPS: "18" }
+- tapOn: "Finish session"
+- tapOn: "Confirm"
+- assertVisible: ".*Workout.*"
+
+# ############################## WEEK 5 ##############################
+# W5-I was generated from W4 at Gym 1. Every session then switches BACK to Gym 2,
+# where each exercise now HAS history — so instead of resetting to blank it
+# repopulates from its own latest Gym-2 completion (S1/S2 from W3-A, S3 from
+# W4-A). Those post-switch asserts are the core gym-scoped progression check.
+# Completing session 3 finishes the last rotation and clears the program.
+
+# ============================ Session 1 (Gym 1 -> Gym 2) ============================
+- tapOn: ".*Workout.*"
+# W5-I BB Bench carried 100x11 (Gym 1) — assert before switching gyms.
+- assertVisible: ".*11 reps.*"
+- assertVisible: ".*100lbs.*"
+- runFlow:
+    file: ../subflows/switchGym.yaml
+    env: { GYM: "Gym 2" }
+# Re-add Leg Raises at the FRONT (position 0) and Crunch at the END, before
+# logging, matching the doc's day order (Leg Raises, BB Bench, DB OHP, Tricep,
+# Crunch). Adds go in first so the pager order is fixed.
+- runFlow:
+    file: ../subflows/addExercise.yaml
+    env:
+      POS: "0"
+      NAME: "Leg Raises"
+      EQUIPMENT: "Machine"
+      WEIGHT_TYPE: "lbs"
+- runFlow:
+    file: ../subflows/addExercise.yaml
+    env:
+      POS: "4"
+      NAME: "Crunch"
+      EQUIPMENT: "Machine"
+      WEIGHT_TYPE: "lbs"
+# Page 1 is now Leg Raises, repopulated from its Gym-2 history (W3-A 0x14).
+# Leg Raises: 5x14 (the doc's 2nd, add-on "Skip" set is omitted — see header).
+- assertVisible: "Leg Raises"
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "5", REPS: "14" }
+- tapOn: "Next exercise"
+# BB Bench repopulated from Gym-2 history (W3-A 1x1 / 2x2) — NOT the Gym-1 100x11.
+- assertVisible: ".*1 rep.*"
+- assertVisible: ".*1lbs.*"
+# BB Bench: 2x1, 3x2
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "2", REPS: "1" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "3", REPS: "2" }
+- tapOn: "Next exercise"
+# DB OHP repopulated from Gym-2 history (W3-A 3x3 / 4x4).
+- assertVisible: ".*3 reps.*"
+- assertVisible: ".*3lbs.*"
+# DB OHP: 4x3, 5x4
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "4", REPS: "3" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "5", REPS: "4" }
+- tapOn: "Next exercise"
+# Tricep Pushdown repopulated from Gym-2 history (W3-A 5x5 / 6x6).
+- assertVisible: ".*5 reps.*"
+- assertVisible: ".*5lbs.*"
+# Tricep Pushdown: 6x4, 7x5
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "6", REPS: "4" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "7", REPS: "5" }
+- tapOn: "Next exercise"
+# Crunch repopulated from Gym-2 history (W4-A 50x8, one set).
+# Crunch: 50x10, + add-on set 50x10
+- assertVisible: "Crunch"
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "50", REPS: "10" }
+- runFlow:
+    file: ../subflows/addSet.yaml
+    env: { WEIGHT: "50", REPS: "10" }
+- tapOn: "Finish session"
+- tapOn: "Confirm"
+- assertVisible: ".*Workout.*"
+
+# ============================ Session 2 (Gym 1 -> Gym 2) ============================
+- tapOn: ".*Workout.*"
+# W5-I BB Row carried 210x8 (Gym 1) — assert before switching gyms.
+- assertVisible: ".*8 reps.*"
+- assertVisible: ".*210lbs.*"
+- runFlow:
+    file: ../subflows/switchGym.yaml
+    env: { GYM: "Gym 2" }
+# BB Row repopulated from Gym-2 history (W3-A 7x7 / 8x8).
+- assertVisible: ".*7 reps.*"
+- assertVisible: ".*7lbs.*"
+# BB Row: 6x7, 7x8
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "6", REPS: "7" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "7", REPS: "8" }
+- tapOn: "Next exercise"
+# Lat Pulldown repopulated from Gym-2 history (W3-A 10x10, then a skipped set
+# that carried its blank value -> set 2 shows 0).
+- assertVisible: ".*10 reps.*"
+- assertVisible: ".*10lbs.*"
+# Lat Pulldown: 10x9, 1x1
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "10", REPS: "9" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "1", REPS: "1" }
+- tapOn: "Next exercise"
+# DB Bicep Curl repopulated from Gym-2 history (W3-A 11x11 / 12x12).
+- assertVisible: ".*11 reps.*"
+- assertVisible: ".*11lbs.*"
+# DB Bicep Curl: 11x10, 11x11
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "11", REPS: "10" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "11", REPS: "11" }
+- tapOn: "Finish session"
+- tapOn: "Confirm"
+- assertVisible: ".*Workout.*"
+
+# ============================ Session 3 (Gym 1 -> Gym 2, program end) ============================
+- tapOn: ".*Workout.*"
+# W5-I BB Squat carried 290x7 (Gym 1) — assert before switching gyms.
+- assertVisible: ".*7 reps.*"
+- assertVisible: ".*290lbs.*"
+- runFlow:
+    file: ../subflows/switchGym.yaml
+    env: { GYM: "Gym 2" }
+# BB Squat repopulated from Gym-2 history (W4-A 13x13 / 14x14).
+- assertVisible: ".*13 reps.*"
+- assertVisible: ".*13lbs.*"
+# Re-add Adductors at the end (position 3 -> after Calf Raise), before logging.
+- runFlow:
+    file: ../subflows/addExercise.yaml
+    env:
+      POS: "3"
+      NAME: "Adductors"
+      EQUIPMENT: "Machine"
+      WEIGHT_TYPE: "lbs"
+# BB Squat: 13x13, 14x14
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "13", REPS: "13" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "14", REPS: "14" }
+- tapOn: "Next exercise"
+# Hamstring Curl repopulated from Gym-2 history (W4-A 15x15 / 16x16).
+- assertVisible: ".*15 reps.*"
+- assertVisible: ".*15lbs.*"
+# Hamstring Curl: 16x16, Skip
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "16", REPS: "16" }
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "1" }
+- tapOn: "Next exercise"
+# Calf Raise repopulated from Gym-2 history (W4-A 17x17 / 18x18).
+- assertVisible: ".*17 reps.*"
+- assertVisible: ".*17lbs.*"
+# Calf Raise: Skip, Skip
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "0" }
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "1" }
+- tapOn: "Next exercise"
+# Re-adding Adductors at Gym 2 has no Gym-2 history, but still carries the set
+# COUNT from its latest occurrence anywhere (W3-A Gym 1: two sets) -> two blank
+# sets. Log both rather than logging one and adding a set.
+- assertVisible: "Adductors"
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "20", REPS: "20" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "20", REPS: "20" }
+- tapOn: "Finish session"
+- tapOn: "Confirm"
+# This was the last session of the last rotation -> the program completes and
+# curProgram is cleared, so the dashboard drops to the no-program placeholder.
+- assertVisible: "Create program"

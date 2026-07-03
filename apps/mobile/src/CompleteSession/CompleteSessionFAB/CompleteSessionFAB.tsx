@@ -7,10 +7,15 @@ import { RADIUS, SPACING } from "../../theme";
 import { EditExercisesModal } from "./EditExercisesModal/EditExercisesModal";
 import { EditGymDialog } from "./EditGymDialog";
 import { TimerSettingsDialog } from "./TimerSettingsDialog";
+import { env } from "../../config/env";
 
 interface Props {
   isFinishing: boolean;
 }
+
+// Zero out the speed-dial open/close fade under E2E so Maestro doesn't tap the
+// action FABs while they're still faded to ~0 opacity.
+const DURATION = env.e2e ? 0 : 200;
 
 // Pinned top-right speed dial, across from the exercise title. Paper's
 // FAB.Group only anchors bottom-right, so this rebuilds the same idea from
@@ -33,7 +38,7 @@ export const CompleteSessionFAB = ({ isFinishing }: Props) => {
   useEffect(() => {
     Animated.timing(progress, {
       toValue: open ? 1 : 0,
-      duration: 200,
+      duration: DURATION,
       useNativeDriver: true,
     }).start();
   }, [open, progress]);
@@ -48,6 +53,7 @@ export const CompleteSessionFAB = ({ isFinishing }: Props) => {
           {
             icon: "timer-outline",
             label: "Start Timer",
+            testID: "fab-start-timer",
             onPress: () => setTimerDialogOpen(true),
           },
         ]
@@ -57,6 +63,7 @@ export const CompleteSessionFAB = ({ isFinishing }: Props) => {
           {
             icon: "office-building",
             label: "Change Gym",
+            testID: "fab-change-gym",
             onPress: () => setEditGymDialogOpen(true),
           },
         ]
@@ -64,6 +71,7 @@ export const CompleteSessionFAB = ({ isFinishing }: Props) => {
     {
       icon: "pencil",
       label: "Edit Exercises",
+      testID: "fab-edit-exercises",
       onPress: () => setEditModalOpen(true),
     },
   ];
@@ -99,6 +107,7 @@ export const CompleteSessionFAB = ({ isFinishing }: Props) => {
         <FAB
           icon={open ? "close" : "dots-vertical"}
           accessibilityLabel={open ? "Close actions" : "More actions"}
+          testID="fab-more-actions"
           size="small"
           customSize={FAB_SIZE}
           color="white"
@@ -126,6 +135,7 @@ export const CompleteSessionFAB = ({ isFinishing }: Props) => {
               key={action.icon}
               icon={action.icon}
               accessibilityLabel={action.label}
+              testID={action.testID}
               size="small"
               customSize={FAB_SIZE}
               color="white"

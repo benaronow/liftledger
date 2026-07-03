@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Animated, Easing } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { env } from "../../../config/env";
 
 const PULSE_PERIOD = 2000;
 const BAND_HEIGHT_RATIO = 0.9;
@@ -13,6 +14,9 @@ export const BarPulse = ({ fillHeight }: Props) => {
   const progress = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    // Skip the perpetual pulse under E2E: an animation that never ends keeps
+    // Maestro from ever seeing the dashboard "settle" before each tap.
+    if (env.e2e) return;
     const loop = Animated.loop(
       Animated.timing(progress, {
         toValue: 1,

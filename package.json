@@ -22,6 +22,7 @@
     "api:deploy": "fly deploy",
     "mobile:start": "yarn workspace @liftledger/mobile start",
     "mobile:ios": "yarn workspace @liftledger/mobile ios",
+    "mobile:ios:e2e": "yarn workspace @liftledger/mobile ios:e2e",
     "mobile:build:ios": "yarn workspace @liftledger/mobile build:ios",
     "mobile:build:ios:preview": "yarn workspace @liftledger/mobile build:ios:preview",
     "mobile:typecheck": "yarn workspace @liftledger/mobile typecheck",

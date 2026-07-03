@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useTheme } from "react-native-paper";
 import { Animated, Easing, View } from "react-native";
+import { env } from "../../../config/env";
 
 const SEG_GAP = 3;
 const PULSE_MAX_OPACITY = 0.4;
@@ -10,6 +11,8 @@ const CurrentSegment = ({ color }: { color: string }) => {
   const pulse = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    // See BarPulse: a never-ending pulse blocks Maestro's settle wait.
+    if (env.e2e) return;
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(pulse, {

@@ -7,8 +7,10 @@ is automated.
 
 ## How it fits together
 
-- The dev build shows an **"E2E Sign In"** button on the Welcome screen
-  (`__DEV__` + `EXPO_PUBLIC_E2E_EMAIL` only — absent in release builds). It calls
+- The dev build shows an **"E2E Sign In"** button on the Welcome screen when
+  launched in E2E mode (`__DEV__` + `EXPO_PUBLIC_E2E=1`, set by the `start:e2e` /
+  `ios:e2e` scripts — absent in release builds and in a normal `yarn mobile:ios`
+  launch). It calls
   `loginWithPasswordRealm`, which is a real Auth0 login: the token it returns is
   verified normally by the API, so **the local API needs no auth changes**.
 - All test data is owned by one account (`E2E_TEST_AUTH0_ID`).
@@ -40,8 +42,12 @@ EXPO_PUBLIC_E2E_PASSWORD=<the test user's password>
 
 ### 4. Build the dev client once
 ```
-yarn mobile:ios   # installs the dev build on the simulator
+yarn mobile:ios:e2e   # installs the E2E dev build (EXPO_PUBLIC_E2E=1) on the simulator
 ```
+The `:e2e` variant is what surfaces the **E2E Sign In** button; a plain
+`yarn mobile:ios` build won't show it. Once the dev client is installed, later
+runs only need Metro in E2E mode — `yarn workspace @liftledger/mobile start:e2e`
+(no native rebuild).
 If the API uses the mkcert self-signed cert, trust it in the booted simulator:
 ```
 xcrun simctl keychain booted add-root-cert <path-to-mkcert-rootCA.pem>
@@ -146,8 +152,8 @@ maestro test apps/mobile/.maestro/flows/programCompletionTest.yaml \
 
 `programCompletionTest.yaml` is **cumulative** and grows week by week: it logs each week's
 Actuals and asserts the app's carried-forward Initial values at the start of the
-next week (the progression check). It currently covers **W1–W2**. It's built
-from reusable, parameterized subflows:
+next week (the progression check). It covers the **full W1–W5** program through
+program completion. It's built from reusable, parameterized subflows:
 
 - `subflows/logSet.yaml` (`SET`, `WEIGHT`, `REPS`) — complete a set (covers plain
   completes and doc "e" edits)
@@ -156,9 +162,16 @@ from reusable, parameterized subflows:
   exercise is fully complete)
 - `subflows/addExercise.yaml` (`POS`, `NAME`, `EQUIPMENT`, `WEIGHT_TYPE`) — add an
   add-on exercise via FAB → Edit Exercises, inserted at position `POS`
+- `subflows/switchGym.yaml` (`GYM`) — switch the session's gym via FAB → Change
+  Gym (W3+); must run before any set is logged. Adds the gym as a custom option
+  the first time and picks the existing option afterwards.
 
-Still to come: **gym switches** (W3+, FAB → Change Gym) need a `switchGym`
-subflow, plus the W3–W5 driver sections.
+Two intentional deviations from the PDF (the doc is inconsistent with actual app
+behavior — both are called out in the flow's header comment):
+1. W5-I DB Bicep Curl set 2 is asserted as **30x12** (the app carries the W4-A
+   actual), not the doc's 25x12.
+2. The doc's add-on **"Skip"** sets are omitted — the app disables Skip for a
+   freshly-added set, and add-on sets never carry forward.
 
 ### Selectors most likely to need a tweak on first run
 
@@ -173,5 +186,5 @@ W2 was authored without a simulator in the loop, so expect to adjust:
 
 - `flows/` — top-level flows (`basic.yaml` harness check, `programCompletionTest.yaml`)
 - `subflows/` — reusable pieces (`login`, `reset`, `logSet`, `skipSet`,
-  `addSet`, `addExercise`)
+  `addSet`, `addExercise`, `switchGym`)
 - `scripts/` — host-side JS (`reset.js`, `seed.js`)

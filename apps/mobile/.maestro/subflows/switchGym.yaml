@@ -1,0 +1,82 @@
+appId: app.liftledger.mobile
+# Switch the CURRENT session's gym via FAB -> Change Gym. This must run BEFORE
+# any set in the session is logged: the "Change Gym" action is hidden once the
+# session has started (a set is completed/skipped), i.e. `!isSessionStarted`.
+#
+# Switching a session's gym repopulates every not-yet-started exercise from that
+# gym's history (getNewSetsFromLatest, gym-scoped by name+equipment+gym):
+#   - first visit to a gym (no history there) -> sets reset to blank (0 reps /
+#     0<unit>), carrying only the set COUNT from the exercise's latest occurrence
+#     at any gym.
+#   - a return visit -> sets repopulate from the latest completion at THAT gym.
+#
+# GYM is added as a custom option the first time it's used (the seed only knows
+# "Gym 1") and picked from the list on later switches. The two conditional
+# runFlows below handle both cases; exactly one fires. Param: GYM.
+---
+- tapOn:
+    id: "fab-more-actions"
+# Wait for the dial's action FABs to render before tapping — a bare tapOn here
+# races the open transition.
+- extendedWaitUntil:
+    visible:
+      id: "fab-change-gym"
+    timeout: 5000
+- tapOn:
+    id: "fab-change-gym"
+- extendedWaitUntil:
+    visible:
+      text: "Change Gym"
+    timeout: 5000
+- waitForAnimationToEnd:
+    timeout: 300
+
+# Open the gym SearchableSelect and type the target gym to filter.
+- tapOn: "Session Gym"
+- extendedWaitUntil:
+    visible:
+      id: "select-search"
+    timeout: 5000
+- tapOn:
+    id: "select-search"
+- inputText: "${GYM}"
+- waitForAnimationToEnd:
+    timeout: 300
+
+# Existing gym -> tap its option; new gym -> add it as a custom option (which
+# also selects it). Fuzzy search may also surface "Gym 1", but we only ever
+# target the exact "select-option-${GYM}" / add-custom rows, so exactly one of
+# these branches matches.
+#
+# Branch 1 selects the option, which closes the modal. Branch 2's guard must
+# therefore also require the modal to still be open (select-search visible) --
+# otherwise, after branch 1 closes the modal, `notVisible select-option-${GYM}`
+# becomes true again and branch 2 would fire on a now-absent add-custom row.
+- runFlow:
+    when:
+      visible:
+        id: "select-option-${GYM}"
+    commands:
+      - tapOn:
+          id: "select-option-${GYM}"
+- runFlow:
+    when:
+      visible:
+        id: "select-search"
+      notVisible:
+        id: "select-option-${GYM}"
+    commands:
+      - tapOn:
+          id: "select-add-custom"
+
+# Selecting closes the SearchableSelect modal; confirm the gym change on the
+# dialog underneath (enabled only because the gym now differs from the current).
+- extendedWaitUntil:
+    notVisible:
+      id: "select-search"
+    timeout: 5000
+- tapOn: "Confirm"
+- extendedWaitUntil:
+    notVisible:
+      text: "Change Gym"
+    timeout: 5000

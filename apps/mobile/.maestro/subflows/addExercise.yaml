@@ -3,12 +3,20 @@ appId: app.liftledger.mobile
 # is inserted at position POS (the add-row above the exercise currently at that
 # 0-based index; use the day's exercise count to append at the end).
 #
-# NAME is added as a custom name (not pre-seeded); EQUIPMENT and WEIGHT_TYPE are
-# selected from existing options (seeded). Params: POS, NAME, EQUIPMENT,
-# WEIGHT_TYPE.
+# NAME is added as a custom name the first time and reused (selected as an
+# existing option) on later re-adds; EQUIPMENT and WEIGHT_TYPE are selected from
+# existing options (seeded). Params: POS, NAME, EQUIPMENT, WEIGHT_TYPE.
 ---
-- tapOn: "More actions"
-- tapOn: "Edit Exercises"
+- tapOn:
+    id: "fab-more-actions"
+# Wait for the dial's action FABs to render before tapping — a bare tapOn here
+# races the open transition.
+- extendedWaitUntil:
+    visible:
+      id: "fab-edit-exercises"
+    timeout: 5000
+- tapOn:
+    id: "fab-edit-exercises"
 - extendedWaitUntil:
     visible:
       text: "insert-exercise-${POS}"
@@ -21,7 +29,9 @@ appId: app.liftledger.mobile
 - waitForAnimationToEnd:
     timeout: 300
 
-# --- Name: typed + added as a custom option ---
+# --- Name: pick the existing option if the name is already in the list (a
+# re-add of a name custom-added earlier in the flow — custom names persist even
+# after the add-on exercise itself is dropped), otherwise add it as custom. ---
 - tapOn: "Exercise"
 - extendedWaitUntil:
     visible:
@@ -30,8 +40,22 @@ appId: app.liftledger.mobile
 - tapOn:
     id: "select-search"
 - inputText: "${NAME}"
-- tapOn:
-    id: "select-add-custom"
+- waitForAnimationToEnd:
+    timeout: 300
+- runFlow:
+    when:
+      visible:
+        id: "select-option-${NAME}"
+    commands:
+      - tapOn:
+          id: "select-option-${NAME}"
+- runFlow:
+    when:
+      visible:
+        id: "select-add-custom"
+    commands:
+      - tapOn:
+          id: "select-add-custom"
 
 # --- Equipment: typed to filter, then the existing option is picked ---
 - tapOn: "Equipment"
