@@ -220,6 +220,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
         <Sheet
           title="Edit Exercises"
           actions={[{ label: "Done", onPress: close }]}
+          headerColor={colors.secondaryContainer}
         >
           <ScrollView
             contentContainerStyle={{
@@ -239,11 +240,11 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                     accessibilityLabel={`insert-exercise-${idx}`}
                   />
                   <Surface
-                    elevation={1}
+                    elevation={0}
                     style={{
                       width: "100%",
                       borderRadius: RADIUS.md,
-                      marginBottom: SPACING.md,
+                      marginBottom: SPACING.lg,
                       backgroundColor: colors.background,
                     }}
                   >
@@ -294,7 +295,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                         )}
                         {exercise.addedOn && (
                           <IconButton
-                            style={{ margin: 0 }}
+                            style={{ margin: 0, borderRadius: RADIUS.sm }}
                             icon="delete"
                             mode="contained"
                             size={18}
@@ -312,7 +313,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                           />
                         )}
                         <IconButton
-                          style={{ margin: 0 }}
+                          style={{ margin: 0, borderRadius: RADIUS.sm }}
                           icon="pencil"
                           mode="contained"
                           size={18}

@@ -12,8 +12,6 @@ interface Props {
   onChange: (totalSeconds: number) => void;
 }
 
-// A mm : ss picker built from two 0–59 selects. Reused by the timer preset
-// editor and the default/override time dialogs.
 export const TimePicker = ({ totalSeconds, onChange }: Props) => {
   const mins = Math.floor(totalSeconds / 60);
   const secs = totalSeconds % 60;

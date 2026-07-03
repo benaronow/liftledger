@@ -10,6 +10,8 @@ interface Props {
   actions: SheetAction[];
   children: ReactNode;
   keyboardAvoiding?: boolean;
+  /** Background for the header band (title + actions). Defaults to transparent. */
+  headerColor?: string;
 }
 
 export const Sheet = ({
@@ -17,19 +19,22 @@ export const Sheet = ({
   actions,
   children,
   keyboardAvoiding,
+  headerColor,
 }: Props) => {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
   const body = (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: colors.primaryContainer,
-        paddingTop: (Platform.OS === "android" ? insets.top : 0) + SPACING.md,
-      }}
-    >
-      <SheetHeader title={title} actions={actions} />
+    <View style={{ flex: 1, backgroundColor: colors.primaryContainer }}>
+      <View
+        style={{
+          backgroundColor: headerColor,
+          paddingTop:
+            (Platform.OS === "android" ? insets.top : 0) + SPACING.md,
+        }}
+      >
+        <SheetHeader title={title} actions={actions} />
+      </View>
       {children}
     </View>
   );

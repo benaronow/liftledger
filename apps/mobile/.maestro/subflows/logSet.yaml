@@ -1,6 +1,6 @@
 appId: app.liftledger.mobile
 # Log one set as completed at the given WEIGHT x REPS (covers both plain
-# completions and "e" edits from the doc — same action, we always type the
+# completions and "e" edits from the doc — same action, we always target the
 # actual values). Params: SET (0-based index within the exercise), WEIGHT, REPS.
 ---
 - tapOn:
@@ -18,12 +18,26 @@ appId: app.liftledger.mobile
     id: "set-input-reps"
 - waitForAnimationToEnd:
     timeout: 300
-- eraseText: 8
-- inputText: "${REPS}"
+# The field pre-fills with the planned/carried value; only erase+retype when it
+# differs from the target (many sets log the same value they carried in).
+- copyTextFrom:
+    id: "set-input-reps"
+- runFlow:
+    when:
+      true: ${maestro.copiedText != REPS}
+    commands:
+      - eraseText: 8
+      - inputText: "${REPS}"
 - tapOn:
     id: "set-input-weight"
-- eraseText: 8
-- inputText: "${WEIGHT}"
+- copyTextFrom:
+    id: "set-input-weight"
+- runFlow:
+    when:
+      true: ${maestro.copiedText != WEIGHT}
+    commands:
+      - eraseText: 8
+      - inputText: "${WEIGHT}"
 # The number-pad has no dismiss key and covers the dialog's actions. Tapping the
 # (non-input) title dismisses the keyboard via the dialog's tap-to-dismiss,
 # revealing Confirm.

@@ -47,7 +47,7 @@ export const ExerciseEquipmentSelect = ({
       onSelect={onSelect}
       onAddCustom={addExerciseEquipment}
       canAddCustom
-      placeholder="Enter or add equipment..."
+      placeholder="Search or add equipment..."
     />
   );
 };

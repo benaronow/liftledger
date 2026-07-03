@@ -3,9 +3,16 @@ appId: app.liftledger.mobile
 # is inserted at position POS (the add-row above the exercise currently at that
 # 0-based index; use the day's exercise count to append at the end).
 #
-# NAME is added as a custom name the first time and reused (selected as an
-# existing option) on later re-adds; EQUIPMENT and WEIGHT_TYPE are selected from
-# existing options (seeded). Params: POS, NAME, EQUIPMENT, WEIGHT_TYPE.
+# EQUIPMENT and WEIGHT_TYPE are selected from existing (seeded) options. NAME is
+# either added as a custom option (first use) or selected from the list (a re-add
+# of a name custom-added earlier in the flow — custom names persist even after
+# the add-on exercise itself is dropped). The caller states which via EXISTING:
+#   EXISTING: "false" -> first use, tap the "Add ..." footer to create it.
+#   EXISTING: "true"  -> re-add, tap the existing option.
+# Branching on the param (not on which row happens to render) keeps it
+# deterministic: no waiting on the not-taken branch's element to time out, and no
+# risk of a mistyped name silently falling through to "add custom".
+# Params: POS, NAME, EQUIPMENT, WEIGHT_TYPE, EXISTING.
 ---
 - tapOn:
     id: "fab-more-actions"
@@ -29,9 +36,10 @@ appId: app.liftledger.mobile
 - waitForAnimationToEnd:
     timeout: 300
 
-# --- Name: pick the existing option if the name is already in the list (a
-# re-add of a name custom-added earlier in the flow — custom names persist even
-# after the add-on exercise itself is dropped), otherwise add it as custom. ---
+# --- Name: type to filter, then pick the existing option or add it as custom
+# per EXISTING. The wait AFTER tapping the field (before inputText) lets the
+# native keyboard finish sliding in — otherwise it races the typing and drops
+# characters, which is how a mistyped name would leak through as a custom add. ---
 - tapOn: "Exercise"
 - extendedWaitUntil:
     visible:
@@ -39,25 +47,24 @@ appId: app.liftledger.mobile
     timeout: 5000
 - tapOn:
     id: "select-search"
-- inputText: "${NAME}"
 - waitForAnimationToEnd:
     timeout: 300
+- inputText: "${NAME}"
 - runFlow:
     when:
-      visible:
-        id: "select-option-${NAME}"
+      true: ${EXISTING == 'true'}
     commands:
       - tapOn:
           id: "select-option-${NAME}"
 - runFlow:
     when:
-      visible:
-        id: "select-add-custom"
+      true: ${EXISTING == 'false'}
     commands:
       - tapOn:
           id: "select-add-custom"
 
-# --- Equipment: typed to filter, then the existing option is picked ---
+# --- Equipment: typed to filter, then the existing option is picked. Same
+# keyboard-settle wait before typing as the name field above. ---
 - tapOn: "Equipment"
 - extendedWaitUntil:
     visible:
@@ -65,6 +72,8 @@ appId: app.liftledger.mobile
     timeout: 5000
 - tapOn:
     id: "select-search"
+- waitForAnimationToEnd:
+    timeout: 300
 - inputText: "${EQUIPMENT}"
 - tapOn:
     id: "select-option-${EQUIPMENT}"

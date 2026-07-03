@@ -223,6 +223,7 @@ onFlowComplete:
       NAME: "Adductors"
       EQUIPMENT: "Machine"
       WEIGHT_TYPE: "lbs"
+      EXISTING: "false"
 # Adductors is now exercise 3 of 4, but the pager sits on the first page (BB
 # Squat) after the edit sheet closes — its name only renders on its own page,
 # so we assert it once we page over to it below, not here.
@@ -284,10 +285,11 @@ onFlowComplete:
 - assertVisible: ".*11 reps.*"
 - assertVisible: ".*100lbs.*"
 # Switch this session to Gym 2. No Gym-2 history yet -> each exercise resets to
-# blank (0 reps / 0lbs), keeping only its set count.
+# blank (0 reps / 0lbs), keeping only its set count. First use of Gym 2 -> added
+# as a custom option.
 - runFlow:
     file: ../subflows/switchGym.yaml
-    env: { GYM: "Gym 2" }
+    env: { GYM: "Gym 2", EXISTING: "false" }
 # Add the Leg Raises add-on exercise at the end (position 3 of the 3-exercise
 # day -> appends), at the current gym (Gym 2), before logging.
 - runFlow:
@@ -297,6 +299,7 @@ onFlowComplete:
       NAME: "Leg Raises"
       EQUIPMENT: "Machine"
       WEIGHT_TYPE: "lbs"
+      EXISTING: "false"
 # Back on page 1 (BB Bench) — now blank at the new gym.
 - assertVisible: ".*0 reps.*"
 - assertVisible: ".*0lbs.*"
@@ -340,7 +343,7 @@ onFlowComplete:
 - assertVisible: ".*200lbs.*"
 - runFlow:
     file: ../subflows/switchGym.yaml
-    env: { GYM: "Gym 2" }
+    env: { GYM: "Gym 2", EXISTING: "true" }
 # BB Row now blank at Gym 2.
 - assertVisible: ".*0 reps.*"
 - assertVisible: ".*0lbs.*"
@@ -390,6 +393,7 @@ onFlowComplete:
       NAME: "Adductors"
       EQUIPMENT: "Machine"
       WEIGHT_TYPE: "lbs"
+      EXISTING: "true"
 # BB Squat: Skip, Skip
 - runFlow:
     file: ../subflows/skipSet.yaml
@@ -533,7 +537,7 @@ onFlowComplete:
 # reset to blank.
 - runFlow:
     file: ../subflows/switchGym.yaml
-    env: { GYM: "Gym 2" }
+    env: { GYM: "Gym 2", EXISTING: "true" }
 # BB Squat now blank at Gym 2.
 - assertVisible: ".*0 reps.*"
 - assertVisible: ".*0lbs.*"
@@ -545,6 +549,7 @@ onFlowComplete:
       NAME: "Crunch"
       EQUIPMENT: "Machine"
       WEIGHT_TYPE: "lbs"
+      EXISTING: "false"
 # Pager is back on page 1, which is now Crunch. Crunch (new, one blank set): 50x8
 - assertVisible: "Crunch"
 - runFlow:
@@ -592,7 +597,7 @@ onFlowComplete:
 - assertVisible: ".*100lbs.*"
 - runFlow:
     file: ../subflows/switchGym.yaml
-    env: { GYM: "Gym 2" }
+    env: { GYM: "Gym 2", EXISTING: "true" }
 # Re-add Leg Raises at the FRONT (position 0) and Crunch at the END, before
 # logging, matching the doc's day order (Leg Raises, BB Bench, DB OHP, Tricep,
 # Crunch). Adds go in first so the pager order is fixed.
@@ -603,6 +608,7 @@ onFlowComplete:
       NAME: "Leg Raises"
       EQUIPMENT: "Machine"
       WEIGHT_TYPE: "lbs"
+      EXISTING: "true"
 - runFlow:
     file: ../subflows/addExercise.yaml
     env:
@@ -610,6 +616,7 @@ onFlowComplete:
       NAME: "Crunch"
       EQUIPMENT: "Machine"
       WEIGHT_TYPE: "lbs"
+      EXISTING: "true"
 # Page 1 is now Leg Raises, repopulated from its Gym-2 history (W3-A 0x14).
 # Leg Raises: 5x14 (the doc's 2nd, add-on "Skip" set is omitted — see header).
 - assertVisible: "Leg Raises"
@@ -670,7 +677,7 @@ onFlowComplete:
 - assertVisible: ".*210lbs.*"
 - runFlow:
     file: ../subflows/switchGym.yaml
-    env: { GYM: "Gym 2" }
+    env: { GYM: "Gym 2", EXISTING: "true" }
 # BB Row repopulated from Gym-2 history (W3-A 7x7 / 8x8).
 - assertVisible: ".*7 reps.*"
 - assertVisible: ".*7lbs.*"
@@ -715,7 +722,7 @@ onFlowComplete:
 - assertVisible: ".*290lbs.*"
 - runFlow:
     file: ../subflows/switchGym.yaml
-    env: { GYM: "Gym 2" }
+    env: { GYM: "Gym 2", EXISTING: "true" }
 # BB Squat repopulated from Gym-2 history (W4-A 13x13 / 14x14).
 - assertVisible: ".*13 reps.*"
 - assertVisible: ".*13lbs.*"
@@ -727,6 +734,7 @@ onFlowComplete:
       NAME: "Adductors"
       EQUIPMENT: "Machine"
       WEIGHT_TYPE: "lbs"
+      EXISTING: "true"
 # BB Squat: 13x13, 14x14
 - runFlow:
     file: ../subflows/logSet.yaml

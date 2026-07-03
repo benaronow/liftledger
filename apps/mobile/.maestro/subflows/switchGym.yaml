@@ -10,9 +10,14 @@ appId: app.liftledger.mobile
 #     at any gym.
 #   - a return visit -> sets repopulate from the latest completion at THAT gym.
 #
-# GYM is added as a custom option the first time it's used (the seed only knows
-# "Gym 1") and picked from the list on later switches. The two conditional
-# runFlows below handle both cases; exactly one fires. Param: GYM.
+# The seed only knows "Gym 1", so a gym is added as a custom option the first
+# time it's used and picked from the list on later switches. The caller states
+# which via EXISTING:
+#   EXISTING: "false" -> first switch to this gym, tap the "Add ..." footer.
+#   EXISTING: "true"  -> a later switch, tap the existing option.
+# Branching on the param (not on which row renders) keeps it deterministic: no
+# waiting on the not-taken branch's element to time out, and no risk of a
+# mistyped gym name silently creating a bogus custom gym. Params: GYM, EXISTING.
 ---
 - tapOn:
     id: "fab-more-actions"
@@ -31,7 +36,9 @@ appId: app.liftledger.mobile
 - waitForAnimationToEnd:
     timeout: 300
 
-# Open the gym SearchableSelect and type the target gym to filter.
+# Open the gym SearchableSelect and type the target gym to filter. The wait
+# after tapping the field (before inputText) lets the native keyboard finish
+# sliding in so it doesn't race the typing and drop characters.
 - tapOn: "Session Gym"
 - extendedWaitUntil:
     visible:
@@ -39,32 +46,21 @@ appId: app.liftledger.mobile
     timeout: 5000
 - tapOn:
     id: "select-search"
-- inputText: "${GYM}"
 - waitForAnimationToEnd:
     timeout: 300
+- inputText: "${GYM}"
 
 # Existing gym -> tap its option; new gym -> add it as a custom option (which
-# also selects it). Fuzzy search may also surface "Gym 1", but we only ever
-# target the exact "select-option-${GYM}" / add-custom rows, so exactly one of
-# these branches matches.
-#
-# Branch 1 selects the option, which closes the modal. Branch 2's guard must
-# therefore also require the modal to still be open (select-search visible) --
-# otherwise, after branch 1 closes the modal, `notVisible select-option-${GYM}`
-# becomes true again and branch 2 would fire on a now-absent add-custom row.
+# also selects it).
 - runFlow:
     when:
-      visible:
-        id: "select-option-${GYM}"
+      true: ${EXISTING == 'true'}
     commands:
       - tapOn:
           id: "select-option-${GYM}"
 - runFlow:
     when:
-      visible:
-        id: "select-search"
-      notVisible:
-        id: "select-option-${GYM}"
+      true: ${EXISTING == 'false'}
     commands:
       - tapOn:
           id: "select-add-custom"

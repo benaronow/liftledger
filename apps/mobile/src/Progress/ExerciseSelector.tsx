@@ -34,7 +34,7 @@ export const ExerciseSelector = ({
           value={selectedName}
           options={allExerciseNameOptions}
           onSelect={setSelectedName}
-          placeholder="Enter exercise..."
+          placeholder="Search exercise..."
         />
       </View>
       <View style={{ flex: 1 }}>
@@ -43,7 +43,7 @@ export const ExerciseSelector = ({
           value={selectedEquipment}
           options={allExerciseEquipmentOptions}
           onSelect={setSelectedEquipment}
-          placeholder="Enter equipment..."
+          placeholder="Search equipment..."
         />
       </View>
     </View>

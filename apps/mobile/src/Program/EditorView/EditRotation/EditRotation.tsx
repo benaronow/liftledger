@@ -32,9 +32,9 @@ export const EditRotation = () => {
     editingRotationIdx,
     templateErrors,
   } = useTemplate();
-  const [deletingSessionIdx, setDeletingSessionIdx] = useState<number | undefined>(
-    undefined,
-  );
+  const [deletingSessionIdx, setDeletingSessionIdx] = useState<
+    number | undefined
+  >(undefined);
 
   const rotation = templateProgram.rotations[editingRotationIdx];
 
@@ -208,7 +208,7 @@ export const EditRotation = () => {
           onSelect={setPrimaryGym}
           onAddCustom={handleAddGym}
           canAddCustom
-          placeholder="Enter or add a gym..."
+          placeholder="Search or add gym..."
         />
       </SectionCard>
 

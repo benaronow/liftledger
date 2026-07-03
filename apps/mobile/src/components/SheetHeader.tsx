@@ -30,12 +30,16 @@ export const SheetHeader = ({ title, actions }: Props) => {
         alignItems: "center",
         justifyContent: "space-between",
         paddingLeft: SPACING.lg,
-        paddingRight: SPACING.sm,
-        marginBottom: SPACING.sm,
+        paddingRight: SPACING.xs,
+        marginBottom: SPACING.md,
       }}
     >
       <Text
-        style={{ color: colors.onSurface, fontSize: FONT.lg, fontWeight: "600" }}
+        style={{
+          color: colors.onSurface,
+          fontSize: FONT.lg,
+          fontWeight: "600",
+        }}
       >
         {title}
       </Text>

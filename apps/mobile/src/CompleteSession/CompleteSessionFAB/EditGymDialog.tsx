@@ -100,7 +100,7 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
         onSelect={setGymName}
         onAddCustom={handleAddGym}
         canAddCustom
-        placeholder="Enter or add a gym..."
+        placeholder="Search or add gym..."
       />
     </ConfirmationDialog>
   );
