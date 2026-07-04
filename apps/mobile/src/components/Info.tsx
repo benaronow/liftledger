@@ -17,18 +17,15 @@ export interface InfoAction {
 interface Props {
   title: string;
   actions?: InfoAction[];
-  titleAction?: {
-    icon: string;
-    onPress: () => void;
-    accessibilityLabel?: string;
-  };
+  // Controls rendered in the title row, aligned to the right of the title.
+  headerRight?: ReactNode;
   // Stretch the card to fill its parent, letting the children area flex (and
   // scroll) while any actions stay pinned at the bottom.
   fill?: boolean;
   children: ReactNode;
 }
 
-export const Info = ({ title, actions, fill, children }: Props) => {
+export const Info = ({ title, actions, headerRight, fill, children }: Props) => {
   const theme = useTheme();
   const { colors } = theme;
 
@@ -44,6 +41,7 @@ export const Info = ({ title, actions, fill, children }: Props) => {
   return (
     <SectionCard
       title={title}
+      headerRight={headerRight}
       style={{ marginBottom: SPACING.lg, ...(fill && { flex: 1 }) }}
     >
       <View

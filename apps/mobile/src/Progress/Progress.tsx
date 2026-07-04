@@ -3,7 +3,6 @@ import { useRoute, type RouteProp } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LogoSpinner } from "../components/LogoSpinner";
 import { floatingTabBarClearance } from "../RootNavigator/TabNavigator/FloatingTabBar";
 import type { TabParamList } from "../RootNavigator/types";
 import { useTheme } from "react-native-paper";
@@ -34,8 +33,6 @@ export const Progress = () => {
     setSelectedName,
     setSelectedEquipment,
   });
-
-  if (isLoading) return <LogoSpinner />;
 
   return (
     <View
@@ -69,6 +66,7 @@ export const Progress = () => {
           <ProgressChart
             selectedName={selectedName}
             selectedEquipment={selectedEquipment}
+            loading={isLoading}
           />
         </SectionCard>
       </View>

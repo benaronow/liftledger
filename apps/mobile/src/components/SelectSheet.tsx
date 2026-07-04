@@ -11,6 +11,13 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Gesture } from "react-native-gesture-handler";
+import Reanimated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 import {
   ActivityIndicator,
   List,
@@ -28,35 +35,23 @@ interface Props {
   onClose: () => void;
   title: string;
   options: string[];
-  /** Highlighted row (the currently-selected value). */
   value?: string;
-  /** Row press handler. Omit to make rows non-pressable. */
   onSelect?: (item: string) => void;
   searchPlaceholder?: string;
-  /** Show the "Add …" footer when the search term is a new value. */
   canAddCustom?: boolean;
   onAddCustom?: (value: string) => Promise<void>;
-  /** Options that exist but can't be picked — surfaced as "unavailable". */
   unavailableOptions?: string[];
-  /** Leading accessory per row (e.g. a checkbox). */
   renderItemLeft?: (item: string) => ReactNode;
-  /** Trailing accessory per row (e.g. edit/delete buttons). */
   renderItemRight?: (item: string) => ReactNode;
-  /**
-   * Forwarded to the FlatList so rows re-render when accessory state that
-   * lives outside `options` changes (e.g. per-row toggles).
-   */
   extraData?: unknown;
 }
 
-// Zero out the slide under E2E so Maestro doesn't wait on the transition,
-// matching TopSheet.
 const DURATION = env.e2e ? 0 : 250;
 
-// Shared searchable list sheet used by SearchableSelect, ManageExerciseList and
-// ExerciseTimerOverridesModal. Rendered via Portal + animated bottom slide
-// (not a native pageSheet) so the ConfirmationDialogs some consumers open from
-// inside can layer on top.
+const DRAG_DISMISS_DISTANCE = 120;
+const DRAG_DISMISS_VELOCITY = 800;
+const DRAG_SPRING = { damping: 20, stiffness: 220, overshootClamping: true };
+
 export const SelectSheet = ({
   open,
   onClose,
@@ -77,12 +72,14 @@ export const SelectSheet = ({
   const { height: screenHeight } = useWindowDimensions();
 
   const progress = useRef(new Animated.Value(0)).current;
+  const dragY = useSharedValue(0);
   const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
   const [addingCustom, setAddingCustom] = useState(false);
 
   useEffect(() => {
     if (open) {
+      dragY.value = 0;
       setMounted(true);
       Animated.timing(progress, {
         toValue: 1,
@@ -160,6 +157,26 @@ export const SelectSheet = ({
     outputRange: [screenHeight, 0],
   });
 
+  const dragStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: dragY.value }],
+  }));
+
+  const dragGesture = Gesture.Pan()
+    .activeOffsetY(10)
+    .onUpdate((e) => {
+      dragY.value = Math.max(0, e.translationY);
+    })
+    .onEnd((e) => {
+      if (
+        e.translationY > DRAG_DISMISS_DISTANCE ||
+        e.velocityY > DRAG_DISMISS_VELOCITY
+      ) {
+        scheduleOnRN(onClose);
+      } else {
+        dragY.value = withSpring(0, DRAG_SPRING);
+      }
+    });
+
   if (!mounted) return null;
 
   return (
@@ -180,117 +197,127 @@ export const SelectSheet = ({
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: colors.primaryContainer,
-          borderTopLeftRadius: RADIUS.xl,
-          borderTopRightRadius: RADIUS.xl,
-          overflow: "hidden",
           transform: [{ translateY }],
         }}
       >
-        <Sheet
-          title={title}
-          actions={[{ label: "Done", onPress: onClose }]}
-          keyboardAvoiding
-          headerColor={colors.secondaryContainer}
+        <Reanimated.View
+          style={[
+            {
+              flex: 1,
+              backgroundColor: colors.primaryContainer,
+              borderTopLeftRadius: RADIUS.xl,
+              borderTopRightRadius: RADIUS.xl,
+              overflow: "hidden",
+            },
+            dragStyle,
+          ]}
         >
-          <Searchbar
-            testID="select-search"
-            style={{
-              marginHorizontal: SPACING.lg - 14,
-            }}
-            inputStyle={{ color: colors.onSurface }}
-            placeholderTextColor={colors.onSurfaceDisabled}
-            value={query}
-            onChangeText={setQuery}
-            placeholder={
-              searchPlaceholder ??
-              (canAddCustom ? "Search or add..." : "Search...")
-            }
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoComplete="off"
-            spellCheck={false}
-          />
-          <View
-            style={{
-              marginHorizontal: SPACING.lg,
-              height: StyleSheet.hairlineWidth,
-              backgroundColor: colors.outlineVariant,
-            }}
-          />
-          <FlatList
-            style={{ flex: 1 }}
-            data={filteredOptions}
-            extraData={extraData}
-            keyboardShouldPersistTaps="handled"
-            keyExtractor={(item) => item}
-            contentContainerStyle={{
-              paddingBottom: insets.bottom + SPACING.md,
-            }}
-            ItemSeparatorComponent={() => (
-              <View
-                style={{
-                  marginHorizontal: SPACING.lg,
-                  height: StyleSheet.hairlineWidth,
-                  backgroundColor: colors.outlineVariant,
-                }}
-              />
-            )}
-            renderItem={({ item }) => (
-              <Pressable
-                testID={`select-option-${item}`}
-                onPress={onSelect ? () => onSelect(item) : undefined}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: SPACING.md,
-                  paddingHorizontal: SPACING.lg,
-                  paddingVertical: SPACING.md,
-                  minHeight: 48,
-                  backgroundColor:
-                    item === value ? colors.primary : colors.primaryContainer,
-                }}
-              >
-                {renderItemLeft?.(item)}
-                <Text
-                  numberOfLines={1}
+          <Sheet
+            title={title}
+            actions={[{ label: "Done", onPress: onClose }]}
+            keyboardAvoiding
+            headerColor={colors.secondaryContainer}
+            headerDragGesture={dragGesture}
+          >
+            <Searchbar
+              testID="select-search"
+              style={{
+                marginHorizontal: SPACING.lg - 14,
+              }}
+              inputStyle={{ color: colors.onSurface }}
+              placeholderTextColor={colors.onSurfaceDisabled}
+              value={query}
+              onChangeText={setQuery}
+              placeholder={
+                searchPlaceholder ??
+                (canAddCustom ? "Search or add..." : "Search...")
+              }
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="off"
+              spellCheck={false}
+            />
+            <View
+              style={{
+                marginHorizontal: SPACING.lg,
+                height: StyleSheet.hairlineWidth,
+                backgroundColor: colors.outlineVariant,
+              }}
+            />
+            <FlatList
+              style={{ flex: 1 }}
+              data={filteredOptions}
+              extraData={extraData}
+              keyboardShouldPersistTaps="handled"
+              keyExtractor={(item) => item}
+              contentContainerStyle={{
+                paddingBottom: insets.bottom + SPACING.md,
+              }}
+              ItemSeparatorComponent={() => (
+                <View
                   style={{
-                    flex: 1,
-                    color: colors.onSurface,
-                    fontSize: FONT.base,
+                    marginHorizontal: SPACING.lg,
+                    height: StyleSheet.hairlineWidth,
+                    backgroundColor: colors.outlineVariant,
+                  }}
+                />
+              )}
+              renderItem={({ item }) => (
+                <Pressable
+                  testID={`select-option-${item}`}
+                  onPress={onSelect ? () => onSelect(item) : undefined}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: SPACING.md,
+                    paddingHorizontal: SPACING.lg,
+                    paddingVertical: SPACING.md,
+                    minHeight: 48,
+                    backgroundColor:
+                      item === value ? colors.primary : colors.primaryContainer,
                   }}
                 >
-                  {item}
-                </Text>
-                {renderItemRight?.(item)}
-              </Pressable>
-            )}
-            ListFooterComponent={
-              showAddOrUnavailable ? (
-                <List.Item
-                  testID="select-add-custom"
-                  title={
-                    addingCustom ? (
-                      <View style={{ paddingVertical: SPACING.xs }}>
-                        <ActivityIndicator
-                          color={colors.primary}
-                          size="small"
-                        />
-                      </View>
-                    ) : isUnavailable ? (
-                      `"${trimmed}" is unavailable`
-                    ) : (
-                      `Add "${trimmed}"`
-                    )
-                  }
-                  titleStyle={{ color: colors.primary, fontSize: FONT.sm }}
-                  onPress={isUnavailable ? undefined : handleAddCustom}
-                  disabled={isUnavailable}
-                />
-              ) : null
-            }
-          />
-        </Sheet>
+                  {renderItemLeft?.(item)}
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      flex: 1,
+                      color: colors.onSurface,
+                      fontSize: FONT.base,
+                    }}
+                  >
+                    {item}
+                  </Text>
+                  {renderItemRight?.(item)}
+                </Pressable>
+              )}
+              ListFooterComponent={
+                showAddOrUnavailable ? (
+                  <List.Item
+                    testID="select-add-custom"
+                    title={
+                      addingCustom ? (
+                        <View style={{ paddingVertical: SPACING.xs }}>
+                          <ActivityIndicator
+                            color={colors.primary}
+                            size="small"
+                          />
+                        </View>
+                      ) : isUnavailable ? (
+                        `"${trimmed}" is unavailable`
+                      ) : (
+                        `Add "${trimmed}"`
+                      )
+                    }
+                    titleStyle={{ color: colors.primary, fontSize: FONT.sm }}
+                    onPress={isUnavailable ? undefined : handleAddCustom}
+                    disabled={isUnavailable}
+                  />
+                ) : null
+              }
+            />
+          </Sheet>
+        </Reanimated.View>
       </Animated.View>
     </Portal>
   );

@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { Exercise } from "@liftledger/shared";
 import { useState } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { Badge } from "../../components/Badge";
 import { Info } from "../../components/Info";
 import {
@@ -43,6 +43,9 @@ export const ExercisePage = ({
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [editingSetIdx, setEditingSetIdx] = useState<number>();
+  // Off by default: the chart tracks the current gym. "Show all" drops the gym
+  // filter so progress across every gym is plotted (with the legend).
+  const [showAll, setShowAll] = useState(false);
 
   const openFullProgress = () =>
     navigation.navigate(
@@ -119,11 +122,46 @@ export const ExercisePage = ({
       <Info
         title="Progress"
         fill
-        titleAction={{
-          icon: "arrow-expand",
-          onPress: openFullProgress,
-          accessibilityLabel: "Open full progress",
-        }}
+        headerRight={
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: SPACING.md,
+            }}
+          >
+            <Pressable
+              onPress={() => setShowAll((v) => !v)}
+              hitSlop={8}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: SPACING.xs,
+              }}
+            >
+              <MaterialCommunityIcons
+                name={showAll ? "checkbox-marked" : "checkbox-blank-outline"}
+                size={20}
+                color={showAll ? colors.primary : colors.onSurfaceVariant}
+              />
+              <Text style={{ color: colors.onSurface, fontSize: FONT.base }}>
+                Show all
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={openFullProgress}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel="Open full progress"
+            >
+              <MaterialCommunityIcons
+                name="arrow-expand"
+                size={20}
+                color={colors.primary}
+              />
+            </Pressable>
+          </View>
+        }
       >
         <View
           style={{ flex: 1 }}
@@ -134,7 +172,7 @@ export const ExercisePage = ({
           <ProgressChart
             selectedName={exercise.name}
             selectedEquipment={exercise.equipment}
-            gym={exercise.gym}
+            gym={showAll ? undefined : exercise.gym}
           />
         </View>
       </Info>

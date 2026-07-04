@@ -10,7 +10,10 @@ const STROKE = 4;
 const LOGO_SIZE = 50;
 const SPIN_DURATION = 1000;
 
-export const LogoSpinner = ({ inline = false }: { inline?: boolean } = {}) => {
+export const LogoSpinner = ({
+  inline = false,
+  transparent = false,
+}: { inline?: boolean; transparent?: boolean } = {}) => {
   const spin = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const { colors } = useTheme();
@@ -58,7 +61,7 @@ export const LogoSpinner = ({ inline = false }: { inline?: boolean } = {}) => {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: colors.background,
+        backgroundColor: transparent ? undefined : colors.background,
       }}
     >
       <Animated.View

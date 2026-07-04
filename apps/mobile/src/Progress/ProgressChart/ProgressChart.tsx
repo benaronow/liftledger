@@ -15,6 +15,7 @@ interface Props {
   selectedName: string;
   selectedEquipment: string;
   gym?: string;
+  loading?: boolean;
 }
 
 const fmtKey = (d?: Date) => dayjs(d).format("YYYY-MM-DD");
@@ -28,11 +29,13 @@ const RIGHT_PAD = 16;
 const INITIAL_SPACING = 12;
 const END_SPACING = 12;
 const POINTER_RADIUS = 6;
+const CHART_HEIGHT_RATIO = 0.85;
 
 export const ProgressChart = ({
   selectedName,
   selectedEquipment,
   gym,
+  loading: externalLoading,
 }: Props) => {
   const { data: curUser, isLoading: isUserLoading } = useMe();
   const { data: completedExercises, isLoading: completedExercisesLoading } =
@@ -161,13 +164,13 @@ export const ProgressChart = ({
     };
   }, [chartExercises]);
 
-  if (isUserLoading || completedExercisesLoading) return <LogoSpinner inline />;
-  if (!chartExercises.length) return <NoDataPlaceholder />;
+  const loading = externalLoading || isUserLoading || completedExercisesLoading;
+  const hasData = chartExercises.length > 0;
 
   const onLayout = (e: LayoutChangeEvent) =>
     setSize({
-      width: e.nativeEvent.layout.width - SPACING.sm,
-      height: e.nativeEvent.layout.height - SPACING.sm,
+      width: e.nativeEvent.layout.width,
+      height: e.nativeEvent.layout.height,
     });
 
   const plotWidth = Math.max(
@@ -187,17 +190,23 @@ export const ProgressChart = ({
         style={{
           flex: 1,
           backgroundColor: colors.secondaryContainer,
-          paddingTop: SPACING.sm,
           paddingLeft: SPACING.sm,
           borderRadius: RADIUS.sm,
+          zIndex: 1,
+          justifyContent: "center",
         }}
         onLayout={onLayout}
       >
-        {size.width > 0 && (
+        {loading ? (
+          <LogoSpinner inline transparent />
+        ) : !hasData ? (
+          <NoDataPlaceholder />
+        ) : size.width > 0 ? (
           <LineChart
             dataSet={dataSet}
             width={plotWidth}
-            height={Math.max(0, size.height - 40)}
+            height={Math.max(0, size.height * CHART_HEIGHT_RATIO)}
+            xAxisLabelsHeight={0}
             yAxisLabelWidth={Y_AXIS_WIDTH}
             initialSpacing={firstSpacing}
             endSpacing={END_SPACING}
@@ -256,9 +265,9 @@ export const ProgressChart = ({
               },
             }}
           />
-        )}
+        ) : null}
       </View>
-      {!gym && (
+      {!loading && hasData && (
         <View
           style={{
             flexDirection: "row",

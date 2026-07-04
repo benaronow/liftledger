@@ -35,6 +35,8 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
 
   const [exerciseState, setExerciseState] = useState<Exercise>();
   useEffect(() => {
+    if (setIdx === undefined) return;
+
     setExerciseState(
       exercise && setIdx === exercise.sets.length
         ? {
@@ -51,43 +53,44 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
   const saveExercises = async (updatedExercises: Exercise[]) => {
     if (!curUser?._id || !curProgram) return;
 
-    const newSessions: Session[] = curProgram.rotations[curProgram.curRotationIdx].toSpliced(
-      curProgram.curSessionIdx,
-      1,
-      {
-        ...curProgram.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx],
-        exercises: updatedExercises,
-      },
-    );
+    const newSessions: Session[] = curProgram.rotations[
+      curProgram.curRotationIdx
+    ].toSpliced(curProgram.curSessionIdx, 1, {
+      ...curProgram.rotations[curProgram.curRotationIdx][
+        curProgram.curSessionIdx
+      ],
+      exercises: updatedExercises,
+    });
 
-    const updatedLaterDays: Session[] = newSessions.map((session: Session, idx) =>
-      idx <= curProgram.curSessionIdx
-        ? session
-        : {
-            ...session,
-            exercises: session.exercises.map((exercise: Exercise) => {
-              const completedExercise = updatedExercises.find(
-                (e: Exercise) =>
-                  e.name === exercise.name &&
-                  e.equipment === exercise.equipment &&
-                  e.gym === exercise.gym,
-              );
+    const updatedLaterDays: Session[] = newSessions.map(
+      (session: Session, idx) =>
+        idx <= curProgram.curSessionIdx
+          ? session
+          : {
+              ...session,
+              exercises: session.exercises.map((exercise: Exercise) => {
+                const completedExercise = updatedExercises.find(
+                  (e: Exercise) =>
+                    e.name === exercise.name &&
+                    e.equipment === exercise.equipment &&
+                    e.gym === exercise.gym,
+                );
 
-              return completedExercise
-                ? {
-                    ...completedExercise,
-                    sets: completedExercise.sets
-                      .filter((set) => !set.addedOn)
-                      .map((set: Set) => ({
-                        ...set,
-                        completed: false,
-                        skipped: undefined,
-                        note: "",
-                      })),
-                  }
-                : exercise;
-            }),
-          },
+                return completedExercise
+                  ? {
+                      ...completedExercise,
+                      sets: completedExercise.sets
+                        .filter((set) => !set.addedOn)
+                        .map((set: Set) => ({
+                          ...set,
+                          completed: false,
+                          skipped: undefined,
+                          note: "",
+                        })),
+                    }
+                  : exercise;
+              }),
+            },
     );
 
     const newProgram: Program = {
@@ -201,7 +204,8 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       secondaryAction="Skip Set"
       onSecondaryAction={() => handleSubmitSet({ skip: true })}
       secondaryActionDisabled={
-        exerciseState?.sets[setIdx!]?.skipped || setIdx === exercise!.sets.length
+        exerciseState?.sets[setIdx!]?.skipped ||
+        setIdx === exercise!.sets.length
       }
     >
       <EditSet

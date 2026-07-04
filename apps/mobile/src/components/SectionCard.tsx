@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { StyleProp, ViewStyle } from "react-native";
+import { StyleProp, View, ViewStyle } from "react-native";
 import { Surface, Text, useTheme } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../theme";
 
@@ -8,6 +8,8 @@ interface Props {
   children: ReactNode;
   background?: string;
   titleColor?: string;
+  /** Controls rendered in the title row, aligned to the right of the title. */
+  headerRight?: ReactNode;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -16,6 +18,7 @@ export const SectionCard = ({
   children,
   background,
   titleColor,
+  headerRight,
   style,
 }: Props) => {
   const { colors } = useTheme();
@@ -35,17 +38,30 @@ export const SectionCard = ({
         style,
       ]}
     >
-      {title && (
-        <Text
+      {(title || headerRight) && (
+        <View
           style={{
-            color: titleColor ?? colors.onSurface,
-            fontSize: FONT.base,
-            fontWeight: "800",
-            alignSelf: "flex-start",
+            flexDirection: "row",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
           }}
         >
-          {title}
-        </Text>
+          {title ? (
+            <Text
+              style={{
+                flexShrink: 1,
+                color: titleColor ?? colors.onSurface,
+                fontSize: FONT.base,
+                fontWeight: "800",
+              }}
+            >
+              {title}
+            </Text>
+          ) : (
+            <View />
+          )}
+          {headerRight}
+        </View>
       )}
       {children}
     </Surface>

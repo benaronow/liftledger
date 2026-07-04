@@ -3,6 +3,7 @@ import useSWRMutation from "swr/mutation";
 import type { User } from "@liftledger/shared";
 import { getApiClient } from "../client";
 import { fetcher } from "../fetcher";
+import { completedExercisesKey } from "./useCompletedExercises";
 import { meKey } from "./useMe";
 
 export const userKey = (id: string | undefined | null) =>
@@ -61,6 +62,7 @@ export const useRenameExercise = () =>
         body,
       );
       await propagateUserToCaches(res.data);
+      await mutate(completedExercisesKey(userId));
       return res.data;
     },
   );

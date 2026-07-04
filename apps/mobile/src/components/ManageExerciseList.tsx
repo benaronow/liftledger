@@ -84,8 +84,9 @@ export const ManageExerciseList = ({ field, open, onClose }: Props) => {
 
   const duplicate = useMemo(
     () =>
+      original !== undefined &&
       trimmed !== "" &&
-      trimmed.toLowerCase() !== (original ?? "").toLowerCase() &&
+      trimmed.toLowerCase() !== original.toLowerCase() &&
       options.some((o) => o.toLowerCase() === trimmed.toLowerCase()),
     [trimmed, original, options],
   );
