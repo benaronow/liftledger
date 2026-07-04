@@ -1,37 +1,18 @@
-import { useEffect, useRef } from "react";
 import { useTheme } from "react-native-paper";
-import { Animated, Easing, View } from "react-native";
-import { env } from "../../../config/env";
+import { Animated, View } from "react-native";
+import { usePulse } from "./PulseProvider";
 
 const SEG_GAP = 3;
 const PULSE_MAX_OPACITY = 0.4;
-const PULSE_DURATION = 1000;
 
 const CurrentSegment = ({ color }: { color: string }) => {
-  const pulse = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    // See BarPulse: a never-ending pulse blocks Maestro's settle wait.
-    if (env.e2e) return;
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulse, {
-          toValue: 1,
-          duration: PULSE_DURATION,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulse, {
-          toValue: 0,
-          duration: PULSE_DURATION,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [pulse]);
+  // Fold the shared 0->1 sawtooth into a 0->max->0 triangle so the segment
+  // brightens and dims once per period, in phase with the other cards.
+  const phase = usePulse();
+  const opacity = phase.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0, PULSE_MAX_OPACITY, 0],
+  });
 
   return (
     <View style={{ flex: 1, backgroundColor: color, overflow: "hidden" }}>
@@ -43,10 +24,7 @@ const CurrentSegment = ({ color }: { color: string }) => {
           right: 0,
           bottom: 0,
           backgroundColor: "#fff",
-          opacity: pulse.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, PULSE_MAX_OPACITY],
-          }),
+          opacity,
         }}
       />
     </View>
@@ -72,7 +50,8 @@ export const SegmentedBar = ({
             key={i}
             style={{
               flex: 1,
-              backgroundColor: i < filled ? colors.primary : colors.secondaryContainer,
+              backgroundColor:
+                i < filled ? colors.primary : colors.secondaryContainer,
             }}
           />
         ),
