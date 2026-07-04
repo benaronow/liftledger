@@ -37,8 +37,11 @@ appId: app.liftledger.mobile
     timeout: 300
 
 # Open the gym SearchableSelect and type the target gym to filter. The wait
-# after tapping the field (before inputText) lets the native keyboard finish
-# sliding in so it doesn't race the typing and drop characters.
+# after tapping the field lets the native keyboard finish sliding in. The filter
+# still re-runs a Fuse search and re-renders the option list on every keystroke,
+# which lags this controlled field and can drop a character from a fast
+# inputText — leaking through as a bogus custom gym. So type, read the field
+# back, and retype until it matches.
 - tapOn: "Session Gym"
 - extendedWaitUntil:
     visible:
@@ -48,7 +51,16 @@ appId: app.liftledger.mobile
     id: "select-search"
 - waitForAnimationToEnd:
     timeout: 300
-- inputText: "${GYM}"
+- copyTextFrom:
+    id: "select-search"
+- repeat:
+    while:
+      true: ${maestro.copiedText != GYM}
+    commands:
+      - eraseText
+      - inputText: "${GYM}"
+      - copyTextFrom:
+          id: "select-search"
 
 # Existing gym -> tap its option; new gym -> add it as a custom option (which
 # also selects it).

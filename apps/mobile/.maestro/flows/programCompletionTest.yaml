@@ -542,6 +542,9 @@ onFlowComplete:
 - assertVisible: ".*0 reps.*"
 - assertVisible: ".*0lbs.*"
 # Add the Crunch add-on exercise at the FRONT (position 0 -> before BB Squat).
+# EXISTING is "true" even though this is Crunch's first appearance in the program:
+# "Crunch" is a seeded library name (exerciseNames.ts), so it's already a select
+# option and never renders the "add custom" footer — pick the existing option.
 - runFlow:
     file: ../subflows/addExercise.yaml
     env:
@@ -549,7 +552,7 @@ onFlowComplete:
       NAME: "Crunch"
       EQUIPMENT: "Machine"
       WEIGHT_TYPE: "lbs"
-      EXISTING: "false"
+      EXISTING: "true"
 # Pager is back on page 1, which is now Crunch. Crunch (new, one blank set): 50x8
 - assertVisible: "Crunch"
 - runFlow:

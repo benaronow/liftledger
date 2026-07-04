@@ -4,11 +4,14 @@ appId: app.liftledger.mobile
 # 0-based index; use the day's exercise count to append at the end).
 #
 # EQUIPMENT and WEIGHT_TYPE are selected from existing (seeded) options. NAME is
-# either added as a custom option (first use) or selected from the list (a re-add
-# of a name custom-added earlier in the flow — custom names persist even after
-# the add-on exercise itself is dropped). The caller states which via EXISTING:
-#   EXISTING: "false" -> first use, tap the "Add ..." footer to create it.
-#   EXISTING: "true"  -> re-add, tap the existing option.
+# either added as a custom option (name not yet a select option) or selected from
+# the list (name already a select option). A name is already an option if it's a
+# seeded library name (exerciseNames.ts, e.g. "Crunch") OR was custom-added earlier
+# in the flow (custom names persist even after the add-on exercise itself is
+# dropped). The caller states which via EXISTING:
+#   EXISTING: "false" -> not yet an option, tap the "Add ..." footer to create it.
+#   EXISTING: "true"  -> already an option, tap it. Use for BOTH re-adds and any
+#                        seeded library name, even on its first use in the program.
 # Branching on the param (not on which row happens to render) keeps it
 # deterministic: no waiting on the not-taken branch's element to time out, and no
 # risk of a mistyped name silently falling through to "add custom".
@@ -37,9 +40,13 @@ appId: app.liftledger.mobile
     timeout: 300
 
 # --- Name: type to filter, then pick the existing option or add it as custom
-# per EXISTING. The wait AFTER tapping the field (before inputText) lets the
-# native keyboard finish sliding in — otherwise it races the typing and drops
-# characters, which is how a mistyped name would leak through as a custom add. ---
+# per EXISTING. The wait AFTER tapping the field (before typing) lets the native
+# keyboard finish sliding in. Even so, the filter re-runs a Fuse search and
+# re-renders the whole option list on every keystroke, which lags this controlled
+# Searchbar and can still drop a character from a fast inputText — leaking through
+# as a wrong custom-add name. So type, read the field back, and retype until it
+# matches. Maestro can't slow inputText or paste, so this retry is the reliable
+# equivalent. ---
 - tapOn: "Exercise"
 - extendedWaitUntil:
     visible:
@@ -49,7 +56,16 @@ appId: app.liftledger.mobile
     id: "select-search"
 - waitForAnimationToEnd:
     timeout: 300
-- inputText: "${NAME}"
+- copyTextFrom:
+    id: "select-search"
+- repeat:
+    while:
+      true: ${maestro.copiedText != NAME}
+    commands:
+      - eraseText
+      - inputText: "${NAME}"
+      - copyTextFrom:
+          id: "select-search"
 - runFlow:
     when:
       true: ${EXISTING == 'true'}
@@ -64,7 +80,7 @@ appId: app.liftledger.mobile
           id: "select-add-custom"
 
 # --- Equipment: typed to filter, then the existing option is picked. Same
-# keyboard-settle wait before typing as the name field above. ---
+# keyboard-settle wait and type-and-verify retry as the name field above. ---
 - tapOn: "Equipment"
 - extendedWaitUntil:
     visible:
@@ -74,7 +90,16 @@ appId: app.liftledger.mobile
     id: "select-search"
 - waitForAnimationToEnd:
     timeout: 300
-- inputText: "${EQUIPMENT}"
+- copyTextFrom:
+    id: "select-search"
+- repeat:
+    while:
+      true: ${maestro.copiedText != EQUIPMENT}
+    commands:
+      - eraseText
+      - inputText: "${EQUIPMENT}"
+      - copyTextFrom:
+          id: "select-search"
 - tapOn:
     id: "select-option-${EQUIPMENT}"
 
