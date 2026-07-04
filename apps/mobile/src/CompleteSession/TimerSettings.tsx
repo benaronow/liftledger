@@ -1,19 +1,10 @@
 import { TimerPresets } from "@liftledger/shared";
-import {
-  useMe,
-  useSetTimerEnd,
-  useTimerPresets,
-  useUpdateTimerPresets,
-} from "@liftledger/api-client";
+import { useMe, useSetTimerEnd, useTimerSettings } from "@liftledger/api-client";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
-import { Button, IconButton, Text, useTheme } from "react-native-paper";
-import { LabeledSelect } from "../components/inputs";
+import { Button, IconButton, useTheme } from "react-native-paper";
+import { TimePicker } from "../components/TimePicker";
 import { FONT, RADIUS, SPACING } from "../theme";
-
-const TIME_OPTIONS = Array.from({ length: 60 }, (_, i) =>
-  i.toString().padStart(2, "0"),
-);
 
 const cellStyle = { flex: 1 };
 
@@ -26,20 +17,17 @@ interface Props {
 export const TimerSettings = ({ onTimerStarted }: Props) => {
   const { colors } = useTheme();
   const { data: curUser } = useMe();
-  const { data: timerPresetsData } = useTimerPresets(curUser?._id);
+  const { presets, savePresets } = useTimerSettings();
   const { trigger: triggerSetTimerEnd } = useSetTimerEnd();
-  const { trigger: triggerUpdateTimerPresets } = useUpdateTimerPresets();
 
   const [presetsState, setPresetsState] = useState<TimerPresets | undefined>(
-    () => timerPresetsData?.timerPresets,
+    () => presets,
   );
   const [presetEditIdx, setPresetEditIdx] = useState<number>();
 
   useEffect(() => {
-    if (timerPresetsData?.timerPresets) {
-      setPresetsState(timerPresetsData.timerPresets);
-    }
-  }, [timerPresetsData?.timerPresets]);
+    if (presets) setPresetsState(presets);
+  }, [presets]);
 
   const updatePresetsState = (idx: number, totalSeconds: number) => {
     setPresetsState((prev) => prev && { ...prev, [idx]: totalSeconds });
@@ -49,14 +37,6 @@ export const TimerSettings = ({ onTimerStarted }: Props) => {
     if (!curUser?._id) return;
     const endTime = new Date(new Date().getTime() + totalSeconds * 1000);
     triggerSetTimerEnd({ userId: curUser._id, timerEnd: endTime });
-  };
-
-  const savePresets = () => {
-    if (!curUser?._id || !presetsState) return;
-    triggerUpdateTimerPresets({
-      userId: curUser._id,
-      timerPresets: presetsState,
-    });
   };
 
   if (!curUser || !presetsState) return null;
@@ -93,31 +73,10 @@ export const TimerSettings = ({ onTimerStarted }: Props) => {
                   borderBottomLeftRadius: 8,
                 }}
               >
-                <View style={cellStyle}>
-                  <LabeledSelect
-                    value={presetMins}
-                    options={TIME_OPTIONS}
-                    onChange={(value) =>
-                      updatePresetsState(
-                        idx,
-                        parseInt(value) * 60 + (preset % 60),
-                      )
-                    }
-                  />
-                </View>
-                <Text style={{ color: "black", fontWeight: "700" }}>:</Text>
-                <View style={cellStyle}>
-                  <LabeledSelect
-                    value={presetSecs}
-                    options={TIME_OPTIONS}
-                    onChange={(value) =>
-                      updatePresetsState(
-                        idx,
-                        Math.floor(preset / 60) * 60 + parseInt(value),
-                      )
-                    }
-                  />
-                </View>
+                <TimePicker
+                  totalSeconds={preset}
+                  onChange={(value) => updatePresetsState(idx, value)}
+                />
               </View>
             ) : (
               <View style={cellStyle}>
@@ -164,7 +123,7 @@ export const TimerSettings = ({ onTimerStarted }: Props) => {
               }}
               onPress={() => {
                 if (isEditing) {
-                  savePresets();
+                  savePresets(presetsState);
                   setPresetEditIdx(undefined);
                 } else {
                   setPresetEditIdx(idx);

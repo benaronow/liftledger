@@ -67,13 +67,13 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
   const defaultNewExercise: Exercise = useMemo(
     () => ({
       name: "",
-      apparatus: "",
+      equipment: "",
       gym: curGym,
-      weightType: "",
+      weightType: curUser?.defaultWeightType ?? "",
       sets: [],
       addedOn: true,
     }),
-    [curGym],
+    [curGym, curUser?.defaultWeightType],
   );
   const [newExercise, setNewExercise] = useState<Exercise>(defaultNewExercise);
 
@@ -184,7 +184,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
 
   const exerciseIncomplete =
     newExercise.name === "" ||
-    newExercise.apparatus === "" ||
+    newExercise.equipment === "" ||
     newExercise.weightType === "";
 
   const translateY = progress.interpolate({
@@ -220,6 +220,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
         <Sheet
           title="Edit Exercises"
           actions={[{ label: "Done", onPress: close }]}
+          headerColor={colors.secondaryContainer}
         >
           <ScrollView
             contentContainerStyle={{
@@ -239,11 +240,11 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                     accessibilityLabel={`insert-exercise-${idx}`}
                   />
                   <Surface
-                    elevation={1}
+                    elevation={0}
                     style={{
                       width: "100%",
                       borderRadius: RADIUS.md,
-                      marginBottom: SPACING.md,
+                      marginBottom: SPACING.lg,
                       backgroundColor: colors.background,
                     }}
                   >
@@ -276,7 +277,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                             fontSize: FONT.sm,
                           }}
                         >
-                          {exercise.apparatus}
+                          {exercise.equipment}
                         </Text>
                       </View>
                       <View
@@ -294,7 +295,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                         )}
                         {exercise.addedOn && (
                           <IconButton
-                            style={{ margin: 0 }}
+                            style={{ margin: 0, borderRadius: RADIUS.sm }}
                             icon="delete"
                             mode="contained"
                             size={18}
@@ -312,7 +313,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                           />
                         )}
                         <IconButton
-                          style={{ margin: 0 }}
+                          style={{ margin: 0, borderRadius: RADIUS.sm }}
                           icon="pencil"
                           mode="contained"
                           size={18}
@@ -358,7 +359,6 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
         open={deletingIdx !== undefined}
         onClose={() => setDeletingIdx(undefined)}
         title="Delete Exercise"
-        icon="alert"
         destructive
         onConfirm={handleDelete}
         confirming={saving}

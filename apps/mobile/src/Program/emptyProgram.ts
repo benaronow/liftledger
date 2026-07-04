@@ -1,8 +1,7 @@
 import { Program } from "@liftledger/shared";
 
-export const EMPTY_PROGRAM: Program = {
+export const emptyProgram = (weightType = ""): Program => ({
   name: "",
-  startDate: new Date(),
   length: 0,
   rotations: [
     [
@@ -11,7 +10,7 @@ export const EMPTY_PROGRAM: Program = {
         exercises: [
           {
             name: "",
-            apparatus: "",
+            equipment: "",
             sets: [
               {
                 reps: null,
@@ -20,7 +19,7 @@ export const EMPTY_PROGRAM: Program = {
                 note: "",
               },
             ],
-            weightType: "",
+            weightType,
           },
         ],
         completedDate: undefined,
@@ -30,4 +29,4 @@ export const EMPTY_PROGRAM: Program = {
   curSessionIdx: 0,
   curRotationIdx: 0,
   restDays: 0,
-};
+});

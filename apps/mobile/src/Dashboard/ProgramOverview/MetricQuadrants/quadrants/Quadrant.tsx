@@ -22,14 +22,31 @@ type Props = {
   label: string;
   value: string;
   bar: ReactNode;
+  labelLeading?: ReactNode;
+  labelTrailing?: ReactNode;
 };
 
-export const Quadrant = ({ corner, label, value, bar }: Props) => {
+export const Quadrant = ({
+  corner,
+  label,
+  value,
+  bar,
+  labelLeading,
+  labelTrailing,
+}: Props) => {
   const { colors } = useTheme();
   const right = corner === "tr" || corner === "br";
   const bottom = corner === "bl" || corner === "br";
   const align: Align = right ? "right" : "left";
-  const title = <TitleRow label={label} value={value} align={align} />;
+  const title = (
+    <TitleRow
+      label={label}
+      value={value}
+      align={align}
+      labelLeading={labelLeading}
+      labelTrailing={labelTrailing}
+    />
+  );
 
   const barFrame = (
     <View

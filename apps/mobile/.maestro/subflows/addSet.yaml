@@ -1,23 +1,38 @@
 appId: app.liftledger.mobile
 # Add an add-on set (the "+" in the Sets header, enabled once an exercise is
 # fully complete) at WEIGHT x REPS. Same dialog as logSet; the new set pre-fills
-# from the last set's values, so we erase before typing. Params: WEIGHT, REPS.
+# from the last set's values. Params: WEIGHT, REPS.
 ---
 - tapOn: "Add set"
+# No dialog-settle wait: the dialog doesn't animate under E2E. The wait after
+# tapping the field stays — the native keyboard slide still races erase/input.
 - extendedWaitUntil:
     visible:
       id: "set-input-reps"
     timeout: 5000
-- waitForAnimationToEnd
 - tapOn:
     id: "set-input-reps"
-- waitForAnimationToEnd
-- eraseText
-- inputText: "${REPS}"
+- waitForAnimationToEnd:
+    timeout: 300
+# Pre-fills from the last set; only erase+retype when it differs from the target.
+- copyTextFrom:
+    id: "set-input-reps"
+- runFlow:
+    when:
+      true: ${maestro.copiedText != REPS}
+    commands:
+      - eraseText: 8
+      - inputText: "${REPS}"
 - tapOn:
     id: "set-input-weight"
-- eraseText
-- inputText: "${WEIGHT}"
+- copyTextFrom:
+    id: "set-input-weight"
+- runFlow:
+    when:
+      true: ${maestro.copiedText != WEIGHT}
+    commands:
+      - eraseText: 8
+      - inputText: "${WEIGHT}"
 # Tap the (non-input) title to dismiss the number-pad and reveal Confirm.
 - tapOn: "Submit Set"
 - tapOn: "Confirm"
@@ -25,4 +40,3 @@ appId: app.liftledger.mobile
     notVisible:
       text: "Submit Set"
     timeout: 5000
-- waitForAnimationToEnd

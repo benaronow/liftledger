@@ -18,7 +18,8 @@ const programByIdRoutes = async (app: FastifyInstance) => {
 
       try {
         const program = await ProgramModel.findOne({ _id: programId });
-        if (!program) return reply.code(404).send({ error: "Program not found" });
+        if (!program)
+          return reply.code(404).send({ error: "Program not found" });
         return program;
       } catch (error) {
         console.error("Failed to fetch program:", error);
@@ -37,7 +38,8 @@ const programByIdRoutes = async (app: FastifyInstance) => {
 
       const { program } = req.body;
 
-      const curSession: Session = program.rotations[program.curRotationIdx][program.curSessionIdx];
+      const curSession: Session =
+        program.rotations[program.curRotationIdx][program.curSessionIdx];
 
       const isCurRotationDone =
         !!program.rotations[program.curRotationIdx][
@@ -75,7 +77,11 @@ const programByIdRoutes = async (app: FastifyInstance) => {
                 sets: exercise.sets
                   .filter((set) => !set.addedOn)
                   .map((set: Set, idx: number) => {
-                    const latestSet = getLatestSet(exercise, idx) ?? set;
+                    const latestSet =
+                      getLatestSet(
+                        { ...exercise, gym: program.primaryGym },
+                        idx,
+                      ) ?? set;
                     return {
                       ...latestSet,
                       completed: false,
@@ -100,7 +106,8 @@ const programByIdRoutes = async (app: FastifyInstance) => {
             }
           : {
               ...program,
-              curSessionIdx: program.curSessionIdx + (curSession.completedDate ? 1 : 0),
+              curSessionIdx:
+                program.curSessionIdx + (curSession.completedDate ? 1 : 0),
             };
 
       let newProgram;
@@ -114,7 +121,8 @@ const programByIdRoutes = async (app: FastifyInstance) => {
         console.error("Failed to update program:", error);
         return reply.code(500).send({ error: "Failed to update program" });
       }
-      if (!newProgram) return reply.code(404).send({ error: "Program not found" });
+      if (!newProgram)
+        return reply.code(404).send({ error: "Program not found" });
 
       if (isCurProgramDone) {
         try {

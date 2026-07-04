@@ -96,7 +96,7 @@ export const SessionInfo = ({ session, dIdx, errors, onRequestDelete }: Props) =
   ];
 
   const hasListedExercises = session.exercises.some(
-    (e) => e.name && e.apparatus && e.sets.length,
+    (e) => e.name && e.equipment && e.sets.length,
   );
 
   const errorLines = [

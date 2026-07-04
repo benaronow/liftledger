@@ -1,7 +1,7 @@
 import { useCompletedExercises, useMe } from "@liftledger/api-client";
 import { type CompletedExercise, type Set } from "@liftledger/shared";
 import dayjs from "dayjs";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { LayoutChangeEvent, View } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
 import { LogoSpinner } from "../../components/LogoSpinner";
@@ -13,8 +13,9 @@ import type { ChartPoint } from "./types";
 
 interface Props {
   selectedName: string;
-  selectedApparatus: string;
+  selectedEquipment: string;
   gym?: string;
+  loading?: boolean;
 }
 
 const fmtKey = (d?: Date) => dayjs(d).format("YYYY-MM-DD");
@@ -28,17 +29,32 @@ const RIGHT_PAD = 16;
 const INITIAL_SPACING = 12;
 const END_SPACING = 12;
 const POINTER_RADIUS = 6;
+const CHART_HEIGHT_RATIO = 0.85;
 
 export const ProgressChart = ({
   selectedName,
-  selectedApparatus,
+  selectedEquipment,
   gym,
+  loading: externalLoading,
 }: Props) => {
   const { data: curUser, isLoading: isUserLoading } = useMe();
   const { data: completedExercises, isLoading: completedExercisesLoading } =
     useCompletedExercises(curUser?._id);
   const [size, setSize] = useState({ width: 0, height: 0 });
+  // The chart re-plots every point from the measured container size. When
+  // CompleteSession pushes in, the container is measured more than once as the
+  // screen slides in and the header inset settles — painting on the first
+  // (intermediate) size then re-plotting on the final one makes the dots visibly
+  // jump/grow. Hold the first paint until layout goes quiet so it lands on the
+  // final size once. (Progress doesn't hit this: its tab is already laid out.)
+  const [layoutReady, setLayoutReady] = useState(false);
+  const layoutReadyRef = useRef(false);
+  const settleTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const { colors } = useTheme();
+
+  useEffect(() => () => clearTimeout(settleTimer.current), []);
 
   const gymColors = useMemo(
     () => [
@@ -56,13 +72,13 @@ export const ProgressChart = ({
         .filter(
           (e) =>
             e.name === selectedName &&
-            e.apparatus === selectedApparatus &&
+            e.equipment === selectedEquipment &&
             (!gym || (e.gym ?? "Gym Unknown") === gym) &&
             e.completedDate &&
             e.sets.some((s) => s.completed),
         )
         .reverse(),
-    [selectedName, selectedApparatus, gym, completedExercises],
+    [selectedName, selectedEquipment, gym, completedExercises],
   );
 
   const gyms = useMemo(
@@ -161,14 +177,24 @@ export const ProgressChart = ({
     };
   }, [chartExercises]);
 
-  if (isUserLoading || completedExercisesLoading) return <LogoSpinner inline />;
-  if (!chartExercises.length) return <NoDataPlaceholder />;
+  const loading = externalLoading || isUserLoading || completedExercisesLoading;
+  const hasData = chartExercises.length > 0;
 
-  const onLayout = (e: LayoutChangeEvent) =>
-    setSize({
-      width: e.nativeEvent.layout.width - SPACING.sm,
-      height: e.nativeEvent.layout.height - SPACING.sm,
-    });
+  const onLayout = (e: LayoutChangeEvent) => {
+    const { width, height } = e.nativeEvent.layout;
+    setSize((prev) =>
+      prev.width === width && prev.height === height ? prev : { width, height },
+    );
+
+    if (layoutReadyRef.current) return;
+
+    clearTimeout(settleTimer.current);
+
+    settleTimer.current = setTimeout(() => {
+      layoutReadyRef.current = true;
+      setLayoutReady(true);
+    }, 80);
+  };
 
   const plotWidth = Math.max(
     0,
@@ -187,17 +213,23 @@ export const ProgressChart = ({
         style={{
           flex: 1,
           backgroundColor: colors.secondaryContainer,
-          paddingTop: SPACING.sm,
           paddingLeft: SPACING.sm,
           borderRadius: RADIUS.sm,
+          zIndex: 1,
+          justifyContent: "center",
         }}
         onLayout={onLayout}
       >
-        {size.width > 0 && (
+        {loading || !layoutReady ? (
+          <LogoSpinner inline transparent />
+        ) : !hasData ? (
+          <NoDataPlaceholder />
+        ) : size.width > 0 ? (
           <LineChart
             dataSet={dataSet}
             width={plotWidth}
-            height={Math.max(0, size.height - 40)}
+            height={Math.max(0, size.height * CHART_HEIGHT_RATIO)}
+            xAxisLabelsHeight={0}
             yAxisLabelWidth={Y_AXIS_WIDTH}
             initialSpacing={firstSpacing}
             endSpacing={END_SPACING}
@@ -256,9 +288,9 @@ export const ProgressChart = ({
               },
             }}
           />
-        )}
+        ) : null}
       </View>
-      {!gym && (
+      {!loading && hasData && (
         <View
           style={{
             flexDirection: "row",

@@ -1,8 +1,7 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
 import { Button, Text, useTheme } from "react-native-paper";
 import { TopSheet } from "../../components/TopSheet";
-import { SPACING } from "../../theme";
+import { RADIUS, SPACING } from "../../theme";
 import { TimerSettings } from "../TimerSettings";
 
 interface Props {
@@ -16,15 +15,13 @@ export const TimerSettingsDialog = ({ open, onClose }: Props) => {
   return (
     <TopSheet open={open} onClose={onClose}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={{ paddingHorizontal: SPACING.lg }}>
+        <View>
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              gap: SPACING.sm,
               marginTop: SPACING.lg,
-              marginBottom: SPACING.md,
               paddingHorizontal: SPACING.lg,
             }}
           >
@@ -34,13 +31,13 @@ export const TimerSettingsDialog = ({ open, onClose }: Props) => {
             >
               Rest Timer
             </Text>
-            <MaterialCommunityIcons
-              name="timer-outline"
-              size={24}
-              color={colors.primary}
-            />
           </View>
-          <View style={{ paddingVertical: SPACING.md }}>
+          <View
+            style={{
+              paddingVertical: SPACING.xl,
+              paddingHorizontal: SPACING.lg,
+            }}
+          >
             <TimerSettings onTimerStarted={onClose} />
           </View>
           <View
@@ -49,6 +46,10 @@ export const TimerSettingsDialog = ({ open, onClose }: Props) => {
               justifyContent: "flex-end",
               paddingTop: SPACING.sm,
               paddingBottom: SPACING.md,
+              backgroundColor: colors.secondaryContainer,
+              paddingHorizontal: SPACING.xs,
+              borderBottomLeftRadius: RADIUS.xl,
+              borderBottomRightRadius: RADIUS.xl,
             }}
           >
             <Button onPress={onClose}>Close</Button>

@@ -3,7 +3,6 @@ import { useRoute, type RouteProp } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LogoSpinner } from "../components/LogoSpinner";
 import { floatingTabBarClearance } from "../RootNavigator/TabNavigator/FloatingTabBar";
 import type { TabParamList } from "../RootNavigator/types";
 import { useTheme } from "react-native-paper";
@@ -18,24 +17,22 @@ export const Progress = () => {
   const { params } = useRoute<RouteProp<TabParamList, "Progress">>();
 
   const [selectedName, setSelectedName] = useState(params?.name ?? "");
-  const [selectedApparatus, setSelectedApparatus] = useState(
-    params?.apparatus ?? "",
+  const [selectedEquipment, setSelectedEquipment] = useState(
+    params?.equipment ?? "",
   );
 
   useEffect(() => {
     if (params?.name) {
       setSelectedName(params.name);
-      setSelectedApparatus(params.apparatus ?? "");
+      setSelectedEquipment(params.equipment ?? "");
     }
-  }, [params?.name, params?.apparatus]);
+  }, [params?.name, params?.equipment]);
   const { selectName, isLoading } = useExerciseSelection({
     selectedName,
-    selectedApparatus,
+    selectedEquipment,
     setSelectedName,
-    setSelectedApparatus,
+    setSelectedEquipment,
   });
-
-  if (isLoading) return <LogoSpinner />;
 
   return (
     <View
@@ -54,9 +51,9 @@ export const Progress = () => {
       >
         <ExerciseSelector
           selectedName={selectedName}
-          selectedApparatus={selectedApparatus}
+          selectedEquipment={selectedEquipment}
           setSelectedName={selectName}
-          setSelectedApparatus={setSelectedApparatus}
+          setSelectedEquipment={setSelectedEquipment}
         />
       </View>
       <View
@@ -68,7 +65,8 @@ export const Progress = () => {
         <SectionCard title="All Progress" style={{ flex: 1 }}>
           <ProgressChart
             selectedName={selectedName}
-            selectedApparatus={selectedApparatus}
+            selectedEquipment={selectedEquipment}
+            loading={isLoading}
           />
         </SectionCard>
       </View>

@@ -1,4 +1,5 @@
 import { useProgram, useMe } from "@liftledger/api-client";
+import { useState } from "react";
 import { ScrollView, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { LogoSpinner } from "../../components/LogoSpinner";
@@ -12,15 +13,15 @@ export const History = () => {
     curUser?.curProgram,
   );
   const { colors } = useTheme();
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   if (isUserLoading || isProgramLoading) return <LogoSpinner />;
 
-  // Duplicating a past program starts a fresh one, which would overwrite the
-  // active program. Block it while a program is in progress.
   const hasActiveProgram = !!curUser?.curProgram;
 
   const completedPrograms =
-    curUser?.programs.filter((program) => program._id !== curProgram?._id) ?? [];
+    curUser?.programs.filter((program) => program._id !== curProgram?._id) ??
+    [];
 
   return (
     <ScrollView
@@ -33,26 +34,14 @@ export const History = () => {
         paddingHorizontal: SPACING.lg,
       }}
     >
-      {hasActiveProgram && completedPrograms.length > 0 && (
-        <Text
-          style={{
-            width: "100%",
-            marginBottom: SPACING.lg,
-            fontSize: FONT.sm,
-            color: colors.onSurfaceDisabled,
-            textAlign: "center",
-          }}
-        >
-          Programs can&apos;t be duplicated while one is in progress.
-        </Text>
-      )}
       {completedPrograms.length > 0 ? (
         completedPrograms.map((program, idx) => (
           <CompletedProgram
             key={program._id}
             program={program}
-            idx={idx}
             disabled={hasActiveProgram}
+            expanded={openIdx === idx}
+            onToggle={() => setOpenIdx((prev) => (prev === idx ? null : idx))}
           />
         ))
       ) : (

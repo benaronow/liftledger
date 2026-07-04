@@ -10,3 +10,8 @@ export const fabClusterWidth = (count: number) =>
 
 export const titleRightInset = (count: number) =>
   FAB_EDGE + fabClusterWidth(count) + SPACING.lg;
+
+export const TIMER_PILL_WIDTH = 120;
+
+export const timerTitleRightInset = () =>
+  FAB_EDGE + TIMER_PILL_WIDTH + SPACING.lg;

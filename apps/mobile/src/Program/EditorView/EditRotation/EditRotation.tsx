@@ -8,20 +8,16 @@ import {
 import { Session } from "@liftledger/shared";
 import { Fragment, useEffect, useState } from "react";
 import { View } from "react-native";
-import { DatePickerInput } from "react-native-paper-dates";
 import { SearchableSelect } from "../../../components/SearchableSelect";
-import { PaperProvider, useTheme } from "react-native-paper";
 import { AddRow } from "../../../components/AddRow";
 import { AppTextInput, NumberInput } from "../../../components/inputs";
 import { SectionCard } from "../../../components/SectionCard";
-import { INPUT_HEIGHT, RADIUS, SPACING } from "../../../theme";
+import { SPACING } from "../../../theme";
 import { useTemplate } from "../../TemplateProvider";
 import { SessionInfo } from "./SessionInfo";
 import { DeleteSessionDialog } from "./DeleteSessionDialog";
 
 export const EditRotation = () => {
-  const theme = useTheme();
-  const { colors } = theme;
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
@@ -32,9 +28,9 @@ export const EditRotation = () => {
     editingRotationIdx,
     templateErrors,
   } = useTemplate();
-  const [deletingSessionIdx, setDeletingSessionIdx] = useState<number | undefined>(
-    undefined,
-  );
+  const [deletingSessionIdx, setDeletingSessionIdx] = useState<
+    number | undefined
+  >(undefined);
 
   const rotation = templateProgram.rotations[editingRotationIdx];
 
@@ -114,10 +110,10 @@ export const EditRotation = () => {
       exercises: [
         {
           name: "",
-          apparatus: "",
+          equipment: "",
           gym: templateProgram.primaryGym || "",
           sets: [{ reps: null, weight: null, completed: false, note: "" }],
-          weightType: curProgram ? "lbs" : "",
+          weightType: curUser?.defaultWeightType ?? "",
         },
       ],
       completedDate: undefined,
@@ -131,31 +127,14 @@ export const EditRotation = () => {
     });
   };
 
-  // An empty field commits null, which we ignore so clearing it mid-edit
-  // doesn't reset the length to 0 — it snaps back on blur.
   const handleLengthInput = (length: number | null) => {
     if (length == null) return;
     setTemplateProgram({ ...templateProgram, length });
   };
 
-  // Like length, an empty field commits null, which we ignore so clearing it
-  // mid-edit doesn't reset the value — it snaps back on blur.
   const handleRestDaysInput = (restDays: number | null) => {
     if (restDays == null) return;
     setTemplateProgram({ ...templateProgram, restDays });
-  };
-
-  const handleDateInput = (date: Date | undefined) => {
-    if (date) setTemplateProgram({ ...templateProgram, startDate: date });
-  };
-
-  const modalTheme = {
-    ...theme,
-    colors: {
-      ...colors,
-      surface: colors.background,
-      surfaceDisabled: colors.onSurfaceDisabled,
-    },
   };
 
   return (
@@ -171,24 +150,6 @@ export const EditRotation = () => {
           placeholder="Enter program name..."
           autoCapitalize="none"
         />
-        <View>
-          <PaperProvider theme={modalTheme}>
-            <DatePickerInput
-              style={{ height: INPUT_HEIGHT }}
-              outlineStyle={{ borderRadius: RADIUS.md }}
-              mode="outlined"
-              locale="en"
-              label="Start Date"
-              value={
-                templateProgram.startDate
-                  ? new Date(templateProgram.startDate)
-                  : undefined
-              }
-              onChange={handleDateInput}
-              inputMode="start"
-            />
-          </PaperProvider>
-        </View>
         <NumberInput
           label="Rotations"
           value={templateProgram.length}
@@ -208,7 +169,7 @@ export const EditRotation = () => {
           onSelect={setPrimaryGym}
           onAddCustom={handleAddGym}
           canAddCustom
-          placeholder="Enter or add a gym..."
+          placeholder="Search or add gym..."
         />
       </SectionCard>
 

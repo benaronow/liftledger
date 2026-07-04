@@ -4,62 +4,62 @@ import { useMe } from "../api/useMe";
 import { useExerciseOptions } from "./useExerciseOptions";
 
 /**
- * Where the (name, apparatus) selection is stored. Web backs this with the URL
+ * Where the (name, equipment) selection is stored. Web backs this with the URL
  * (`useSearchParams`) so progress views are shareable; mobile backs it with
  * `useState`. The hook owns the seeding/derivation logic and stays agnostic to
  * the storage.
  */
 export interface ExerciseSelectionStorage {
   selectedName: string;
-  selectedApparatus: string;
+  selectedEquipment: string;
   setSelectedName: (name: string) => void;
-  setSelectedApparatus: (apparatus: string) => void;
+  setSelectedEquipment: (equipment: string) => void;
 }
 
 /**
- * Drives the Progress page's exercise/apparatus selection, shared between web
+ * Drives the Progress page's exercise/equipment selection, shared between web
  * and mobile:
  *  - On first load (once data is in) seeds to the first exercise in the list
  *    that has entries — falling back to the first option — and that exercise's
- *    first entry's apparatus, so the initial view lands on real data.
- *  - Selecting an exercise (via the returned `selectName`) moves the apparatus
- *    to that exercise's first entry's apparatus. An exercise with no history
- *    leaves the apparatus untouched.
+ *    first entry's equipment, so the initial view lands on real data.
+ *  - Selecting an exercise (via the returned `selectName`) moves the equipment
+ *    to that exercise's first entry's equipment. An exercise with no history
+ *    leaves the equipment untouched.
  */
 export const useExerciseSelection = ({
   selectedName,
-  selectedApparatus,
+  selectedEquipment,
   setSelectedName,
-  setSelectedApparatus,
+  setSelectedEquipment,
 }: ExerciseSelectionStorage) => {
   const { data: curUser, isLoading: isUserLoading } = useMe();
   const { data: completedExercises, isLoading: completedExercisesLoading } =
     useCompletedExercises(curUser?._id);
-  const { allExerciseNameOptions, allExerciseApparatusOptions } =
+  const { allExerciseNameOptions, allExerciseEquipmentOptions } =
     useExerciseOptions();
 
-  // The apparatus of an exercise's first recorded entry, if any. `previous` is
-  // newest-first, so this is the apparatus last used for that exercise.
-  const firstApparatusFor = useCallback(
+  // The equipment of an exercise's first recorded entry, if any. `previous` is
+  // newest-first, so this is the equipment last used for that exercise.
+  const firstEquipmentFor = useCallback(
     (name: string) =>
-      completedExercises?.previous.find((ex) => ex.name === name)?.apparatus,
+      completedExercises?.previous.find((ex) => ex.name === name)?.equipment,
     [completedExercises],
   );
 
-  // Selecting an exercise also moves the apparatus to that of its first entry,
+  // Selecting an exercise also moves the equipment to that of its first entry,
   // so the view shows data instead of an empty combo. An exercise with no
-  // history leaves the apparatus untouched.
+  // history leaves the equipment untouched.
   const selectName = useCallback(
     (name: string) => {
       setSelectedName(name);
-      const apparatus = firstApparatusFor(name);
-      if (apparatus) setSelectedApparatus(apparatus);
+      const equipment = firstEquipmentFor(name);
+      if (equipment) setSelectedEquipment(equipment);
     },
-    [firstApparatusFor, setSelectedName, setSelectedApparatus],
+    [firstEquipmentFor, setSelectedName, setSelectedEquipment],
   );
 
   // Seed once the data has loaded. Handles both a clean start (no name yet) and
-  // a pre-set name with no apparatus (e.g. a shared/bookmarked web URL).
+  // a pre-set name with no equipment (e.g. a shared/bookmarked web URL).
   useEffect(() => {
     // Wait for the data itself, not just the loading flag: while the user is
     // still loading, `useCompletedExercises` runs with a null key (no user id),
@@ -68,7 +68,7 @@ export const useExerciseSelection = ({
     // user with no history gets a defined `{ current: [], previous: [] }` and
     // still falls through to the alphabetical default below.
     if (!completedExercises || allExerciseNameOptions.length === 0) return;
-    if (selectedName && selectedApparatus) return;
+    if (selectedName && selectedEquipment) return;
 
     if (!selectedName) {
       const seedName =
@@ -76,25 +76,25 @@ export const useExerciseSelection = ({
           completedExercises?.previous.some((ex) => ex.name === name),
         ) ?? allExerciseNameOptions[0];
       setSelectedName(seedName);
-      setSelectedApparatus(
-        firstApparatusFor(seedName) ?? allExerciseApparatusOptions[0] ?? "",
+      setSelectedEquipment(
+        firstEquipmentFor(seedName) ?? allExerciseEquipmentOptions[0] ?? "",
       );
       return;
     }
 
-    setSelectedApparatus(
-      firstApparatusFor(selectedName) ?? allExerciseApparatusOptions[0] ?? "",
+    setSelectedEquipment(
+      firstEquipmentFor(selectedName) ?? allExerciseEquipmentOptions[0] ?? "",
     );
   }, [
     selectedName,
-    selectedApparatus,
+    selectedEquipment,
     completedExercisesLoading,
     completedExercises,
     allExerciseNameOptions,
-    allExerciseApparatusOptions,
-    firstApparatusFor,
+    allExerciseEquipmentOptions,
+    firstEquipmentFor,
     setSelectedName,
-    setSelectedApparatus,
+    setSelectedEquipment,
   ]);
 
   // True until the user is loaded, the completed-exercise data is in, and the
@@ -103,13 +103,13 @@ export const useExerciseSelection = ({
     isUserLoading ||
     completedExercisesLoading ||
     !selectedName ||
-    !selectedApparatus;
+    !selectedEquipment;
 
   return {
     selectedName,
-    selectedApparatus,
+    selectedEquipment,
     selectName,
-    setSelectedApparatus,
+    setSelectedEquipment,
     isLoading,
   };
 };

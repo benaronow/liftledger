@@ -1,4 +1,4 @@
-import { useCurrentSession } from "@liftledger/api-client";
+import { useCurrentSession, useMe, useTimerEnd } from "@liftledger/api-client";
 import { useEffect, useRef, useState } from "react";
 import {
   NativeScrollEvent,
@@ -16,6 +16,9 @@ interface Props {
 
 export const ExercisePager = ({ pageIdx, onPageChange }: Props) => {
   const { exercises, currentExIdx } = useCurrentSession();
+  const { data: curUser } = useMe();
+  const { data: timerEndData } = useTimerEnd(curUser?._id);
+  const timerRunning = !!timerEndData?.timerEnd;
   const { width } = useWindowDimensions();
   const scrollRef = useRef<ScrollView>(null);
   const isFirstSync = useRef(true);
@@ -51,6 +54,7 @@ export const ExercisePager = ({ pageIdx, onPageChange }: Props) => {
           <ExercisePage
             exercise={exercise}
             isCurrentExercise={index === currentExIdx}
+            timerRunning={timerRunning}
             onChartTouchStart={() => setSwipeEnabled(false)}
             onChartTouchEnd={() => setSwipeEnabled(true)}
           />

@@ -10,6 +10,7 @@ import { LogoSpinner } from "../components/LogoSpinner";
 import { useThemePreference } from "../providers/ThemeProvider";
 import { Welcome } from "../Welcome";
 import { AuthenticatedRouter } from "./AuthenticatedRouter";
+import { navigationRef } from "./navigationRef";
 
 const AuthStack = createNativeStackNavigator();
 
@@ -35,7 +36,7 @@ export const RootNavigator = () => {
   };
 
   return (
-    <NavigationContainer theme={navTheme}>
+    <NavigationContainer ref={navigationRef} theme={navTheme}>
       {user ? (
         <AuthenticatedRouter />
       ) : (

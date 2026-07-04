@@ -1,34 +1,17 @@
-import { useEffect, useRef } from "react";
 import { useTheme } from "react-native-paper";
-import { Animated, Easing, View } from "react-native";
+import { Animated, View } from "react-native";
+import { usePulse } from "./PulseProvider";
 
 const SEG_GAP = 3;
 const PULSE_MAX_OPACITY = 0.4;
-const PULSE_DURATION = 1000;
+const SKIPPED_COLOR = "#7D7D82";
 
 const CurrentSegment = ({ color }: { color: string }) => {
-  const pulse = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulse, {
-          toValue: 1,
-          duration: PULSE_DURATION,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulse, {
-          toValue: 0,
-          duration: PULSE_DURATION,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [pulse]);
+  const phase = usePulse();
+  const opacity = phase.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0, PULSE_MAX_OPACITY, 0],
+  });
 
   return (
     <View style={{ flex: 1, backgroundColor: color, overflow: "hidden" }}>
@@ -40,10 +23,7 @@ const CurrentSegment = ({ color }: { color: string }) => {
           right: 0,
           bottom: 0,
           backgroundColor: "#fff",
-          opacity: pulse.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, PULSE_MAX_OPACITY],
-          }),
+          opacity,
         }}
       />
     </View>
@@ -53,9 +33,11 @@ const CurrentSegment = ({ color }: { color: string }) => {
 export const SegmentedBar = ({
   count,
   filled,
+  skipped,
 }: {
   count: number;
   filled: number;
+  skipped?: Set<number>;
 }) => {
   const { colors } = useTheme();
 
@@ -69,7 +51,12 @@ export const SegmentedBar = ({
             key={i}
             style={{
               flex: 1,
-              backgroundColor: i < filled ? colors.primary : colors.secondaryContainer,
+              backgroundColor:
+                i < filled
+                  ? skipped?.has(i)
+                    ? SKIPPED_COLOR
+                    : colors.primary
+                  : colors.secondaryContainer,
             }}
           />
         ),

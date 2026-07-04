@@ -3,7 +3,6 @@ import { Schema } from "mongoose";
 const programSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
-    startDate: { type: Date, required: true },
     length: { type: Number, required: true },
     primaryGym: { type: String },
     rotations: [
@@ -14,7 +13,7 @@ const programSchema: Schema = new Schema(
           exercises: [
             {
               name: String,
-              apparatus: String,
+              equipment: String,
               gym: String,
               sets: [
                 {

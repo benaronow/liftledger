@@ -8,7 +8,7 @@
     "dev": "tsx watch --env-file=.env.local src/index.ts",
     "start": "tsx src/index.ts",
     "start:local": "tsx --env-file=.env.local src/index.ts",
-    "migrate:rotations": "tsx --env-file=.env.local scripts/migrate-rename-rotations.ts",
+    "start:e2e": "tsx --env-file=.env.local scripts/start-e2e.ts",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "test": "vitest",

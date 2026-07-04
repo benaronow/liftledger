@@ -35,7 +35,6 @@ export const ResetPasswordDialog = ({ open, onClose }: Props) => {
       open={open}
       onClose={onClose}
       title="Reset Password"
-      icon="lock-reset"
       onConfirm={handleSend}
       confirming={sending}
     >

@@ -29,9 +29,9 @@ export const Welcome = () => {
 
   // Dev-build-only: non-interactive password-realm login for the dedicated E2E
   // user, so Maestro can authenticate without driving the Auth0 browser sheet.
-  // Gated by __DEV__ (stripped from release builds) and a configured E2E email,
-  // so it never renders for real users.
-  const showE2eLogin = __DEV__ && !!env.e2eEmail;
+  // Gated by env.e2e (only set when launched via the `start:e2e` script), so it
+  // never renders for real users.
+  const showE2eLogin = env.e2e;
   const onE2eLogin = () =>
     loginWithPasswordRealm({
       username: env.e2eEmail,

@@ -1,4 +1,4 @@
-import { Program } from "@liftledger/shared";
+import { Program, Session } from "@liftledger/shared";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -8,54 +8,66 @@ const startOfDay = (date: Date): number => {
   return d.getTime();
 };
 
-// The streak is the run of completed-session days ending at (or just before)
-// today. `restDays` is a per-rotation budget: walking the run backwards, each
-// missed day spends one day of the budget for the rotation it falls in, and the
-// budget refreshes whenever we cross into an earlier rotation. Once a rotation's
-// budget is exhausted, the next missed day breaks the streak. Rest days keep the
-// streak alive but never add to its count — only completed days do.
-export const getStreak = (program: Program): number => {
-  const restDays = program.restDays ?? 0;
+export const isFullySkipped = (session: Session): boolean =>
+  session.exercises.every((exercise) =>
+    exercise.sets.every((set) => !set.completed),
+  );
 
-  // day -> rotation index. When a single day holds sessions from more than one
-  // rotation, keep the most recent so the budget refresh lands at the boundary.
-  const completedDays = new Map<number, number>();
+const completedDayMap = (program: Program): Map<number, number> => {
+  const days = new Map<number, number>();
   program.rotations.forEach((rotation, rotationIdx) =>
     rotation.forEach((session) => {
-      if (!session.completedDate) return;
+      if (!session.completedDate || isFullySkipped(session)) return;
       const day = startOfDay(new Date(session.completedDate));
-      completedDays.set(day, Math.max(completedDays.get(day) ?? 0, rotationIdx));
+      days.set(day, Math.max(days.get(day) ?? 0, rotationIdx));
     }),
   );
-  if (completedDays.size === 0) return 0;
+  return days;
+};
 
-  const mostRecent = Math.max(...completedDays.keys());
-  const earliest = Math.min(...completedDays.keys());
+export const getStreak = (program: Program): number => {
+  const restDays = program.restDays ?? 0;
+  const days = completedDayMap(program);
+  if (days.size === 0) return 0;
+
+  const sorted = [...days.keys()].sort((a, b) => b - a);
   const today = startOfDay(new Date());
 
-  // Today not being done yet is grace, not a missed day — start from yesterday.
-  let cursor = completedDays.has(today) ? today : today - DAY_MS;
+  let restUsed = Math.max(0, (today - sorted[0]) / DAY_MS - 1);
+  if (restUsed > restDays) return 0;
 
-  let streak = 0;
-  let curRotation = completedDays.get(mostRecent)!;
-  let restUsed = 0;
-
-  // Below the earliest completed day there's nothing left to count and the budget
-  // can't refresh, so the streak is settled.
-  while (cursor >= earliest) {
-    const rotation = completedDays.get(cursor);
-    if (rotation !== undefined) {
-      if (rotation !== curRotation) {
-        curRotation = rotation;
-        restUsed = 0;
-      }
-      streak += 1;
-    } else {
-      restUsed += 1;
-      if (restUsed > restDays) break;
+  let streak = 1;
+  let curRotation = days.get(sorted[0])!;
+  for (let i = 1; i < sorted.length; i++) {
+    restUsed += (sorted[i - 1] - sorted[i]) / DAY_MS - 1;
+    if (restUsed > restDays) break;
+    if (days.get(sorted[i]) !== curRotation) {
+      curRotation = days.get(sorted[i])!;
+      restUsed = 0;
     }
-    cursor -= DAY_MS;
+    streak += 1;
   }
 
   return streak;
+};
+
+export const getRestDaysRemaining = (program: Program): number => {
+  const restDays = program.restDays ?? 0;
+  const rotation = program.rotations[program.curRotationIdx];
+  if (!rotation) return restDays;
+
+  const completedDays = rotation
+    .filter((session) => session.completedDate)
+    .map((session) => startOfDay(new Date(session.completedDate!)));
+  if (completedDays.length === 0) return restDays;
+
+  const start = Math.min(...completedDays);
+  const today = startOfDay(new Date());
+  const daysThroughYesterday = Math.max(0, (today - start) / DAY_MS);
+  const completedBeforeToday = new Set(
+    completedDays.filter((day) => day < today),
+  ).size;
+  const idle = daysThroughYesterday - completedBeforeToday;
+
+  return Math.max(0, restDays - idle);
 };

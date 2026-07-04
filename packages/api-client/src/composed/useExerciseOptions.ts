@@ -1,36 +1,25 @@
 import { Exercise } from "@liftledger/shared";
-import { EXERCISE_NAMES } from "@liftledger/shared";
-import { EXERCISE_APPARATUSES } from "@liftledger/shared";
 import { useCallback, useMemo } from "react";
 import { useMe } from "../api/useMe";
 import { useUpdateUser } from "../api/useUser";
 
-const getAllOptions = (baseOptions: string[], customOptions?: string[]) => {
-  const filteredCustom =
-    customOptions?.filter(
-      (c) =>
-        !baseOptions.some((b: string) => b.toLowerCase() === c.toLowerCase()),
-    ) ?? [];
-
-  return [...baseOptions, ...filteredCustom].sort();
-};
+const sorted = (options?: string[]) => [...(options ?? [])].sort();
 
 export const useExerciseOptions = () => {
   const { data: curUser } = useMe();
   const { trigger: triggerUpdateUser } = useUpdateUser();
 
   const allExerciseNameOptions = useMemo<string[]>(
-    () => getAllOptions(EXERCISE_NAMES, curUser?.customExerciseNames),
+    () => sorted(curUser?.exerciseNames),
     [curUser],
   );
 
-  const allExerciseApparatusOptions = useMemo<string[]>(
-    () =>
-      getAllOptions(EXERCISE_APPARATUSES, curUser?.customExerciseApparatuses),
+  const allExerciseEquipmentOptions = useMemo<string[]>(
+    () => sorted(curUser?.exerciseEquipment),
     [curUser],
   );
 
-  const addCustomExerciseName = useCallback(
+  const addExerciseName = useCallback(
     async (value: string) => {
       if (
         !curUser ||
@@ -42,17 +31,17 @@ export const useExerciseOptions = () => {
 
       await triggerUpdateUser({
         ...curUser,
-        customExerciseNames: [...(curUser.customExerciseNames ?? []), value],
+        exerciseNames: [...(curUser.exerciseNames ?? []), value],
       });
     },
     [curUser, allExerciseNameOptions, triggerUpdateUser],
   );
 
-  const addCustomExerciseApparatus = useCallback(
+  const addExerciseEquipment = useCallback(
     async (value: string) => {
       if (
         !curUser ||
-        allExerciseApparatusOptions
+        allExerciseEquipmentOptions
           .map((o) => o.toLowerCase())
           .includes(value.toLowerCase())
       )
@@ -60,55 +49,80 @@ export const useExerciseOptions = () => {
 
       await triggerUpdateUser({
         ...curUser,
-        customExerciseApparatuses: [
-          ...(curUser.customExerciseApparatuses ?? []),
-          value,
-        ],
+        exerciseEquipment: [...(curUser.exerciseEquipment ?? []), value],
       });
     },
-    [curUser, allExerciseApparatusOptions, triggerUpdateUser],
+    [curUser, allExerciseEquipmentOptions, triggerUpdateUser],
+  );
+
+  const deleteExerciseName = useCallback(
+    async (value: string) => {
+      if (!curUser) return;
+      await triggerUpdateUser({
+        ...curUser,
+        exerciseNames: (curUser.exerciseNames ?? []).filter(
+          (o) => o !== value,
+        ),
+      });
+    },
+    [curUser, triggerUpdateUser],
+  );
+
+  const deleteExerciseEquipment = useCallback(
+    async (value: string) => {
+      if (!curUser) return;
+      await triggerUpdateUser({
+        ...curUser,
+        exerciseEquipment: (curUser.exerciseEquipment ?? []).filter(
+          (o) => o !== value,
+        ),
+      });
+    },
+    [curUser, triggerUpdateUser],
   );
 
   const getAvailableExerciseNameOptions = useCallback(
     (curExercise: Exercise, allReservedExercises: Exercise[]) => {
       const unavailableExercises = allReservedExercises.filter(
         (e) =>
-          e.name !== curExercise.name || e.apparatus !== curExercise.apparatus,
+          e.name !== curExercise.name || e.equipment !== curExercise.equipment,
       );
 
       return allExerciseNameOptions.filter(
         (n) =>
           !unavailableExercises.find(
-            (e) => e.name === n && e.apparatus === curExercise.apparatus,
+            (e) => e.name === n && e.equipment === curExercise.equipment,
           ),
       );
     },
     [allExerciseNameOptions],
   );
 
-  const getAvailableExerciseApparatusOptions = useCallback(
+  const getAvailableExerciseEquipmentOptions = useCallback(
     (curExercise: Exercise, allReservedExercises: Exercise[]) => {
       const unavailableExercises = allReservedExercises.filter(
         (e) =>
-          e.name !== curExercise.name || e.apparatus !== curExercise.apparatus,
+          e.name !== curExercise.name || e.equipment !== curExercise.equipment,
       );
 
-      return allExerciseApparatusOptions.filter(
+      return allExerciseEquipmentOptions.filter(
         (a) =>
           !unavailableExercises.find(
-            (e) => e.apparatus === a && e.name === curExercise.name,
+            (e) => e.equipment === a && e.name === curExercise.name,
           ),
       );
     },
-    [allExerciseApparatusOptions],
+    [allExerciseEquipmentOptions],
   );
 
   return {
-    addCustomExerciseName,
-    addCustomExerciseApparatus,
+    addExerciseName,
+    addExerciseEquipment,
+    deleteExerciseName,
+    deleteExerciseEquipment,
     allExerciseNameOptions,
     getAvailableExerciseNameOptions,
-    allExerciseApparatusOptions,
-    getAvailableExerciseApparatusOptions,
+    allExerciseEquipmentOptions,
+    getAvailableExerciseEquipmentOptions,
   };
 };

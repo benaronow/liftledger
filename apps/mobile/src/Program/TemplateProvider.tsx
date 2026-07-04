@@ -4,12 +4,13 @@ import {
   Dispatch,
   PropsWithChildren,
   SetStateAction,
+  useCallback,
   useContext,
   useMemo,
   useState,
 } from "react";
 import { TemplateErrors, validateTemplate } from "./validateTemplate";
-import { EMPTY_PROGRAM } from "./emptyProgram";
+import { emptyProgram } from "./emptyProgram";
 
 interface TemplateContextModel {
   templateProgram: Program;
@@ -20,10 +21,13 @@ interface TemplateContextModel {
   editingSessionIdx: number;
   setEditingSessionIdx: Dispatch<SetStateAction<number>>;
   templateErrors: TemplateErrors;
+  dirty: boolean;
+  resetTemplate: () => void;
+  commitBaseline: (program: Program) => void;
 }
 
 const defaultTemplateContext: TemplateContextModel = {
-  templateProgram: EMPTY_PROGRAM,
+  templateProgram: emptyProgram(),
   setTemplateProgram: () => {},
   unsetTemplateProgram: () => {},
   editingRotationIdx: 0,
@@ -31,6 +35,9 @@ const defaultTemplateContext: TemplateContextModel = {
   editingSessionIdx: -1,
   setEditingSessionIdx: () => {},
   templateErrors: { program: {}, sessions: [] },
+  dirty: false,
+  resetTemplate: () => {},
+  commitBaseline: () => {},
 };
 
 const TemplateContext = createContext<TemplateContextModel>(
@@ -49,10 +56,28 @@ export const TemplateProvider = ({
 }: Props) => {
   const [templateProgram, setTemplateProgram] =
     useState<Program>(initialTemplate);
-  const [editingRotationIdx, setEditingRotationIdx] = useState(initialRotationIdx);
+  const [editingRotationIdx, setEditingRotationIdx] =
+    useState(initialRotationIdx);
   const [editingSessionIdx, setEditingSessionIdx] = useState(-1);
+  const [baseline, setBaseline] = useState(initialTemplate);
 
-  const unsetTemplateProgram = () => setTemplateProgram(EMPTY_PROGRAM);
+  const unsetTemplateProgram = () => setTemplateProgram(emptyProgram());
+
+  const dirty = useMemo(
+    () => JSON.stringify(templateProgram) !== JSON.stringify(baseline),
+    [templateProgram, baseline],
+  );
+
+  const resetTemplate = useCallback(() => {
+    setTemplateProgram(baseline);
+    setEditingRotationIdx(initialRotationIdx);
+    setEditingSessionIdx(-1);
+  }, [baseline, initialRotationIdx]);
+
+  const commitBaseline = useCallback((program: Program) => {
+    setBaseline(program);
+    setTemplateProgram(program);
+  }, []);
 
   const templateErrors = useMemo(
     () => validateTemplate(templateProgram, editingRotationIdx),
@@ -70,6 +95,9 @@ export const TemplateProvider = ({
         editingSessionIdx,
         setEditingSessionIdx,
         templateErrors,
+        dirty,
+        resetTemplate,
+        commitBaseline,
       }}
     >
       {children}

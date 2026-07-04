@@ -19,8 +19,7 @@ export const AddRow = ({ onPress, accessibilityLabel, disabled }: Props) => {
         flexDirection: "row",
         alignItems: "center",
         width: "90%",
-        // Match Info's marginBottom so the row sits centered between cards.
-        marginBottom: SPACING.md,
+        marginBottom: SPACING.lg,
       }}
     >
       <Divider style={lineStyle} />

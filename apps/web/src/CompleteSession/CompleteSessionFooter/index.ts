@@ -1,1 +1,0 @@
-export { CompleteSessionFooter } from "./CompleteSessionFooter";

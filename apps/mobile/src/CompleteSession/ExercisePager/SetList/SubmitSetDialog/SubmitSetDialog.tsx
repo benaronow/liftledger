@@ -1,4 +1,4 @@
-import { Program, Session, Exercise, Set } from "@liftledger/shared";
+import { Exercise, buildProgramWithSessionExercises } from "@liftledger/shared";
 import { useEffect, useState } from "react";
 import {
   findLatestOccurrence,
@@ -6,6 +6,8 @@ import {
   useCompletedExercises,
   useCurrentSession,
   useMe,
+  useSetTimerEnd,
+  useTimerSettings,
   useUpdateUserProgram,
 } from "@liftledger/api-client";
 import { ConfirmationDialog } from "../../../../components/ConfirmationDialog";
@@ -23,6 +25,8 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
   const { trigger: triggerUpdateUserProgram } = useUpdateUserProgram();
+  const { trigger: triggerSetTimerEnd } = useSetTimerEnd();
+  const { resolveDuration } = useTimerSettings();
   const { showSnackbar } = useSnackbar();
 
   const { exercises } = useCurrentSession();
@@ -30,7 +34,10 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
   const [skippingSet, setSkippingSet] = useState(false);
 
   const [exerciseState, setExerciseState] = useState<Exercise>();
+  const [displaySetIdx, setDisplaySetIdx] = useState(setIdx);
   useEffect(() => {
+    if (setIdx === undefined) return;
+
     setExerciseState(
       exercise && setIdx === exercise.sets.length
         ? {
@@ -42,62 +49,16 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
           }
         : exercise,
     );
+
+    setDisplaySetIdx(setIdx);
   }, [exercise, setIdx]);
 
   const saveExercises = async (updatedExercises: Exercise[]) => {
     if (!curUser?._id || !curProgram) return;
 
-    const newSessions: Session[] = curProgram.rotations[curProgram.curRotationIdx].toSpliced(
-      curProgram.curSessionIdx,
-      1,
-      {
-        ...curProgram.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx],
-        exercises: updatedExercises,
-      },
-    );
-
-    const updatedLaterDays: Session[] = newSessions.map((session: Session, idx) =>
-      idx <= curProgram.curSessionIdx
-        ? session
-        : {
-            ...session,
-            exercises: session.exercises.map((exercise: Exercise) => {
-              const completedExercise = updatedExercises.find(
-                (e: Exercise) =>
-                  e.name === exercise.name &&
-                  e.apparatus === exercise.apparatus &&
-                  e.gym === exercise.gym,
-              );
-
-              return completedExercise
-                ? {
-                    ...completedExercise,
-                    sets: completedExercise.sets
-                      .filter((set) => !set.addedOn)
-                      .map((set: Set) => ({
-                        ...set,
-                        completed: false,
-                        skipped: undefined,
-                        note: "",
-                      })),
-                  }
-                : exercise;
-            }),
-          },
-    );
-
-    const newProgram: Program = {
-      ...curProgram,
-      rotations: curProgram.rotations.toSpliced(
-        curProgram.curRotationIdx,
-        1,
-        updatedLaterDays,
-      ),
-    };
-
     await triggerUpdateUserProgram({
       userId: curUser._id,
-      program: newProgram,
+      program: buildProgramWithSessionExercises(curProgram, updatedExercises),
     });
   };
 
@@ -114,7 +75,7 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       completedExercises,
       (e: Exercise) =>
         e.name === exercise?.name &&
-        e.apparatus === exercise?.apparatus &&
+        e.equipment === exercise?.equipment &&
         e.gym === exercise.gym &&
         !!e.sets[setIdx],
     )?.sets[setIdx];
@@ -138,12 +99,10 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
     const exerciseIdx = exercises.findIndex(
       (e: Exercise) =>
         e.name === updatedExercise.name &&
-        e.apparatus === updatedExercise.apparatus &&
+        e.equipment === updatedExercise.equipment &&
         e.gym === updatedExercise.gym,
     );
 
-    // Guard against a -1 from findIndex: toSpliced(-1, …) would silently
-    // replace the *last* exercise rather than the intended one.
     if (exerciseIdx === -1) {
       showSnackbar("Error submitting set. Please try again.");
       setSkippingSet(false);
@@ -162,10 +121,27 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       onClose();
     } catch {
       showSnackbar("Error submitting set. Please try again.");
-    } finally {
       setSkippingSet(false);
       setSubmittingSet(false);
+      return;
     }
+
+    if (!options?.skip && curUser?._id) {
+      const duration = resolveDuration(updatedExercise.name);
+      if (duration !== undefined) {
+        try {
+          await triggerSetTimerEnd({
+            userId: curUser._id,
+            timerEnd: new Date(Date.now() + duration * 1000),
+          });
+        } catch {
+          showSnackbar("Failed to start rest timer.", "error");
+        }
+      }
+    }
+
+    setSkippingSet(false);
+    setSubmittingSet(false);
   };
 
   return (
@@ -173,19 +149,18 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       open={!!exercise && setIdx !== undefined}
       onClose={onClose}
       title="Submit Set"
-      icon="check-bold"
       onConfirm={handleSubmitSet}
       confirming={submittingSet || skippingSet}
+      confirmationDisabled={submittingSet || skippingSet}
       secondaryAction="Skip Set"
       onSecondaryAction={() => handleSubmitSet({ skip: true })}
-      secondaryActionDisabled={
-        exerciseState?.sets[setIdx!]?.skipped || setIdx === exercise!.sets.length
-      }
+      secondaryActionLoading={skippingSet}
+      secondaryActionDisabled={submittingSet || skippingSet}
     >
       <EditSet
         exerciseState={exerciseState}
         setExerciseState={setExerciseState}
-        setIdx={setIdx!}
+        setIdx={displaySetIdx!}
       />
     </ConfirmationDialog>
   );

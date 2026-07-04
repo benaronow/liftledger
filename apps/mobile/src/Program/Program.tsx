@@ -10,8 +10,9 @@ import { LogoSpinner } from "../components/LogoSpinner";
 import type { TabParamList } from "../RootNavigator/types";
 import { useTheme } from "react-native-paper";
 import { ProgramFAB } from "./ProgramFAB";
+import { ProgramLeaveGuard } from "./ProgramLeaveGuard";
 import { EditorView } from "./EditorView";
-import { EMPTY_PROGRAM } from "./emptyProgram";
+import { emptyProgram } from "./emptyProgram";
 import { ProgramTransitionProvider } from "./ProgramTransition";
 import { TemplateProvider } from "./TemplateProvider";
 import { templateFromProgram } from "./templateFromProgram";
@@ -58,7 +59,7 @@ export const Program = () => {
     ? curProgram!
     : duplicateFromId
       ? templateFromProgram(sourceProgram!, completedExercises!)
-      : EMPTY_PROGRAM;
+      : emptyProgram(curUser.defaultWeightType);
   const initialRotationIdx = editingActiveProgram
     ? (curProgram!.curRotationIdx ?? 0)
     : 0;
@@ -75,6 +76,7 @@ export const Program = () => {
             <EditorView />
             <ProgramFAB />
           </View>
+          <ProgramLeaveGuard />
         </TemplateProvider>
         {transitioning && (
           <View style={[StyleSheet.absoluteFill, { zIndex: 20 }]}>

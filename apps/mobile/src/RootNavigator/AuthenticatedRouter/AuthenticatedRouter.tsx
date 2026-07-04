@@ -4,13 +4,14 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth0 } from "react-native-auth0";
-import { useAuth0Profile, useMe } from "@liftledger/api-client";
+import { useAuth0Profile, useMe, useTimerEnd } from "@liftledger/api-client";
 import { useTheme } from "react-native-paper";
 import { AvatarButton } from "./AvatarButton";
 import { ConnectionError } from "./ConnectionError";
 import { LogoutButton } from "./LogoutButton";
 import { LogoSpinner } from "../../components/LogoSpinner";
-import { Timer } from "../../components/Timer";
+import { HeaderTimer } from "../../components/Timer";
+import { TimerFinishedOverlay } from "./TimerFinishedOverlay";
 import { Account } from "../../Account";
 import { useThemePreference } from "../../providers/ThemeProvider";
 import { CompleteSession } from "../../CompleteSession";
@@ -50,6 +51,9 @@ export const AuthenticatedRouter = () => {
     mutate: refreshMe,
   } = useMe(emailVerified);
 
+  const { data: timerEndData } = useTimerEnd(curUser?._id);
+  const timerRunning = !!timerEndData?.timerEnd;
+
   const status = (userError as { response?: { status?: number } } | undefined)
     ?.response?.status;
   const accountMissing = status === 404;
@@ -86,6 +90,7 @@ export const AuthenticatedRouter = () => {
           component={TabNavigator}
           options={({ navigation, route }) => ({
             title: tabTitle(route),
+            headerLeft: timerRunning ? () => <HeaderTimer /> : undefined,
             headerRight: () => (
               <AvatarButton onPress={() => navigation.navigate("Account")} />
             ),
@@ -108,7 +113,7 @@ export const AuthenticatedRouter = () => {
           }}
         />
       </Stack.Navigator>
-      <Timer />
+      <TimerFinishedOverlay />
     </>
   );
 };

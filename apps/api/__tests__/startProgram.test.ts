@@ -15,16 +15,15 @@ const makeUser = () => ({
   email: "test@example.com",
   username: "testuser",
   fullName: "Test User",
-  timerPresets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 },
+  timerSettings: { presets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 } },
   gyms: ["Gym A"],
-  customExerciseNames: [],
-  customExerciseApparatuses: [],
+  exerciseNames: [],
+  exerciseEquipment: [],
   programs: [],
 });
 
 const makeProgram = () => ({
   name: "Test Program",
-  startDate: new Date("2024-01-01"),
   length: 4,
   primaryGym: "Gym A",
   rotations: [
@@ -35,7 +34,7 @@ const makeProgram = () => ({
         exercises: [
           {
             name: "Bench Press",
-            apparatus: "Barbell",
+            equipment: "Barbell",
             gym: "Gym A",
             sets: [{ reps: 10, weight: 100, note: "", completed: false }],
             weightType: "lbs",

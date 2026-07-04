@@ -48,7 +48,7 @@ export const getNewSetsFromLatest = (
     completedExercises,
     (e: Exercise) =>
       e.name === exercise.name &&
-      e.apparatus === exercise.apparatus &&
+      e.equipment === exercise.equipment &&
       e.gym === exercise.gym,
   )
     ?.sets?.filter((set) => !set.addedOn)
@@ -62,7 +62,7 @@ export const getNewSetsFromLatest = (
   const latestOccurrenceAllGymsSetNum = findLatestOccurrence(
     completedExercises,
     (e: Exercise) =>
-      e.name === exercise.name && e.apparatus === exercise.apparatus,
+      e.name === exercise.name && e.equipment === exercise.equipment,
   )?.sets.filter((set) => !set.addedOn).length;
 
   const sets: Set[] =
@@ -87,13 +87,13 @@ export const getNewSetsFromLatest = (
 export const getUpdatedExercise = (
   completedExercises: CompletedExercisesResponse | undefined,
   update: string,
-  type: "name" | "apparatus" | "weightType",
+  type: "name" | "equipment" | "weightType",
   exercise: Exercise,
 ): Exercise => {
   const newExercise = {
     ...exercise,
     name: type === "name" ? update : exercise.name,
-    apparatus: type === "apparatus" ? update : exercise.apparatus,
+    equipment: type === "equipment" ? update : exercise.equipment,
     weightType: type === "weightType" ? update : exercise.weightType,
   };
 

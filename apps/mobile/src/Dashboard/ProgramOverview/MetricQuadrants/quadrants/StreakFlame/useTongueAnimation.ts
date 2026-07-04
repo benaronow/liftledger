@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { Animated, Easing } from "react-native";
+import { env } from "../../../../../config/env";
 
 const SPEED_MULT_MIN = 0.45;
 const SPEED_MULT_MAX = 2.1;
@@ -29,6 +30,9 @@ export const useTongueAnimation = () => {
   const breakProbability = randBetween(BREAK_PROB_MIN, BREAK_PROB_MAX);
 
   useEffect(() => {
+    // Skip the perpetual flame flicker under E2E so the dashboard settles for
+    // Maestro (see BarPulse). The tongue rests at its initial static level.
+    if (env.e2e) return;
     let active = true;
 
     const tick = () => {

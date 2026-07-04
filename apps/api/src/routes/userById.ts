@@ -11,10 +11,12 @@ import { getCompletedSessionsInProgram } from "@liftledger/shared";
 import { authorizeCaller } from "../auth";
 
 const UPDATABLE_FIELDS = [
-  "timerPresets",
+  "timerSettings",
   "gyms",
-  "customExerciseNames",
-  "customExerciseApparatuses",
+  "exerciseNames",
+  "exerciseEquipment",
+  "weightTypes",
+  "defaultWeightType",
 ] as const satisfies readonly (keyof User)[];
 
 type UpdatableField = (typeof UPDATABLE_FIELDS)[number];
@@ -71,6 +73,98 @@ const userByIdRoutes = async (app: FastifyInstance) => {
     },
   );
 
+  app.put<{
+    Params: IdParams;
+    Body: {
+      field: "name" | "equipment";
+      from: string;
+      to: string;
+      scope: "list" | "current" | "all";
+    };
+  }>(
+    "/users/:id/renameExercise",
+    { preHandler: app.authenticate },
+    async (req, reply) => {
+      const { id } = req.params;
+      const auth = await authorizeCaller(req, reply, id);
+      if (!auth.ok) return;
+
+      const { field, from, to, scope } = req.body ?? {};
+      const trimmedTo = typeof to === "string" ? to.trim() : "";
+      if (
+        (field !== "name" && field !== "equipment") ||
+        !from ||
+        !trimmedTo ||
+        (scope !== "list" && scope !== "current" && scope !== "all")
+      )
+        return reply.code(400).send({ error: "Invalid rename request" });
+
+      const listField =
+        field === "name" ? "exerciseNames" : "exerciseEquipment";
+      const exerciseKey = field === "name" ? "name" : "equipment";
+
+      try {
+        const user = await UserModel.findOne({ _id: id });
+        if (!user) return reply.code(404).send({ error: "User not found" });
+
+        const list: string[] = user.get(listField) ?? [];
+        const collides = list.some(
+          (o) =>
+            o.toLowerCase() !== from.toLowerCase() &&
+            o.toLowerCase() === trimmedTo.toLowerCase(),
+        );
+        if (collides)
+          return reply
+            .code(409)
+            .send({ error: `"${trimmedTo}" already exists` });
+
+        const nextList = list.map((o) =>
+          o.toLowerCase() === from.toLowerCase() ? trimmedTo : o,
+        );
+        user.set(listField, nextList);
+        await user.save();
+
+        if (scope !== "list") {
+          const programIds =
+            scope === "current"
+              ? user.curProgram
+                ? [String(user.curProgram)]
+                : []
+              : user.programs.map((p) => String(p));
+
+          const programs = await ProgramModel.find({
+            _id: { $in: programIds },
+          });
+          for (const program of programs) {
+            let changed = false;
+            for (const rotation of program.rotations) {
+              for (const session of rotation) {
+                for (const exercise of session.exercises) {
+                  if (exercise[exerciseKey] === from) {
+                    exercise[exerciseKey] = trimmedTo;
+                    changed = true;
+                  }
+                }
+              }
+            }
+            if (changed) {
+              program.markModified("rotations");
+              await program.save();
+            }
+          }
+        }
+
+        const updatedUser = await UserModel.findOne({ _id: id }).populate([
+          { path: "programs", model: ProgramModel },
+        ]);
+        return updatedUser;
+      } catch (error) {
+        console.error("Failed to rename exercise:", error);
+        return reply.code(500).send({ error: "Failed to rename exercise" });
+      }
+    },
+  );
+
   app.get<{ Params: IdParams }>(
     "/users/:id/completedExercises",
     { preHandler: app.authenticate },
@@ -85,7 +179,8 @@ const userByIdRoutes = async (app: FastifyInstance) => {
           .lean();
         if (!user) return reply.code(404).send({ error: "User not found" });
 
-        const programs: Program[] = (user.programs as unknown as Program[]) || [];
+        const programs: Program[] =
+          (user.programs as unknown as Program[]) || [];
 
         const curProgram = programs.find(
           (program) => String(program._id) === String(user.curProgram),
@@ -114,7 +209,9 @@ const userByIdRoutes = async (app: FastifyInstance) => {
           .reverse();
 
         const currentCompletedExercises: Exercise[] = curProgram
-          ? curProgram.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx].exercises
+          ? curProgram.rotations[curProgram.curRotationIdx][
+              curProgram.curSessionIdx
+            ].exercises
               .slice()
               .reverse()
           : [];
@@ -164,7 +261,10 @@ const userByIdRoutes = async (app: FastifyInstance) => {
       try {
         const updatedUser = await UserModel.findOneAndUpdate(
           { _id: id },
-          { $set: { curProgram: newProgram }, $addToSet: { programs: newProgram } },
+          {
+            $set: { curProgram: newProgram },
+            $addToSet: { programs: newProgram },
+          },
           { new: true },
         ).populate([{ path: "programs", model: ProgramModel }]);
         if (!updatedUser) {
@@ -246,53 +346,6 @@ const userByIdRoutes = async (app: FastifyInstance) => {
   );
 
   app.get<{ Params: IdParams }>(
-    "/users/:id/timerPresets",
-    { preHandler: app.authenticate },
-    async (req, reply) => {
-      const { id } = req.params;
-      const auth = await authorizeCaller(req, reply, id);
-      if (!auth.ok) return;
-
-      try {
-        const user = await UserModel.findOne({ _id: id });
-        if (!user) return reply.code(404).send({ error: "User not found" });
-        return { timerPresets: user.timerPresets };
-      } catch (error) {
-        console.error("Failed to fetch timer presets:", error);
-        return reply.code(500).send({ error: "Failed to fetch timer presets" });
-      }
-    },
-  );
-
-  app.put<{ Params: IdParams; Body: User["timerPresets"] }>(
-    "/users/:id/timerPresets",
-    { preHandler: app.authenticate },
-    async (req, reply) => {
-      const { id } = req.params;
-      const auth = await authorizeCaller(req, reply, id);
-      if (!auth.ok) return;
-
-      const timerPresets = req.body;
-
-      try {
-        const updatedUser = await UserModel.findOneAndUpdate(
-          { _id: id },
-          { $set: { timerPresets } },
-          { new: true },
-        );
-        if (!updatedUser)
-          return reply.code(404).send({ error: "User not found" });
-        return { timerPresets };
-      } catch (error) {
-        console.error("Failed to update timer presets:", error);
-        return reply
-          .code(500)
-          .send({ error: "Failed to update timer presets" });
-      }
-    },
-  );
-
-  app.get<{ Params: IdParams }>(
     "/users/:id/timerEnd",
     { preHandler: app.authenticate },
     async (req, reply) => {
@@ -303,7 +356,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
       try {
         const user = await UserModel.findOne({ _id: id });
         if (!user) return reply.code(404).send({ error: "User not found" });
-        return { timerEnd: user.timerEnd };
+        return { timerEnd: user.timerSettings?.end };
       } catch (error) {
         console.error("Failed to fetch timer end:", error);
         return reply.code(500).send({ error: "Failed to fetch timer end" });
@@ -324,7 +377,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
       try {
         const updatedUser = await UserModel.findOneAndUpdate(
           { _id: id },
-          { $set: { timerEnd } },
+          { $set: { "timerSettings.end": timerEnd } },
           { new: true },
         );
         if (!updatedUser)
@@ -348,7 +401,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
       try {
         const updatedUser = await UserModel.findOneAndUpdate(
           { _id: id },
-          { $unset: { timerEnd: null } },
+          { $unset: { "timerSettings.end": "" } },
           { new: true },
         );
         if (!updatedUser)

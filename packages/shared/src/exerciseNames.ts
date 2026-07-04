@@ -1,4 +1,4 @@
-export const EXERCISE_NAMES: string[] = [
+export const DEFAULT_EXERCISE_NAMES: string[] = [
   "Arnold Press",
   "Back Extension",
   "Back Squat",

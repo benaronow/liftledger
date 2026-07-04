@@ -1,35 +1,55 @@
 import { useCurrentSession } from "@liftledger/api-client";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useEffect, useState } from "react";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { View } from "react-native";
+import { TouchableRipple, useTheme } from "react-native-paper";
+import { RADIUS } from "../theme";
 import { LogoSpinner } from "../components/LogoSpinner";
 import type { RootStackParamList } from "../RootNavigator/types";
-import { useTheme } from "react-native-paper";
+import { useThemePreference } from "../providers/ThemeProvider";
 import { CompleteSessionFAB } from "./CompleteSessionFAB/CompleteSessionFAB";
 import { ExercisePager } from "./ExercisePager/ExercisePager";
 import { PagerBar } from "./ExercisePager/PagerBar";
 import { FinishSessionDialog } from "./FinishSessionDialog";
+import { SkipDayDialog } from "./SkipDayDialog";
 
 export const CompleteSession = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { exercises, currentExIdx } = useCurrentSession();
+  const { exercises, currentExIdx, isSessionComplete } = useCurrentSession();
   const { colors } = useTheme();
-  // While finishing, the saved program advances to the next session underneath us.
-  // Masking the pager with a spinner during the save hides that swap until we
-  // navigate away.
+  const { scheme } = useThemePreference();
   const [isFinishing, setIsFinishing] = useState(false);
   const [finishDialogOpen, setFinishDialogOpen] = useState(false);
+  const [skipDialogOpen, setSkipDialogOpen] = useState(false);
 
-  // Land on the exercise that's up next (web parity); -1 means the session is
-  // already complete, so open on the last exercise instead.
+  const canSkip = !isSessionComplete && !isFinishing;
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: canSkip
+        ? () => (
+            <TouchableRipple
+              accessibilityLabel="Skip the rest of the day"
+              onPress={() => setSkipDialogOpen(true)}
+              style={{ borderRadius: RADIUS.md, overflow: "hidden" }}
+            >
+              <MaterialCommunityIcons
+                name="fast-forward"
+                size={24}
+                color={scheme === "dark" ? "white" : "black"}
+              />
+            </TouchableRipple>
+          )
+        : undefined,
+    });
+  }, [navigation, canSkip, scheme]);
+
   const [pageIdx, setPageIdx] = useState(() =>
     currentExIdx === -1 ? Math.max(0, exercises.length - 1) : currentExIdx,
   );
 
-  // No exercises means there's no current session to log (e.g. just finished) —
-  // bounce back to the dashboard, as web did.
   useEffect(() => {
     if (!exercises.length)
       navigation.navigate("Tabs", { screen: "Dashboard" }, { pop: true });
@@ -37,8 +57,6 @@ export const CompleteSession = () => {
 
   if (!exercises.length) return <LogoSpinner />;
 
-  // Deleting the last add-on from the edit modal can leave the active page
-  // past the end — snap back to the last exercise.
   const clampedPageIdx = Math.min(pageIdx, exercises.length - 1);
 
   return (
@@ -59,6 +77,12 @@ export const CompleteSession = () => {
       <FinishSessionDialog
         open={finishDialogOpen}
         onClose={() => setFinishDialogOpen(false)}
+        finishing={isFinishing}
+        setFinishing={setIsFinishing}
+      />
+      <SkipDayDialog
+        open={skipDialogOpen}
+        onClose={() => setSkipDialogOpen(false)}
         finishing={isFinishing}
         setFinishing={setIsFinishing}
       />

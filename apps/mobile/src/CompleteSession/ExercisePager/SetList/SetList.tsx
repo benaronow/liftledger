@@ -56,7 +56,7 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
       for (const e of intraProgramPrevious) {
         if (
           e.name === exercise.name &&
-          e.apparatus === exercise.apparatus &&
+          e.equipment === exercise.equipment &&
           e.gym === exercise.gym &&
           !!e.sets[setIdx] &&
           e.sets[setIdx].completed

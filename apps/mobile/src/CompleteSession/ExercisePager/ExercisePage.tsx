@@ -4,10 +4,15 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { Exercise } from "@liftledger/shared";
 import { useState } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { Badge } from "../../components/Badge";
 import { Info } from "../../components/Info";
-import { FAB_SIZE, FAB_TOP, titleRightInset } from "../../layout";
+import {
+  FAB_SIZE,
+  FAB_TOP,
+  timerTitleRightInset,
+  titleRightInset,
+} from "../../layout";
 import { Text, useTheme } from "react-native-paper";
 import { ProgressChart } from "../../Progress/ProgressChart";
 import type { RootStackParamList } from "../../RootNavigator/types";
@@ -18,6 +23,9 @@ import { SubmitSetDialog } from "./SetList/SubmitSetDialog/SubmitSetDialog";
 interface Props {
   exercise: Exercise;
   isCurrentExercise: boolean;
+  // Whether a rest timer is running — the FAB then morphs into a wider pill, so
+  // the title reserves more right-side space.
+  timerRunning: boolean;
   // Let the pager suspend swiping while the progress chart is being touched, so
   // its tooltip pan gesture doesn't fight the horizontal page swipe.
   onChartTouchStart?: () => void;
@@ -27,6 +35,7 @@ interface Props {
 export const ExercisePage = ({
   exercise,
   isCurrentExercise,
+  timerRunning,
   onChartTouchStart,
   onChartTouchEnd,
 }: Props) => {
@@ -34,13 +43,16 @@ export const ExercisePage = ({
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [editingSetIdx, setEditingSetIdx] = useState<number>();
+  // Off by default: the chart tracks the current gym. "Show all" drops the gym
+  // filter so progress across every gym is plotted (with the legend).
+  const [showAll, setShowAll] = useState(false);
 
   const openFullProgress = () =>
     navigation.navigate(
       "Tabs",
       {
         screen: "Progress",
-        params: { name: exercise.name, apparatus: exercise.apparatus },
+        params: { name: exercise.name, equipment: exercise.equipment },
       },
       { pop: true },
     );
@@ -58,7 +70,9 @@ export const ExercisePage = ({
       <View
         style={{
           marginBottom: SPACING.md,
-          paddingRight: titleRightInset(1) - SPACING.lg,
+          paddingRight:
+            (timerRunning ? timerTitleRightInset() : titleRightInset(1)) -
+            SPACING.lg,
         }}
       >
         <View
@@ -79,13 +93,6 @@ export const ExercisePage = ({
           >
             {exercise.name}
           </Text>
-          {isComplete && (
-            <MaterialCommunityIcons
-              name="check-circle"
-              size={22}
-              color={colors.tertiary}
-            />
-          )}
           {exercise.addedOn && <Badge label="ADD-ON" />}
         </View>
         <Text
@@ -95,10 +102,10 @@ export const ExercisePage = ({
             color: colors.onSurfaceDisabled,
           }}
         >
-          {exercise.apparatus}
+          {exercise.equipment}
         </Text>
       </View>
-      <Info title="Sets" fill>
+      <Info title="Sets" fill background={isComplete ? colors.tertiary : undefined}>
         <SetList
           exercise={exercise}
           isCurrentExercise={isCurrentExercise}
@@ -108,11 +115,47 @@ export const ExercisePage = ({
       <Info
         title="Progress"
         fill
-        titleAction={{
-          icon: "arrow-expand",
-          onPress: openFullProgress,
-          accessibilityLabel: "Open full progress",
-        }}
+        overflowVisible
+        headerRight={
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: SPACING.md,
+            }}
+          >
+            <Pressable
+              onPress={() => setShowAll((v) => !v)}
+              hitSlop={8}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: SPACING.xs,
+              }}
+            >
+              <MaterialCommunityIcons
+                name={showAll ? "checkbox-marked" : "checkbox-blank-outline"}
+                size={20}
+                color={showAll ? colors.primary : colors.onSurfaceVariant}
+              />
+              <Text style={{ color: colors.onSurface, fontSize: FONT.base }}>
+                Show all
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={openFullProgress}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel="Open full progress"
+            >
+              <MaterialCommunityIcons
+                name="arrow-expand"
+                size={20}
+                color={colors.primary}
+              />
+            </Pressable>
+          </View>
+        }
       >
         <View
           style={{ flex: 1 }}
@@ -122,8 +165,8 @@ export const ExercisePage = ({
         >
           <ProgressChart
             selectedName={exercise.name}
-            selectedApparatus={exercise.apparatus}
-            gym={exercise.gym}
+            selectedEquipment={exercise.equipment}
+            gym={showAll ? undefined : exercise.gym}
           />
         </View>
       </Info>

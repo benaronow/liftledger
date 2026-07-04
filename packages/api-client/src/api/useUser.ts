@@ -3,6 +3,7 @@ import useSWRMutation from "swr/mutation";
 import type { User } from "@liftledger/shared";
 import { getApiClient } from "../client";
 import { fetcher } from "../fetcher";
+import { completedExercisesKey } from "./useCompletedExercises";
 import { meKey } from "./useMe";
 
 export const userKey = (id: string | undefined | null) =>
@@ -37,6 +38,31 @@ export const useUpdateUser = () =>
     async (_key: string, { arg: user }: { arg: User }): Promise<User> => {
       const res = await getApiClient().put<User>(`/users/${user._id}`, user);
       await propagateUserToCaches(res.data);
+      return res.data;
+    },
+  );
+
+export interface RenameExerciseArg {
+  userId: string;
+  field: "name" | "equipment";
+  from: string;
+  to: string;
+  scope: "list" | "current" | "all";
+}
+
+export const useRenameExercise = () =>
+  useSWRMutation(
+    "mutation:renameExercise",
+    async (
+      _key: string,
+      { arg: { userId, ...body } }: { arg: RenameExerciseArg },
+    ): Promise<User> => {
+      const res = await getApiClient().put<User>(
+        `/users/${userId}/renameExercise`,
+        body,
+      );
+      await propagateUserToCaches(res.data);
+      await mutate(completedExercisesKey(userId));
       return res.data;
     },
   );

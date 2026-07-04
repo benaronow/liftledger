@@ -37,7 +37,6 @@ export const DeleteAccountDialog = ({ open, onClose }: Props) => {
       open={open}
       onClose={onClose}
       title="Delete Account"
-      icon="alert"
       destructive
       onConfirm={handleDelete}
       confirming={deleting}

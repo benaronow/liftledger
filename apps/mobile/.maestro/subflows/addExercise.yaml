@@ -3,12 +3,30 @@ appId: app.liftledger.mobile
 # is inserted at position POS (the add-row above the exercise currently at that
 # 0-based index; use the day's exercise count to append at the end).
 #
-# NAME is added as a custom name (not pre-seeded); APPARATUS and WEIGHT_TYPE are
-# selected from existing options (seeded). Params: POS, NAME, APPARATUS,
-# WEIGHT_TYPE.
+# EQUIPMENT and WEIGHT_TYPE are selected from existing (seeded) options. NAME is
+# either added as a custom option (name not yet a select option) or selected from
+# the list (name already a select option). A name is already an option if it's a
+# seeded library name (exerciseNames.ts, e.g. "Crunch") OR was custom-added earlier
+# in the flow (custom names persist even after the add-on exercise itself is
+# dropped). The caller states which via EXISTING:
+#   EXISTING: "false" -> not yet an option, tap the "Add ..." footer to create it.
+#   EXISTING: "true"  -> already an option, tap it. Use for BOTH re-adds and any
+#                        seeded library name, even on its first use in the program.
+# Branching on the param (not on which row happens to render) keeps it
+# deterministic: no waiting on the not-taken branch's element to time out, and no
+# risk of a mistyped name silently falling through to "add custom".
+# Params: POS, NAME, EQUIPMENT, WEIGHT_TYPE, EXISTING.
 ---
-- tapOn: "More actions"
-- tapOn: "Edit Exercises"
+- tapOn:
+    id: "fab-more-actions"
+# Wait for the dial's action FABs to render before tapping — a bare tapOn here
+# races the open transition.
+- extendedWaitUntil:
+    visible:
+      id: "fab-edit-exercises"
+    timeout: 5000
+- tapOn:
+    id: "fab-edit-exercises"
 - extendedWaitUntil:
     visible:
       text: "insert-exercise-${POS}"
@@ -18,9 +36,17 @@ appId: app.liftledger.mobile
     visible:
       text: "Add Exercise"
     timeout: 5000
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 300
 
-# --- Name: typed + added as a custom option ---
+# --- Name: type to filter, then pick the existing option or add it as custom
+# per EXISTING. The wait AFTER tapping the field (before typing) lets the native
+# keyboard finish sliding in. Even so, the filter re-runs a Fuse search and
+# re-renders the whole option list on every keystroke, which lags this controlled
+# Searchbar and can still drop a character from a fast inputText — leaking through
+# as a wrong custom-add name. So type, read the field back, and retype until it
+# matches. Maestro can't slow inputText or paste, so this retry is the reliable
+# equivalent. ---
 - tapOn: "Exercise"
 - extendedWaitUntil:
     visible:
@@ -28,21 +54,54 @@ appId: app.liftledger.mobile
     timeout: 5000
 - tapOn:
     id: "select-search"
-- inputText: "${NAME}"
-- tapOn:
-    id: "select-add-custom"
+- waitForAnimationToEnd:
+    timeout: 300
+- copyTextFrom:
+    id: "select-search"
+- repeat:
+    while:
+      true: ${maestro.copiedText != NAME}
+    commands:
+      - eraseText
+      - inputText: "${NAME}"
+      - copyTextFrom:
+          id: "select-search"
+- runFlow:
+    when:
+      true: ${EXISTING == 'true'}
+    commands:
+      - tapOn:
+          id: "select-option-${NAME}"
+- runFlow:
+    when:
+      true: ${EXISTING == 'false'}
+    commands:
+      - tapOn:
+          id: "select-add-custom"
 
-# --- Apparatus: typed to filter, then the existing option is picked ---
-- tapOn: "Apparatus"
+# --- Equipment: typed to filter, then the existing option is picked. Same
+# keyboard-settle wait and type-and-verify retry as the name field above. ---
+- tapOn: "Equipment"
 - extendedWaitUntil:
     visible:
       id: "select-search"
     timeout: 5000
 - tapOn:
     id: "select-search"
-- inputText: "${APPARATUS}"
+- waitForAnimationToEnd:
+    timeout: 300
+- copyTextFrom:
+    id: "select-search"
+- repeat:
+    while:
+      true: ${maestro.copiedText != EQUIPMENT}
+    commands:
+      - eraseText
+      - inputText: "${EQUIPMENT}"
+      - copyTextFrom:
+          id: "select-search"
 - tapOn:
-    id: "select-option-${APPARATUS}"
+    id: "select-option-${EQUIPMENT}"
 
 # --- Weight type: fixed options (lbs/kgs), pick directly ---
 - tapOn: "Weight Type"
@@ -64,4 +123,3 @@ appId: app.liftledger.mobile
     notVisible:
       text: "Edit Exercises"
     timeout: 5000
-- waitForAnimationToEnd

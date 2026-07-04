@@ -10,7 +10,7 @@ export interface Set {
 export interface Exercise {
   _id?: string;
   name: string;
-  apparatus: string;
+  equipment: string;
   gym?: string;
   sets: Set[];
   weightType: string;
@@ -19,7 +19,7 @@ export interface Exercise {
 
 export interface CompletedExercise {
   name: string;
-  apparatus: string;
+  equipment: string;
   gym?: string;
   sets: Set[];
   weightType: string;
@@ -37,15 +37,12 @@ export interface Session {
 export interface Program {
   _id?: string;
   name: string;
-  startDate: Date;
   length: number;
   primaryGym?: string;
   rotations: Session[][];
   curRotationIdx: number;
   curSessionIdx: number;
   endDate?: Date;
-  // Per-rotation streak "keep-alive" budget: this many missed days are allowed
-  // within a rotation before the streak breaks. Rest days don't add to the streak.
   restDays?: number;
 }
 
@@ -57,6 +54,14 @@ export interface TimerPresets {
   4: number;
 }
 
+export interface TimerSettings {
+  end?: Date;
+  presets: TimerPresets;
+  defaultEnabled: boolean;
+  defaultTime: number;
+  exerciseOverrides: Record<string, number>;
+}
+
 export interface User {
   _id?: string;
   email: string;
@@ -65,9 +70,10 @@ export interface User {
   fullName: string;
   programs: Program[];
   curProgram?: string;
-  timerEnd?: Date;
-  timerPresets: TimerPresets;
+  timerSettings: TimerSettings;
   gyms: string[];
-  customExerciseNames: string[];
-  customExerciseApparatuses: string[];
+  exerciseNames: string[];
+  exerciseEquipment: string[];
+  weightTypes: string[];
+  defaultWeightType: string;
 }

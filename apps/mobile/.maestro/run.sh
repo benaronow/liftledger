@@ -4,7 +4,7 @@
 # dev API over https://localhost:4000 without a PKIX/cert error.
 #
 # Usage (same args as `maestro test`):
-#   apps/mobile/.maestro/run.sh apps/mobile/.maestro/flows/test1-week1.yaml -e INTERNAL_SECRET=...
+#   apps/mobile/.maestro/run.sh apps/mobile/.maestro/flows/programCompletionTest.yaml -e INTERNAL_SECRET=...
 #
 # The trust store (truststore.jks) is machine-local and gitignored. Rebuild it
 # if your mkcert CA changes — see .maestro/README.md.

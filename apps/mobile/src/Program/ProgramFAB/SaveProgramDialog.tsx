@@ -20,7 +20,8 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
   const navigation = useNavigation<TabNav<"Program">>();
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { trigger: triggerStartProgram, isMutating: starting } = useStartProgram();
+  const { trigger: triggerStartProgram, isMutating: starting } =
+    useStartProgram();
   const { trigger: triggerUpdateUserProgram, isMutating: updating } =
     useUpdateUserProgram();
   const saving = starting || updating;
@@ -29,41 +30,35 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
 
   const {
     templateProgram,
-    setTemplateProgram,
+    commitBaseline,
     unsetTemplateProgram,
     setEditingRotationIdx,
   } = useTemplate();
 
   const handleSave = async () => {
     if (!curUser?._id) return;
-
-    // Show the loading spinner and close the dialog right away so only the
-    // spinner shows through the save. Reset on failure so we don't strand the
-    // spinner over a screen we're staying on.
     setTransitioning(true);
-    onClose();
+
     try {
       if (curProgram) {
         const res = await triggerUpdateUserProgram({
           userId: curUser._id,
           program: templateProgram,
         });
-        // The program id is unchanged, so this tab stays mounted (no remount).
-        // Sync the editor to the server's saved copy rather than blanking it —
-        // web got this free by unmounting the route on navigate.
         if (res?.program) {
-          setTemplateProgram(res.program);
+          commitBaseline(res.program);
           setEditingRotationIdx(res.program.curRotationIdx ?? 0);
         }
       } else {
-        // Starting a program sets curUser.curProgram, which changes the screen's
-        // remount key and re-reads the new program, so just clear local state.
-        await triggerStartProgram({ userId: curUser._id, program: templateProgram });
+        await triggerStartProgram({
+          userId: curUser._id,
+          program: templateProgram,
+        });
         unsetTemplateProgram();
         setEditingRotationIdx(0);
       }
 
-      // Drop any lingering ?duplicateFrom so a later visit starts from curProgram.
+      onClose();
       navigation.setParams({ duplicateFrom: undefined });
       navigation.navigate("Dashboard");
     } catch {
@@ -77,7 +72,6 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
       open={open}
       onClose={onClose}
       title="Save Program"
-      icon="content-save-outline"
       onConfirm={handleSave}
       confirming={saving}
       description="Are you sure you want to save this program?"
