@@ -59,7 +59,7 @@ export const Program = () => {
     ? curProgram!
     : duplicateFromId
       ? templateFromProgram(sourceProgram!, completedExercises!)
-      : emptyProgram(curUser.defaultWeightType);
+      : emptyProgram(curUser.defaultUnit);
   const initialRotationIdx = editingActiveProgram
     ? (curProgram!.curRotationIdx ?? 0)
     : 0;

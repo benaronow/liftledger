@@ -20,7 +20,7 @@ export const EditSet = ({ exerciseState, setExerciseState, setIdx }: Props) => {
   const { data: curUser } = useMe();
   const { data: completedExercises } = useCompletedExercises(curUser?._id);
 
-  const curSet = exerciseState?.sets[setIdx];
+  const curSet = exerciseState?.workingSets[setIdx];
 
   const latestPreviousSetNote = useMemo(() => {
     return findLatestOccurrence(
@@ -28,8 +28,8 @@ export const EditSet = ({ exerciseState, setExerciseState, setIdx }: Props) => {
       (e: Exercise) =>
         e.name === exerciseState?.name &&
         e.equipment === exerciseState?.equipment &&
-        !!e.sets[setIdx],
-    )?.sets[setIdx].note;
+        !!e.workingSets[setIdx],
+    )?.workingSets[setIdx].note;
   }, [exerciseState, setIdx, completedExercises]);
 
   const updateSet = (update: Partial<Set>) => {
@@ -37,8 +37,8 @@ export const EditSet = ({ exerciseState, setExerciseState, setIdx }: Props) => {
 
     setExerciseState({
       ...exerciseState,
-      sets: exerciseState.sets.toSpliced(setIdx, 1, {
-        ...exerciseState.sets[setIdx],
+      workingSets: exerciseState.workingSets.toSpliced(setIdx, 1, {
+        ...exerciseState.workingSets[setIdx],
         ...update,
       }),
     });

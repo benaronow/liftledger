@@ -57,13 +57,13 @@ export const SkipDayDialog = ({
 
       return {
         ...exercise,
-        sets: exercise.sets.map((set, setIdx) => {
+        workingSets: exercise.workingSets.map((set, setIdx) => {
           if (set.completed || set.skipped) return set;
 
           const latestPreviousSet = findLatestOccurrence(
             completedExercises,
-            (e) => isSameExercise(e, exercise) && !!e.sets[setIdx],
-          )?.sets[setIdx];
+            (e) => isSameExercise(e, exercise) && !!e.workingSets[setIdx],
+          )?.workingSets[setIdx];
 
           return {
             ...(latestPreviousSet ?? set),

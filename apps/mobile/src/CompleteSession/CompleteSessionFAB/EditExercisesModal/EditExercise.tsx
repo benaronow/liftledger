@@ -9,10 +9,10 @@ import {
 } from "@liftledger/api-client";
 import { ExerciseEquipmentSelect } from "../../../components/ExerciseEquipmentSelect";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
-import { WeightTypeSelect } from "../../../components/WeightTypeSelect";
+import { UnitSelect } from "../../../components/UnitSelect";
 import { SPACING } from "../../../theme";
 
-type ExerciseInfoName = "name" | "equipment" | "weightType";
+type ExerciseInfoName = "name" | "equipment" | "unit";
 
 interface Props {
   newExercise: Exercise;
@@ -47,10 +47,10 @@ export const EditExercise = ({ newExercise, setNewExercise }: Props) => {
         reservedExercises={exercises}
         onSelect={(value) => switchExercise(value, "equipment")}
       />
-      <WeightTypeSelect
-        label="Weight Type"
-        value={newExercise.weightType}
-        onSelect={(value) => switchExercise(value, "weightType")}
+      <UnitSelect
+        label="Unit"
+        value={newExercise.unit}
+        onSelect={(value) => switchExercise(value, "unit")}
       />
     </View>
   );

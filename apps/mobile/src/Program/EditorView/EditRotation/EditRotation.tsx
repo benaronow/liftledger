@@ -71,7 +71,7 @@ export const EditRotation = () => {
           if (wIdx === curRotationIdx && dIdx < curSessionIdx) return session;
 
           const sessionHasCompletedSets = session.exercises.some((ex) =>
-            ex.sets.some((s) => s.completed || s.skipped),
+            ex.workingSets.some((s) => s.completed || s.skipped),
           );
           if (sessionHasCompletedSets) return session;
 
@@ -81,7 +81,7 @@ export const EditRotation = () => {
             exercises: session.exercises.map((exercise) => ({
               ...exercise,
               gym,
-              sets: getNewSetsFromLatest(completedExercises, {
+              workingSets: getNewSetsFromLatest(completedExercises, {
                 ...exercise,
                 gym,
               }),
@@ -112,8 +112,8 @@ export const EditRotation = () => {
           name: "",
           equipment: "",
           gym: templateProgram.primaryGym || "",
-          sets: [{ reps: null, weight: null, completed: false, note: "" }],
-          weightType: curUser?.defaultWeightType ?? "",
+          workingSets: [{ reps: null, weight: null, completed: false, note: "" }],
+          unit: curUser?.defaultUnit ?? "",
         },
       ],
       completedDate: undefined,

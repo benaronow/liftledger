@@ -3,7 +3,7 @@ import { useTheme } from "react-native-paper";
 import { SPACING } from "../../theme";
 import { Appearance } from "./Appearance";
 import { DefaultTimer } from "./DefaultTimer";
-import { DefaultWeightType } from "./DefaultWeightType";
+import { DefaultUnit } from "./DefaultUnit";
 import { ExerciseLists } from "./ExerciseLists";
 
 export const Settings = () => {
@@ -20,7 +20,7 @@ export const Settings = () => {
     >
       <View style={{ gap: SPACING.lg }}>
         <Appearance />
-        <DefaultWeightType />
+        <DefaultUnit />
         <DefaultTimer />
         <ExerciseLists />
       </View>

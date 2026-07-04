@@ -34,8 +34,8 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
 
   const nextSetIdx = useMemo(() => {
     if (!isCurrentExercise) return -1;
-    for (let i = 0; i <= exercise?.sets.length; i++) {
-      if (!exercise?.sets[i]?.completed && !exercise?.sets[i]?.skipped)
+    for (let i = 0; i <= exercise?.workingSets.length; i++) {
+      if (!exercise?.workingSets[i]?.completed && !exercise?.workingSets[i]?.skipped)
         return i;
     }
     return -1;
@@ -58,20 +58,20 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
           e.name === exercise.name &&
           e.equipment === exercise.equipment &&
           e.gym === exercise.gym &&
-          !!e.sets[setIdx] &&
-          e.sets[setIdx].completed
+          !!e.workingSets[setIdx] &&
+          e.workingSets[setIdx].completed
         ) {
-          lastCompletedSet = e.sets[setIdx];
+          lastCompletedSet = e.workingSets[setIdx];
           break;
         }
       }
 
       if (lastCompletedSet) {
-        const repDiff = exercise.sets[setIdx]
-          ? (exercise.sets[setIdx].reps ?? 0) - (lastCompletedSet.reps ?? 0)
+        const repDiff = exercise.workingSets[setIdx]
+          ? (exercise.workingSets[setIdx].reps ?? 0) - (lastCompletedSet.reps ?? 0)
           : 0;
-        const weightDiff = exercise.sets[setIdx]
-          ? (exercise.sets[setIdx].weight ?? 0) - (lastCompletedSet.weight ?? 0)
+        const weightDiff = exercise.workingSets[setIdx]
+          ? (exercise.workingSets[setIdx].weight ?? 0) - (lastCompletedSet.weight ?? 0)
           : 0;
         return { repDiff, weightDiff };
       }
@@ -92,12 +92,12 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
   );
 
   const canAddSet =
-    isExerciseComplete(exercise) && !exercise.sets.some((set) => set.skipped);
+    isExerciseComplete(exercise) && !exercise.workingSets.some((set) => set.skipped);
 
   const scrollRef = useRef<ScrollView>(null);
   const scrollY = useRef(0);
   const [viewportH, setViewportH] = useState(0);
-  const focusIdx = nextSetIdx >= 0 ? nextSetIdx : exercise.sets.length;
+  const focusIdx = nextSetIdx >= 0 ? nextSetIdx : exercise.workingSets.length;
 
   useEffect(() => {
     if (!viewportH) return;
@@ -129,7 +129,7 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
         padding: SPACING.sm,
       }}
     >
-      {exercise.sets.map((set, i) => {
+      {exercise.workingSets.map((set, i) => {
         const diffs = getDiffs(i);
         return (
           <TouchableRipple
@@ -185,7 +185,7 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
                     fontSize: FONT.sm,
                   }}
                 >
-                  {`${set.weight ?? 0}${exercise.weightType}`}
+                  {`${set.weight ?? 0}${exercise.unit}`}
                   {set.completed
                     ? ` (${getProgressString(diffs.weightDiff)})`
                     : ""}
@@ -221,7 +221,7 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
           borderRadius: RADIUS.md,
           backgroundColor: canAddSet ? colors.primary : colors.surfaceDisabled,
         }}
-        onPress={() => onEditSet(exercise.sets.length)}
+        onPress={() => onEditSet(exercise.workingSets.length)}
       >
         <MaterialCommunityIcons
           name="plus"

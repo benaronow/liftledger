@@ -10,14 +10,14 @@ import { useCallback, useMemo } from "react";
 import { View } from "react-native";
 import { ExerciseEquipmentSelect } from "../../../components/ExerciseEquipmentSelect";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
-import { WeightTypeSelect } from "../../../components/WeightTypeSelect";
+import { UnitSelect } from "../../../components/UnitSelect";
 import { SPACING } from "../../../theme";
 import { NumberInput } from "../../../components/inputs";
 import { Info, InfoAction } from "../../../components/Info";
 import { useTemplate } from "../../TemplateProvider";
 import { fullExerciseIndex, moveExercise } from "./moveExercise";
 
-type ExerciseInfoName = "name" | "equipment" | "weightType";
+type ExerciseInfoName = "name" | "equipment" | "unit";
 
 interface Props {
   exercise: Exercise;
@@ -107,7 +107,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
     if (count == null) return;
     updateExercise({
       ...exercise,
-      sets: getNewSetsFromLatest(
+      workingSets: getNewSetsFromLatest(
         completedExercises,
         exercise,
         Math.min(count, 999),
@@ -118,10 +118,10 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
   const updateSetsField = (field: "reps" | "weight", value: number | null) => {
     updateExercise({
       ...exercise,
-      sets: exercise.sets.map((set) => ({
+      workingSets: exercise.workingSets.map((set) => ({
         ...set,
-        reps: field === "reps" ? value : exercise.sets[0].reps,
-        weight: field === "weight" ? value : exercise.sets[0].weight,
+        reps: field === "reps" ? value : exercise.workingSets[0].reps,
+        weight: field === "weight" ? value : exercise.workingSets[0].weight,
       })),
     });
   };
@@ -135,7 +135,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
     [completedExercises, exercise, updateExercise],
   );
 
-  const editDisabled = !exercise.sets.length;
+  const editDisabled = !exercise.workingSets.length;
 
   const infoActions: InfoAction[] = [
     {
@@ -158,7 +158,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
     },
   ];
 
-  const setCount = exercise.sets.filter((set) => !set.addedOn).length;
+  const setCount = exercise.workingSets.filter((set) => !set.addedOn).length;
 
   return (
     <Info title={`Exercise ${eIdx + 1}`} actions={infoActions}>
@@ -181,14 +181,14 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
           style={{ flex: 1 }}
           label="Sets"
           value={setCount}
-          error={errors.sets}
+          error={errors.workingSets}
           onChangeValue={handleSetsCount}
         />
         {!curProgram && (
           <NumberInput
             style={{ flex: 1 }}
             label="Reps"
-            value={exercise.sets[0]?.reps ?? null}
+            value={exercise.workingSets[0]?.reps ?? null}
             disabled={editDisabled}
             onChangeValue={(reps) => updateSetsField("reps", reps)}
           />
@@ -199,17 +199,17 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
           <NumberInput
             style={{ flex: 1 }}
             label="Weight"
-            value={exercise.sets[0]?.weight ?? null}
+            value={exercise.workingSets[0]?.weight ?? null}
             decimal
             disabled={editDisabled}
             onChangeValue={(weight) => updateSetsField("weight", weight)}
           />
           <View style={cellStyle}>
-            <WeightTypeSelect
-              label="Weight Type"
-              error={errors.weightType}
-              value={exercise.weightType}
-              onSelect={(value) => switchExercise(value, "weightType")}
+            <UnitSelect
+              label="Unit"
+              error={errors.unit}
+              value={exercise.unit}
+              onSelect={(value) => switchExercise(value, "unit")}
             />
           </View>
         </View>

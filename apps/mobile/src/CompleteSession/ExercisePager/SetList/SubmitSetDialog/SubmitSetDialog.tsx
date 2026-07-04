@@ -39,12 +39,12 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
     if (setIdx === undefined) return;
 
     setExerciseState(
-      exercise && setIdx === exercise.sets.length
+      exercise && setIdx === exercise.workingSets.length
         ? {
             ...exercise,
-            sets: [
-              ...exercise.sets,
-              { ...exercise.sets[setIdx - 1], completed: false, note: "" },
+            workingSets: [
+              ...exercise.workingSets,
+              { ...exercise.workingSets[setIdx - 1], completed: false, note: "" },
             ],
           }
         : exercise,
@@ -77,22 +77,22 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
         e.name === exercise?.name &&
         e.equipment === exercise?.equipment &&
         e.gym === exercise.gym &&
-        !!e.sets[setIdx],
-    )?.sets[setIdx];
+        !!e.workingSets[setIdx],
+    )?.workingSets[setIdx];
 
     const updatedSet = options?.skip
-      ? (latestPreviousSet ?? exerciseState.sets[setIdx])
-      : exerciseState.sets[setIdx];
+      ? (latestPreviousSet ?? exerciseState.workingSets[setIdx])
+      : exerciseState.workingSets[setIdx];
 
     const updatedExercise: Exercise = {
       ...exerciseState,
-      sets: exerciseState.sets.toSpliced(setIdx, 1, {
+      workingSets: exerciseState.workingSets.toSpliced(setIdx, 1, {
         ...updatedSet,
         completed: !options?.skip,
         skipped: options?.skip,
         addedOn:
-          exercise?.sets[setIdx]?.addedOn ??
-          (setIdx === exercise?.sets.length && !exercise.addedOn),
+          exercise?.workingSets[setIdx]?.addedOn ??
+          (setIdx === exercise?.workingSets.length && !exercise.addedOn),
       }),
     };
 

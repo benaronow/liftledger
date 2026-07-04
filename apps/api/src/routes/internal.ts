@@ -5,7 +5,7 @@ import ProgramModel from "@liftledger/shared/models/program";
 import {
   DEFAULT_EXERCISE_NAMES,
   DEFAULT_EXERCISE_EQUIPMENT,
-  DEFAULT_WEIGHT_TYPES,
+  DEFAULT_UNITS,
 } from "@liftledger/shared";
 import { env } from "../env";
 
@@ -61,9 +61,9 @@ const plannedExercise = (
   name,
   equipment,
   gym: GYM1,
-  weightType: LBS,
+  unit: LBS,
   addedOn: false,
-  sets: [plannedSet(weight, reps), plannedSet(weight, reps)],
+  workingSets: [plannedSet(weight, reps), plannedSet(weight, reps)],
 });
 
 const test1Week = () => [
@@ -171,8 +171,8 @@ const internalRoutes = async (app: FastifyInstance) => {
             programs: [],
             exerciseNames: [...DEFAULT_EXERCISE_NAMES],
             exerciseEquipment: [...DEFAULT_EXERCISE_EQUIPMENT],
-            weightTypes: [...DEFAULT_WEIGHT_TYPES],
-            defaultWeightType: LBS,
+            units: [...DEFAULT_UNITS],
+            defaultUnit: LBS,
             gyms: [],
             "timerSettings.exerciseOverrides": {},
           },

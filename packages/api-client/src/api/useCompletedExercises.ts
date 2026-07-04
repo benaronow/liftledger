@@ -51,7 +51,7 @@ export const getNewSetsFromLatest = (
       e.equipment === exercise.equipment &&
       e.gym === exercise.gym,
   )
-    ?.sets?.filter((set) => !set.addedOn)
+    ?.workingSets?.filter((set) => !set.addedOn)
     .map((set) => ({
       ...set,
       completed: false,
@@ -63,7 +63,7 @@ export const getNewSetsFromLatest = (
     completedExercises,
     (e: Exercise) =>
       e.name === exercise.name && e.equipment === exercise.equipment,
-  )?.sets.filter((set) => !set.addedOn).length;
+  )?.workingSets.filter((set) => !set.addedOn).length;
 
   const sets: Set[] =
     latestOccurrenceSameGymSets ??
@@ -87,21 +87,21 @@ export const getNewSetsFromLatest = (
 export const getUpdatedExercise = (
   completedExercises: CompletedExercisesResponse | undefined,
   update: string,
-  type: "name" | "equipment" | "weightType",
+  type: "name" | "equipment" | "unit",
   exercise: Exercise,
 ): Exercise => {
   const newExercise = {
     ...exercise,
     name: type === "name" ? update : exercise.name,
     equipment: type === "equipment" ? update : exercise.equipment,
-    weightType: type === "weightType" ? update : exercise.weightType,
+    unit: type === "unit" ? update : exercise.unit,
   };
 
   return {
     ...newExercise,
-    sets:
-      type === "weightType"
-        ? newExercise.sets
+    workingSets:
+      type === "unit"
+        ? newExercise.workingSets
         : getNewSetsFromLatest(completedExercises, newExercise),
   };
 };

@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
 import { DEFAULT_EXERCISE_NAMES } from "../../exerciseNames";
 import { DEFAULT_EXERCISE_EQUIPMENT } from "../../exerciseEquipment";
-import { DEFAULT_WEIGHT_TYPES } from "../../weightTypes";
+import { DEFAULT_UNITS } from "../../units";
 
 const userSchema: Schema = new Schema(
   {
@@ -35,11 +35,11 @@ const userSchema: Schema = new Schema(
       type: [String],
       default: () => [...DEFAULT_EXERCISE_EQUIPMENT],
     },
-    weightTypes: {
+    units: {
       type: [String],
-      default: () => [...DEFAULT_WEIGHT_TYPES],
+      default: () => [...DEFAULT_UNITS],
     },
-    defaultWeightType: {
+    defaultUnit: {
       type: String,
       default: "lbs",
     },

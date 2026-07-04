@@ -96,7 +96,7 @@ export const SessionInfo = ({ session, dIdx, errors, onRequestDelete }: Props) =
   ];
 
   const hasListedExercises = session.exercises.some(
-    (e) => e.name && e.equipment && e.sets.length,
+    (e) => e.name && e.equipment && e.workingSets.length,
   );
 
   const errorLines = [
@@ -115,7 +115,7 @@ export const SessionInfo = ({ session, dIdx, errors, onRequestDelete }: Props) =
           .filter((ex) => !ex.addedOn)
           .map((ex, i) => (
             <Text style={lineStyle(colors.onSurface)} key={ex._id ?? i}>
-              {`${i + 1}. ${ex.name} [${ex.sets.filter((s) => !s.addedOn).length}]`}
+              {`${i + 1}. ${ex.name} [${ex.workingSets.filter((s) => !s.addedOn).length}]`}
             </Text>
           ))}
       {errorLines.map((line, i) => (

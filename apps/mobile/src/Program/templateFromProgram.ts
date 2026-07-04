@@ -21,11 +21,11 @@ export const templateFromProgram = (
           name: exercise.name,
           equipment: exercise.equipment,
           gym: program.primaryGym,
-          sets: getNewSetsFromLatest(completedExercises, {
+          workingSets: getNewSetsFromLatest(completedExercises, {
             ...exercise,
             gym: program.primaryGym,
           }),
-          weightType: exercise.weightType,
+          unit: exercise.unit,
         })),
       completedDate: undefined,
     })),

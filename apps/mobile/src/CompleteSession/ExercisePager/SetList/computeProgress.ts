@@ -9,16 +9,16 @@ export const computeProgress = (
   let prevReps: number | undefined;
 
   for (const e of history) {
-    if (isSameExercise(e, exercise) && e.sets[setIdx]?.completed) {
-      prevWeight = e.sets[setIdx].weight ?? 0;
-      prevReps = e.sets[setIdx].reps ?? 0;
+    if (isSameExercise(e, exercise) && e.workingSets[setIdx]?.completed) {
+      prevWeight = e.workingSets[setIdx].weight ?? 0;
+      prevReps = e.workingSets[setIdx].reps ?? 0;
       break;
     }
   }
 
   if (prevWeight === undefined || prevReps === undefined) return undefined;
 
-  const cur = exercise.sets[setIdx];
+  const cur = exercise.workingSets[setIdx];
   const weightDiff = cur ? (cur.weight ?? 0) - prevWeight : 0;
   const repDiff = cur ? (cur.reps ?? 0) - prevReps : 0;
 

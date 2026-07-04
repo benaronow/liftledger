@@ -9,8 +9,8 @@ export interface ProgramErrors {
 export interface ExerciseErrors {
   name?: string;
   equipment?: string;
-  weightType?: string;
-  sets?: string;
+  unit?: string;
+  workingSets?: string;
 }
 
 export interface SessionErrors {
@@ -42,8 +42,9 @@ export const validateTemplate = (
           const errors: ExerciseErrors = {};
           if (!exercise.name) errors.name = "Select an exercise";
           if (!exercise.equipment) errors.equipment = "Select equipment";
-          if (!exercise.weightType) errors.weightType = "Select a weight type";
-          if (exercise.sets.length === 0) errors.sets = "Add at least one set";
+          if (!exercise.unit) errors.unit = "Select a unit";
+          if (exercise.workingSets.length === 0)
+            errors.workingSets = "Add at least one set";
           return errors;
         }),
     }),

@@ -10,7 +10,7 @@ const startOfDay = (date: Date): number => {
 
 export const isFullySkipped = (session: Session): boolean =>
   session.exercises.every((exercise) =>
-    exercise.sets.every((set) => !set.completed),
+    exercise.workingSets.every((set) => !set.completed),
   );
 
 const completedDayMap = (program: Program): Map<number, number> => {

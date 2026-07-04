@@ -17,7 +17,7 @@ interface Props {
 
 interface ExerciseBest {
   name: string;
-  weightType: string;
+  unit: string;
   weight: number | null;
   reps: number | null;
 }
@@ -45,7 +45,7 @@ const summarizeBlock = (program: Program): DaySummary[] => {
     sessions.forEach((session) =>
       session.exercises.forEach((exercise) => {
         const key = exercise.name?.trim() || "Exercise";
-        exercise.sets.forEach((set) => {
+        exercise.workingSets.forEach((set) => {
           if (!set.completed) return;
           const prev = best.get(key);
           const weight = set.weight ?? 0;
@@ -58,7 +58,7 @@ const summarizeBlock = (program: Program): DaySummary[] => {
             if (!prev) order.push(key);
             best.set(key, {
               name: key,
-              weightType: exercise.weightType,
+              unit: exercise.unit,
               weight: set.weight,
               reps: set.reps,
             });
@@ -73,8 +73,8 @@ const summarizeBlock = (program: Program): DaySummary[] => {
   return days;
 };
 
-const formatBest = ({ weight, weightType, reps }: ExerciseBest): string => {
-  const load = weight != null ? `${weight}${weightType}` : "BW";
+const formatBest = ({ weight, unit, reps }: ExerciseBest): string => {
+  const load = weight != null ? `${weight}${unit}` : "BW";
   return reps != null ? `${load} × ${reps}` : load;
 };
 

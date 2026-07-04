@@ -27,11 +27,11 @@ const makeExercise = () => ({
   name: "Bench Press",
   equipment: "Barbell",
   gym: "Gym A",
-  sets: [
+  workingSets: [
     { reps: 10, weight: 100, note: "", completed: false },
     { reps: 10, weight: 100, note: "", completed: false },
   ],
-  weightType: "lbs",
+  unit: "lbs",
 });
 
 const makeSession = (completedDate?: Date) => ({
@@ -177,8 +177,8 @@ describe("PUT /users/:id/programs/:programId — rotation progression", () => {
 
     const newRotationSession = updated.rotations[1][0];
     expect(newRotationSession.exercises[0].name).toBe("Bench Press");
-    expect(newRotationSession.exercises[0].sets.length).toBe(2);
-    expect(newRotationSession.exercises[0].sets[0].completed).toBe(false);
+    expect(newRotationSession.exercises[0].workingSets.length).toBe(2);
+    expect(newRotationSession.exercises[0].workingSets[0].completed).toBe(false);
 
     await app.close();
   });

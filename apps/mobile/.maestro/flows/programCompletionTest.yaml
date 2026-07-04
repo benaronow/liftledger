@@ -222,7 +222,7 @@ onFlowComplete:
       POS: "2"
       NAME: "Adductors"
       EQUIPMENT: "Machine"
-      WEIGHT_TYPE: "lbs"
+      UNIT: "lbs"
       EXISTING: "false"
 # Adductors is now exercise 3 of 4, but the pager sits on the first page (BB
 # Squat) after the edit sheet closes — its name only renders on its own page,
@@ -298,7 +298,7 @@ onFlowComplete:
       POS: "3"
       NAME: "Leg Raises"
       EQUIPMENT: "Machine"
-      WEIGHT_TYPE: "lbs"
+      UNIT: "lbs"
       EXISTING: "false"
 # Back on page 1 (BB Bench) — now blank at the new gym.
 - assertVisible: ".*0 reps.*"
@@ -392,7 +392,7 @@ onFlowComplete:
       POS: "3"
       NAME: "Adductors"
       EQUIPMENT: "Machine"
-      WEIGHT_TYPE: "lbs"
+      UNIT: "lbs"
       EXISTING: "true"
 # BB Squat: Skip, Skip
 - runFlow:
@@ -551,7 +551,7 @@ onFlowComplete:
       POS: "0"
       NAME: "Crunch"
       EQUIPMENT: "Machine"
-      WEIGHT_TYPE: "lbs"
+      UNIT: "lbs"
       EXISTING: "true"
 # Pager is back on page 1, which is now Crunch. Crunch (new, one blank set): 50x8
 - assertVisible: "Crunch"
@@ -610,7 +610,7 @@ onFlowComplete:
       POS: "0"
       NAME: "Leg Raises"
       EQUIPMENT: "Machine"
-      WEIGHT_TYPE: "lbs"
+      UNIT: "lbs"
       EXISTING: "true"
 - runFlow:
     file: ../subflows/addExercise.yaml
@@ -618,7 +618,7 @@ onFlowComplete:
       POS: "4"
       NAME: "Crunch"
       EQUIPMENT: "Machine"
-      WEIGHT_TYPE: "lbs"
+      UNIT: "lbs"
       EXISTING: "true"
 # Page 1 is now Leg Raises, repopulated from its Gym-2 history (W3-A 0x14).
 # Leg Raises: 5x14 (the doc's 2nd, add-on "Skip" set is omitted — see header).
@@ -736,7 +736,7 @@ onFlowComplete:
       POS: "3"
       NAME: "Adductors"
       EQUIPMENT: "Machine"
-      WEIGHT_TYPE: "lbs"
+      UNIT: "lbs"
       EXISTING: "true"
 # BB Squat: 13x13, 14x14
 - runFlow:

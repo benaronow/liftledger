@@ -1,5 +1,14 @@
 import { Schema } from "mongoose";
 
+const setFields = {
+  reps: Number,
+  weight: Number,
+  note: String,
+  completed: Boolean,
+  skipped: Boolean,
+  addedOn: Boolean,
+};
+
 const programSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
@@ -15,17 +24,14 @@ const programSchema: Schema = new Schema(
               name: String,
               equipment: String,
               gym: String,
-              sets: [
+              warmupSets: [setFields],
+              workingSets: [
                 {
-                  reps: Number,
-                  weight: Number,
-                  note: String,
-                  completed: Boolean,
-                  skipped: Boolean,
-                  addedOn: Boolean,
+                  ...setFields,
+                  dropSets: [setFields],
                 },
               ],
-              weightType: String,
+              unit: String,
               addedOn: Boolean,
             },
           ],

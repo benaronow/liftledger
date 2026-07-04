@@ -49,12 +49,12 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
                         ...session,
                         gym: name,
                         exercises: session.exercises.map((exercise) =>
-                          exercise.sets.some((s) => s.completed)
+                          exercise.workingSets.some((s) => s.completed)
                             ? exercise
                             : {
                                 ...exercise,
                                 gym: name,
-                                sets: getNewSetsFromLatest(completedExercises, {
+                                workingSets: getNewSetsFromLatest(completedExercises, {
                                   ...exercise,
                                   gym: name,
                                 }),

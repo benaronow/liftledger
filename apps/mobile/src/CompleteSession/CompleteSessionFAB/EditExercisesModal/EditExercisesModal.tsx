@@ -81,11 +81,11 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
       name: "",
       equipment: "",
       gym: curGym,
-      weightType: curUser?.defaultWeightType ?? "",
-      sets: [],
+      unit: curUser?.defaultUnit ?? "",
+      workingSets: [],
       addedOn: true,
     }),
-    [curGym, curUser?.defaultWeightType],
+    [curGym, curUser?.defaultUnit],
   );
   const [newExercise, setNewExercise] = useState<Exercise>(defaultNewExercise);
 
@@ -195,7 +195,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
   const exerciseIncomplete =
     newExercise.name === "" ||
     newExercise.equipment === "" ||
-    newExercise.weightType === "";
+    newExercise.unit === "";
 
   const translateY = progress.interpolate({
     inputRange: [0, 1],
@@ -269,7 +269,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
               }}
             >
               {exercises.map((exercise, idx) => {
-                const started = exercise.sets.some(
+                const started = exercise.workingSets.some(
                   (set) => set.completed || set.skipped,
                 );
                 return (

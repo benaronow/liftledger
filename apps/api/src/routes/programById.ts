@@ -55,8 +55,8 @@ const programByIdRoutes = async (app: FastifyInstance) => {
           for (let d = rotation.length - 1; d >= 0; d--) {
             const session = rotation[d];
             for (const e of session.exercises) {
-              if (isSameExercise(e, exercise) && idx < e.sets.length) {
-                return e.sets[idx];
+              if (isSameExercise(e, exercise) && idx < e.workingSets.length) {
+                return e.workingSets[idx];
               }
             }
           }
@@ -74,7 +74,7 @@ const programByIdRoutes = async (app: FastifyInstance) => {
               return {
                 ...exercise,
                 gym: program.primaryGym,
-                sets: exercise.sets
+                workingSets: exercise.workingSets
                   .filter((set) => !set.addedOn)
                   .map((set: Set, idx: number) => {
                     const latestSet =

@@ -160,7 +160,7 @@ program completion. It's built from reusable, parameterized subflows:
 - `subflows/skipSet.yaml` (`SET`) — skip a set
 - `subflows/addSet.yaml` (`WEIGHT`, `REPS`) — add an add-on set (the "+" after an
   exercise is fully complete)
-- `subflows/addExercise.yaml` (`POS`, `NAME`, `EQUIPMENT`, `WEIGHT_TYPE`) — add an
+- `subflows/addExercise.yaml` (`POS`, `NAME`, `EQUIPMENT`, `UNIT`) — add an
   add-on exercise via FAB → Edit Exercises, inserted at position `POS`
 - `subflows/switchGym.yaml` (`GYM`) — switch the session's gym via FAB → Change
   Gym (W3+); must run before any set is logged. Adds the gym as a custom option

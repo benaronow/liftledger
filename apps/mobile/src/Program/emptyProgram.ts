@@ -1,6 +1,6 @@
 import { Program } from "@liftledger/shared";
 
-export const emptyProgram = (weightType = ""): Program => ({
+export const emptyProgram = (unit = ""): Program => ({
   name: "",
   length: 0,
   rotations: [
@@ -11,7 +11,7 @@ export const emptyProgram = (weightType = ""): Program => ({
           {
             name: "",
             equipment: "",
-            sets: [
+            workingSets: [
               {
                 reps: null,
                 weight: null,
@@ -19,7 +19,7 @@ export const emptyProgram = (weightType = ""): Program => ({
                 note: "",
               },
             ],
-            weightType,
+            unit,
           },
         ],
         completedDate: undefined,

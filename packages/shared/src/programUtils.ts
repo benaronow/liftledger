@@ -24,7 +24,7 @@ export const buildProgramWithSessionExercises = (
             return completedExercise
               ? {
                   ...completedExercise,
-                  sets: completedExercise.sets
+                  workingSets: completedExercise.workingSets
                     .filter((set) => !set.addedOn)
                     .map((set) => ({
                       ...set,

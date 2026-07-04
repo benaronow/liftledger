@@ -4,8 +4,8 @@ import { useMe } from "../api/useMe";
 import { useProgram } from "../api/useProgram";
 
 export const isExerciseComplete = (exercise: Exercise) =>
-  exercise.sets.length !== 0 &&
-  exercise.sets.every((set: Set) => set.completed || (set.skipped ?? false));
+  exercise.workingSets.length !== 0 &&
+  exercise.workingSets.every((set: Set) => set.completed || (set.skipped ?? false));
 
 export const useCurrentSession = () => {
   const { data: curUser } = useMe();
@@ -27,7 +27,7 @@ export const useCurrentSession = () => {
   const isSessionStarted = useMemo(
     () =>
       exercises.some((exercise) =>
-        exercise.sets.some((set) => set.completed || set.skipped),
+        exercise.workingSets.some((set) => set.completed || set.skipped),
       ),
     [exercises],
   );

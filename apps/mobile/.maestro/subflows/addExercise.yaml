@@ -3,7 +3,7 @@ appId: app.liftledger.mobile
 # is inserted at position POS (the add-row above the exercise currently at that
 # 0-based index; use the day's exercise count to append at the end).
 #
-# EQUIPMENT and WEIGHT_TYPE are selected from existing (seeded) options. NAME is
+# EQUIPMENT and UNIT are selected from existing (seeded) options. NAME is
 # either added as a custom option (name not yet a select option) or selected from
 # the list (name already a select option). A name is already an option if it's a
 # seeded library name (exerciseNames.ts, e.g. "Crunch") OR was custom-added earlier
@@ -15,7 +15,7 @@ appId: app.liftledger.mobile
 # Branching on the param (not on which row happens to render) keeps it
 # deterministic: no waiting on the not-taken branch's element to time out, and no
 # risk of a mistyped name silently falling through to "add custom".
-# Params: POS, NAME, EQUIPMENT, WEIGHT_TYPE, EXISTING.
+# Params: POS, NAME, EQUIPMENT, UNIT, EXISTING.
 ---
 - tapOn:
     id: "fab-more-actions"
@@ -103,14 +103,14 @@ appId: app.liftledger.mobile
 - tapOn:
     id: "select-option-${EQUIPMENT}"
 
-# --- Weight type: fixed options (lbs/kgs), pick directly ---
-- tapOn: "Weight Type"
+# --- Unit: fixed options (lbs/kgs), pick directly ---
+- tapOn: "Unit"
 - extendedWaitUntil:
     visible:
-      id: "select-option-${WEIGHT_TYPE}"
+      id: "select-option-${UNIT}"
     timeout: 5000
 - tapOn:
-    id: "select-option-${WEIGHT_TYPE}"
+    id: "select-option-${UNIT}"
 
 # Save the new exercise, then close the Edit Exercises sheet.
 - tapOn: "Add"

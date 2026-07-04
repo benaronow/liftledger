@@ -27,8 +27,8 @@ const makeExercise = (name = "Bench Press", equipment = "Barbell") => ({
   name,
   equipment,
   gym: "Gym A",
-  sets: [{ reps: 10, weight: 100, note: "", completed: false }],
-  weightType: "lbs",
+  workingSets: [{ reps: 10, weight: 100, note: "", completed: false }],
+  unit: "lbs",
 });
 
 const makeProgram = (

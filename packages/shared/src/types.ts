@@ -5,6 +5,7 @@ export interface Set {
   completed: boolean;
   skipped?: boolean;
   addedOn?: boolean;
+  dropSets?: Set[];
 }
 
 export interface Exercise {
@@ -12,8 +13,9 @@ export interface Exercise {
   name: string;
   equipment: string;
   gym?: string;
-  sets: Set[];
-  weightType: string;
+  workingSets: Set[];
+  warmupSets?: Set[];
+  unit: string;
   addedOn?: boolean;
 }
 
@@ -21,8 +23,9 @@ export interface CompletedExercise {
   name: string;
   equipment: string;
   gym?: string;
-  sets: Set[];
-  weightType: string;
+  workingSets: Set[];
+  warmupSets?: Set[];
+  unit: string;
   completedDate?: Date;
 }
 
@@ -74,6 +77,6 @@ export interface User {
   gyms: string[];
   exerciseNames: string[];
   exerciseEquipment: string[];
-  weightTypes: string[];
-  defaultWeightType: string;
+  units: string[];
+  defaultUnit: string;
 }
