@@ -68,10 +68,11 @@ export const StreakInfoDialog = ({
               }}
             >
               Your streak is the run of days you&apos;ve completed a session.
-              You can take up to {restDays} rest{" "}
-              {restDays === 1 ? "day" : "days"} each rotation without losing it
-              — the allowance refreshes when you start a new rotation, and
-              resting more than that resets the streak to zero.
+              You have allotted yourself {restDays} rest{" "}
+              {restDays === 1 ? "day" : "days"} each rotation, which you can
+              take without losing your streak. The allowance refreshes when you start a
+              new rotation, and resting more than that resets the streak to
+              zero.
             </Text>
             <View
               style={{

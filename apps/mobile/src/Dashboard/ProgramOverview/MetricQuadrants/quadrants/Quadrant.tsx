@@ -23,9 +23,17 @@ type Props = {
   value: string;
   bar: ReactNode;
   labelLeading?: ReactNode;
+  labelTrailing?: ReactNode;
 };
 
-export const Quadrant = ({ corner, label, value, bar, labelLeading }: Props) => {
+export const Quadrant = ({
+  corner,
+  label,
+  value,
+  bar,
+  labelLeading,
+  labelTrailing,
+}: Props) => {
   const { colors } = useTheme();
   const right = corner === "tr" || corner === "br";
   const bottom = corner === "bl" || corner === "br";
@@ -36,6 +44,7 @@ export const Quadrant = ({ corner, label, value, bar, labelLeading }: Props) => 
       value={value}
       align={align}
       labelLeading={labelLeading}
+      labelTrailing={labelTrailing}
     />
   );
 

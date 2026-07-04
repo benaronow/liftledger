@@ -31,7 +31,7 @@ export const StreakQuadrant = ({ program, onLayout }: Props) => {
         corner="br"
         label="STREAK"
         value={`${streak}`}
-        labelLeading={
+        labelTrailing={
           <Pressable
             onPress={() => setInfoOpen(true)}
             hitSlop={10}
@@ -42,9 +42,11 @@ export const StreakQuadrant = ({ program, onLayout }: Props) => {
               name="information-outline"
               size={14}
               color={
-                restDaysRemaining === 1
+                restDaysRemaining === 0
                   ? colors.error
-                  : colors.onSurfaceDisabled
+                  : restDaysRemaining === 1
+                    ? colors.tertiaryContainer
+                    : colors.onSurfaceDisabled
               }
             />
           </Pressable>

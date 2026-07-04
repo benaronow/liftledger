@@ -1,4 +1,4 @@
-import { Program } from "@liftledger/shared";
+import { Program, Session } from "@liftledger/shared";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -8,11 +8,16 @@ const startOfDay = (date: Date): number => {
   return d.getTime();
 };
 
+const isFullySkipped = (session: Session): boolean =>
+  session.exercises.every((exercise) =>
+    exercise.sets.every((set) => !set.completed),
+  );
+
 const completedDayMap = (program: Program): Map<number, number> => {
   const days = new Map<number, number>();
   program.rotations.forEach((rotation, rotationIdx) =>
     rotation.forEach((session) => {
-      if (!session.completedDate) return;
+      if (!session.completedDate || isFullySkipped(session)) return;
       const day = startOfDay(new Date(session.completedDate));
       days.set(day, Math.max(days.get(day) ?? 0, rotationIdx));
     }),

@@ -9,9 +9,10 @@ type Props = {
   value: string;
   align: Align;
   labelLeading?: ReactNode;
+  labelTrailing?: ReactNode;
 };
 
-export const TitleRow = ({ label, value, align, labelLeading }: Props) => {
+export const TitleRow = ({ label, value, align, labelLeading, labelTrailing }: Props) => {
   const { colors } = useTheme();
   const labelEl = (
     <View
@@ -33,6 +34,7 @@ export const TitleRow = ({ label, value, align, labelLeading }: Props) => {
       >
         {label}
       </Text>
+      {labelTrailing}
     </View>
   );
   const valueEl = (
