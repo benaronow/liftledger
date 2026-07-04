@@ -8,7 +8,7 @@ const startOfDay = (date: Date): number => {
   return d.getTime();
 };
 
-const isFullySkipped = (session: Session): boolean =>
+export const isFullySkipped = (session: Session): boolean =>
   session.exercises.every((exercise) =>
     exercise.sets.every((set) => !set.completed),
   );

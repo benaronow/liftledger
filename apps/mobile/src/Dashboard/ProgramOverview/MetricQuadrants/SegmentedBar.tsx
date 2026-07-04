@@ -4,10 +4,9 @@ import { usePulse } from "./PulseProvider";
 
 const SEG_GAP = 3;
 const PULSE_MAX_OPACITY = 0.4;
+const SKIPPED_COLOR = "#7D7D82";
 
 const CurrentSegment = ({ color }: { color: string }) => {
-  // Fold the shared 0->1 sawtooth into a 0->max->0 triangle so the segment
-  // brightens and dims once per period, in phase with the other cards.
   const phase = usePulse();
   const opacity = phase.interpolate({
     inputRange: [0, 0.5, 1],
@@ -34,9 +33,11 @@ const CurrentSegment = ({ color }: { color: string }) => {
 export const SegmentedBar = ({
   count,
   filled,
+  skipped,
 }: {
   count: number;
   filled: number;
+  skipped?: Set<number>;
 }) => {
   const { colors } = useTheme();
 
@@ -51,7 +52,11 @@ export const SegmentedBar = ({
             style={{
               flex: 1,
               backgroundColor:
-                i < filled ? colors.primary : colors.secondaryContainer,
+                i < filled
+                  ? skipped?.has(i)
+                    ? SKIPPED_COLOR
+                    : colors.primary
+                  : colors.secondaryContainer,
             }}
           />
         ),
