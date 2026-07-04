@@ -1,4 +1,4 @@
-import { Program, Session, Exercise, Set } from "@liftledger/shared";
+import { Exercise, buildProgramWithSessionExercises } from "@liftledger/shared";
 import { useEffect, useState } from "react";
 import {
   findLatestOccurrence,
@@ -56,58 +56,9 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
   const saveExercises = async (updatedExercises: Exercise[]) => {
     if (!curUser?._id || !curProgram) return;
 
-    const newSessions: Session[] = curProgram.rotations[
-      curProgram.curRotationIdx
-    ].toSpliced(curProgram.curSessionIdx, 1, {
-      ...curProgram.rotations[curProgram.curRotationIdx][
-        curProgram.curSessionIdx
-      ],
-      exercises: updatedExercises,
-    });
-
-    const updatedLaterDays: Session[] = newSessions.map(
-      (session: Session, idx) =>
-        idx <= curProgram.curSessionIdx
-          ? session
-          : {
-              ...session,
-              exercises: session.exercises.map((exercise: Exercise) => {
-                const completedExercise = updatedExercises.find(
-                  (e: Exercise) =>
-                    e.name === exercise.name &&
-                    e.equipment === exercise.equipment &&
-                    e.gym === exercise.gym,
-                );
-
-                return completedExercise
-                  ? {
-                      ...completedExercise,
-                      sets: completedExercise.sets
-                        .filter((set) => !set.addedOn)
-                        .map((set: Set) => ({
-                          ...set,
-                          completed: false,
-                          skipped: undefined,
-                          note: "",
-                        })),
-                    }
-                  : exercise;
-              }),
-            },
-    );
-
-    const newProgram: Program = {
-      ...curProgram,
-      rotations: curProgram.rotations.toSpliced(
-        curProgram.curRotationIdx,
-        1,
-        updatedLaterDays,
-      ),
-    };
-
     await triggerUpdateUserProgram({
       userId: curUser._id,
-      program: newProgram,
+      program: buildProgramWithSessionExercises(curProgram, updatedExercises),
     });
   };
 
@@ -152,8 +103,6 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
         e.gym === updatedExercise.gym,
     );
 
-    // Guard against a -1 from findIndex: toSpliced(-1, …) would silently
-    // replace the *last* exercise rather than the intended one.
     if (exerciseIdx === -1) {
       showSnackbar("Error submitting set. Please try again.");
       setSkippingSet(false);
@@ -177,8 +126,6 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       return;
     }
 
-    // Auto-start the rest timer after a completed (non-skipped) set. Failure is
-    // non-blocking — the set was already saved — so it just surfaces a toast.
     if (!options?.skip && curUser?._id) {
       const duration = resolveDuration(updatedExercise.name);
       if (duration !== undefined) {
@@ -204,12 +151,11 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       title="Submit Set"
       onConfirm={handleSubmitSet}
       confirming={submittingSet || skippingSet}
+      confirmationDisabled={submittingSet || skippingSet}
       secondaryAction="Skip Set"
       onSecondaryAction={() => handleSubmitSet({ skip: true })}
-      secondaryActionDisabled={
-        exerciseState?.sets[displaySetIdx!]?.skipped ||
-        displaySetIdx === exercise?.sets.length
-      }
+      secondaryActionLoading={skippingSet}
+      secondaryActionDisabled={submittingSet || skippingSet}
     >
       <EditSet
         exerciseState={exerciseState}

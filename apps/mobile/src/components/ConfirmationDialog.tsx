@@ -4,9 +4,8 @@ import { Button, Text, useTheme } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../theme";
 import { TopSheet } from "./TopSheet";
 
-// Gray of the skipped-set chip (see SetList.getBackground), reused for the
-// "Skip Set" secondary action so it reads as the same non-committal state.
 const SKIP_GRAY = "#7D7D82";
+const SKIP_GRAY_DISABLED = "#5C5C61";
 
 interface Props {
   children?: ReactNode;
@@ -23,6 +22,7 @@ interface Props {
   secondaryAction?: string;
   onSecondaryAction?: () => void;
   secondaryActionDisabled?: boolean;
+  secondaryActionLoading?: boolean;
 }
 
 export const ConfirmationDialog = ({
@@ -40,6 +40,7 @@ export const ConfirmationDialog = ({
   secondaryAction,
   onSecondaryAction,
   secondaryActionDisabled,
+  secondaryActionLoading,
 }: Props) => {
   const { colors } = useTheme();
 
@@ -117,10 +118,18 @@ export const ConfirmationDialog = ({
             {secondaryAction && onSecondaryAction && (
               <Button
                 mode="contained"
-                buttonColor={SKIP_GRAY}
-                textColor="white"
-                onPress={onSecondaryAction}
-                disabled={confirming || secondaryActionDisabled}
+                buttonColor={
+                  secondaryActionDisabled ? SKIP_GRAY_DISABLED : SKIP_GRAY
+                }
+                textColor={
+                  secondaryActionDisabled ? colors.onSurfaceDisabled : "white"
+                }
+                loading={secondaryActionLoading}
+                onPress={
+                  confirming || secondaryActionDisabled
+                    ? undefined
+                    : onSecondaryAction
+                }
               >
                 {secondaryAction}
               </Button>
@@ -129,11 +138,7 @@ export const ConfirmationDialog = ({
               mode="contained"
               buttonColor={destructive ? colors.error : colors.primary}
               textColor={destructive ? colors.onError : colors.onPrimary}
-              loading={confirming}
-              // Guard the press instead of setting `disabled` while confirming:
-              // a disabled Paper Button drops its custom buttonColor and reverts
-              // to the theme's surface tint, which made the destructive red flash
-              // to the primary color mid-confirm.
+              loading={confirming && !secondaryActionLoading}
               onPress={confirming ? undefined : onConfirm}
               disabled={confirmationDisabled}
             >

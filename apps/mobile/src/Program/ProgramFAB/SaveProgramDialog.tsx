@@ -37,9 +37,8 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
 
   const handleSave = async () => {
     if (!curUser?._id) return;
-
     setTransitioning(true);
-    onClose();
+
     try {
       if (curProgram) {
         const res = await triggerUpdateUserProgram({
@@ -59,7 +58,7 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
         setEditingRotationIdx(0);
       }
 
-      // Drop any lingering ?duplicateFrom so a later visit starts from curProgram.
+      onClose();
       navigation.setParams({ duplicateFrom: undefined });
       navigation.navigate("Dashboard");
     } catch {

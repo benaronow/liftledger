@@ -14,21 +14,22 @@ interface Props {
 export const QuitProgramDialog = ({ open, onClose }: Props) => {
   const navigation = useNavigation<TabNav<"Program">>();
   const { data: curUser } = useMe();
-  const { trigger: triggerQuitProgram, isMutating: quitting } = useQuitProgram();
+  const { trigger: triggerQuitProgram, isMutating: quitting } =
+    useQuitProgram();
   const { unsetTemplateProgram, setEditingRotationIdx } = useTemplate();
   const { setTransitioning } = useProgramTransition();
   const { showSnackbar } = useSnackbar();
 
   const handleQuit = async () => {
     if (!curUser?._id) return;
-    // Show the loading spinner and close the dialog right away so only the
-    // spinner shows. Reset on failure since we stay on the Program screen.
     setTransitioning(true);
-    onClose();
+
     try {
       await triggerQuitProgram(curUser._id);
       unsetTemplateProgram();
       setEditingRotationIdx(0);
+
+      onClose();
       navigation.setParams({ duplicateFrom: undefined });
       navigation.navigate("Dashboard");
     } catch (e: unknown) {
