@@ -93,13 +93,6 @@ export const ExercisePage = ({
           >
             {exercise.name}
           </Text>
-          {isComplete && (
-            <MaterialCommunityIcons
-              name="check-circle"
-              size={22}
-              color={colors.tertiary}
-            />
-          )}
           {exercise.addedOn && <Badge label="ADD-ON" />}
         </View>
         <Text
@@ -112,7 +105,7 @@ export const ExercisePage = ({
           {exercise.equipment}
         </Text>
       </View>
-      <Info title="Sets" fill>
+      <Info title="Sets" fill background={isComplete ? colors.tertiary : undefined}>
         <SetList
           exercise={exercise}
           isCurrentExercise={isCurrentExercise}
@@ -122,6 +115,7 @@ export const ExercisePage = ({
       <Info
         title="Progress"
         fill
+        overflowVisible
         headerRight={
           <View
             style={{

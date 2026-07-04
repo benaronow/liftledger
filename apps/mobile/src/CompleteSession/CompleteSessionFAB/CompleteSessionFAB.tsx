@@ -52,6 +52,7 @@ export const CompleteSessionFAB = ({ isFinishing }: Props) => {
     testID: string;
     onPress: () => void;
     backgroundColor?: string;
+    disabled?: boolean;
   };
 
   const actions: FabAction[] = [
@@ -69,21 +70,18 @@ export const CompleteSessionFAB = ({ isFinishing }: Props) => {
           testID: "fab-start-timer",
           onPress: () => setTimerDialogOpen(true),
         },
-    ...(!isSessionStarted
-      ? [
-          {
-            icon: "office-building",
-            label: "Change Gym",
-            testID: "fab-change-gym",
-            onPress: () => setEditGymDialogOpen(true),
-          },
-        ]
-      : []),
     {
       icon: "pencil",
       label: "Edit Exercises",
       testID: "fab-edit-exercises",
       onPress: () => setEditModalOpen(true),
+    },
+    {
+      icon: "office-building",
+      label: "Change Gym",
+      testID: "fab-change-gym",
+      onPress: () => setEditGymDialogOpen(true),
+      disabled: isSessionStarted,
     },
   ];
 
@@ -188,11 +186,14 @@ export const CompleteSessionFAB = ({ isFinishing }: Props) => {
               testID={action.testID}
               size="small"
               customSize={FAB_SIZE}
-              color="white"
+              color={action.disabled ? colors.onSurfaceDisabled : "white"}
+              disabled={action.disabled}
               style={
-                action.backgroundColor
-                  ? { ...fabStyle, backgroundColor: action.backgroundColor }
-                  : fabStyle
+                action.disabled
+                  ? { ...fabStyle, backgroundColor: colors.surfaceDisabled }
+                  : action.backgroundColor
+                    ? { ...fabStyle, backgroundColor: action.backgroundColor }
+                    : fabStyle
               }
               onPress={() => {
                 setOpen(false);

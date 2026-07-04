@@ -22,10 +22,24 @@ interface Props {
   // Stretch the card to fill its parent, letting the children area flex (and
   // scroll) while any actions stay pinned at the bottom.
   fill?: boolean;
+  // Overrides the card's surface color (e.g. success green once complete).
+  background?: string;
+  // Lets children draw past the card's rounded content box (e.g. a chart
+  // tooltip that needs to spill into the card's padding to stay fully visible).
+  // Defaults to clipping so rounded children stay masked.
+  overflowVisible?: boolean;
   children: ReactNode;
 }
 
-export const Info = ({ title, actions, headerRight, fill, children }: Props) => {
+export const Info = ({
+  title,
+  actions,
+  headerRight,
+  fill,
+  background,
+  overflowVisible,
+  children,
+}: Props) => {
   const theme = useTheme();
   const { colors } = theme;
 
@@ -42,11 +56,15 @@ export const Info = ({ title, actions, headerRight, fill, children }: Props) => 
     <SectionCard
       title={title}
       headerRight={headerRight}
+      background={background}
       style={{ marginBottom: SPACING.lg, ...(fill && { flex: 1 }) }}
     >
       <View
         style={[
-          { borderRadius: RADIUS.md, overflow: "hidden" },
+          {
+            borderRadius: RADIUS.md,
+            overflow: overflowVisible ? "visible" : "hidden",
+          },
           fill && { flex: 1 },
         ]}
       >
