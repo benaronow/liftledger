@@ -1,6 +1,5 @@
 import { Program } from "@liftledger/shared";
 import dayjs from "dayjs";
-import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Button, Text, useTheme } from "react-native-paper";
@@ -11,8 +10,9 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 interface Props {
   program: Program;
-  idx: number;
   disabled?: boolean;
+  expanded: boolean;
+  onToggle: () => void;
 }
 
 interface ExerciseBest {
@@ -78,11 +78,25 @@ const formatBest = ({ weight, weightType, reps }: ExerciseBest): string => {
   return reps != null ? `${load} × ${reps}` : load;
 };
 
-export const CompletedProgram = ({ program, idx, disabled }: Props) => {
+const getStartDate = (program: Program): Date | undefined => {
+  const times = (program.rotations[0] ?? [])
+    .map((session) => session.completedDate)
+    .filter((date): date is Date => !!date)
+    .map((date) => new Date(date).getTime());
+  return times.length ? new Date(Math.min(...times)) : undefined;
+};
+
+export const CompletedProgram = ({
+  program,
+  disabled,
+  expanded,
+  onToggle,
+}: Props) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors } = useTheme();
-  const [expanded, setExpanded] = useState(false);
+
+  const startDate = getStartDate(program);
 
   const completedDate = () => {
     if (program.endDate) return program.endDate;
@@ -114,7 +128,7 @@ export const CompletedProgram = ({ program, idx, disabled }: Props) => {
       }}
     >
       <Pressable
-        onPress={() => setExpanded((prev) => !prev)}
+        onPress={onToggle}
         accessibilityRole="button"
         accessibilityState={{ expanded }}
         style={{
@@ -128,15 +142,18 @@ export const CompletedProgram = ({ program, idx, disabled }: Props) => {
         }}
       >
         <Text
-          style={{ flex: 1, fontSize: FONT.sm, color: colors.onSurface }}
+          style={{
+            flex: 1,
+            gap: SPACING.md,
+            fontSize: FONT.sm,
+            color: colors.onSurface,
+          }}
           numberOfLines={1}
         >
-          <Text
-            style={{ fontWeight: "700" }}
-          >{`${idx + 1}. ${program.name}`}</Text>
-          <Text>{`  (${dayjs(program.startDate).format("M/DD/YY")} - ${
+          <Text style={{ fontWeight: "700" }}>{program.name}</Text>
+          <Text>{`   ${startDate ? dayjs(startDate).format("M/DD/YY") : "N/A"} - ${
             completedDate() ? dayjs(completedDate()).format("M/DD/YY") : "N/A"
-          })`}</Text>
+          }`}</Text>
         </Text>
         <MaterialCommunityIcons
           name={expanded ? "chevron-up" : "chevron-down"}
@@ -200,15 +217,35 @@ export const CompletedProgram = ({ program, idx, disabled }: Props) => {
             </View>
           ))}
 
-          <Button
-            mode="contained"
-            icon="content-copy"
-            disabled={disabled}
-            onPress={duplicate}
-            style={{ alignSelf: "flex-start", borderRadius: RADIUS.md }}
+          <View
+            style={{
+              flexDirection: "column",
+              alignItems: "center",
+              gap: SPACING.sm,
+              width: "100%",
+            }}
           >
-            Duplicate
-          </Button>
+            <Button
+              mode="contained"
+              icon="content-copy"
+              disabled={disabled}
+              onPress={duplicate}
+              style={{ borderRadius: RADIUS.md, width: "100%" }}
+            >
+              Duplicate
+            </Button>
+            {disabled && (
+              <Text
+                style={{
+                  flex: 1,
+                  fontSize: FONT.xs,
+                  color: colors.onSurfaceDisabled,
+                }}
+              >
+                {"Can't duplicate while a program is in progress."}
+              </Text>
+            )}
+          </View>
         </View>
       )}
     </View>

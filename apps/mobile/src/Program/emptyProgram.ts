@@ -2,7 +2,6 @@ import { Program } from "@liftledger/shared";
 
 export const emptyProgram = (weightType = ""): Program => ({
   name: "",
-  startDate: new Date(),
   length: 0,
   rotations: [
     [

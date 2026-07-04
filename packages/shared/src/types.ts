@@ -37,15 +37,12 @@ export interface Session {
 export interface Program {
   _id?: string;
   name: string;
-  startDate: Date;
   length: number;
   primaryGym?: string;
   rotations: Session[][];
   curRotationIdx: number;
   curSessionIdx: number;
   endDate?: Date;
-  // Per-rotation streak "keep-alive" budget: this many missed days are allowed
-  // within a rotation before the streak breaks. Rest days don't add to the streak.
   restDays?: number;
 }
 

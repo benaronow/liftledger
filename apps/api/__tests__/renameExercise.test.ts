@@ -36,7 +36,6 @@ const makeProgram = (
   overrides: Partial<Program> = {},
 ): Partial<Program> => ({
   name: "Test Program",
-  startDate: new Date("2024-01-01"),
   length: 4,
   primaryGym: "Gym A",
   rotations: [[{ name: "Session 1", gym: "Gym A", exercises: [exercise], completedDate: undefined }]],

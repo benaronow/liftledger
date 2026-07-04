@@ -34,6 +34,7 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
   const [skippingSet, setSkippingSet] = useState(false);
 
   const [exerciseState, setExerciseState] = useState<Exercise>();
+  const [displaySetIdx, setDisplaySetIdx] = useState(setIdx);
   useEffect(() => {
     if (setIdx === undefined) return;
 
@@ -48,6 +49,8 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
           }
         : exercise,
     );
+
+    setDisplaySetIdx(setIdx);
   }, [exercise, setIdx]);
 
   const saveExercises = async (updatedExercises: Exercise[]) => {
@@ -204,14 +207,14 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       secondaryAction="Skip Set"
       onSecondaryAction={() => handleSubmitSet({ skip: true })}
       secondaryActionDisabled={
-        exerciseState?.sets[setIdx!]?.skipped ||
-        setIdx === exercise!.sets.length
+        exerciseState?.sets[displaySetIdx!]?.skipped ||
+        displaySetIdx === exercise?.sets.length
       }
     >
       <EditSet
         exerciseState={exerciseState}
         setExerciseState={setExerciseState}
-        setIdx={setIdx!}
+        setIdx={displaySetIdx!}
       />
     </ConfirmationDialog>
   );

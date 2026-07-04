@@ -43,7 +43,6 @@ const makeSession = (completedDate?: Date) => ({
 
 const makeProgram = (overrides: Partial<Program> = {}): Partial<Program> => ({
   name: "Test Program",
-  startDate: new Date("2024-01-01"),
   length: 4,
   primaryGym: "Gym A",
   rotations: [[makeSession()]],

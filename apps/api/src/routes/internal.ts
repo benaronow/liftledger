@@ -101,7 +101,6 @@ const test1Week = () => [
 
 const buildTest1Program = () => ({
   name: "E2E Test Program",
-  startDate: new Date(),
   length: TEST1_PROGRAM_LENGTH,
   primaryGym: GYM1,
   curRotationIdx: 0,

@@ -3,7 +3,6 @@ import { Schema } from "mongoose";
 const programSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
-    startDate: { type: Date, required: true },
     length: { type: Number, required: true },
     primaryGym: { type: String },
     rotations: [
