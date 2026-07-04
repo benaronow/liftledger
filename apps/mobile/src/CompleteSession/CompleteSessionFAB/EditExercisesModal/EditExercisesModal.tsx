@@ -11,6 +11,13 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Gesture } from "react-native-gesture-handler";
+import Reanimated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 import {
   useProgram,
   useCurrentSession,
@@ -34,6 +41,10 @@ import { EditExercise } from "./EditExercise";
 
 const DURATION = 250;
 
+const DRAG_DISMISS_DISTANCE = 120;
+const DRAG_DISMISS_VELOCITY = 800;
+const DRAG_SPRING = { damping: 20, stiffness: 220, overshootClamping: true };
+
 type Editor = { type: "add"; idx: number } | { type: "edit"; idx: number };
 
 interface Props {
@@ -53,6 +64,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
   const { height: screenHeight } = useWindowDimensions();
 
   const progress = useRef(new Animated.Value(0)).current;
+  const dragY = useSharedValue(0);
   const [mounted, setMounted] = useState(false);
   const [editor, setEditor] = useState<Editor>();
   const [editorOpen, setEditorOpen] = useState(false);
@@ -83,11 +95,9 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
     onClose();
   };
 
-  // Slide the sheet up from the bottom (Portal-rendered, so it shares the app's
-  // main window — a native pageSheet would force any TopSheet opened from inside
-  // it into a nested native modal that XCUITest can't reliably traverse).
   useEffect(() => {
     if (open) {
+      dragY.value = 0;
       setMounted(true);
       Animated.timing(progress, {
         toValue: 1,
@@ -192,6 +202,26 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
     outputRange: [screenHeight, 0],
   });
 
+  const dragStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: dragY.value }],
+  }));
+
+  const dragGesture = Gesture.Pan()
+    .activeOffsetY(10)
+    .onUpdate((e) => {
+      dragY.value = Math.max(0, e.translationY);
+    })
+    .onEnd((e) => {
+      if (
+        e.translationY > DRAG_DISMISS_DISTANCE ||
+        e.velocityY > DRAG_DISMISS_VELOCITY
+      ) {
+        scheduleOnRN(close);
+      } else {
+        dragY.value = withSpring(0, DRAG_SPRING);
+      }
+    });
+
   return mounted ? (
     <Portal>
       <Animated.View
@@ -210,136 +240,149 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: colors.primaryContainer,
-          borderTopLeftRadius: RADIUS.xl,
-          borderTopRightRadius: RADIUS.xl,
-          overflow: "hidden",
           transform: [{ translateY }],
         }}
       >
-        <Sheet
-          title="Edit Exercises"
-          actions={[{ label: "Done", onPress: close }]}
-          headerColor={colors.secondaryContainer}
+        <Reanimated.View
+          style={[
+            {
+              flex: 1,
+              backgroundColor: colors.primaryContainer,
+              borderTopLeftRadius: RADIUS.xl,
+              borderTopRightRadius: RADIUS.xl,
+              overflow: "hidden",
+            },
+            dragStyle,
+          ]}
         >
-          <ScrollView
-            contentContainerStyle={{
-              padding: SPACING.lg,
-              paddingBottom: insets.bottom + SPACING.lg,
-              alignItems: "center",
-            }}
+          <Sheet
+            title="Edit Exercises"
+            actions={[{ label: "Done", onPress: close }]}
+            headerColor={colors.secondaryContainer}
+            headerDragGesture={dragGesture}
           >
-            {exercises.map((exercise, idx) => {
-              const started = exercise.sets.some(
-                (set) => set.completed || set.skipped,
-              );
-              return (
-                <View key={idx} style={{ width: "100%", alignItems: "center" }}>
-                  <AddRow
-                    onPress={() => startAdd(idx)}
-                    accessibilityLabel={`insert-exercise-${idx}`}
-                  />
-                  <Surface
-                    elevation={0}
-                    style={{
-                      width: "100%",
-                      borderRadius: RADIUS.md,
-                      marginBottom: SPACING.lg,
-                      backgroundColor: colors.background,
-                    }}
+            <ScrollView
+              contentContainerStyle={{
+                padding: SPACING.lg,
+                paddingBottom: insets.bottom + SPACING.lg,
+                alignItems: "center",
+              }}
+            >
+              {exercises.map((exercise, idx) => {
+                const started = exercise.sets.some(
+                  (set) => set.completed || set.skipped,
+                );
+                return (
+                  <View
+                    key={idx}
+                    style={{ width: "100%", alignItems: "center" }}
                   >
-                    <View
+                    <AddRow
+                      onPress={() => startAdd(idx)}
+                      accessibilityLabel={`insert-exercise-${idx}`}
+                    />
+                    <Surface
+                      elevation={0}
                       style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        minHeight: 50,
-                        paddingVertical: SPACING.sm,
-                        paddingLeft: SPACING.md,
-                        paddingRight: SPACING.sm,
+                        width: "100%",
+                        borderRadius: RADIUS.md,
+                        marginBottom: SPACING.lg,
+                        backgroundColor: colors.background,
                       }}
                     >
-                      <View style={{ flexShrink: 1 }}>
-                        <Text
-                          numberOfLines={1}
-                          style={{
-                            color: colors.onSurface,
-                            fontWeight: "700",
-                            fontSize: FONT.base,
-                          }}
-                        >
-                          {exercise.name}
-                        </Text>
-                        <Text
-                          style={{
-                            color: colors.onSurfaceDisabled,
-                            fontWeight: "600",
-                            fontSize: FONT.sm,
-                          }}
-                        >
-                          {exercise.equipment}
-                        </Text>
-                      </View>
                       <View
                         style={{
                           flexDirection: "row",
                           alignItems: "center",
-                          gap: SPACING.sm,
+                          justifyContent: "space-between",
+                          minHeight: 50,
+                          paddingVertical: SPACING.sm,
+                          paddingLeft: SPACING.md,
+                          paddingRight: SPACING.sm,
                         }}
                       >
-                        {exercise.addedOn && (
-                          <Badge
-                            label="ADD-ON"
-                            background={colors.surfaceVariant}
-                          />
-                        )}
-                        {exercise.addedOn && (
+                        <View style={{ flexShrink: 1 }}>
+                          <Text
+                            numberOfLines={1}
+                            style={{
+                              color: colors.onSurface,
+                              fontWeight: "700",
+                              fontSize: FONT.base,
+                            }}
+                          >
+                            {exercise.name}
+                          </Text>
+                          <Text
+                            style={{
+                              color: colors.onSurfaceDisabled,
+                              fontWeight: "600",
+                              fontSize: FONT.sm,
+                            }}
+                          >
+                            {exercise.equipment}
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: SPACING.sm,
+                          }}
+                        >
+                          {exercise.addedOn && (
+                            <Badge
+                              label="ADD-ON"
+                              background={colors.surfaceVariant}
+                            />
+                          )}
+                          {exercise.addedOn && (
+                            <IconButton
+                              style={{ margin: 0, borderRadius: RADIUS.sm }}
+                              icon="delete"
+                              mode="contained"
+                              size={18}
+                              containerColor={
+                                started ? colors.surfaceDisabled : colors.error
+                              }
+                              iconColor={
+                                started
+                                  ? colors.onSurfaceDisabled
+                                  : colors.onError
+                              }
+                              disabled={started}
+                              onPress={() => setDeletingIdx(idx)}
+                              accessibilityLabel={`delete-exercise-${idx}`}
+                            />
+                          )}
                           <IconButton
                             style={{ margin: 0, borderRadius: RADIUS.sm }}
-                            icon="delete"
+                            icon="pencil"
                             mode="contained"
                             size={18}
                             containerColor={
-                              started ? colors.surfaceDisabled : colors.error
+                              started ? colors.surfaceDisabled : colors.primary
                             }
                             iconColor={
                               started
                                 ? colors.onSurfaceDisabled
-                                : colors.onError
+                                : colors.onPrimary
                             }
                             disabled={started}
-                            onPress={() => setDeletingIdx(idx)}
-                            accessibilityLabel={`delete-exercise-${idx}`}
+                            onPress={() => startEdit(idx)}
                           />
-                        )}
-                        <IconButton
-                          style={{ margin: 0, borderRadius: RADIUS.sm }}
-                          icon="pencil"
-                          mode="contained"
-                          size={18}
-                          containerColor={
-                            started ? colors.surfaceDisabled : colors.primary
-                          }
-                          iconColor={
-                            started
-                              ? colors.onSurfaceDisabled
-                              : colors.onPrimary
-                          }
-                          disabled={started}
-                          onPress={() => startEdit(idx)}
-                        />
+                        </View>
                       </View>
-                    </View>
-                  </Surface>
-                </View>
-              );
-            })}
-            <AddRow
-              onPress={() => startAdd(exercises.length)}
-              accessibilityLabel={`insert-exercise-${exercises.length}`}
-            />
-          </ScrollView>
-        </Sheet>
+                    </Surface>
+                  </View>
+                );
+              })}
+              <AddRow
+                onPress={() => startAdd(exercises.length)}
+                accessibilityLabel={`insert-exercise-${exercises.length}`}
+              />
+            </ScrollView>
+          </Sheet>
+        </Reanimated.View>
       </Animated.View>
       <ConfirmationDialog
         open={editorOpen}
