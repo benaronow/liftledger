@@ -69,6 +69,7 @@ export const ManageExerciseList = ({ field, open, onClose }: Props) => {
   const [scope, setScope] = useState<Scope>("list");
   const [saving, setSaving] = useState(false);
   const [editorError, setEditorError] = useState("");
+  const [committed, setCommitted] = useState(false);
 
   const [pendingDelete, setPendingDelete] = useState<string>();
   const [deleting, setDeleting] = useState(false);
@@ -78,6 +79,7 @@ export const ManageExerciseList = ({ field, open, onClose }: Props) => {
     setValue(item);
     setScope("list");
     setEditorError("");
+    setCommitted(false);
   };
 
   const trimmed = value.trim();
@@ -97,6 +99,7 @@ export const ManageExerciseList = ({ field, open, onClose }: Props) => {
     if (!canSave || !curUser?._id || original === undefined) return;
     setSaving(true);
     setEditorError("");
+    setCommitted(true);
     try {
       await renameExercise({
         userId: curUser._id,
@@ -107,6 +110,7 @@ export const ManageExerciseList = ({ field, open, onClose }: Props) => {
       });
       setOriginal(undefined);
     } catch {
+      setCommitted(false);
       setEditorError("Something went wrong. Please try again.");
     } finally {
       setSaving(false);
@@ -177,7 +181,7 @@ export const ManageExerciseList = ({ field, open, onClose }: Props) => {
             onChangeText={setValue}
             autoFocus
             error={
-              duplicate
+              !committed && duplicate
                 ? `"${trimmed}" already exists`
                 : editorError !== ""
                   ? editorError

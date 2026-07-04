@@ -1,7 +1,7 @@
 import { useCompletedExercises, useMe } from "@liftledger/api-client";
 import { type CompletedExercise, type Set } from "@liftledger/shared";
 import dayjs from "dayjs";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { LayoutChangeEvent, View } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
 import { LogoSpinner } from "../../components/LogoSpinner";
@@ -41,7 +41,20 @@ export const ProgressChart = ({
   const { data: completedExercises, isLoading: completedExercisesLoading } =
     useCompletedExercises(curUser?._id);
   const [size, setSize] = useState({ width: 0, height: 0 });
+  // The chart re-plots every point from the measured container size. When
+  // CompleteSession pushes in, the container is measured more than once as the
+  // screen slides in and the header inset settles — painting on the first
+  // (intermediate) size then re-plotting on the final one makes the dots visibly
+  // jump/grow. Hold the first paint until layout goes quiet so it lands on the
+  // final size once. (Progress doesn't hit this: its tab is already laid out.)
+  const [layoutReady, setLayoutReady] = useState(false);
+  const layoutReadyRef = useRef(false);
+  const settleTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const { colors } = useTheme();
+
+  useEffect(() => () => clearTimeout(settleTimer.current), []);
 
   const gymColors = useMemo(
     () => [
@@ -167,11 +180,21 @@ export const ProgressChart = ({
   const loading = externalLoading || isUserLoading || completedExercisesLoading;
   const hasData = chartExercises.length > 0;
 
-  const onLayout = (e: LayoutChangeEvent) =>
-    setSize({
-      width: e.nativeEvent.layout.width,
-      height: e.nativeEvent.layout.height,
-    });
+  const onLayout = (e: LayoutChangeEvent) => {
+    const { width, height } = e.nativeEvent.layout;
+    setSize((prev) =>
+      prev.width === width && prev.height === height ? prev : { width, height },
+    );
+
+    if (layoutReadyRef.current) return;
+
+    clearTimeout(settleTimer.current);
+
+    settleTimer.current = setTimeout(() => {
+      layoutReadyRef.current = true;
+      setLayoutReady(true);
+    }, 80);
+  };
 
   const plotWidth = Math.max(
     0,
@@ -197,7 +220,7 @@ export const ProgressChart = ({
         }}
         onLayout={onLayout}
       >
-        {loading ? (
+        {loading || !layoutReady ? (
           <LogoSpinner inline transparent />
         ) : !hasData ? (
           <NoDataPlaceholder />
