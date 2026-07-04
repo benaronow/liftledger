@@ -10,6 +10,7 @@ import { LogoSpinner } from "../components/LogoSpinner";
 import type { TabParamList } from "../RootNavigator/types";
 import { useTheme } from "react-native-paper";
 import { ProgramFAB } from "./ProgramFAB";
+import { ProgramLeaveGuard } from "./ProgramLeaveGuard";
 import { EditorView } from "./EditorView";
 import { emptyProgram } from "./emptyProgram";
 import { ProgramTransitionProvider } from "./ProgramTransition";
@@ -75,6 +76,7 @@ export const Program = () => {
             <EditorView />
             <ProgramFAB />
           </View>
+          <ProgramLeaveGuard />
         </TemplateProvider>
         {transitioning && (
           <View style={[StyleSheet.absoluteFill, { zIndex: 20 }]}>

@@ -2,7 +2,13 @@ import { Program } from "@liftledger/shared";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useCallback } from "react";
-import { useProgram, useMe, useUpdateUserProgram } from "@liftledger/api-client";
+import {
+  useProgram,
+  useMe,
+  useUpdateUserProgram,
+  useTimerEnd,
+  useClearTimerEnd,
+} from "@liftledger/api-client";
 import { ConfirmationDialog } from "../components/ConfirmationDialog";
 import type { RootStackParamList } from "../RootNavigator/types";
 import { useSnackbar } from "../providers/SnackbarProvider";
@@ -25,6 +31,8 @@ export const FinishSessionDialog = ({
   const { data: curUser } = useMe();
   const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
   const { trigger: triggerUpdateUserProgram } = useUpdateUserProgram();
+  const { data: timerEndData } = useTimerEnd(curUser?._id);
+  const { trigger: triggerClearTimerEnd } = useClearTimerEnd();
   const { showSnackbar } = useSnackbar();
 
   const handleFinishSession = useCallback(async () => {
@@ -35,19 +43,28 @@ export const FinishSessionDialog = ({
       rotations: curProgram.rotations.toSpliced(
         curProgram.curRotationIdx,
         1,
-        curProgram.rotations[curProgram.curRotationIdx].toSpliced(curProgram.curSessionIdx, 1, {
-          ...curProgram.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx],
-          completedDate: new Date(),
-        }),
+        curProgram.rotations[curProgram.curRotationIdx].toSpliced(
+          curProgram.curSessionIdx,
+          1,
+          {
+            ...curProgram.rotations[curProgram.curRotationIdx][
+              curProgram.curSessionIdx
+            ],
+            completedDate: new Date(),
+          },
+        ),
       ),
     };
 
     setFinishing(true);
     try {
-      await triggerUpdateUserProgram({ userId: curUser._id, program: newProgram });
+      await triggerUpdateUserProgram({
+        userId: curUser._id,
+        program: newProgram,
+      });
+      if (timerEndData?.timerEnd)
+        triggerClearTimerEnd(curUser._id).catch(() => {});
       onClose();
-      // `pop: true` returns to the existing Tabs screen instead of pushing a new
-      // one on top of CompleteSession (RN7 navigate no longer pops back by default).
       navigation.navigate("Tabs", { screen: "Dashboard" }, { pop: true });
     } catch {
       showSnackbar("Failed to finish session. Please try again.");
@@ -59,6 +76,8 @@ export const FinishSessionDialog = ({
     curProgram,
     setFinishing,
     triggerUpdateUserProgram,
+    timerEndData?.timerEnd,
+    triggerClearTimerEnd,
     onClose,
     navigation,
     showSnackbar,

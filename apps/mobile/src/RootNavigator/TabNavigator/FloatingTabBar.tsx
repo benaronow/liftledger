@@ -4,6 +4,7 @@ import { Animated, Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "react-native-paper";
 import { SPACING } from "../../theme";
+import { useLeaveGuard } from "./LeaveGuardProvider";
 
 const TAB_BAR_HEIGHT = 68;
 const ICON_SIZE = 24;
@@ -20,6 +21,9 @@ export const FloatingTabBar = ({
 }: BottomTabBarProps) => {
   const { colors } = useTheme();
   const { bottom } = useSafeAreaInsets();
+  const { requestLeave } = useLeaveGuard();
+
+  const currentRouteName = state.routes[state.index].name;
 
   const indicatorIndex = useRef(new Animated.Value(state.index)).current;
 
@@ -97,7 +101,8 @@ export const FloatingTabBar = ({
               canPreventDefault: true,
             });
             if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
+              const proceed = () => navigation.navigate(route.name);
+              if (!requestLeave(currentRouteName, proceed)) proceed();
             }
           };
 
