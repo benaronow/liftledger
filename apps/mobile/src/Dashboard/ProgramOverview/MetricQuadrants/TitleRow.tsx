@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { FONT, SPACING } from "../../../theme";
@@ -7,22 +8,32 @@ type Props = {
   label: string;
   value: string;
   align: Align;
+  labelLeading?: ReactNode;
 };
 
-export const TitleRow = ({ label, value, align }: Props) => {
+export const TitleRow = ({ label, value, align, labelLeading }: Props) => {
   const { colors } = useTheme();
   const labelEl = (
-    <Text
+    <View
       style={{
+        flexDirection: "row",
+        alignItems: "center",
+        gap: SPACING.xs,
         flexShrink: 0,
-        fontSize: FONT.xs,
-        fontWeight: "800",
-        letterSpacing: 1,
-        color: colors.onSurfaceDisabled,
       }}
     >
-      {label}
-    </Text>
+      {labelLeading}
+      <Text
+        style={{
+          fontSize: FONT.xs,
+          fontWeight: "800",
+          letterSpacing: 1,
+          color: colors.onSurfaceDisabled,
+        }}
+      >
+        {label}
+      </Text>
+    </View>
   );
   const valueEl = (
     <Text
