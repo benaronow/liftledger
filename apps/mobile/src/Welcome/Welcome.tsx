@@ -25,6 +25,7 @@ export const Welcome = () => {
     authorize({
       audience: env.auth0Audience,
       scope: "openid profile email offline_access",
+      additionalParameters: { prompt: "select_account" },
     });
 
   // Dev-build-only: non-interactive password-realm login for the dedicated E2E
