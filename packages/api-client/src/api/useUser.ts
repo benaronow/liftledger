@@ -44,7 +44,7 @@ export const useUpdateUser = () =>
 
 export interface RenameExerciseArg {
   userId: string;
-  field: "name" | "equipment";
+  field: "name" | "equipment" | "unit";
   from: string;
   to: string;
   scope: "list" | "current" | "all";

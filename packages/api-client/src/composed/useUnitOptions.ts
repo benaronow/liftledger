@@ -31,6 +31,17 @@ export const useUnitOptions = () => {
     [curUser, allUnitOptions, triggerUpdateUser],
   );
 
+  const deleteUnit = useCallback(
+    async (value: string) => {
+      if (!curUser) return;
+      await triggerUpdateUser({
+        ...curUser,
+        units: (curUser.units ?? []).filter((o) => o !== value),
+      });
+    },
+    [curUser, triggerUpdateUser],
+  );
+
   // Sets the default in a single update that also adds the value to the list if
   // it's new, so selecting a freshly-typed unit from Settings can't race a
   // separate add-then-set-default pair (which would clobber one another).
@@ -56,6 +67,7 @@ export const useUnitOptions = () => {
     allUnitOptions,
     defaultUnit,
     addUnit,
+    deleteUnit,
     setDefaultUnit,
   };
 };

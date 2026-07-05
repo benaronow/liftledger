@@ -3,6 +3,7 @@ import {
   useExerciseOptions,
   useMe,
   useRenameExercise,
+  useUnitOptions,
 } from "@liftledger/api-client";
 import { useMemo, useState } from "react";
 import { Pressable, View } from "react-native";
@@ -12,7 +13,7 @@ import { ConfirmationDialog } from "./ConfirmationDialog";
 import { AppTextInput } from "./inputs";
 import { SelectSheet } from "./SelectSheet";
 
-type Field = "name" | "equipment";
+type Field = "name" | "equipment" | "unit";
 type Scope = "list" | "current" | "all";
 
 interface Props {
@@ -21,10 +22,12 @@ interface Props {
   onClose: () => void;
 }
 
-const COPY: Record<Field, { title: string; singular: string }> = {
-  name: { title: "Edit exercises", singular: "exercise" },
-  equipment: { title: "Edit equipment", singular: "equipment" },
-};
+const COPY: Record<Field, { title: string; singular: string; label: string }> =
+  {
+    name: { title: "Edit exercises", singular: "exercise", label: "Exercise name" },
+    equipment: { title: "Edit equipment", singular: "equipment", label: "Equipment" },
+    unit: { title: "Edit units", singular: "unit", label: "Unit" },
+  };
 
 const SCOPE_OPTIONS: { value: Scope; label: string; description: string }[] = [
   {
@@ -55,14 +58,25 @@ export const ManageExerciseList = ({ field, open, onClose }: Props) => {
     deleteExerciseName,
     deleteExerciseEquipment,
   } = useExerciseOptions();
+  const { allUnitOptions, addUnit, deleteUnit } = useUnitOptions();
   const { trigger: renameExercise } = useRenameExercise();
 
-  const options =
-    field === "name" ? allExerciseNameOptions : allExerciseEquipmentOptions;
-  const addOption = field === "name" ? addExerciseName : addExerciseEquipment;
-  const deleteOption =
-    field === "name" ? deleteExerciseName : deleteExerciseEquipment;
-  const { title, singular } = COPY[field];
+  const options = {
+    name: allExerciseNameOptions,
+    equipment: allExerciseEquipmentOptions,
+    unit: allUnitOptions,
+  }[field];
+  const addOption = {
+    name: addExerciseName,
+    equipment: addExerciseEquipment,
+    unit: addUnit,
+  }[field];
+  const deleteOption = {
+    name: deleteExerciseName,
+    equipment: deleteExerciseEquipment,
+    unit: deleteUnit,
+  }[field];
+  const { title, singular, label } = COPY[field];
 
   const [original, setOriginal] = useState<string>();
   const [value, setValue] = useState("");
@@ -176,7 +190,7 @@ export const ManageExerciseList = ({ field, open, onClose }: Props) => {
       >
         <View style={{ gap: SPACING.md, width: "100%" }}>
           <AppTextInput
-            label={field === "name" ? "Exercise name" : "Equipment"}
+            label={label}
             value={value}
             onChangeText={setValue}
             autoFocus

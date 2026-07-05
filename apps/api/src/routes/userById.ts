@@ -76,7 +76,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
   app.put<{
     Params: IdParams;
     Body: {
-      field: "name" | "equipment";
+      field: "name" | "equipment" | "unit";
       from: string;
       to: string;
       scope: "list" | "current" | "all";
@@ -92,16 +92,19 @@ const userByIdRoutes = async (app: FastifyInstance) => {
       const { field, from, to, scope } = req.body ?? {};
       const trimmedTo = typeof to === "string" ? to.trim() : "";
       if (
-        (field !== "name" && field !== "equipment") ||
+        (field !== "name" && field !== "equipment" && field !== "unit") ||
         !from ||
         !trimmedTo ||
         (scope !== "list" && scope !== "current" && scope !== "all")
       )
         return reply.code(400).send({ error: "Invalid rename request" });
 
-      const listField =
-        field === "name" ? "exerciseNames" : "exerciseEquipment";
-      const exerciseKey = field === "name" ? "name" : "equipment";
+      const listField = {
+        name: "exerciseNames",
+        equipment: "exerciseEquipment",
+        unit: "units",
+      }[field];
+      const exerciseKey = field;
 
       try {
         const user = await UserModel.findOne({ _id: id });
