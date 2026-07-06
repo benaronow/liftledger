@@ -1,51 +1,54 @@
-import { Exercise } from "@liftledger/shared";
-import { useExerciseOptions } from "@liftledger/api-client";
+import {
+  CurrentExercisesState,
+  useExerciseOptions,
+} from "@liftledger/api-client";
 import { useMemo } from "react";
 import { SearchableSelect } from "./SearchableSelect";
 
 interface Props {
-  curExercise: Exercise;
-  reservedExercises: Exercise[];
+  currentExercisesState?: CurrentExercisesState;
+  value: string;
   onSelect: (value: string) => void;
   label?: string;
   error?: string;
+  canAddCustom?: boolean;
 }
 
 export const ExerciseNameSelect = ({
-  curExercise,
-  reservedExercises,
+  currentExercisesState,
+  value,
   onSelect,
   label,
   error,
+  canAddCustom,
 }: Props) => {
   const {
     addExerciseName,
     allExerciseNameOptions,
-    getAvailableExerciseNameOptions,
-  } = useExerciseOptions();
-
-  const availableNameOptions = useMemo(
-    () => getAvailableExerciseNameOptions(curExercise, reservedExercises),
-    [getAvailableExerciseNameOptions, curExercise, reservedExercises],
-  );
+    availableExerciseNameOptions,
+  } = useExerciseOptions(currentExercisesState);
 
   const unavailableNameOptions = useMemo(
     () =>
-      allExerciseNameOptions.filter((o) => !availableNameOptions.includes(o)),
-    [availableNameOptions, allExerciseNameOptions],
+      allExerciseNameOptions.filter(
+        (o) => !availableExerciseNameOptions.includes(o),
+      ),
+    [availableExerciseNameOptions, allExerciseNameOptions],
   );
 
   return (
     <SearchableSelect
       label={label}
       error={error}
-      value={curExercise.name}
-      options={availableNameOptions}
+      value={value}
+      options={availableExerciseNameOptions}
       unavailableOptions={unavailableNameOptions}
       onSelect={onSelect}
       onAddCustom={addExerciseName}
-      canAddCustom
-      placeholder="Search or add exercise..."
+      canAddCustom={canAddCustom}
+      placeholder={
+        canAddCustom ? "Search or add exercise..." : "Search exercise..."
+      }
     />
   );
 };

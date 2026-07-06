@@ -4,6 +4,7 @@ import {
   useProgram,
   useCompletedExercises,
   useMe,
+  CurrentExercisesState,
 } from "@liftledger/api-client";
 import { Exercise } from "@liftledger/shared";
 import { useCallback, useMemo } from "react";
@@ -37,10 +38,13 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
     templateErrors,
   } = useTemplate();
 
-  const errors = templateErrors.sessions[editingSessionIdx]?.exercises[eIdx] ?? {};
+  const errors =
+    templateErrors.sessions[editingSessionIdx]?.exercises[eIdx] ?? {};
 
   const curSessionExercises = useMemo(
-    () => templateProgram.rotations[editingRotationIdx][editingSessionIdx].exercises,
+    () =>
+      templateProgram.rotations[editingRotationIdx][editingSessionIdx]
+        .exercises,
     [templateProgram, editingRotationIdx, editingSessionIdx],
   );
 
@@ -158,23 +162,36 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
     },
   ];
 
-  const setCount = exercise.workingSets.filter((set) => !set.addedOn).length;
+  const setCount = useMemo(
+    () => exercise.workingSets.filter((set) => !set.addedOn).length,
+    [exercise],
+  );
+
+  const currentExercisesState = useMemo<CurrentExercisesState>(
+    () => ({
+      curExercise: exercise,
+      allReservedExercises: curSessionExercises,
+    }),
+    [curSessionExercises, exercise],
+  );
 
   return (
     <Info title={`Exercise ${eIdx + 1}`} actions={infoActions}>
       <ExerciseNameSelect
+        value={exercise.name ?? ""}
         label="Exercise"
         error={errors.name}
-        curExercise={exercise}
-        reservedExercises={curSessionExercises}
+        currentExercisesState={currentExercisesState}
         onSelect={(value) => switchExercise(value, "name")}
+        canAddCustom
       />
       <ExerciseEquipmentSelect
+        value={exercise.equipment ?? ""}
         label="Equipment"
         error={errors.equipment}
-        curExercise={exercise}
-        reservedExercises={curSessionExercises}
+        currentExercisesState={currentExercisesState}
         onSelect={(value) => switchExercise(value, "equipment")}
+        canAddCustom
       />
       <View style={rowStyle}>
         <NumberInput

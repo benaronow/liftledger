@@ -3,20 +3,66 @@ import { useCallback, useMemo } from "react";
 import { useMe } from "../api/useMe";
 import { useUpdateUser } from "../api/useUser";
 
-const sorted = (options?: string[]) => [...(options ?? [])].sort();
+export interface CurrentExercisesState {
+  curExercise: Exercise;
+  allReservedExercises: Exercise[];
+}
 
-export const useExerciseOptions = () => {
+export const useExerciseOptions = (exercisesState?: CurrentExercisesState) => {
   const { data: curUser } = useMe();
   const { trigger: triggerUpdateUser } = useUpdateUser();
 
   const allExerciseNameOptions = useMemo<string[]>(
-    () => sorted(curUser?.exerciseNames),
+    () => (curUser ? curUser.exerciseNames.toSorted() : []),
     [curUser],
   );
 
   const allExerciseEquipmentOptions = useMemo<string[]>(
-    () => sorted(curUser?.exerciseEquipment),
+    () => (curUser ? curUser.exerciseEquipment.toSorted() : []),
     [curUser],
+  );
+
+  const potentialExerciseAvailable = useCallback(
+    (potentialExercise: Exercise) => {
+      const { curExercise, allReservedExercises } = exercisesState!;
+
+      const unavailableExercises = allReservedExercises.filter(
+        (e) =>
+          e.name !== curExercise.name || e.equipment !== curExercise.equipment,
+      );
+
+      const potentialExerciseUnavailable = unavailableExercises.find(
+        (e) =>
+          e.name === potentialExercise.name &&
+          e.equipment === potentialExercise.equipment,
+      );
+
+      return !potentialExerciseUnavailable;
+    },
+    [exercisesState],
+  );
+
+  const availableExerciseNameOptions = useMemo(
+    () =>
+      exercisesState
+        ? allExerciseNameOptions.filter((name) =>
+            potentialExerciseAvailable({ ...exercisesState.curExercise, name }),
+          )
+        : allExerciseNameOptions,
+    [allExerciseNameOptions, exercisesState, potentialExerciseAvailable],
+  );
+
+  const availableExerciseEquipmentOptions = useMemo(
+    () =>
+      exercisesState
+        ? allExerciseEquipmentOptions.filter((equipment) =>
+            potentialExerciseAvailable({
+              ...exercisesState.curExercise,
+              equipment,
+            }),
+          )
+        : allExerciseEquipmentOptions,
+    [allExerciseEquipmentOptions, exercisesState, potentialExerciseAvailable],
   );
 
   const addExerciseName = useCallback(
@@ -60,9 +106,7 @@ export const useExerciseOptions = () => {
       if (!curUser) return;
       await triggerUpdateUser({
         ...curUser,
-        exerciseNames: (curUser.exerciseNames ?? []).filter(
-          (o) => o !== value,
-        ),
+        exerciseNames: (curUser.exerciseNames ?? []).filter((o) => o !== value),
       });
     },
     [curUser, triggerUpdateUser],
@@ -81,48 +125,14 @@ export const useExerciseOptions = () => {
     [curUser, triggerUpdateUser],
   );
 
-  const getAvailableExerciseNameOptions = useCallback(
-    (curExercise: Exercise, allReservedExercises: Exercise[]) => {
-      const unavailableExercises = allReservedExercises.filter(
-        (e) =>
-          e.name !== curExercise.name || e.equipment !== curExercise.equipment,
-      );
-
-      return allExerciseNameOptions.filter(
-        (n) =>
-          !unavailableExercises.find(
-            (e) => e.name === n && e.equipment === curExercise.equipment,
-          ),
-      );
-    },
-    [allExerciseNameOptions],
-  );
-
-  const getAvailableExerciseEquipmentOptions = useCallback(
-    (curExercise: Exercise, allReservedExercises: Exercise[]) => {
-      const unavailableExercises = allReservedExercises.filter(
-        (e) =>
-          e.name !== curExercise.name || e.equipment !== curExercise.equipment,
-      );
-
-      return allExerciseEquipmentOptions.filter(
-        (a) =>
-          !unavailableExercises.find(
-            (e) => e.equipment === a && e.name === curExercise.name,
-          ),
-      );
-    },
-    [allExerciseEquipmentOptions],
-  );
-
   return {
+    allExerciseNameOptions,
+    allExerciseEquipmentOptions,
+    availableExerciseNameOptions,
+    availableExerciseEquipmentOptions,
     addExerciseName,
     addExerciseEquipment,
     deleteExerciseName,
     deleteExerciseEquipment,
-    allExerciseNameOptions,
-    getAvailableExerciseNameOptions,
-    allExerciseEquipmentOptions,
-    getAvailableExerciseEquipmentOptions,
   };
 };

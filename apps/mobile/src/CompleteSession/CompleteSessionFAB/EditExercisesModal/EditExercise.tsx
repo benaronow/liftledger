@@ -1,7 +1,8 @@
 import { Exercise } from "@liftledger/shared";
-import { Dispatch, SetStateAction, useCallback } from "react";
+import { Dispatch, SetStateAction, useCallback, useMemo } from "react";
 import { View } from "react-native";
 import {
+  CurrentExercisesState,
   getUpdatedExercise,
   useCompletedExercises,
   useCurrentSession,
@@ -33,19 +34,29 @@ export const EditExercise = ({ newExercise, setNewExercise }: Props) => {
     [completedExercises, newExercise, setNewExercise],
   );
 
+  const currentExercisesState = useMemo<CurrentExercisesState>(
+    () => ({
+      curExercise: newExercise,
+      allReservedExercises: exercises,
+    }),
+    [exercises, newExercise],
+  );
+
   return (
     <View style={{ width: "100%", gap: SPACING.sm }}>
       <ExerciseNameSelect
+        value={newExercise.name}
         label="Exercise"
-        curExercise={newExercise}
-        reservedExercises={exercises}
+        currentExercisesState={currentExercisesState}
         onSelect={(value) => switchExercise(value, "name")}
+        canAddCustom
       />
       <ExerciseEquipmentSelect
+        value={newExercise.equipment}
         label="Equipment"
-        curExercise={newExercise}
-        reservedExercises={exercises}
+        currentExercisesState={currentExercisesState}
         onSelect={(value) => switchExercise(value, "equipment")}
+        canAddCustom
       />
       <UnitSelect
         label="Unit"
@@ -55,4 +66,3 @@ export const EditExercise = ({ newExercise, setNewExercise }: Props) => {
     </View>
   );
 };
-

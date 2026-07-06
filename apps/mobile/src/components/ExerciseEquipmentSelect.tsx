@@ -1,53 +1,54 @@
-import { Exercise } from "@liftledger/shared";
-import { useExerciseOptions } from "@liftledger/api-client";
+import {
+  CurrentExercisesState,
+  useExerciseOptions,
+} from "@liftledger/api-client";
 import { useMemo } from "react";
 import { SearchableSelect } from "./SearchableSelect";
 
 interface Props {
-  curExercise: Exercise;
-  reservedExercises: Exercise[];
+  currentExercisesState?: CurrentExercisesState;
+  value: string;
   onSelect: (value: string) => void;
   label?: string;
   error?: string;
+  canAddCustom?: boolean;
 }
 
 export const ExerciseEquipmentSelect = ({
-  curExercise,
-  reservedExercises,
+  currentExercisesState,
+  value,
   onSelect,
   label,
   error,
+  canAddCustom,
 }: Props) => {
   const {
     addExerciseEquipment,
     allExerciseEquipmentOptions,
-    getAvailableExerciseEquipmentOptions,
-  } = useExerciseOptions();
-
-  const availableEquipmentOptions = useMemo(
-    () => getAvailableExerciseEquipmentOptions(curExercise, reservedExercises),
-    [getAvailableExerciseEquipmentOptions, curExercise, reservedExercises],
-  );
+    availableExerciseEquipmentOptions,
+  } = useExerciseOptions(currentExercisesState);
 
   const unavailableEquipmentOptions = useMemo(
     () =>
       allExerciseEquipmentOptions.filter(
-        (o) => !availableEquipmentOptions.includes(o),
+        (o) => !availableExerciseEquipmentOptions.includes(o),
       ),
-    [availableEquipmentOptions, allExerciseEquipmentOptions],
+    [availableExerciseEquipmentOptions, allExerciseEquipmentOptions],
   );
 
   return (
     <SearchableSelect
       label={label}
       error={error}
-      value={curExercise.equipment}
-      options={availableEquipmentOptions}
+      value={value}
+      options={availableExerciseEquipmentOptions}
       unavailableOptions={unavailableEquipmentOptions}
       onSelect={onSelect}
       onAddCustom={addExerciseEquipment}
-      canAddCustom
-      placeholder="Search or add equipment..."
+      canAddCustom={canAddCustom}
+      placeholder={
+        canAddCustom ? "Search or add equipment..." : "Search equipment..."
+      }
     />
   );
 };
