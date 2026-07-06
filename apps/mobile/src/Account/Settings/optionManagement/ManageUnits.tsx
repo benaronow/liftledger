@@ -8,7 +8,7 @@ export const ManageUnits = () => {
   return (
     <ManageOptions
       optionType="unit"
-      buttonLabel="Edit units"
+      buttonLabel="Units"
       singular="unit"
       fieldLabel="Unit"
       options={allUnitOptions}

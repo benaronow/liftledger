@@ -8,7 +8,7 @@ export const ManageGyms = () => {
   return (
     <ManageOptions
       optionType="gym"
-      buttonLabel="Edit gyms"
+      buttonLabel="Gyms"
       singular="gym"
       fieldLabel="Gym"
       options={allGymOptions}

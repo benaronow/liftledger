@@ -8,7 +8,7 @@ export const ManageExerciseNames = () => {
   return (
     <ManageOptions
       optionType="name"
-      buttonLabel="Edit exercises"
+      buttonLabel="Exercises"
       singular="exercise"
       fieldLabel="Exercise name"
       options={allExerciseNameOptions}

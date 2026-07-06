@@ -11,7 +11,7 @@ export const ManageEquipment = () => {
   return (
     <ManageOptions
       optionType="equipment"
-      buttonLabel="Edit equipment"
+      buttonLabel="Equipment"
       singular="equipment"
       fieldLabel="Equipment"
       options={allExerciseEquipmentOptions}
