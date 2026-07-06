@@ -23,11 +23,7 @@ import { SubmitSetDialog } from "./SetList/SubmitSetDialog/SubmitSetDialog";
 interface Props {
   exercise: Exercise;
   isCurrentExercise: boolean;
-  // Whether a rest timer is running — the FAB then morphs into a wider pill, so
-  // the title reserves more right-side space.
   timerRunning: boolean;
-  // Let the pager suspend swiping while the progress chart is being touched, so
-  // its tooltip pan gesture doesn't fight the horizontal page swipe.
   onChartTouchStart?: () => void;
   onChartTouchEnd?: () => void;
 }
@@ -43,8 +39,6 @@ export const ExercisePage = ({
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [editingSetIdx, setEditingSetIdx] = useState<number>();
-  // Off by default: the chart tracks the current gym. "Show all" drops the gym
-  // filter so progress across every gym is plotted (with the legend).
   const [showAll, setShowAll] = useState(false);
 
   const openFullProgress = () =>
@@ -105,7 +99,11 @@ export const ExercisePage = ({
           {exercise.equipment}
         </Text>
       </View>
-      <Info title="Sets" fill background={isComplete ? colors.tertiary : undefined}>
+      <Info
+        title="Sets"
+        fill
+        background={isComplete ? colors.tertiary : undefined}
+      >
         <SetList
           exercise={exercise}
           isCurrentExercise={isCurrentExercise}

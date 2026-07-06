@@ -47,11 +47,7 @@ export const ManageOptions = ({
         dismissOnSelect: false,
         onSelect: setRenaming,
         renderTrigger: (open) => (
-          <Button
-            mode="outlined"
-            style={{ backgroundColor: colors.background }}
-            onPress={open}
-          >
+          <Button mode="contained" onPress={open}>
             {buttonLabel}
           </Button>
         ),

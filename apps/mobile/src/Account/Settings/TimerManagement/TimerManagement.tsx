@@ -1,16 +1,20 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { useTimerSettings } from "@liftledger/api-client";
-import { Button, Text, TouchableRipple, useTheme } from "react-native-paper";
-import { ConfirmationDialog } from "../../components/ConfirmationDialog";
-import { LoadingCheckbox } from "../../components/LoadingCheckbox";
-import { SectionCard } from "../../components/SectionCard";
-import { TimePicker } from "../../components/TimePicker";
-import { useSnackbar } from "../../providers/SnackbarProvider";
-import { FONT, SPACING } from "../../theme";
-import { ExerciseTimerOverridesModal } from "./ExerciseTimerOverrides/ExerciseTimerOverridesModal";
+import { Text, TouchableRipple, useTheme } from "react-native-paper";
+import { ConfirmationDialog } from "../../../components/ConfirmationDialog";
+import { AppTextInput } from "../../../components/inputs";
+import { LoadingCheckbox } from "../../../components/LoadingCheckbox";
+import { SectionCard } from "../../../components/SectionCard";
+import { TimePicker } from "../../../components/TimePicker";
+import { useSnackbar } from "../../../providers/SnackbarProvider";
+import { FONT, SPACING } from "../../../theme";
+import {
+  ExerciseTimerOverridesModal,
+  formatTime,
+} from "./ExerciseTimerOverridesModal";
 
-export const DefaultTimer = () => {
+export const TimerManagement = () => {
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
   const { defaultEnabled, setDefaultEnabled, defaultTime, setDefaultTime } =
@@ -20,7 +24,6 @@ export const DefaultTimer = () => {
   const [draftTime, setDraftTime] = useState(defaultTime);
   const [saving, setSaving] = useState(false);
   const [togglingEnabled, setTogglingEnabled] = useState(false);
-  const [overridesOpen, setOverridesOpen] = useState(false);
 
   const toggleEnabled = async () => {
     setTogglingEnabled(true);
@@ -61,6 +64,8 @@ export const DefaultTimer = () => {
             flexDirection: "row",
             alignItems: "center",
             gap: SPACING.xs,
+            marginLeft: -6,
+            marginVertical: -6,
           }}
         >
           <LoadingCheckbox
@@ -72,22 +77,21 @@ export const DefaultTimer = () => {
           </Text>
         </View>
       </TouchableRipple>
-      <Button
-        mode="outlined"
-        style={{ backgroundColor: colors.background }}
-        disabled={!defaultEnabled}
-        onPress={openEdit}
-      >
-        Change default time
-      </Button>
-      <Button
-        mode="outlined"
-        style={{ backgroundColor: colors.background }}
-        disabled={!defaultEnabled}
-        onPress={() => setOverridesOpen(true)}
-      >
-        Exercise overrides
-      </Button>
+      <View>
+        <View pointerEvents="none">
+          <AppTextInput
+            label="Default time"
+            value={formatTime(defaultTime)}
+            editable={false}
+            disabled={!defaultEnabled}
+          />
+        </View>
+        <Pressable
+          style={StyleSheet.absoluteFill}
+          onPress={defaultEnabled ? openEdit : undefined}
+        />
+      </View>
+      <ExerciseTimerOverridesModal />
       <ConfirmationDialog
         open={editOpen}
         onClose={() => setEditOpen(false)}
@@ -98,10 +102,6 @@ export const DefaultTimer = () => {
       >
         <TimePicker totalSeconds={draftTime} onChange={setDraftTime} />
       </ConfirmationDialog>
-      <ExerciseTimerOverridesModal
-        open={overridesOpen}
-        onClose={() => setOverridesOpen(false)}
-      />
     </SectionCard>
   );
 };

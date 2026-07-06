@@ -7,10 +7,6 @@ interface Props {
   onPress?: () => void;
 }
 
-// A checkbox that swaps in a spinner (occupying the same footprint) while an
-// async toggle is in flight, so the control reflects the pending write right
-// away instead of waiting on the server round-trip. Uses Checkbox.Android so
-// the box is visible in both checked and unchecked states on every platform.
 export const LoadingCheckbox = ({ status, loading, onPress }: Props) => {
   const { colors } = useTheme();
 

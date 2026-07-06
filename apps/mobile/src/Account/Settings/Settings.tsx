@@ -2,9 +2,8 @@ import { ScrollView, View } from "react-native";
 import { useTheme } from "react-native-paper";
 import { SPACING } from "../../theme";
 import { Appearance } from "./Appearance";
-import { DefaultTimer } from "./DefaultTimer";
-import { DefaultUnit } from "./DefaultUnit";
-import { ExerciseLists } from "./ExerciseLists";
+import { TimerManagement } from "./TimerManagement/TimerManagement";
+import { OptionManagement } from "./OptionManagement/OptionManagement";
 
 export const Settings = () => {
   const { colors } = useTheme();
@@ -20,9 +19,8 @@ export const Settings = () => {
     >
       <View style={{ gap: SPACING.lg }}>
         <Appearance />
-        <DefaultUnit />
-        <DefaultTimer />
-        <ExerciseLists />
+        <TimerManagement />
+        <OptionManagement />
       </View>
     </ScrollView>
   );

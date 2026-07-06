@@ -1,29 +1,27 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Pressable, View } from "react-native";
-import { useMe, useTimerSettings } from "@liftledger/api-client";
-import { Icon, Text, useTheme } from "react-native-paper";
+import { useTimerSettings } from "@liftledger/api-client";
+import { Button, Icon, Text, useTheme } from "react-native-paper";
 import { ConfirmationDialog } from "../../../components/ConfirmationDialog";
+import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
 import { LoadingCheckbox } from "../../../components/LoadingCheckbox";
-import { SelectSheet } from "../../../components/SelectSheet";
 import { TimePicker } from "../../../components/TimePicker";
 import { useSnackbar } from "../../../providers/SnackbarProvider";
 import { FONT, RADIUS, SPACING } from "../../../theme";
 
-const formatTime = (totalSeconds: number) =>
+export const formatTime = (totalSeconds: number) =>
   `${Math.floor(totalSeconds / 60)
     .toString()
     .padStart(2, "0")} : ${(totalSeconds % 60).toString().padStart(2, "0")}`;
 
-interface Props {
-  open: boolean;
-  onClose: () => void;
-}
-
-export const ExerciseTimerOverridesModal = ({ open, onClose }: Props) => {
+export const ExerciseTimerOverridesModal = () => {
   const { colors } = useTheme();
-  const { data: curUser } = useMe();
-  const { defaultTime, exerciseOverrides, setExerciseOverride } =
-    useTimerSettings();
+  const {
+    defaultEnabled,
+    defaultTime,
+    exerciseOverrides,
+    setExerciseOverride,
+  } = useTimerSettings();
   const { showSnackbar } = useSnackbar();
 
   const [editingName, setEditingName] = useState<string>();
@@ -31,11 +29,6 @@ export const ExerciseTimerOverridesModal = ({ open, onClose }: Props) => {
   const [saving, setSaving] = useState(false);
   const [togglingNames, setTogglingNames] = useState<Set<string>>(
     () => new Set(),
-  );
-
-  const exerciseNames = useMemo(
-    () => [...(curUser?.exerciseNames ?? [])].sort(),
-    [curUser?.exerciseNames],
   );
 
   const toggleOverride = async (name: string, currentlyOn: boolean) => {
@@ -73,14 +66,17 @@ export const ExerciseTimerOverridesModal = ({ open, onClose }: Props) => {
 
   return (
     <>
-      <SelectSheet
-        open={open}
-        onClose={onClose}
-        title="Exercise Overrides"
-        searchPlaceholder="Search exercise..."
-        options={exerciseNames}
-        extraData={[exerciseOverrides, togglingNames]}
-        renderItemLeft={(name) => {
+      <ExerciseNameSelect
+        label="Exercise Overrides"
+        value=""
+        onSelect={() => {}}
+        dismissOnSelect={false}
+        renderTrigger={(open) => (
+          <Button mode="contained" disabled={!defaultEnabled} onPress={open}>
+            Exercise overrides
+          </Button>
+        )}
+        prefix={(name) => {
           const enabled = exerciseOverrides[name] !== undefined;
           return (
             <View style={{ marginLeft: -6 }}>
@@ -92,7 +88,7 @@ export const ExerciseTimerOverridesModal = ({ open, onClose }: Props) => {
             </View>
           );
         }}
-        renderItemRight={(name) => {
+        trailing={(name) => {
           const override = exerciseOverrides[name];
           const enabled = override !== undefined;
           const onEdit = enabled ? () => startEdit(name, override) : undefined;
