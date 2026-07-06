@@ -53,21 +53,28 @@ export const getStreak = (program: Program): number => {
 
 export const getRestDaysRemaining = (program: Program): number => {
   const restDays = program.restDays ?? 0;
-  const rotation = program.rotations[program.curRotationIdx];
-  if (!rotation) return restDays;
+  const days = completedDayMap(program);
+  if (days.size === 0) return restDays;
 
-  const completedDays = rotation
-    .filter((session) => session.completedDate)
-    .map((session) => startOfDay(new Date(session.completedDate!)));
-  if (completedDays.length === 0) return restDays;
-
-  const start = Math.min(...completedDays);
   const today = startOfDay(new Date());
-  const daysThroughYesterday = Math.max(0, (today - start) / DAY_MS);
-  const completedBeforeToday = new Set(
-    completedDays.filter((day) => day < today),
-  ).size;
-  const idle = daysThroughYesterday - completedBeforeToday;
+
+  const prevRotationDays: number[] = [];
+  const curRotationDays: number[] = [];
+  days.forEach((rotationIdx, day) => {
+    if (rotationIdx < program.curRotationIdx) prevRotationDays.push(day);
+    else if (rotationIdx === program.curRotationIdx) curRotationDays.push(day);
+  });
+
+  const anchor = prevRotationDays.length
+    ? Math.max(...prevRotationDays)
+    : curRotationDays.length
+      ? Math.min(...curRotationDays)
+      : today;
+
+  const workedSinceAnchor = [...days.keys()].filter(
+    (day) => day > anchor && day < today,
+  ).length;
+  const idle = Math.max(0, (today - anchor) / DAY_MS - 1 - workedSinceAnchor);
 
   return Math.max(0, restDays - idle);
 };

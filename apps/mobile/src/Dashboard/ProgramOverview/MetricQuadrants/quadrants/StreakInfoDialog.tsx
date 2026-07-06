@@ -21,7 +21,12 @@ export const StreakInfoDialog = ({
   const { colors } = useTheme();
   if (!open) return null;
 
-  const low = restDaysRemaining === 1;
+  const restDaysColor =
+    restDaysRemaining === 0
+      ? colors.error
+      : restDaysRemaining === 1
+        ? colors.tertiaryContainer
+        : colors.onSurfaceDisabled;
 
   return (
     <Portal>
@@ -70,41 +75,24 @@ export const StreakInfoDialog = ({
               Your streak is the run of days you&apos;ve completed a session.
               You have allotted yourself {restDays} rest{" "}
               {restDays === 1 ? "day" : "days"} each rotation, which you can
-              take without losing your streak. The allowance refreshes when you start a
-              new rotation, and resting more than that resets the streak to
-              zero.
+              take without losing your streak. The allowance refreshes when you
+              start a new rotation, and resting more than that resets the streak
+              to zero.
             </Text>
-            <View
+            <Text
               style={{
-                backgroundColor: colors.surfaceVariant,
-                borderRadius: RADIUS.lg,
-                paddingVertical: SPACING.md,
-                paddingHorizontal: SPACING.lg,
-                alignItems: "center",
-                gap: SPACING.xs,
+                fontSize: FONT.sm,
+                fontWeight: "600",
+                letterSpacing: 1,
+                color: colors.onSurfaceDisabled,
               }}
             >
-              <Text
-                style={{
-                  fontSize: FONT.xs,
-                  fontWeight: "800",
-                  letterSpacing: 1,
-                  textAlign: "center",
-                  color: colors.onSurfaceDisabled,
-                }}
-              >
-                REST DAYS LEFT THIS ROTATION
-              </Text>
-              <Text
-                style={{
-                  fontSize: 44,
-                  fontWeight: "900",
-                  color: low ? colors.error : colors.onSurface,
-                }}
-              >
+              <Text style={{ fontWeight: "800", color: restDaysColor }}>
                 {restDaysRemaining}
               </Text>
-            </View>
+              {"  "}
+              REST {restDaysRemaining === 1 ? "DAY" : "DAYS"} LEFT THIS ROTATION
+            </Text>
           </Surface>
         </Pressable>
       </Pressable>
