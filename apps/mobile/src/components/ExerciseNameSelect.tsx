@@ -2,7 +2,7 @@ import {
   CurrentExercisesState,
   useExerciseOptions,
 } from "@liftledger/api-client";
-import { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import { SearchableSelect } from "./SearchableSelect";
 
 interface Props {
@@ -12,6 +12,10 @@ interface Props {
   label?: string;
   error?: string;
   canAddCustom?: boolean;
+  prefix?: (item: string) => ReactNode;
+  trailing?: (item: string) => ReactNode;
+  renderTrigger?: (open: () => void) => ReactNode;
+  dismissOnSelect?: boolean;
 }
 
 export const ExerciseNameSelect = ({
@@ -21,6 +25,10 @@ export const ExerciseNameSelect = ({
   label,
   error,
   canAddCustom,
+  prefix,
+  trailing,
+  renderTrigger,
+  dismissOnSelect,
 }: Props) => {
   const {
     addExerciseName,
@@ -46,6 +54,10 @@ export const ExerciseNameSelect = ({
       onSelect={onSelect}
       onAddCustom={addExerciseName}
       canAddCustom={canAddCustom}
+      prefix={prefix}
+      trailing={trailing}
+      renderTrigger={renderTrigger}
+      dismissOnSelect={dismissOnSelect}
       placeholder={
         canAddCustom ? "Search or add exercise..." : "Search exercise..."
       }

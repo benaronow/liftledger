@@ -8,7 +8,7 @@ import {
   useCurrentSession,
   useMe,
 } from "@liftledger/api-client";
-import { ExerciseEquipmentSelect } from "../../../components/ExerciseEquipmentSelect";
+import { EquipmentSelect } from "../../../components/EquipmentSelect";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
 import { UnitSelect } from "../../../components/UnitSelect";
 import { SPACING } from "../../../theme";
@@ -51,7 +51,7 @@ export const EditExercise = ({ newExercise, setNewExercise }: Props) => {
         onSelect={(value) => switchExercise(value, "name")}
         canAddCustom
       />
-      <ExerciseEquipmentSelect
+      <EquipmentSelect
         value={newExercise.equipment}
         label="Equipment"
         currentExercisesState={currentExercisesState}

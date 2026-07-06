@@ -2,14 +2,12 @@ import { useCallback, useMemo } from "react";
 import { useMe } from "../api/useMe";
 import { useUpdateUser } from "../api/useUser";
 
-const sorted = (options?: string[]) => [...(options ?? [])].sort();
-
 export const useUnitOptions = () => {
   const { data: curUser } = useMe();
   const { trigger: triggerUpdateUser } = useUpdateUser();
 
   const allUnitOptions = useMemo<string[]>(
-    () => sorted(curUser?.units),
+    () => [...(curUser?.units ?? [])].sort(),
     [curUser],
   );
 
@@ -42,9 +40,6 @@ export const useUnitOptions = () => {
     [curUser, triggerUpdateUser],
   );
 
-  // Sets the default in a single update that also adds the value to the list if
-  // it's new, so selecting a freshly-typed unit from Settings can't race a
-  // separate add-then-set-default pair (which would clobber one another).
   const setDefaultUnit = useCallback(
     async (value: string) => {
       if (!curUser) return;

@@ -15,7 +15,7 @@ export const DefaultUnit = () => {
         onSelect={setDefaultUnit}
         onAddCustom={addUnit}
         canAddCustom
-        placeholder="Enter or add a unit..."
+        placeholder="Search or add unit..."
       />
     </SectionCard>
   );

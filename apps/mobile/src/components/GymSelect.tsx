@@ -1,4 +1,4 @@
-import { useUnitOptions } from "@liftledger/api-client";
+import { useGymOptions } from "@liftledger/api-client";
 import { ReactNode } from "react";
 import { SearchableSelect } from "./SearchableSelect";
 
@@ -7,38 +7,40 @@ interface Props {
   onSelect: (value: string) => void;
   label?: string;
   error?: string;
+  canAddCustom?: boolean;
   prefix?: (item: string) => ReactNode;
   trailing?: (item: string) => ReactNode;
   renderTrigger?: (open: () => void) => ReactNode;
   dismissOnSelect?: boolean;
 }
 
-export const UnitSelect = ({
+export const GymSelect = ({
   value,
   onSelect,
   label,
   error,
+  canAddCustom,
   prefix,
   trailing,
   renderTrigger,
   dismissOnSelect,
 }: Props) => {
-  const { allUnitOptions, addUnit } = useUnitOptions();
+  const { allGymOptions, addGym } = useGymOptions();
 
   return (
     <SearchableSelect
       label={label}
       error={error}
       value={value}
-      options={allUnitOptions}
+      options={allGymOptions}
       onSelect={onSelect}
-      onAddCustom={addUnit}
-      canAddCustom
+      onAddCustom={addGym}
+      canAddCustom={canAddCustom}
       prefix={prefix}
       trailing={trailing}
       renderTrigger={renderTrigger}
       dismissOnSelect={dismissOnSelect}
-      placeholder="Search or add unit..."
+      placeholder={canAddCustom ? "Search or add gym..." : "Search gym..."}
     />
   );
 };

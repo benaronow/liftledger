@@ -76,7 +76,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
   app.put<{
     Params: IdParams;
     Body: {
-      field: "name" | "equipment" | "unit";
+      field: "name" | "equipment" | "unit" | "gym";
       from: string;
       to: string;
       scope: "list" | "current" | "all";
@@ -92,7 +92,10 @@ const userByIdRoutes = async (app: FastifyInstance) => {
       const { field, from, to, scope } = req.body ?? {};
       const trimmedTo = typeof to === "string" ? to.trim() : "";
       if (
-        (field !== "name" && field !== "equipment" && field !== "unit") ||
+        (field !== "name" &&
+          field !== "equipment" &&
+          field !== "unit" &&
+          field !== "gym") ||
         !from ||
         !trimmedTo ||
         (scope !== "list" && scope !== "current" && scope !== "all")
@@ -103,6 +106,7 @@ const userByIdRoutes = async (app: FastifyInstance) => {
         name: "exerciseNames",
         equipment: "exerciseEquipment",
         unit: "units",
+        gym: "gyms",
       }[field];
       const exerciseKey = field;
 
@@ -142,6 +146,11 @@ const userByIdRoutes = async (app: FastifyInstance) => {
             let changed = false;
             for (const rotation of program.rotations) {
               for (const session of rotation) {
+                // Gym also lives on the session itself, not just its exercises.
+                if (field === "gym" && session.gym === from) {
+                  session.gym = trimmedTo;
+                  changed = true;
+                }
                 for (const exercise of session.exercises) {
                   if (exercise[exerciseKey] === from) {
                     exercise[exerciseKey] = trimmedTo;
@@ -149,6 +158,10 @@ const userByIdRoutes = async (app: FastifyInstance) => {
                   }
                 }
               }
+            }
+            if (field === "gym" && program.primaryGym === from) {
+              program.primaryGym = trimmedTo;
+              changed = true;
             }
             if (changed) {
               program.markModified("rotations");

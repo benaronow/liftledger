@@ -16,10 +16,6 @@ export const useTimerSettings = () => {
     [settings?.exerciseOverrides],
   );
 
-  // Writes go through the full-user PUT (useUpdateUser), which propagates to the
-  // `me` cache. Spread the existing settings — including `end`, which is managed
-  // by the separate optimistic timerEnd endpoints — so a settings save never
-  // drops sibling fields.
   const saveSettings = useCallback(
     (patch: Partial<TimerSettings>) => {
       if (!curUser || !settings) return Promise.resolve(undefined);
@@ -46,7 +42,6 @@ export const useTimerSettings = () => {
     [saveSettings],
   );
 
-  // Passing `undefined` removes the exercise's override entirely.
   const setExerciseOverride = useCallback(
     (name: string, seconds: number | undefined) => {
       const next = { ...exerciseOverrides };
@@ -57,10 +52,6 @@ export const useTimerSettings = () => {
     [exerciseOverrides, saveSettings],
   );
 
-  // Duration to auto-start after a completed set. `defaultEnabled` is the master
-  // switch: when off, nothing auto-starts (overrides included, matching the
-  // disabled overrides UI). When on, a per-exercise override wins over the
-  // default. `undefined` means "don't start a timer".
   const resolveDuration = useCallback(
     (exerciseName: string): number | undefined => {
       if (!defaultEnabled) return undefined;

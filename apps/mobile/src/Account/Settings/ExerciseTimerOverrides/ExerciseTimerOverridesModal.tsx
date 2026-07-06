@@ -19,9 +19,6 @@ interface Props {
   onClose: () => void;
 }
 
-// Lists every exercise name with a per-exercise rest-timer override. Shares the
-// SelectSheet shell (Portal + animated bottom slide, not a native pageSheet) so
-// the edit dialog it opens from inside layers on top.
 export const ExerciseTimerOverridesModal = ({ open, onClose }: Props) => {
   const { colors } = useTheme();
   const { data: curUser } = useMe();
@@ -86,8 +83,6 @@ export const ExerciseTimerOverridesModal = ({ open, onClose }: Props) => {
         renderItemLeft={(name) => {
           const enabled = exerciseOverrides[name] !== undefined;
           return (
-            // -6 cancels Checkbox.Android's internal padding so the box's left
-            // edge lines up with the row inset / divider.
             <View style={{ marginLeft: -6 }}>
               <LoadingCheckbox
                 status={enabled ? "checked" : "unchecked"}
@@ -101,15 +96,12 @@ export const ExerciseTimerOverridesModal = ({ open, onClose }: Props) => {
           const override = exerciseOverrides[name];
           const enabled = override !== undefined;
           const onEdit = enabled ? () => startEdit(name, override) : undefined;
-          // Time + pencil are joined into one control (no gap, only the outer
-          // corners rounded) and both halves open the edit dialog.
+
           return (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Pressable
                 onPress={onEdit}
                 style={{
-                  // Match the pencil half's height (MD3 IconButton was
-                  // size + 2 * 8 padding = 34) so the two line up.
                   height: 34,
                   justifyContent: "center",
                   backgroundColor: colors.surfaceVariant,

@@ -13,12 +13,12 @@ export const useExerciseOptions = (exercisesState?: CurrentExercisesState) => {
   const { trigger: triggerUpdateUser } = useUpdateUser();
 
   const allExerciseNameOptions = useMemo<string[]>(
-    () => (curUser ? curUser.exerciseNames.toSorted() : []),
+    () => [...(curUser?.exerciseNames ?? [])].sort(),
     [curUser],
   );
 
-  const allExerciseEquipmentOptions = useMemo<string[]>(
-    () => (curUser ? curUser.exerciseEquipment.toSorted() : []),
+  const allEquipmentOptions = useMemo<string[]>(
+    () => [...(curUser?.exerciseEquipment ?? [])].sort(),
     [curUser],
   );
 
@@ -52,17 +52,17 @@ export const useExerciseOptions = (exercisesState?: CurrentExercisesState) => {
     [allExerciseNameOptions, exercisesState, potentialExerciseAvailable],
   );
 
-  const availableExerciseEquipmentOptions = useMemo(
+  const availableEquipmentOptions = useMemo(
     () =>
       exercisesState
-        ? allExerciseEquipmentOptions.filter((equipment) =>
+        ? allEquipmentOptions.filter((equipment) =>
             potentialExerciseAvailable({
               ...exercisesState.curExercise,
               equipment,
             }),
           )
-        : allExerciseEquipmentOptions,
-    [allExerciseEquipmentOptions, exercisesState, potentialExerciseAvailable],
+        : allEquipmentOptions,
+    [allEquipmentOptions, exercisesState, potentialExerciseAvailable],
   );
 
   const addExerciseName = useCallback(
@@ -83,11 +83,11 @@ export const useExerciseOptions = (exercisesState?: CurrentExercisesState) => {
     [curUser, allExerciseNameOptions, triggerUpdateUser],
   );
 
-  const addExerciseEquipment = useCallback(
+  const addEquipment = useCallback(
     async (value: string) => {
       if (
         !curUser ||
-        allExerciseEquipmentOptions
+        allEquipmentOptions
           .map((o) => o.toLowerCase())
           .includes(value.toLowerCase())
       )
@@ -98,7 +98,7 @@ export const useExerciseOptions = (exercisesState?: CurrentExercisesState) => {
         exerciseEquipment: [...(curUser.exerciseEquipment ?? []), value],
       });
     },
-    [curUser, allExerciseEquipmentOptions, triggerUpdateUser],
+    [curUser, allEquipmentOptions, triggerUpdateUser],
   );
 
   const deleteExerciseName = useCallback(
@@ -112,7 +112,7 @@ export const useExerciseOptions = (exercisesState?: CurrentExercisesState) => {
     [curUser, triggerUpdateUser],
   );
 
-  const deleteExerciseEquipment = useCallback(
+  const deleteEquipment = useCallback(
     async (value: string) => {
       if (!curUser) return;
       await triggerUpdateUser({
@@ -127,12 +127,12 @@ export const useExerciseOptions = (exercisesState?: CurrentExercisesState) => {
 
   return {
     allExerciseNameOptions,
-    allExerciseEquipmentOptions,
+    allEquipmentOptions,
     availableExerciseNameOptions,
-    availableExerciseEquipmentOptions,
+    availableEquipmentOptions,
     addExerciseName,
-    addExerciseEquipment,
+    addEquipment,
     deleteExerciseName,
-    deleteExerciseEquipment,
+    deleteEquipment,
   };
 };

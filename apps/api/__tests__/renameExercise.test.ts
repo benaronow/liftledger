@@ -161,6 +161,33 @@ describe("PUT /users/:id/renameExercise", () => {
     await app.close();
   });
 
+  it("renames a gym across the list, sessions, exercises, and primaryGym", async () => {
+    const program = await ProgramModel.create(makeProgram());
+    const user = await UserModel.create({
+      ...makeUser(),
+      programs: [program._id],
+      curProgram: program._id,
+    });
+    const app = await buildTestApp();
+
+    const res = await rename(app, user._id.toString(), {
+      field: "gym",
+      from: "Gym A",
+      to: "Gym B",
+      scope: "all",
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().gyms).toContain("Gym B");
+    expect(res.json().gyms).not.toContain("Gym A");
+
+    const prog = await ProgramModel.findById(program._id);
+    expect(prog!.primaryGym).toBe("Gym B");
+    expect(prog!.rotations[0][0].gym).toBe("Gym B");
+    expect(prog!.rotations[0][0].exercises[0].gym).toBe("Gym B");
+
+    await app.close();
+  });
+
   it("rejects a rename that collides with an existing entry", async () => {
     const user = await UserModel.create(makeUser());
     const app = await buildTestApp();

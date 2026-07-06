@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { ExerciseEquipmentSelect } from "../components/ExerciseEquipmentSelect";
+import { EquipmentSelect } from "../components/EquipmentSelect";
 import { ExerciseNameSelect } from "../components/ExerciseNameSelect";
 import { SPACING } from "../theme";
 
@@ -33,7 +33,7 @@ export const ExerciseSelector = ({
         />
       </View>
       <View style={{ flex: 1 }}>
-        <ExerciseEquipmentSelect
+        <EquipmentSelect
           label="Equipment"
           value={selectedEquipment}
           onSelect={setSelectedEquipment}

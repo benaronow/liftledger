@@ -2,7 +2,7 @@ import {
   CurrentExercisesState,
   useExerciseOptions,
 } from "@liftledger/api-client";
-import { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import { SearchableSelect } from "./SearchableSelect";
 
 interface Props {
@@ -12,20 +12,28 @@ interface Props {
   label?: string;
   error?: string;
   canAddCustom?: boolean;
+  prefix?: (item: string) => ReactNode;
+  trailing?: (item: string) => ReactNode;
+  renderTrigger?: (open: () => void) => ReactNode;
+  dismissOnSelect?: boolean;
 }
 
-export const ExerciseEquipmentSelect = ({
+export const EquipmentSelect = ({
   currentExercisesState,
   value,
   onSelect,
   label,
   error,
   canAddCustom,
+  prefix,
+  trailing,
+  renderTrigger,
+  dismissOnSelect,
 }: Props) => {
   const {
-    addExerciseEquipment,
-    allExerciseEquipmentOptions,
-    availableExerciseEquipmentOptions,
+    addEquipment: addExerciseEquipment,
+    allEquipmentOptions: allExerciseEquipmentOptions,
+    availableEquipmentOptions: availableExerciseEquipmentOptions,
   } = useExerciseOptions(currentExercisesState);
 
   const unavailableEquipmentOptions = useMemo(
@@ -46,6 +54,10 @@ export const ExerciseEquipmentSelect = ({
       onSelect={onSelect}
       onAddCustom={addExerciseEquipment}
       canAddCustom={canAddCustom}
+      prefix={prefix}
+      trailing={trailing}
+      renderTrigger={renderTrigger}
+      dismissOnSelect={dismissOnSelect}
       placeholder={
         canAddCustom ? "Search or add equipment..." : "Search equipment..."
       }

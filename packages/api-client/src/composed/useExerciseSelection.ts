@@ -19,8 +19,10 @@ export const useExerciseSelection = ({
   const { data: curUser, isLoading: isUserLoading } = useMe();
   const { data: completedExercises, isLoading: completedExercisesLoading } =
     useCompletedExercises(curUser?._id);
-  const { allExerciseNameOptions, allExerciseEquipmentOptions } =
-    useExerciseOptions();
+  const {
+    allExerciseNameOptions,
+    allEquipmentOptions: allExerciseEquipmentOptions,
+  } = useExerciseOptions();
 
   const firstEquipmentFor = useCallback(
     (name: string) =>

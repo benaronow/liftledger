@@ -9,7 +9,7 @@ import {
 import { Exercise } from "@liftledger/shared";
 import { useCallback, useMemo } from "react";
 import { View } from "react-native";
-import { ExerciseEquipmentSelect } from "../../../components/ExerciseEquipmentSelect";
+import { EquipmentSelect } from "../../../components/EquipmentSelect";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
 import { UnitSelect } from "../../../components/UnitSelect";
 import { SPACING } from "../../../theme";
@@ -185,7 +185,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
         onSelect={(value) => switchExercise(value, "name")}
         canAddCustom
       />
-      <ExerciseEquipmentSelect
+      <EquipmentSelect
         value={exercise.equipment ?? ""}
         label="Equipment"
         error={errors.equipment}
