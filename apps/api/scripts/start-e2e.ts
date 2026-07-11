@@ -37,7 +37,7 @@ const main = async () => {
         email: "e2e@liftledger.app",
         username: "e2e",
         fullName: "E2E Test User",
-        timerSettings: { presets: {} },
+        timer: { settings: { presets: {} } },
         "options.gyms": [],
         programs: [],
       },

@@ -26,7 +26,7 @@ export const useUpdateTimerSettings = () => {
       await propagateUserToCaches(user);
       await mutate(
         basePath,
-        { timerSettings: user.timerSettings },
+        { timerSettings: user.timer.settings },
         { revalidate: false },
       );
     },

@@ -73,7 +73,7 @@ export const CreateAccount = () => {
         email,
         username: username.trim(),
         fullName: fullName.trim(),
-        timerSettings: DEFAULT_TIMER_SETTINGS,
+        timer: { settings: DEFAULT_TIMER_SETTINGS },
       });
     } catch (e: unknown) {
       const msg = errorMessage(e, "Failed to create account");

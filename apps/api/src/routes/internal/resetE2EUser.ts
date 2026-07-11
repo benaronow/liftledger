@@ -44,9 +44,9 @@ export const resetE2EUser = async ({ reply }: { reply: FastifyReply }) => {
           "options.units": [...DEFAULT_UNITS],
           "options.defaultUnit": LBS,
           "options.gyms": [],
-          "timerSettings.exerciseOverrides": {},
+          "timer.settings.exerciseOverrides": {},
         },
-        $unset: { curProgram: "", "timerSettings.end": "" },
+        $unset: { curProgram: "", "timer.end": "" },
       },
     );
 

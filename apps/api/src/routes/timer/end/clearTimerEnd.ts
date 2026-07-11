@@ -11,7 +11,7 @@ export const clearTimerEnd = async ({
   try {
     const updatedUser = await UserModel.findOneAndUpdate(
       { _id: id },
-      { $unset: { "timerSettings.end": "" } },
+      { $unset: { "timer.end": "" } },
       { new: true },
     );
     if (!updatedUser) return reply.code(404).send({ error: "User not found" });

@@ -58,11 +58,15 @@ export interface TimerPresets {
 }
 
 export interface TimerSettings {
-  end?: Date;
   presets: TimerPresets;
   defaultEnabled: boolean;
   defaultTime: number;
   exerciseOverrides: Record<string, number>;
+}
+
+export interface Timer {
+  end?: Date;
+  settings: TimerSettings;
 }
 
 // Scope of an option rename: the list only, the current program, or all programs.
@@ -76,7 +80,7 @@ export interface User {
   fullName: string;
   programs: Program[];
   curProgram?: string;
-  timerSettings: TimerSettings;
+  timer: Timer;
   options: UserOptions;
 }
 

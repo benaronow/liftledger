@@ -28,7 +28,7 @@ export const updateTimerSettings = async ({
   // setting can't clobber a concurrent change to another.
   const $set = Object.fromEntries(
     PATCHABLE_FIELDS.filter((key) => patch[key] !== undefined).map((key) => [
-      `timerSettings.${key}`,
+      `timer.settings.${key}`,
       patch[key],
     ]),
   );

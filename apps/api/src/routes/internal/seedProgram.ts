@@ -138,7 +138,7 @@ export const seedProgram = async ({ reply }: { reply: FastifyReply }) => {
           ]),
           "options.gyms": [GYM1],
         },
-        $unset: { "timerSettings.end": "" },
+        $unset: { "timer.end": "" },
       },
     );
 

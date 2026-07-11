@@ -17,7 +17,7 @@ const makeUser = () => ({
   email: "test@example.com",
   username: "testuser",
   fullName: "Test User",
-  timerSettings: { presets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 } },
+  timer: { settings: { presets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 } } },
   options: {
     gyms: ["Gym A"],
     exerciseNames: ["Bench Press", "Squat"],
@@ -356,10 +356,10 @@ describe("PATCH /users/:id/timer/settings", () => {
       payload: { patch: { defaultEnabled: false, defaultTime: 90 } },
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json().timerSettings.defaultTime).toBe(90);
-    expect(res.json().timerSettings.defaultEnabled).toBe(false);
+    expect(res.json().timer.settings.defaultTime).toBe(90);
+    expect(res.json().timer.settings.defaultEnabled).toBe(false);
     // Untouched fields survive the partial update.
-    expect(res.json().timerSettings.presets).toEqual({
+    expect(res.json().timer.settings.presets).toEqual({
       0: 30,
       1: 60,
       2: 90,
