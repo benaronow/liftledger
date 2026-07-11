@@ -81,11 +81,11 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
       name: "",
       equipment: "",
       gym: curGym,
-      unit: curUser?.defaultUnit ?? "",
+      unit: curUser?.options?.defaultUnit ?? "",
       workingSets: [],
       addedOn: true,
     }),
-    [curGym, curUser?.defaultUnit],
+    [curGym, curUser?.options?.defaultUnit],
   );
   const [newExercise, setNewExercise] = useState<Exercise>(defaultNewExercise);
 

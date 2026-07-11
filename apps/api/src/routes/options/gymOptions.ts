@@ -7,7 +7,7 @@ import { removeOption } from "./helpers/removeOption";
 import type { OptionField } from "./helpers/shared";
 
 const BASE = "/users/:id/options/gyms";
-const OPTION: OptionField = { field: "gyms", exerciseKey: "gym" };
+const OPTION: OptionField = { field: "options.gyms", exerciseKey: "gym" };
 const LABEL = "gym";
 
 type IdParams = { id: string };

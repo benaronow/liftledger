@@ -8,7 +8,7 @@ import type { OptionField } from "./helpers/shared";
 
 const BASE = "/users/:id/options/equipment";
 const OPTION: OptionField = {
-  field: "exerciseEquipment",
+  field: "options.equipment",
   exerciseKey: "equipment",
 };
 const LABEL = "equipment";

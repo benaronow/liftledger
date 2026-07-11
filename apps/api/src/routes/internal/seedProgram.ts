@@ -119,7 +119,7 @@ export const seedProgram = async ({ reply }: { reply: FastifyReply }) => {
           // test-specific abbreviations layered on top.
           // "Adductors"/"Leg Raises"/"Crunch" are intentionally omitted here —
           // the test adds them as custom names, mirroring the doc.
-          exerciseNames: withDefaults(DEFAULT_EXERCISE_NAMES, [
+          "options.exerciseNames": withDefaults(DEFAULT_EXERCISE_NAMES, [
             "BB Bench",
             "DB OHP",
             "Tricep Pushdown",
@@ -130,13 +130,13 @@ export const seedProgram = async ({ reply }: { reply: FastifyReply }) => {
             "Hamstring Curl",
             "Calf Raise",
           ]),
-          exerciseEquipment: withDefaults(DEFAULT_EXERCISE_EQUIPMENT, [
+          "options.equipment": withDefaults(DEFAULT_EXERCISE_EQUIPMENT, [
             "Barbell",
             "Dumbbell",
             "Cable",
             "Machine",
           ]),
-          gyms: [GYM1],
+          "options.gyms": [GYM1],
         },
         $unset: { "timerSettings.end": "" },
       },

@@ -18,11 +18,13 @@ const makeUser = () => ({
   username: "testuser",
   fullName: "Test User",
   timerSettings: { presets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 } },
-  gyms: ["Gym A"],
-  exerciseNames: ["Bench Press", "Squat"],
-  exerciseEquipment: ["Barbell", "Dumbbell"],
-  units: ["lbs"],
-  defaultUnit: "lbs",
+  options: {
+    gyms: ["Gym A"],
+    exerciseNames: ["Bench Press", "Squat"],
+    equipment: ["Barbell", "Dumbbell"],
+    units: ["lbs"],
+    defaultUnit: "lbs",
+  },
   programs: [],
 });
 
@@ -96,8 +98,8 @@ describe("PATCH /users/:id/<segment> (rename)", () => {
       scope: "list",
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json().exerciseNames).toContain("Barbell Bench");
-    expect(res.json().exerciseNames).not.toContain("Bench Press");
+    expect(res.json().options.exerciseNames).toContain("Barbell Bench");
+    expect(res.json().options.exerciseNames).not.toContain("Bench Press");
 
     const prog = await ProgramModel.findById(program._id);
     expect(prog!.rotations[0][0].exercises[0].name).toBe("Bench Press");
@@ -167,7 +169,7 @@ describe("PATCH /users/:id/<segment> (rename)", () => {
       scope: "all",
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json().exerciseEquipment).toContain("Olympic Barbell");
+    expect(res.json().options.equipment).toContain("Olympic Barbell");
 
     const prog = await ProgramModel.findById(program._id);
     expect(prog!.rotations[0][0].exercises[0].equipment).toBe("Olympic Barbell");
@@ -189,8 +191,8 @@ describe("PATCH /users/:id/<segment> (rename)", () => {
       scope: "all",
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json().gyms).toContain("Gym B");
-    expect(res.json().gyms).not.toContain("Gym A");
+    expect(res.json().options.gyms).toContain("Gym B");
+    expect(res.json().options.gyms).not.toContain("Gym A");
 
     const prog = await ProgramModel.findById(program._id);
     expect(prog!.primaryGym).toBe("Gym B");
@@ -243,9 +245,13 @@ describe("PATCH /users/:id/<segment> (rename)", () => {
 
 describe("GET /users/:id/<segment>", () => {
   it("returns the option list sorted", async () => {
+    const base = makeUser();
     const user = await UserModel.create({
-      ...makeUser(),
-      exerciseNames: ["Squat", "Bench Press", "Deadlift"],
+      ...base,
+      options: {
+        ...base.options,
+        exerciseNames: ["Squat", "Bench Press", "Deadlift"],
+      },
     });
     const app = await buildTestApp();
 
@@ -267,7 +273,7 @@ describe("PUT /users/:id/<segment> (add)", () => {
 
     const res = await add(app, user._id.toString(), "exerciseNames", "Deadlift");
     expect(res.statusCode).toBe(200);
-    expect(res.json().exerciseNames).toContain("Deadlift");
+    expect(res.json().options.exerciseNames).toContain("Deadlift");
 
     await app.close();
   });
@@ -278,7 +284,7 @@ describe("PUT /users/:id/<segment> (add)", () => {
 
     const res = await add(app, user._id.toString(), "exerciseNames", "bench press");
     expect(res.statusCode).toBe(200);
-    const names: string[] = res.json().exerciseNames;
+    const names: string[] = res.json().options.exerciseNames;
     expect(names.filter((n) => n.toLowerCase() === "bench press")).toHaveLength(1);
     expect(names).toContain("Bench Press");
 
@@ -293,7 +299,7 @@ describe("DELETE /users/:id/<segment>", () => {
 
     const res = await remove(app, user._id.toString(), "exerciseNames", "Squat");
     expect(res.statusCode).toBe(200);
-    expect(res.json().exerciseNames).not.toContain("Squat");
+    expect(res.json().options.exerciseNames).not.toContain("Squat");
 
     await app.close();
   });
@@ -310,8 +316,8 @@ describe("PUT /users/:id/options/units/default", () => {
       payload: { defaultUnit: "kg" },
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json().defaultUnit).toBe("kg");
-    expect(res.json().units).toContain("kg");
+    expect(res.json().options.defaultUnit).toBe("kg");
+    expect(res.json().options.units).toContain("kg");
 
     await app.close();
   });

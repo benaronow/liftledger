@@ -17,7 +17,7 @@ export const useRemoveUnit = () => useRemoveOption("units");
 
 export const useDefaultUnit = () => {
   const { data: curUser } = useMe();
-  return curUser?.defaultUnit ?? "";
+  return curUser?.options?.defaultUnit ?? "";
 };
 
 export const useSetDefaultUnit = () => {

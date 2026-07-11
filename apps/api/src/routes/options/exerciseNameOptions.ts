@@ -7,7 +7,10 @@ import { removeOption } from "./helpers/removeOption";
 import type { OptionField } from "./helpers/shared";
 
 const BASE = "/users/:id/options/exerciseNames";
-const OPTION: OptionField = { field: "exerciseNames", exerciseKey: "name" };
+const OPTION: OptionField = {
+  field: "options.exerciseNames",
+  exerciseKey: "name",
+};
 const LABEL = "exercise name";
 
 type IdParams = { id: string };

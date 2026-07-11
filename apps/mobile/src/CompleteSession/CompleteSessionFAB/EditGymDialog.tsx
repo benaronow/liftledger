@@ -90,7 +90,7 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
       <SearchableSelect
         label="Session Gym"
         value={gymName}
-        options={curUser?.gyms || []}
+        options={curUser?.options?.gyms || []}
         onSelect={setGymName}
         onAddCustom={handleAddGym}
         canAddCustom

@@ -7,7 +7,7 @@ import { removeOption } from "./helpers/removeOption";
 import { populatedUser, type OptionField } from "./helpers/shared";
 
 const BASE = "/users/:id/options/units";
-const OPTION: OptionField = { field: "units", exerciseKey: "unit" };
+const OPTION: OptionField = { field: "options.units", exerciseKey: "unit" };
 const LABEL = "unit";
 
 type IdParams = { id: string };
@@ -100,7 +100,7 @@ const unitOptions = async (app: FastifyInstance) => {
           (o) => o.toLowerCase() === trimmed.toLowerCase(),
         );
         if (!listed) auth.me.set(OPTION.field, [...list, trimmed]);
-        auth.me.set("defaultUnit", trimmed);
+        auth.me.set("options.defaultUnit", trimmed);
         await auth.me.save();
         return await populatedUser(id);
       } catch (error) {

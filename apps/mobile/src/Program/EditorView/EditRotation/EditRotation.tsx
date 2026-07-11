@@ -36,25 +36,33 @@ export const EditRotation = () => {
   // Seed the primary gym (and propagate it to the editing rotation's sessions +
   // exercises) from the user's first saved gym when none is set yet.
   useEffect(() => {
-    if (templateProgram.primaryGym === undefined && curUser?.gyms?.length) {
+    if (
+      templateProgram.primaryGym === undefined &&
+      curUser?.options?.gyms?.length
+    ) {
       setTemplateProgram({
         ...templateProgram,
-        primaryGym: curUser.gyms[0],
+        primaryGym: curUser.options.gyms[0],
         rotations: templateProgram.rotations.map((w, wIdx) =>
           wIdx === editingRotationIdx
             ? w.map((session) => ({
                 ...session,
-                gym: curUser.gyms[0],
+                gym: curUser.options.gyms[0],
                 exercises: session.exercises.map((exercise) => ({
                   ...exercise,
-                  gym: curUser.gyms[0],
+                  gym: curUser.options.gyms[0],
                 })),
               }))
             : w,
         ),
       });
     }
-  }, [templateProgram, curUser?.gyms, editingRotationIdx, setTemplateProgram]);
+  }, [
+    templateProgram,
+    curUser?.options?.gyms,
+    editingRotationIdx,
+    setTemplateProgram,
+  ]);
 
   const setPrimaryGym = (gym: string) => {
     const curRotationIdx = curProgram?.curRotationIdx ?? 0;
@@ -106,7 +114,7 @@ export const EditRotation = () => {
           equipment: "",
           gym: templateProgram.primaryGym || "",
           workingSets: [{ reps: null, weight: null, completed: false, note: "" }],
-          unit: curUser?.defaultUnit ?? "",
+          unit: curUser?.options?.defaultUnit ?? "",
         },
       ],
       completedDate: undefined,
@@ -158,7 +166,7 @@ export const EditRotation = () => {
           label="Primary Gym"
           error={templateErrors.program.primaryGym}
           value={templateProgram.primaryGym ?? ""}
-          options={curUser?.gyms || []}
+          options={curUser?.options?.gyms || []}
           onSelect={setPrimaryGym}
           onAddCustom={handleAddGym}
           canAddCustom

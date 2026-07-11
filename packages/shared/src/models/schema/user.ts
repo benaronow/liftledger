@@ -26,22 +26,24 @@ const userSchema: Schema = new Schema(
         default: () => ({}),
       },
     },
-    gyms: { type: [String] },
-    exerciseNames: {
-      type: [String],
-      default: () => [...DEFAULT_EXERCISE_NAMES],
-    },
-    exerciseEquipment: {
-      type: [String],
-      default: () => [...DEFAULT_EXERCISE_EQUIPMENT],
-    },
-    units: {
-      type: [String],
-      default: () => [...DEFAULT_UNITS],
-    },
-    defaultUnit: {
-      type: String,
-      default: "lbs",
+    options: {
+      gyms: { type: [String] },
+      exerciseNames: {
+        type: [String],
+        default: () => [...DEFAULT_EXERCISE_NAMES],
+      },
+      equipment: {
+        type: [String],
+        default: () => [...DEFAULT_EXERCISE_EQUIPMENT],
+      },
+      units: {
+        type: [String],
+        default: () => [...DEFAULT_UNITS],
+      },
+      defaultUnit: {
+        type: String,
+        default: "lbs",
+      },
     },
   },
   { collection: "User" },

@@ -77,9 +77,13 @@ export interface User {
   programs: Program[];
   curProgram?: string;
   timerSettings: TimerSettings;
+  options: UserOptions;
+}
+
+export interface UserOptions {
   gyms: string[];
   exerciseNames: string[];
-  exerciseEquipment: string[];
+  equipment: string[];
   units: string[];
   defaultUnit: string;
 }
