@@ -30,7 +30,7 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
 
   const {
     templateProgram,
-    commitBaseline,
+    rebaseTemplate,
     unsetTemplateProgram,
     setEditingRotationIdx,
   } = useTemplate();
@@ -46,7 +46,7 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
           program: templateProgram,
         });
         if (res?.program) {
-          commitBaseline(res.program);
+          rebaseTemplate(res.program);
           setEditingRotationIdx(res.program.curRotationIdx ?? 0);
         }
       } else {

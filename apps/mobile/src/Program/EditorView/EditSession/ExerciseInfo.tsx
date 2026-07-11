@@ -55,9 +55,8 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
 
   const updateExercise = useCallback(
     (exerciseUpdate: Exercise) => {
-      // eIdx is the position in the *visible* list; map it to the full-array
-      // index so hidden addedOn exercises don't shift the target.
       const fullIdx = fullExerciseIndex(curSessionExercises, eIdx);
+
       setTemplateProgram({
         ...templateProgram,
         rotations: templateProgram.rotations.map((rotation, wIdx) =>
@@ -104,11 +103,9 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
     });
   };
 
-  // Sets is a list length, not a Set value: regenerate the set list (capped at
-  // 999). An empty field commits null, which we ignore so clearing it mid-edit
-  // doesn't wipe the existing sets — it snaps back to the count on blur.
   const handleSetsCount = (count: number | null) => {
     if (count == null) return;
+
     updateExercise({
       ...exercise,
       workingSets: getNewSetsFromLatest(

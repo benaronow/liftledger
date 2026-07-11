@@ -6,6 +6,7 @@ import {
   SetStateAction,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -23,7 +24,7 @@ interface TemplateContextModel {
   templateErrors: TemplateErrors;
   dirty: boolean;
   resetTemplate: () => void;
-  commitBaseline: (program: Program) => void;
+  rebaseTemplate: (program: Program) => void;
 }
 
 const defaultTemplateContext: TemplateContextModel = {
@@ -37,7 +38,7 @@ const defaultTemplateContext: TemplateContextModel = {
   templateErrors: { program: {}, sessions: [] },
   dirty: false,
   resetTemplate: () => {},
-  commitBaseline: () => {},
+  rebaseTemplate: () => {},
 };
 
 const TemplateContext = createContext<TemplateContextModel>(
@@ -68,16 +69,30 @@ export const TemplateProvider = ({
     [templateProgram, baseline],
   );
 
+  const initialTemplateKey = useMemo(
+    () => JSON.stringify(initialTemplate),
+    [initialTemplate],
+  );
+
+  const rebaseTemplate = useCallback(
+    (program: Program) => {
+      setBaseline(program);
+      setTemplateProgram(program);
+    },
+    [setBaseline, setTemplateProgram],
+  );
+
+  useEffect(() => {
+    if (!dirty && initialTemplateKey !== JSON.stringify(baseline)) {
+      rebaseTemplate(initialTemplate);
+    }
+  }, [baseline, dirty, initialTemplate, initialTemplateKey, rebaseTemplate]);
+
   const resetTemplate = useCallback(() => {
     setTemplateProgram(baseline);
     setEditingRotationIdx(initialRotationIdx);
     setEditingSessionIdx(-1);
   }, [baseline, initialRotationIdx]);
-
-  const commitBaseline = useCallback((program: Program) => {
-    setBaseline(program);
-    setTemplateProgram(program);
-  }, []);
 
   const templateErrors = useMemo(
     () => validateTemplate(templateProgram, editingRotationIdx),
@@ -97,7 +112,7 @@ export const TemplateProvider = ({
         templateErrors,
         dirty,
         resetTemplate,
-        commitBaseline,
+        rebaseTemplate,
       }}
     >
       {children}
