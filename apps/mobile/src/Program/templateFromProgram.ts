@@ -1,8 +1,8 @@
-import { Program } from "@liftledger/shared";
 import {
   CompletedExercisesResponse,
+  Program,
   getNewSetsFromLatest,
-} from "@liftledger/api-client";
+} from "@liftledger/shared";
 
 export const templateFromProgram = (
   program: Program,

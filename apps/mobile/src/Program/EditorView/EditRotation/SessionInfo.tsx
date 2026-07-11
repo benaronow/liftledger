@@ -1,4 +1,4 @@
-import { useProgram, useMe } from "@liftledger/api-client";
+import { useProgram } from "@liftledger/api-client";
 import { Session } from "@liftledger/shared";
 import { Text, useTheme } from "react-native-paper";
 import { FONT } from "../../../theme";
@@ -15,8 +15,7 @@ interface Props {
 
 export const SessionInfo = ({ session, dIdx, errors, onRequestDelete }: Props) => {
   const { colors } = useTheme();
-  const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
+  const { data: curProgram } = useProgram();
   const {
     templateProgram,
     setTemplateProgram,

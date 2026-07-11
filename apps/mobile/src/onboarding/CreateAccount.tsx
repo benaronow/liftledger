@@ -39,7 +39,7 @@ export const CreateAccount = () => {
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
   const logout = useLogout();
-  const { trigger: createUser, isMutating: creating } = useCreateUser();
+  const { send: createUser, isLoading: creating } = useCreateUser();
   const { scheme } = useThemePreference();
 
   const isNonConnectionUser = useMemo(

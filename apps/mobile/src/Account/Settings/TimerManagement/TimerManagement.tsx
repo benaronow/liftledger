@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import { useTimerSettings } from "@liftledger/api-client";
+import { useTimerSettings, useUpdateTimerSettings } from "@liftledger/api-client";
 import { Text, TouchableRipple, useTheme } from "react-native-paper";
 import { ConfirmationDialog } from "../../../components/ConfirmationDialog";
 import { AppTextInput } from "../../../components/inputs";
@@ -17,8 +17,17 @@ import {
 export const TimerManagement = () => {
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
-  const { defaultEnabled, setDefaultEnabled, defaultTime, setDefaultTime } =
-    useTimerSettings();
+  const { data: timerSettingsData } = useTimerSettings();
+  const { send: triggerUpdateTimerSettings } = useUpdateTimerSettings();
+
+  const settings = timerSettingsData?.timerSettings;
+  const defaultEnabled = settings?.defaultEnabled ?? true;
+  const defaultTime = settings?.defaultTime ?? 120;
+
+  const setDefaultEnabled = (enabled: boolean) =>
+    triggerUpdateTimerSettings({ patch: { defaultEnabled: enabled } });
+  const setDefaultTime = (seconds: number) =>
+    triggerUpdateTimerSettings({ patch: { defaultTime: seconds } });
 
   const [editOpen, setEditOpen] = useState(false);
   const [draftTime, setDraftTime] = useState(defaultTime);

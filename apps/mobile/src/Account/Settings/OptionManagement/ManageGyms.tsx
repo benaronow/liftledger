@@ -1,9 +1,14 @@
-import { useGymOptions } from "@liftledger/api-client";
+import { useGymOptions, useRemoveGym } from "@liftledger/api-client";
 import { GymSelect } from "../../../components/GymSelect";
 import { ManageOptions } from "./ManageOptions";
 
 export const ManageGyms = () => {
-  const { allGymOptions, deleteGym } = useGymOptions();
+  const { data: options = [] } = useGymOptions();
+  const { send: removeGym } = useRemoveGym();
+
+  const remove = async (value: string) => {
+    await removeGym(value);
+  };
 
   return (
     <ManageOptions
@@ -11,8 +16,8 @@ export const ManageGyms = () => {
       buttonLabel="Gyms"
       singular="gym"
       fieldLabel="Gym"
-      options={allGymOptions}
-      onDelete={deleteGym}
+      options={options}
+      onDelete={remove}
     >
       {(props) => <GymSelect {...props} canAddCustom />}
     </ManageOptions>

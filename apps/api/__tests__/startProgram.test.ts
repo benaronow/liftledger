@@ -52,7 +52,7 @@ beforeAll(startDb);
 afterAll(stopDb);
 afterEach(clearDb);
 
-describe("POST /users/:id/startProgram", () => {
+describe("POST /users/:id/programs", () => {
   it("returns the updated user with curProgram set and the program in programs", async () => {
     const user = await UserModel.create(makeUser());
     const uid = user._id.toString();
@@ -60,7 +60,7 @@ describe("POST /users/:id/startProgram", () => {
 
     const res = await app.inject({
       method: "POST",
-      url: `/users/${uid}/startProgram`,
+      url: `/users/${uid}/programs`,
       payload: { program: makeProgram() },
     });
     const data = res.json();
@@ -83,7 +83,7 @@ describe("POST /users/:id/startProgram", () => {
 
     const res = await app.inject({
       method: "POST",
-      url: `/users/${uid}/startProgram`,
+      url: `/users/${uid}/programs`,
       payload: { program: makeProgram() },
     });
     const data = res.json();
@@ -102,7 +102,7 @@ describe("POST /users/:id/startProgram", () => {
 
     const res = await app.inject({
       method: "POST",
-      url: `/users/${uid}/startProgram`,
+      url: `/users/${uid}/programs`,
       payload: { program: makeProgram() },
     });
     const data = res.json();

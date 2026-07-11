@@ -1,4 +1,4 @@
-import { useProgram, useMe } from "@liftledger/api-client";
+import { useProgram } from "@liftledger/api-client";
 import { useState } from "react";
 import { View } from "react-native";
 import { FAB, useTheme } from "react-native-paper";
@@ -11,8 +11,7 @@ import { SaveProgramDialog } from "./SaveProgramDialog";
 
 export const ProgramFAB = () => {
   const { colors } = useTheme();
-  const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
+  const { data: curProgram } = useProgram();
   const { editingSessionIdx, setEditingSessionIdx, templateErrors } = useTemplate();
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [quitDialogOpen, setQuitDialogOpen] = useState(false);

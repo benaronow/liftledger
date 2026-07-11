@@ -8,10 +8,7 @@ import { CompletedProgram } from "./CompletedProgram";
 
 export const History = () => {
   const { data: curUser, isLoading: isUserLoading } = useMe();
-  const { data: curProgram, isLoading: isProgramLoading } = useProgram(
-    curUser?._id,
-    curUser?.curProgram,
-  );
+  const { data: curProgram, isLoading: isProgramLoading } = useProgram();
   const { colors } = useTheme();
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 

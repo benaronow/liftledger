@@ -1,5 +1,10 @@
 import { TimerPresets } from "@liftledger/shared";
-import { useMe, useSetTimerEnd, useTimerSettings } from "@liftledger/api-client";
+import {
+  useMe,
+  useSetTimerEnd,
+  useTimerSettings,
+  useUpdateTimerSettings,
+} from "@liftledger/api-client";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { Button, IconButton, useTheme } from "react-native-paper";
@@ -17,8 +22,16 @@ interface Props {
 export const TimerSettings = ({ onTimerStarted }: Props) => {
   const { colors } = useTheme();
   const { data: curUser } = useMe();
-  const { presets, savePresets } = useTimerSettings();
-  const { trigger: triggerSetTimerEnd } = useSetTimerEnd();
+  const { data: timerSettingsData } = useTimerSettings();
+  const { send: triggerUpdateTimerSettings } = useUpdateTimerSettings();
+  const { send: triggerSetTimerEnd } = useSetTimerEnd();
+
+  const settings = timerSettingsData?.timerSettings;
+  const presets = settings?.presets;
+
+  const savePresets = (next: TimerPresets) => {
+    triggerUpdateTimerSettings({ patch: { presets: next } });
+  };
 
   const [presetsState, setPresetsState] = useState<TimerPresets | undefined>(
     () => presets,
@@ -36,7 +49,7 @@ export const TimerSettings = ({ onTimerStarted }: Props) => {
   const startTimer = (totalSeconds: number) => {
     if (!curUser?._id) return;
     const endTime = new Date(new Date().getTime() + totalSeconds * 1000);
-    triggerSetTimerEnd({ userId: curUser._id, timerEnd: endTime });
+    triggerSetTimerEnd(endTime);
   };
 
   if (!curUser || !presetsState) return null;

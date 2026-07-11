@@ -1,5 +1,10 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useMe, useRenameExercise } from "@liftledger/api-client";
+import {
+  useRenameExerciseName,
+  useRenameEquipment,
+  useRenameUnit,
+  useRenameGym,
+} from "@liftledger/api-client";
 import { useEffect, useMemo, useState } from "react";
 import { Pressable, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
@@ -47,8 +52,20 @@ export const RenameOptionDialog = ({
   onClose,
 }: Props) => {
   const { colors } = useTheme();
-  const { data: curUser } = useMe();
-  const { trigger: renameExercise } = useRenameExercise();
+  const { send: renameExerciseName } = useRenameExerciseName();
+  const { send: renameEquipment } = useRenameEquipment();
+  const { send: renameUnit } = useRenameUnit();
+  const { send: renameGym } = useRenameGym();
+
+  const renameByField: Record<
+    OptionType,
+    (arg: { from: string; to: string; scope: Scope }) => Promise<unknown>
+  > = {
+    name: renameExerciseName,
+    equipment: renameEquipment,
+    unit: renameUnit,
+    gym: renameGym,
+  };
 
   const [value, setValue] = useState("");
   const [scope, setScope] = useState<Scope>("list");
@@ -78,14 +95,12 @@ export const RenameOptionDialog = ({
   const canSave = trimmed !== "" && !duplicate && trimmed !== original;
 
   const handleSave = async () => {
-    if (!canSave || !curUser?._id || original === undefined) return;
+    if (!canSave || original === undefined) return;
     setSaving(true);
     setEditorError("");
     setCommitted(true);
     try {
-      await renameExercise({
-        userId: curUser._id,
-        field,
+      await renameByField[field]({
         from: original,
         to: trimmed,
         scope,

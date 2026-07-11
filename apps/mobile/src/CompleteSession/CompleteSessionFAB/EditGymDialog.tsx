@@ -1,10 +1,10 @@
+import { getNewSetsFromLatest } from "@liftledger/shared";
 import { useEffect, useState } from "react";
 import {
-  getNewSetsFromLatest,
   useProgram,
   useCompletedExercises,
   useMe,
-  useUpdateUser,
+  useAddGym,
   useUpdateUserProgram,
 } from "@liftledger/api-client";
 import { ConfirmationDialog } from "../../components/ConfirmationDialog";
@@ -17,10 +17,10 @@ interface Props {
 
 export const EditGymDialog = ({ open, onClose }: Props) => {
   const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { data: completedExercises } = useCompletedExercises(curUser?._id);
-  const { trigger: triggerUpdateUser } = useUpdateUser();
-  const { trigger: triggerUpdateUserProgram, isMutating: editingGym } =
+  const { data: curProgram } = useProgram();
+  const { data: completedExercises } = useCompletedExercises();
+  const { send: addGym } = useAddGym();
+  const { send: triggerUpdateUserProgram, isLoading: editingGym } =
     useUpdateUserProgram();
   const currentGym =
     curProgram?.rotations[curProgram.curRotationIdx]?.[curProgram.curSessionIdx]?.gym ?? "";
@@ -34,11 +34,10 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
   }, [open, currentGym]);
 
   const handleEditGym = async (name: string) => {
-    if (!curUser?._id || !curProgram) return;
+    if (!curProgram) return;
 
     try {
       await triggerUpdateUserProgram({
-        userId: curUser._id,
         program: {
           ...curProgram,
           rotations: curProgram.rotations.map((rotation, wIdx) =>
@@ -71,17 +70,12 @@ export const EditGymDialog = ({ open, onClose }: Props) => {
       onClose();
     } catch {
       // Save failed — keep the dialog open for retry; the spinner clears via
-      // useUpdateUserProgram's isMutating.
+      // useUpdateUserProgram's isLoading.
     }
   };
 
   const handleAddGym = async (name: string) => {
-    if (curUser) {
-      await triggerUpdateUser({
-        ...curUser,
-        gyms: [...(curUser.gyms || []), name],
-      });
-    }
+    await addGym({ value: name });
   };
 
   return (

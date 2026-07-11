@@ -13,7 +13,7 @@ interface Props {
 
 export const ResetPasswordDialog = ({ open, onClose }: Props) => {
   const { colors } = useTheme();
-  const { trigger: requestPasswordReset, isMutating: sending } =
+  const { send: requestPasswordReset, isLoading: sending } =
     useRequestPasswordReset();
   const { showSnackbar } = useSnackbar();
 

@@ -4,7 +4,7 @@ import {
   Set,
   getCompletedSessionsInProgram,
 } from "@liftledger/shared";
-import { isExerciseComplete, useProgram, useMe } from "@liftledger/api-client";
+import { isExerciseComplete, useProgram } from "@liftledger/api-client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { Text, TouchableRipple, useTheme } from "react-native-paper";
@@ -21,8 +21,7 @@ interface Props {
 }
 
 export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
-  const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
+  const { data: curProgram } = useProgram();
   const { colors } = useTheme();
 
   const intraProgramPrevious = useMemo<Exercise[]>(() => {

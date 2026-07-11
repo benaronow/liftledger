@@ -1,4 +1,4 @@
-import { useUnitOptions } from "@liftledger/api-client";
+import { useAddUnit, useUnitOptions } from "@liftledger/api-client";
 import { ReactNode } from "react";
 import { SearchableSelect } from "./SearchableSelect";
 
@@ -23,16 +23,21 @@ export const UnitSelect = ({
   renderTrigger,
   dismissOnSelect,
 }: Props) => {
-  const { allUnitOptions, addUnit } = useUnitOptions();
+  const { data: options = [] } = useUnitOptions();
+  const { send: addUnit } = useAddUnit();
+
+  const handleAdd = async (value: string) => {
+    await addUnit({ value });
+  };
 
   return (
     <SearchableSelect
       label={label}
       error={error}
       value={value}
-      options={allUnitOptions}
+      options={options}
       onSelect={onSelect}
-      onAddCustom={addUnit}
+      onAddCustom={handleAdd}
       canAddCustom
       prefix={prefix}
       trailing={trailing}

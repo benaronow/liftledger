@@ -1,6 +1,8 @@
 import {
   CurrentExercisesState,
-  useExerciseOptions,
+  useAddExerciseName,
+  useExerciseNameOptions,
+  useOptionAvailability,
 } from "@liftledger/api-client";
 import { ReactNode, useMemo } from "react";
 import { SearchableSelect } from "./SearchableSelect";
@@ -30,11 +32,14 @@ export const ExerciseNameSelect = ({
   renderTrigger,
   dismissOnSelect,
 }: Props) => {
-  const {
-    addExerciseName,
-    allExerciseNameOptions,
-    availableExerciseNameOptions,
-  } = useExerciseOptions(currentExercisesState);
+  const { data: allExerciseNameOptions = [] } = useExerciseNameOptions();
+  const { send: addExerciseName } = useAddExerciseName();
+  const { availableExerciseNameOptions } =
+    useOptionAvailability(currentExercisesState);
+
+  const handleAddExerciseName = async (name: string) => {
+    await addExerciseName({ value: name });
+  };
 
   const unavailableNameOptions = useMemo(
     () =>
@@ -52,7 +57,7 @@ export const ExerciseNameSelect = ({
       options={availableExerciseNameOptions}
       unavailableOptions={unavailableNameOptions}
       onSelect={onSelect}
-      onAddCustom={addExerciseName}
+      onAddCustom={handleAddExerciseName}
       canAddCustom={canAddCustom}
       prefix={prefix}
       trailing={trailing}

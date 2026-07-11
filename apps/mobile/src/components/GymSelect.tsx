@@ -1,4 +1,4 @@
-import { useGymOptions } from "@liftledger/api-client";
+import { useAddGym, useGymOptions } from "@liftledger/api-client";
 import { ReactNode } from "react";
 import { SearchableSelect } from "./SearchableSelect";
 
@@ -25,16 +25,21 @@ export const GymSelect = ({
   renderTrigger,
   dismissOnSelect,
 }: Props) => {
-  const { allGymOptions, addGym } = useGymOptions();
+  const { data: options = [] } = useGymOptions();
+  const { send: addGym } = useAddGym();
+
+  const handleAdd = async (value: string) => {
+    await addGym({ value });
+  };
 
   return (
     <SearchableSelect
       label={label}
       error={error}
       value={value}
-      options={allGymOptions}
+      options={options}
       onSelect={onSelect}
-      onAddCustom={addGym}
+      onAddCustom={handleAdd}
       canAddCustom={canAddCustom}
       prefix={prefix}
       trailing={trailing}

@@ -1,9 +1,17 @@
-import { useExerciseOptions } from "@liftledger/api-client";
+import {
+  useExerciseNameOptions,
+  useRemoveExerciseName,
+} from "@liftledger/api-client";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
 import { ManageOptions } from "./ManageOptions";
 
 export const ManageExerciseNames = () => {
-  const { allExerciseNameOptions, deleteExerciseName } = useExerciseOptions();
+  const { data: allExerciseNameOptions = [] } = useExerciseNameOptions();
+  const { send: removeExerciseName } = useRemoveExerciseName();
+
+  const deleteExerciseName = async (value: string) => {
+    await removeExerciseName(value);
+  };
 
   return (
     <ManageOptions

@@ -1,12 +1,17 @@
-import { useExerciseOptions } from "@liftledger/api-client";
+import {
+  useEquipmentOptions,
+  useRemoveEquipment,
+} from "@liftledger/api-client";
 import { EquipmentSelect } from "../../../components/EquipmentSelect";
 import { ManageOptions } from "./ManageOptions";
 
 export const ManageEquipment = () => {
-  const {
-    allEquipmentOptions: allExerciseEquipmentOptions,
-    deleteEquipment: deleteExerciseEquipment,
-  } = useExerciseOptions();
+  const { data: allExerciseEquipmentOptions = [] } = useEquipmentOptions();
+  const { send: removeEquipment } = useRemoveEquipment();
+
+  const deleteExerciseEquipment = async (value: string) => {
+    await removeEquipment(value);
+  };
 
   return (
     <ManageOptions

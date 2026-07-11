@@ -4,7 +4,7 @@ import { ProfileTextInput } from "../profileInputs";
 
 export const UsernameInput = () => {
   const { data: curUser } = useMe();
-  const { trigger: triggerUpdateUsername, isMutating: saving } =
+  const { send: triggerUpdateUsername, isLoading: saving } =
     useUpdateMyUsername();
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
@@ -22,7 +22,7 @@ export const UsernameInput = () => {
     if (!curUser) return;
     setError("");
     try {
-      await triggerUpdateUsername(value);
+      await triggerUpdateUsername({ username: value });
     } catch (e: unknown) {
       setError((e as Error).message);
     }

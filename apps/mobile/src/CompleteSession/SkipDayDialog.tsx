@@ -2,13 +2,13 @@ import {
   Exercise,
   Program,
   buildProgramWithSessionExercises,
+  findLatestOccurrence,
   isSameExercise,
 } from "@liftledger/shared";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useCallback } from "react";
 import {
-  findLatestOccurrence,
   isExerciseComplete,
   useClearTimerEnd,
   useCompletedExercises,
@@ -38,11 +38,11 @@ export const SkipDayDialog = ({
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { data: completedExercises } = useCompletedExercises(curUser?._id);
-  const { trigger: triggerUpdateUserProgram } = useUpdateUserProgram();
-  const { data: timerEndData } = useTimerEnd(curUser?._id);
-  const { trigger: triggerClearTimerEnd } = useClearTimerEnd();
+  const { data: curProgram } = useProgram();
+  const { data: completedExercises } = useCompletedExercises();
+  const { send: triggerUpdateUserProgram } = useUpdateUserProgram();
+  const { data: timerEndData } = useTimerEnd();
+  const { send: triggerClearTimerEnd } = useClearTimerEnd();
   const { exercises } = useCurrentSession();
   const { showSnackbar } = useSnackbar();
 
@@ -97,11 +97,9 @@ export const SkipDayDialog = ({
     setFinishing(true);
     try {
       await triggerUpdateUserProgram({
-        userId: curUser._id,
         program: finishedProgram,
       });
-      if (timerEndData?.timerEnd)
-        triggerClearTimerEnd(curUser._id).catch(() => {});
+      if (timerEndData?.timerEnd) triggerClearTimerEnd().catch(() => {});
       onClose();
       navigation.navigate("Tabs", { screen: "Dashboard" }, { pop: true });
     } catch {

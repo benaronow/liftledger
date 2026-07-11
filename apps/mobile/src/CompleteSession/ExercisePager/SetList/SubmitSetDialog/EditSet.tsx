@@ -1,12 +1,8 @@
-import { Exercise, Set } from "@liftledger/shared";
+import { Exercise, Set, findLatestOccurrence } from "@liftledger/shared";
 import { Dispatch, SetStateAction, useMemo } from "react";
 import { View } from "react-native";
 import { Text } from "react-native-paper";
-import {
-  findLatestOccurrence,
-  useCompletedExercises,
-  useMe,
-} from "@liftledger/api-client";
+import { useCompletedExercises } from "@liftledger/api-client";
 import { AppTextInput, NumberInput } from "../../../../components/inputs";
 import { FONT, SPACING } from "../../../../theme";
 
@@ -17,8 +13,7 @@ interface Props {
 }
 
 export const EditSet = ({ exerciseState, setExerciseState, setIdx }: Props) => {
-  const { data: curUser } = useMe();
-  const { data: completedExercises } = useCompletedExercises(curUser?._id);
+  const { data: completedExercises } = useCompletedExercises();
 
   const curSet = exerciseState?.workingSets[setIdx];
 

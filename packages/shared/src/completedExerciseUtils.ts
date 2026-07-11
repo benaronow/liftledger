@@ -1,9 +1,4 @@
-import useSWR, { SWRConfiguration } from "swr";
-import type { CompletedExercise, Exercise, Set } from "@liftledger/shared";
-import { fetcher } from "../fetcher";
-
-export const completedExercisesKey = (userId: string | undefined | null) =>
-  userId ? `/users/${userId}/completedExercises` : null;
+import type { CompletedExercise, Exercise, Set } from "./types";
 
 export interface CompletedExercisesResponse {
   current: Exercise[];
@@ -11,16 +6,6 @@ export interface CompletedExercisesResponse {
 }
 
 const EMPTY: CompletedExercisesResponse = { current: [], previous: [] };
-
-export const useCompletedExercises = (
-  userId: string | undefined | null,
-  config?: SWRConfiguration<CompletedExercisesResponse>,
-) =>
-  useSWR<CompletedExercisesResponse>(
-    completedExercisesKey(userId),
-    fetcher,
-    config,
-  );
 
 export const findLatestOccurrence = (
   completedExercises: CompletedExercisesResponse | undefined,

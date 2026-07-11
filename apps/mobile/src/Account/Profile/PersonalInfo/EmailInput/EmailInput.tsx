@@ -10,8 +10,7 @@ interface Props {
 
 export const EmailInput = ({ isConnectionUser }: Props) => {
   const { data: curUser } = useMe();
-  const { trigger: triggerUpdateEmail, isMutating: saving } =
-    useUpdateMyEmail();
+  const { send: triggerUpdateEmail, isLoading: saving } = useUpdateMyEmail();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [verifySentFor, setVerifySentFor] = useState<string | null>(null);
@@ -29,7 +28,7 @@ export const EmailInput = ({ isConnectionUser }: Props) => {
     if (!curUser) return;
     setError("");
     try {
-      await triggerUpdateEmail(email);
+      await triggerUpdateEmail({ email });
       setVerifySentFor(email);
     } catch (e: unknown) {
       setError((e as Error).message);

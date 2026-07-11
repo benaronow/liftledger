@@ -6,10 +6,15 @@ import { ManageEquipment } from "./ManageEquipment";
 import { ManageGyms } from "./ManageGyms";
 import { ManageUnits } from "./ManageUnits";
 import { UnitSelect } from "../../../components/UnitSelect";
-import { useUnitOptions } from "@liftledger/api-client";
+import { useDefaultUnit, useSetDefaultUnit } from "@liftledger/api-client";
 
 export const OptionManagement = () => {
-  const { defaultUnit, setDefaultUnit } = useUnitOptions();
+  const defaultUnit = useDefaultUnit();
+  const { send: setDefaultUnit } = useSetDefaultUnit();
+
+  const handleSetDefaultUnit = (value: string) => {
+    return setDefaultUnit({ defaultUnit: value });
+  };
 
   return (
     <SectionCard title="Exercise Options">
@@ -17,7 +22,7 @@ export const OptionManagement = () => {
         <UnitSelect
           label="Default unit"
           value={defaultUnit}
-          onSelect={setDefaultUnit}
+          onSelect={handleSetDefaultUnit}
         />
         <View style={{ flexDirection: "row", gap: SPACING.md }}>
           <View style={{ flex: 1 }}>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
-import { useTimerSettings } from "@liftledger/api-client";
+import { useTimerSettings, useUpdateTimerSettings } from "@liftledger/api-client";
 import { Button, Icon, Text, useTheme } from "react-native-paper";
 import { ConfirmationDialog } from "../../../components/ConfirmationDialog";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
@@ -16,13 +16,23 @@ export const formatTime = (totalSeconds: number) =>
 
 export const ExerciseTimerOverridesModal = () => {
   const { colors } = useTheme();
-  const {
-    defaultEnabled,
-    defaultTime,
-    exerciseOverrides,
-    setExerciseOverride,
-  } = useTimerSettings();
+  const { data: timerSettingsData } = useTimerSettings();
+  const { send: triggerUpdateTimerSettings } = useUpdateTimerSettings();
   const { showSnackbar } = useSnackbar();
+
+  const settings = timerSettingsData?.timerSettings;
+  const defaultEnabled = settings?.defaultEnabled ?? true;
+  const defaultTime = settings?.defaultTime ?? 120;
+  const exerciseOverrides = settings?.exerciseOverrides ?? {};
+
+  const setExerciseOverride = (name: string, seconds: number | undefined) => {
+    const next = { ...exerciseOverrides };
+    if (seconds === undefined) delete next[name];
+    else next[name] = seconds;
+    return triggerUpdateTimerSettings({
+      patch: { exerciseOverrides: next },
+    });
+  };
 
   const [editingName, setEditingName] = useState<string>();
   const [draftTime, setDraftTime] = useState(defaultTime);

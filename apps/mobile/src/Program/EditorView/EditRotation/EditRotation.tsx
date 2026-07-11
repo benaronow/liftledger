@@ -1,11 +1,10 @@
 import {
-  getNewSetsFromLatest,
   useProgram,
   useCompletedExercises,
   useMe,
-  useUpdateUser,
+  useAddGym,
 } from "@liftledger/api-client";
-import { Session } from "@liftledger/shared";
+import { Session, getNewSetsFromLatest } from "@liftledger/shared";
 import { Fragment, useEffect, useState } from "react";
 import { View } from "react-native";
 import { SearchableSelect } from "../../../components/SearchableSelect";
@@ -19,9 +18,9 @@ import { DeleteSessionDialog } from "./DeleteSessionDialog";
 
 export const EditRotation = () => {
   const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { data: completedExercises } = useCompletedExercises(curUser?._id);
-  const { trigger: triggerUpdateUser } = useUpdateUser();
+  const { data: curProgram } = useProgram();
+  const { data: completedExercises } = useCompletedExercises();
+  const { send: addGym } = useAddGym();
   const {
     templateProgram,
     setTemplateProgram,
@@ -93,13 +92,7 @@ export const EditRotation = () => {
   };
 
   const handleAddGym = async (gym: string) => {
-    if (!curUser) return;
-
-    triggerUpdateUser({
-      ...curUser,
-      gyms: [...(curUser?.gyms || []), gym],
-    });
-
+    addGym({ value: gym });
     setPrimaryGym(gym);
   };
 

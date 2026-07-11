@@ -37,9 +37,9 @@ export const ProgressChart = ({
   gym,
   loading: externalLoading,
 }: Props) => {
-  const { data: curUser, isLoading: isUserLoading } = useMe();
+  const { isLoading: isUserLoading } = useMe();
   const { data: completedExercises, isLoading: completedExercisesLoading } =
-    useCompletedExercises(curUser?._id);
+    useCompletedExercises();
   const [size, setSize] = useState({ width: 0, height: 0 });
   // The chart re-plots every point from the measured container size. When
   // CompleteSession pushes in, the container is measured more than once as the

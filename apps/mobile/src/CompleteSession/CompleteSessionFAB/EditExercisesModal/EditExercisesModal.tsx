@@ -56,8 +56,8 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { trigger: triggerUpdateUserProgram, isMutating: saving } =
+  const { data: curProgram } = useProgram();
+  const { send: triggerUpdateUserProgram, isLoading: saving } =
     useUpdateUserProgram();
   const { exercises } = useCurrentSession();
   const { showSnackbar } = useSnackbar();
@@ -141,7 +141,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
   };
 
   const saveExercises = async (updated: Exercise[]) => {
-    if (!curUser?._id || !curProgram) return;
+    if (!curProgram) return;
     const newSessions: Session[] = curProgram.rotations[
       curProgram.curRotationIdx
     ].toSpliced(curProgram.curSessionIdx, 1, {
@@ -159,7 +159,6 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
       ),
     };
     await triggerUpdateUserProgram({
-      userId: curUser._id,
       program: newProgram,
     });
   };

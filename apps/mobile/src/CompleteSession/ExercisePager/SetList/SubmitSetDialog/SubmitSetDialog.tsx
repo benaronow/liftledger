@@ -1,11 +1,13 @@
-import { Exercise, buildProgramWithSessionExercises } from "@liftledger/shared";
+import {
+  Exercise,
+  buildProgramWithSessionExercises,
+  findLatestOccurrence,
+} from "@liftledger/shared";
 import { useEffect, useState } from "react";
 import {
-  findLatestOccurrence,
   useProgram,
   useCompletedExercises,
   useCurrentSession,
-  useMe,
   useSetTimerEnd,
   useTimerSettings,
   useUpdateUserProgram,
@@ -21,13 +23,14 @@ interface Props {
 }
 
 export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
-  const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { data: completedExercises } = useCompletedExercises(curUser?._id);
-  const { trigger: triggerUpdateUserProgram } = useUpdateUserProgram();
-  const { trigger: triggerSetTimerEnd } = useSetTimerEnd();
-  const { resolveDuration } = useTimerSettings();
+  const { data: curProgram } = useProgram();
+  const { data: completedExercises } = useCompletedExercises();
+  const { send: triggerUpdateUserProgram } = useUpdateUserProgram();
+  const { send: triggerSetTimerEnd } = useSetTimerEnd();
+  const { data: timerSettingsData } = useTimerSettings();
   const { showSnackbar } = useSnackbar();
+
+  const timerSettings = timerSettingsData?.timerSettings;
 
   const { exercises } = useCurrentSession();
   const [submittingSet, setSubmittingSet] = useState(false);
@@ -54,10 +57,9 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
   }, [exercise, setIdx]);
 
   const saveExercises = async (updatedExercises: Exercise[]) => {
-    if (!curUser?._id || !curProgram) return;
+    if (!curProgram) return;
 
     await triggerUpdateUserProgram({
-      userId: curUser._id,
       program: buildProgramWithSessionExercises(curProgram, updatedExercises),
     });
   };
@@ -126,14 +128,15 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       return;
     }
 
-    if (!options?.skip && curUser?._id) {
-      const duration = resolveDuration(updatedExercise.name);
+    if (!options?.skip) {
+      const duration = (timerSettings?.defaultEnabled ?? true)
+        ? (timerSettings?.exerciseOverrides?.[updatedExercise.name] ??
+          timerSettings?.defaultTime ??
+          120)
+        : undefined;
       if (duration !== undefined) {
         try {
-          await triggerSetTimerEnd({
-            userId: curUser._id,
-            timerEnd: new Date(Date.now() + duration * 1000),
-          });
+          await triggerSetTimerEnd(new Date(Date.now() + duration * 1000));
         } catch {
           showSnackbar("Failed to start rest timer.", "error");
         }

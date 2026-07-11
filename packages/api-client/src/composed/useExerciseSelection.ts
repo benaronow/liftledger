@@ -1,7 +1,8 @@
 import { useCallback, useEffect } from "react";
-import { useCompletedExercises } from "../api/useCompletedExercises";
-import { useMe } from "../api/useMe";
-import { useExerciseOptions } from "./useExerciseOptions";
+import { useCompletedExercises } from "../api/completedExercises";
+import { useMe } from "../api/me";
+import { useExerciseNameOptions } from "../api/exerciseNameOptions";
+import { useEquipmentOptions } from "../api/equipmentOptions";
 
 export interface ExerciseSelectionStorage {
   selectedName: string;
@@ -16,13 +17,11 @@ export const useExerciseSelection = ({
   setSelectedName,
   setSelectedEquipment,
 }: ExerciseSelectionStorage) => {
-  const { data: curUser, isLoading: isUserLoading } = useMe();
+  const { isLoading: isUserLoading } = useMe();
   const { data: completedExercises, isLoading: completedExercisesLoading } =
-    useCompletedExercises(curUser?._id);
-  const {
-    allExerciseNameOptions,
-    allEquipmentOptions: allExerciseEquipmentOptions,
-  } = useExerciseOptions();
+    useCompletedExercises();
+  const { data: allExerciseNameOptions = [] } = useExerciseNameOptions();
+  const { data: allExerciseEquipmentOptions = [] } = useEquipmentOptions();
 
   const firstEquipmentFor = useCallback(
     (name: string) =>

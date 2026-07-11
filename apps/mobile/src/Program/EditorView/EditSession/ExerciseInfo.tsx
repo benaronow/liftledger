@@ -1,12 +1,13 @@
 import {
-  getNewSetsFromLatest,
-  getUpdatedExercise,
   useProgram,
   useCompletedExercises,
-  useMe,
   CurrentExercisesState,
 } from "@liftledger/api-client";
-import { Exercise } from "@liftledger/shared";
+import {
+  Exercise,
+  getNewSetsFromLatest,
+  getUpdatedExercise,
+} from "@liftledger/shared";
 import { useCallback, useMemo } from "react";
 import { View } from "react-native";
 import { EquipmentSelect } from "../../../components/EquipmentSelect";
@@ -27,9 +28,8 @@ interface Props {
 }
 
 export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
-  const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { data: completedExercises } = useCompletedExercises(curUser?._id);
+  const { data: curProgram } = useProgram();
+  const { data: completedExercises } = useCompletedExercises();
   const {
     templateProgram,
     setTemplateProgram,

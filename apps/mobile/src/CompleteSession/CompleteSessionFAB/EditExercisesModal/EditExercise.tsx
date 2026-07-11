@@ -1,12 +1,10 @@
-import { Exercise } from "@liftledger/shared";
+import { Exercise, getUpdatedExercise } from "@liftledger/shared";
 import { Dispatch, SetStateAction, useCallback, useMemo } from "react";
 import { View } from "react-native";
 import {
   CurrentExercisesState,
-  getUpdatedExercise,
   useCompletedExercises,
   useCurrentSession,
-  useMe,
 } from "@liftledger/api-client";
 import { EquipmentSelect } from "../../../components/EquipmentSelect";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
@@ -22,8 +20,7 @@ interface Props {
 
 export const EditExercise = ({ newExercise, setNewExercise }: Props) => {
   const { exercises } = useCurrentSession();
-  const { data: curUser } = useMe();
-  const { data: completedExercises } = useCompletedExercises(curUser?._id);
+  const { data: completedExercises } = useCompletedExercises();
 
   const switchExercise = useCallback(
     (value: string, type: ExerciseInfoName) => {

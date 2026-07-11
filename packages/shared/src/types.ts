@@ -65,6 +65,9 @@ export interface TimerSettings {
   exerciseOverrides: Record<string, number>;
 }
 
+// Scope of an option rename: the list only, the current program, or all programs.
+export type RenameScope = "list" | "current" | "all";
+
 export interface User {
   _id?: string;
   email: string;

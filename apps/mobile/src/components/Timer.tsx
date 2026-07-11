@@ -1,4 +1,4 @@
-import { useClearTimerEnd, useMe, useTimerEnd } from "@liftledger/api-client";
+import { useClearTimerEnd, useTimerEnd } from "@liftledger/api-client";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -9,9 +9,8 @@ import type { RootStackParamList } from "../RootNavigator/types";
 import { FONT, RADIUS, SPACING } from "../theme";
 
 export const useTimerCountdown = () => {
-  const { data: curUser } = useMe();
-  const { data: timerEndData } = useTimerEnd(curUser?._id);
-  const { trigger: triggerClearTimerEnd } = useClearTimerEnd();
+  const { data: timerEndData } = useTimerEnd();
+  const { send: triggerClearTimerEnd } = useClearTimerEnd();
   const { showSnackbar } = useSnackbar();
 
   const timerEnd = useMemo(() => {
@@ -44,13 +43,12 @@ export const useTimerCountdown = () => {
   }, [secondsLeft]);
 
   const clearTimer = useCallback(async () => {
-    if (!curUser?._id) return;
     try {
-      await triggerClearTimerEnd(curUser._id);
+      await triggerClearTimerEnd();
     } catch {
       showSnackbar("Failed to hide timer.", "error");
     }
-  }, [curUser?._id, triggerClearTimerEnd, showSnackbar]);
+  }, [triggerClearTimerEnd, showSnackbar]);
 
   return {
     timerEnd,

@@ -14,7 +14,7 @@ interface Props {
 export const DeleteAccountDialog = ({ open, onClose }: Props) => {
   const { clearSession } = useAuth0();
   const { data: curUser } = useMe();
-  const { trigger: triggerDeleteMe, isMutating: deleting } = useDeleteMe();
+  const { send: triggerDeleteMe, isLoading: deleting } = useDeleteMe();
   const [error, setError] = useState("");
   const { colors } = useTheme();
 

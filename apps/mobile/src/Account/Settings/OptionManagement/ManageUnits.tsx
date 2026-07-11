@@ -1,9 +1,14 @@
-import { useUnitOptions } from "@liftledger/api-client";
+import { useRemoveUnit, useUnitOptions } from "@liftledger/api-client";
 import { UnitSelect } from "../../../components/UnitSelect";
 import { ManageOptions } from "./ManageOptions";
 
 export const ManageUnits = () => {
-  const { allUnitOptions, deleteUnit } = useUnitOptions();
+  const { data: options = [] } = useUnitOptions();
+  const { send: removeUnit } = useRemoveUnit();
+
+  const remove = async (value: string) => {
+    await removeUnit(value);
+  };
 
   return (
     <ManageOptions
@@ -11,8 +16,8 @@ export const ManageUnits = () => {
       buttonLabel="Units"
       singular="unit"
       fieldLabel="Unit"
-      options={allUnitOptions}
-      onDelete={deleteUnit}
+      options={options}
+      onDelete={remove}
     >
       {(props) => <UnitSelect {...props} />}
     </ManageOptions>
