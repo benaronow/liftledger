@@ -45,6 +45,7 @@ export const EditSession = () => {
       name: "",
       equipment: "",
       gym: templateProgram.primaryGym || "",
+      warmupSets: [],
       workingSets: [{ reps: null, weight: null, completed: false, note: "" }],
       unit: curUser?.options?.defaultUnit ?? "",
     };

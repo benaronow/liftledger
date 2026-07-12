@@ -24,6 +24,14 @@ export const buildProgramWithSessionExercises = (
             return completedExercise
               ? {
                   ...completedExercise,
+                  warmupSets: (completedExercise.warmupSets ?? [])
+                    .filter((set) => !set.addedOn)
+                    .map((set) => ({
+                      ...set,
+                      completed: false,
+                      skipped: undefined,
+                      note: "",
+                    })),
                   workingSets: completedExercise.workingSets
                     .filter((set) => !set.addedOn)
                     .map((set) => ({
@@ -31,6 +39,7 @@ export const buildProgramWithSessionExercises = (
                       completed: false,
                       skipped: undefined,
                       note: "",
+                      dropSets: undefined,
                     })),
                 }
               : exercise;

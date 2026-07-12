@@ -51,6 +51,14 @@ export const updateProgram = async ({
           return {
             ...exercise,
             gym: program.primaryGym,
+            warmupSets: (exercise.warmupSets ?? [])
+              .filter((set) => !set.addedOn)
+              .map((set) => ({
+                ...set,
+                completed: false,
+                skipped: false,
+                note: "",
+              })),
             workingSets: exercise.workingSets
               .filter((set) => !set.addedOn)
               .map((set: Set, idx: number) => {
@@ -64,6 +72,7 @@ export const updateProgram = async ({
                   completed: false,
                   skipped: false,
                   note: "",
+                  dropSets: undefined,
                 };
               }),
           };

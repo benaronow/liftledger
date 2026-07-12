@@ -25,6 +25,14 @@ export const templateFromProgram = (
             ...exercise,
             gym: program.primaryGym,
           }),
+          warmupSets: (exercise.warmupSets ?? [])
+            .filter((set) => !set.addedOn)
+            .map((set) => ({
+              ...set,
+              completed: false,
+              skipped: false,
+              note: "",
+            })),
           unit: exercise.unit,
         })),
       completedDate: undefined,

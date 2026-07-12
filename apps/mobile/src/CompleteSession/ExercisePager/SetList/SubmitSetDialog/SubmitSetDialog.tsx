@@ -1,5 +1,6 @@
 import {
   Exercise,
+  Set,
   buildProgramWithSessionExercises,
   findLatestOccurrence,
 } from "@liftledger/shared";
@@ -14,15 +15,18 @@ import {
 } from "@liftledger/api-client";
 import { ConfirmationDialog } from "../../../../components/ConfirmationDialog";
 import { EditSet } from "./EditSet";
+import { SetKind } from "../SetList";
 import { useSnackbar } from "../../../../providers/SnackbarProvider";
 
 interface Props {
   exercise: Exercise | undefined;
-  setIdx: number | undefined;
+  editingSet: { kind: SetKind; idx: number } | undefined;
   onClose: () => void;
 }
 
-export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
+export const SubmitSetDialog = ({ exercise, editingSet, onClose }: Props) => {
+  const setIdx = editingSet?.idx;
+  const kind = editingSet?.kind;
   const { data: curProgram } = useProgram();
   const { data: completedExercises } = useCompletedExercises();
   const { send: triggerUpdateUserProgram } = useUpdateUserProgram();
@@ -38,23 +42,42 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
 
   const [exerciseState, setExerciseState] = useState<Exercise>();
   const [displaySetIdx, setDisplaySetIdx] = useState(setIdx);
+  const [displayKind, setDisplayKind] = useState<SetKind>(kind ?? "working");
   useEffect(() => {
-    if (setIdx === undefined) return;
+    if (setIdx === undefined || !exercise) return;
 
-    setExerciseState(
-      exercise && setIdx === exercise.workingSets.length
-        ? {
-            ...exercise,
-            workingSets: [
-              ...exercise.workingSets,
-              { ...exercise.workingSets[setIdx - 1], completed: false, note: "" },
-            ],
-          }
-        : exercise,
-    );
+    if (kind === "warmup") {
+      const warmups = exercise.warmupSets ?? [];
+      setExerciseState(
+        setIdx === warmups.length
+          ? {
+              ...exercise,
+              warmupSets: [
+                ...warmups,
+                warmups[setIdx - 1]
+                  ? { ...warmups[setIdx - 1], completed: false, note: "" }
+                  : { reps: null, weight: null, note: "", completed: false },
+              ],
+            }
+          : exercise,
+      );
+    } else {
+      setExerciseState(
+        setIdx === exercise.workingSets.length
+          ? {
+              ...exercise,
+              workingSets: [
+                ...exercise.workingSets,
+                { ...exercise.workingSets[setIdx - 1], completed: false, note: "" },
+              ],
+            }
+          : exercise,
+      );
+    }
 
     setDisplaySetIdx(setIdx);
-  }, [exercise, setIdx]);
+    setDisplayKind(kind ?? "working");
+  }, [exercise, setIdx, kind]);
 
   const saveExercises = async (updatedExercises: Exercise[]) => {
     if (!curProgram) return;
@@ -73,30 +96,55 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       setSubmittingSet(true);
     }
 
+    const isWarmup = kind === "warmup";
+
     const latestPreviousSet = findLatestOccurrence(
       completedExercises,
       (e: Exercise) =>
         e.name === exercise?.name &&
         e.equipment === exercise?.equipment &&
         e.gym === exercise.gym &&
-        !!e.workingSets[setIdx],
-    )?.workingSets[setIdx];
+        (isWarmup ? !!e.warmupSets?.[setIdx] : !!e.workingSets[setIdx]),
+    )?.[isWarmup ? "warmupSets" : "workingSets"]?.[setIdx];
+
+    const stateArr = isWarmup
+      ? (exerciseState.warmupSets ?? [])
+      : exerciseState.workingSets;
+    const originalArr = isWarmup
+      ? (exercise?.warmupSets ?? [])
+      : (exercise?.workingSets ?? []);
 
     const updatedSet = options?.skip
-      ? (latestPreviousSet ?? exerciseState.workingSets[setIdx])
-      : exerciseState.workingSets[setIdx];
+      ? (latestPreviousSet ?? stateArr[setIdx])
+      : stateArr[setIdx];
 
-    const updatedExercise: Exercise = {
-      ...exerciseState,
-      workingSets: exerciseState.workingSets.toSpliced(setIdx, 1, {
-        ...updatedSet,
-        completed: !options?.skip,
-        skipped: options?.skip,
-        addedOn:
-          exercise?.workingSets[setIdx]?.addedOn ??
-          (setIdx === exercise?.workingSets.length && !exercise.addedOn),
-      }),
+    const submittedSet: Set = {
+      ...updatedSet,
+      completed: !options?.skip,
+      skipped: options?.skip,
+      addedOn:
+        originalArr[setIdx]?.addedOn ??
+        (setIdx === originalArr.length && !exercise?.addedOn),
+      // Mirror the parent working set onto its dropsets on submit (never on skip).
+      ...(!isWarmup && !options?.skip
+        ? {
+            dropSets: updatedSet.dropSets?.map((drop) => ({
+              ...drop,
+              completed: true,
+            })),
+          }
+        : {}),
     };
+
+    const updatedExercise: Exercise = isWarmup
+      ? {
+          ...exerciseState,
+          warmupSets: stateArr.toSpliced(setIdx, 1, submittedSet),
+        }
+      : {
+          ...exerciseState,
+          workingSets: stateArr.toSpliced(setIdx, 1, submittedSet),
+        };
 
     const exerciseIdx = exercises.findIndex(
       (e: Exercise) =>
@@ -147,11 +195,24 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
     setSubmittingSet(false);
   };
 
+  // A set is being added (vs edited) when its index sits at the end of the
+  // original array — the append-seed effect grew the array by one for it.
+  const isAdding =
+    displaySetIdx ===
+    (displayKind === "warmup"
+      ? (exercise?.warmupSets?.length ?? 0)
+      : (exercise?.workingSets.length ?? 0));
+  const title = isAdding
+    ? displayKind === "warmup"
+      ? "Add Warmup Set"
+      : "Add Working Set"
+    : "Submit Set";
+
   return (
     <ConfirmationDialog
       open={!!exercise && setIdx !== undefined}
       onClose={onClose}
-      title="Submit Set"
+      title={title}
       onConfirm={handleSubmitSet}
       confirming={submittingSet || skippingSet}
       confirmationDisabled={submittingSet || skippingSet}
@@ -163,6 +224,7 @@ export const SubmitSetDialog = ({ exercise, setIdx, onClose }: Props) => {
       <EditSet
         exerciseState={exerciseState}
         setExerciseState={setExerciseState}
+        kind={displayKind}
         setIdx={displaySetIdx!}
       />
     </ConfirmationDialog>

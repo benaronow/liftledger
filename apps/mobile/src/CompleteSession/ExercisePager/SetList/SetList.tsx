@@ -4,7 +4,7 @@ import {
   Set,
   getCompletedSessionsInProgram,
 } from "@liftledger/shared";
-import { isExerciseComplete, useProgram } from "@liftledger/api-client";
+import { useProgram } from "@liftledger/api-client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { Text, TouchableRipple, useTheme } from "react-native-paper";
@@ -12,12 +12,16 @@ import { FONT, RADIUS, SPACING } from "../../../theme";
 import { computeProgress } from "./computeProgress";
 import { ProgressIcon } from "./ProgressIcon";
 
-const ROW_HEIGHT = 40;
+export type SetKind = "warmup" | "working";
+
+// Two-line column chip (label above the reps × weight row), so taller than the
+// old single-line working-set row.
+const ROW_HEIGHT = 56;
 
 interface Props {
   exercise: Exercise;
   isCurrentExercise: boolean;
-  onEditSet: (setIdx: number) => void;
+  onEditSet: (kind: SetKind, idx: number) => void;
 }
 
 export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
@@ -31,14 +35,26 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
       .reverse();
   }, [curProgram]);
 
-  const nextSetIdx = useMemo(() => {
+  const chips = useMemo(
+    () => [
+      ...(exercise.warmupSets ?? []).map((set, idx) => ({
+        kind: "warmup" as const,
+        idx,
+        set,
+      })),
+      ...exercise.workingSets.map((set, idx) => ({
+        kind: "working" as const,
+        idx,
+        set,
+      })),
+    ],
+    [exercise],
+  );
+
+  const nextChipPos = useMemo(() => {
     if (!isCurrentExercise) return -1;
-    for (let i = 0; i <= exercise?.workingSets.length; i++) {
-      if (!exercise?.workingSets[i]?.completed && !exercise?.workingSets[i]?.skipped)
-        return i;
-    }
-    return -1;
-  }, [exercise, isCurrentExercise]);
+    return chips.findIndex((chip) => !chip.set.completed && !chip.set.skipped);
+  }, [chips, isCurrentExercise]);
 
   const getBackground = (set: Set, nextSet: boolean) =>
     set.completed
@@ -90,13 +106,10 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
     [exercise, intraProgramPrevious],
   );
 
-  const canAddSet =
-    isExerciseComplete(exercise) && !exercise.workingSets.some((set) => set.skipped);
-
   const scrollRef = useRef<ScrollView>(null);
   const scrollY = useRef(0);
   const [viewportH, setViewportH] = useState(0);
-  const focusIdx = nextSetIdx >= 0 ? nextSetIdx : exercise.workingSets.length;
+  const focusIdx = nextChipPos >= 0 ? nextChipPos : chips.length;
 
   useEffect(() => {
     if (!viewportH) return;
@@ -128,24 +141,28 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
         padding: SPACING.sm,
       }}
     >
-      {exercise.workingSets.map((set, i) => {
-        const diffs = getDiffs(i);
+      {chips.map((chip, pos) => {
+        const { kind, idx, set } = chip;
+        const isWorking = kind === "working";
+        const diffs = isWorking
+          ? getDiffs(idx)
+          : { repDiff: undefined, weightDiff: undefined };
         return (
           <TouchableRipple
-            key={i}
-            testID={`set-row-${i}`}
+            key={`${kind}-${idx}`}
+            testID={`set-row-${kind}-${idx}`}
             style={{
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
-              height: 40,
+              height: ROW_HEIGHT,
               borderRadius: RADIUS.md,
               paddingLeft: SPACING.sm,
-              backgroundColor: getBackground(set, i === nextSetIdx),
+              backgroundColor: getBackground(set, pos === nextChipPos),
             }}
             onPress={() =>
-              set.completed || set.skipped || i <= nextSetIdx
-                ? onEditSet(i)
+              set.completed || set.skipped || pos <= nextChipPos
+                ? onEditSet(kind, idx)
                 : undefined
             }
           >
@@ -157,77 +174,70 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
                 width: "100%",
               }}
             >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: SPACING.sm,
-                }}
-              >
+              <View style={{ gap: SPACING.xs }}>
                 <Text
                   style={{
                     color: "white",
                     fontWeight: "700",
-                    fontSize: FONT.sm,
+                    fontSize: FONT.xs,
                   }}
                 >
-                  {`${set.reps ?? 0} rep${(set.reps ?? 0) !== 1 ? "s" : ""}`}
-                  {set.completed
-                    ? ` (${getProgressString(diffs.repDiff)})`
-                    : ""}
+                  {isWorking ? "Working" : "Warmup"}
                 </Text>
-                <MaterialCommunityIcons name="close" size={12} color="white" />
-                <Text
+                <View
                   style={{
-                    color: "white",
-                    fontWeight: "700",
-                    fontSize: FONT.sm,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: SPACING.sm,
                   }}
                 >
-                  {`${set.weight ?? 0}${exercise.unit}`}
-                  {set.completed
-                    ? ` (${getProgressString(diffs.weightDiff)})`
-                    : ""}
-                </Text>
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: "700",
+                      fontSize: FONT.sm,
+                    }}
+                  >
+                    {`${set.reps ?? 0} rep${(set.reps ?? 0) !== 1 ? "s" : ""}`}
+                    {isWorking && set.completed
+                      ? ` (${getProgressString(diffs.repDiff)})`
+                      : ""}
+                  </Text>
+                  <MaterialCommunityIcons name="close" size={12} color="white" />
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: "700",
+                      fontSize: FONT.sm,
+                    }}
+                  >
+                    {`${set.weight ?? 0}${exercise.unit}`}
+                    {isWorking && set.completed
+                      ? ` (${getProgressString(diffs.weightDiff)})`
+                      : ""}
+                  </Text>
+                </View>
               </View>
               <View
                 style={{
                   minWidth: 40,
-                  height: 40,
+                  height: ROW_HEIGHT,
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <ProgressIcon
-                  sign={getProgressSign(i)}
-                  isSetComplete={set.completed}
-                  isSetSkipped={set.skipped}
-                />
+                {isWorking && (
+                  <ProgressIcon
+                    sign={getProgressSign(idx)}
+                    isSetComplete={set.completed}
+                    isSetSkipped={set.skipped}
+                  />
+                )}
               </View>
             </View>
           </TouchableRipple>
         );
       })}
-      <TouchableRipple
-        testID="add-set"
-        accessibilityLabel="Add set"
-        disabled={!canAddSet}
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          height: 40,
-          borderRadius: RADIUS.md,
-          backgroundColor: canAddSet ? colors.primary : colors.surfaceDisabled,
-        }}
-        onPress={() => onEditSet(exercise.workingSets.length)}
-      >
-        <MaterialCommunityIcons
-          name="plus"
-          size={20}
-          color={canAddSet ? colors.onPrimary : colors.onSurfaceDisabled}
-        />
-      </TouchableRipple>
     </ScrollView>
   );
 };

@@ -46,6 +46,7 @@ const plannedExercise = (
   gym: GYM1,
   unit: LBS,
   addedOn: false,
+  warmupSets: [],
   workingSets: [plannedSet(weight, reps), plannedSet(weight, reps)],
 });
 

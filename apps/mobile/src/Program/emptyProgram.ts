@@ -11,6 +11,7 @@ export const emptyProgram = (unit = ""): Program => ({
           {
             name: "",
             equipment: "",
+            warmupSets: [],
             workingSets: [
               {
                 reps: null,

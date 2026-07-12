@@ -6,14 +6,16 @@ import {
 import {
   Exercise,
   getNewSetsFromLatest,
+  getNewWarmupSetsFromLatest,
   getUpdatedExercise,
 } from "@liftledger/shared";
 import { useCallback, useMemo } from "react";
 import { View } from "react-native";
+import { Text } from "react-native-paper";
 import { EquipmentSelect } from "../../../components/EquipmentSelect";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
 import { UnitSelect } from "../../../components/UnitSelect";
-import { SPACING } from "../../../theme";
+import { FONT, SPACING } from "../../../theme";
 import { NumberInput } from "../../../components/inputs";
 import { Info, InfoAction } from "../../../components/Info";
 import { useTemplate } from "../../TemplateProvider";
@@ -127,6 +129,36 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
     });
   };
 
+  const handleWarmupSetsCount = (count: number | null) => {
+    if (count == null) return;
+
+    updateExercise({
+      ...exercise,
+      warmupSets: getNewWarmupSetsFromLatest(
+        completedExercises,
+        exercise,
+        Math.min(count, 999),
+      ),
+    });
+  };
+
+  const updateWarmupField = (
+    field: "reps" | "weight",
+    value: number | null,
+  ) => {
+    updateExercise({
+      ...exercise,
+      warmupSets: (exercise.warmupSets ?? []).map((set) => ({
+        ...set,
+        reps: field === "reps" ? value : (exercise.warmupSets?.[0]?.reps ?? null),
+        weight:
+          field === "weight"
+            ? value
+            : (exercise.warmupSets?.[0]?.weight ?? null),
+      })),
+    });
+  };
+
   const switchExercise = useCallback(
     (value: string, type: ExerciseInfoName) => {
       updateExercise(
@@ -137,6 +169,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
   );
 
   const editDisabled = !exercise.workingSets.length;
+  const warmupEditDisabled = !exercise.warmupSets?.length;
 
   const infoActions: InfoAction[] = [
     {
@@ -161,6 +194,11 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
 
   const setCount = useMemo(
     () => exercise.workingSets.filter((set) => !set.addedOn).length,
+    [exercise],
+  );
+
+  const warmupCount = useMemo(
+    () => (exercise.warmupSets ?? []).filter((set) => !set.addedOn).length,
     [exercise],
   );
 
@@ -190,42 +228,79 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
         onSelect={(value) => switchExercise(value, "equipment")}
         canAddCustom
       />
-      <View style={rowStyle}>
-        <NumberInput
-          style={{ flex: 1 }}
-          label="Sets"
-          value={setCount}
-          error={errors.workingSets}
-          onChangeValue={handleSetsCount}
-        />
-        {!curProgram && (
-          <NumberInput
-            style={{ flex: 1 }}
-            label="Reps"
-            value={exercise.workingSets[0]?.reps ?? null}
-            disabled={editDisabled}
-            onChangeValue={(reps) => updateSetsField("reps", reps)}
+      {!curProgram ? (
+        <>
+          <UnitSelect
+            label="Unit"
+            error={errors.unit}
+            value={exercise.unit}
+            onSelect={(value) => switchExercise(value, "unit")}
           />
-        )}
-      </View>
-      {!curProgram && (
+          <Text style={labelStyle}>Warmup sets</Text>
+          <View style={rowStyle}>
+            <NumberInput
+              style={{ flex: 1 }}
+              label="Sets"
+              value={warmupCount}
+              onChangeValue={handleWarmupSetsCount}
+            />
+            <NumberInput
+              style={{ flex: 1 }}
+              label="Reps"
+              value={exercise.warmupSets?.[0]?.reps ?? null}
+              disabled={warmupEditDisabled}
+              onChangeValue={(reps) => updateWarmupField("reps", reps)}
+            />
+            <NumberInput
+              style={{ flex: 1 }}
+              label="Weight"
+              value={exercise.warmupSets?.[0]?.weight ?? null}
+              decimal
+              disabled={warmupEditDisabled}
+              onChangeValue={(weight) => updateWarmupField("weight", weight)}
+            />
+          </View>
+          <Text style={labelStyle}>Working sets</Text>
+          <View style={rowStyle}>
+            <NumberInput
+              style={{ flex: 1 }}
+              label="Sets"
+              value={setCount}
+              error={errors.workingSets}
+              onChangeValue={handleSetsCount}
+            />
+            <NumberInput
+              style={{ flex: 1 }}
+              label="Reps"
+              value={exercise.workingSets[0]?.reps ?? null}
+              disabled={editDisabled}
+              onChangeValue={(reps) => updateSetsField("reps", reps)}
+            />
+            <NumberInput
+              style={{ flex: 1 }}
+              label="Weight"
+              value={exercise.workingSets[0]?.weight ?? null}
+              decimal
+              disabled={editDisabled}
+              onChangeValue={(weight) => updateSetsField("weight", weight)}
+            />
+          </View>
+        </>
+      ) : (
         <View style={rowStyle}>
           <NumberInput
             style={{ flex: 1 }}
-            label="Weight"
-            value={exercise.workingSets[0]?.weight ?? null}
-            decimal
-            disabled={editDisabled}
-            onChangeValue={(weight) => updateSetsField("weight", weight)}
+            label="Warmup sets"
+            value={warmupCount}
+            onChangeValue={handleWarmupSetsCount}
           />
-          <View style={cellStyle}>
-            <UnitSelect
-              label="Unit"
-              error={errors.unit}
-              value={exercise.unit}
-              onSelect={(value) => switchExercise(value, "unit")}
-            />
-          </View>
+          <NumberInput
+            style={{ flex: 1 }}
+            label="Working sets"
+            value={setCount}
+            error={errors.workingSets}
+            onChangeValue={handleSetsCount}
+          />
         </View>
       )}
     </Info>
@@ -237,4 +312,8 @@ const rowStyle = {
   width: "100%" as const,
   gap: SPACING.md,
 };
-const cellStyle = { flex: 1 };
+const labelStyle = {
+  fontWeight: "700" as const,
+  fontSize: FONT.base,
+  width: "100%" as const,
+};
