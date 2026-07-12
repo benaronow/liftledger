@@ -246,18 +246,18 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
             />
             <NumberInput
               style={{ flex: 1 }}
-              label="Reps"
-              value={exercise.warmupSets?.[0]?.reps ?? null}
-              disabled={warmupEditDisabled}
-              onChangeValue={(reps) => updateWarmupField("reps", reps)}
-            />
-            <NumberInput
-              style={{ flex: 1 }}
               label="Weight"
               value={exercise.warmupSets?.[0]?.weight ?? null}
               decimal
               disabled={warmupEditDisabled}
               onChangeValue={(weight) => updateWarmupField("weight", weight)}
+            />
+            <NumberInput
+              style={{ flex: 1 }}
+              label="Reps"
+              value={exercise.warmupSets?.[0]?.reps ?? null}
+              disabled={warmupEditDisabled}
+              onChangeValue={(reps) => updateWarmupField("reps", reps)}
             />
           </View>
           <Text style={labelStyle}>Working sets</Text>
@@ -271,18 +271,18 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
             />
             <NumberInput
               style={{ flex: 1 }}
-              label="Reps"
-              value={exercise.workingSets[0]?.reps ?? null}
-              disabled={editDisabled}
-              onChangeValue={(reps) => updateSetsField("reps", reps)}
-            />
-            <NumberInput
-              style={{ flex: 1 }}
               label="Weight"
               value={exercise.workingSets[0]?.weight ?? null}
               decimal
               disabled={editDisabled}
               onChangeValue={(weight) => updateSetsField("weight", weight)}
+            />
+            <NumberInput
+              style={{ flex: 1 }}
+              label="Reps"
+              value={exercise.workingSets[0]?.reps ?? null}
+              disabled={editDisabled}
+              onChangeValue={(reps) => updateSetsField("reps", reps)}
             />
           </View>
         </>

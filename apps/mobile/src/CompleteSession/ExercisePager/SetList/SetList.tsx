@@ -14,7 +14,7 @@ import { ProgressIcon } from "./ProgressIcon";
 
 export type SetKind = "warmup" | "working";
 
-// Two-line column chip (label above the reps × weight row), so taller than the
+// Two-line column chip (label above the weight × reps row), so taller than the
 // old single-line working-set row.
 const ROW_HEIGHT = 56;
 
@@ -198,9 +198,9 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
                       fontSize: FONT.sm,
                     }}
                   >
-                    {`${set.reps ?? 0} rep${(set.reps ?? 0) !== 1 ? "s" : ""}`}
+                    {`${set.weight ?? 0}${exercise.unit}`}
                     {isWorking && set.completed
-                      ? ` (${getProgressString(diffs.repDiff)})`
+                      ? ` (${getProgressString(diffs.weightDiff)})`
                       : ""}
                   </Text>
                   <MaterialCommunityIcons name="close" size={12} color="white" />
@@ -211,9 +211,9 @@ export const SetList = ({ exercise, isCurrentExercise, onEditSet }: Props) => {
                       fontSize: FONT.sm,
                     }}
                   >
-                    {`${set.weight ?? 0}${exercise.unit}`}
+                    {`${set.reps ?? 0} rep${(set.reps ?? 0) !== 1 ? "s" : ""}`}
                     {isWorking && set.completed
-                      ? ` (${getProgressString(diffs.weightDiff)})`
+                      ? ` (${getProgressString(diffs.repDiff)})`
                       : ""}
                   </Text>
                 </View>

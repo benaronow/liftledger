@@ -111,17 +111,17 @@ export const EditSet = ({
         <Text style={{ color: "white", fontSize: FONT.sm }}>{`Previous note: ${latestPreviousSetNote}`}</Text>
       )}
       <NumberInput
-        label="Reps"
-        testID="set-input-reps"
-        value={curSet?.reps ?? null}
-        onChangeValue={(reps) => updateSet({ reps })}
-      />
-      <NumberInput
         label="Weight"
         testID="set-input-weight"
         value={curSet?.weight ?? null}
         decimal
         onChangeValue={(weight) => updateSet({ weight })}
+      />
+      <NumberInput
+        label="Reps"
+        testID="set-input-reps"
+        value={curSet?.reps ?? null}
+        onChangeValue={(reps) => updateSet({ reps })}
       />
       <AppTextInput
         label="Note"
@@ -142,13 +142,6 @@ export const EditSet = ({
             >
               <NumberInput
                 style={{ flex: 1 }}
-                label="Reps"
-                testID={`dropset-input-reps-${dropIdx}`}
-                value={drop.reps ?? null}
-                onChangeValue={(reps) => handleDropChange(dropIdx, "reps", reps)}
-              />
-              <NumberInput
-                style={{ flex: 1 }}
                 label="Weight"
                 testID={`dropset-input-weight-${dropIdx}`}
                 value={drop.weight ?? null}
@@ -156,6 +149,13 @@ export const EditSet = ({
                 onChangeValue={(weight) =>
                   handleDropChange(dropIdx, "weight", weight)
                 }
+              />
+              <NumberInput
+                style={{ flex: 1 }}
+                label="Reps"
+                testID={`dropset-input-reps-${dropIdx}`}
+                value={drop.reps ?? null}
+                onChangeValue={(reps) => handleDropChange(dropIdx, "reps", reps)}
               />
               <Pressable
                 onPress={() => handleDeleteDrop(dropIdx)}
@@ -175,7 +175,7 @@ export const EditSet = ({
             onPress={handleAddDropset}
             accessibilityRole="button"
             accessibilityLabel="Add dropset"
-            style={{ alignSelf: "flex-start" }}
+            style={{ alignSelf: "flex-start", marginTop: SPACING.sm }}
           >
             <Text
               style={{
