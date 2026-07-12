@@ -90,7 +90,7 @@ export const PagerBar = ({ pageIdx, onPageChange, onFinish }: Props) => {
         alignItems: "center",
         justifyContent: "center",
         gap: SPACING.md,
-        paddingBottom: SPACING.xl + insets.bottom,
+        paddingBottom: insets.bottom,
       }}
     >
       <IconButton

@@ -1,5 +1,4 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { isExerciseComplete } from "@liftledger/api-client";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { Exercise } from "@liftledger/shared";
@@ -51,8 +50,6 @@ export const ExercisePage = ({
       { pop: true },
     );
 
-  const isComplete = isExerciseComplete(exercise);
-
   return (
     <View
       style={{
@@ -99,11 +96,7 @@ export const ExercisePage = ({
           {exercise.equipment}
         </Text>
       </View>
-      <Info
-        title="Sets"
-        fill
-        background={isComplete ? colors.tertiary : undefined}
-      >
+      <Info title="Sets" fill>
         <SetList
           exercise={exercise}
           isCurrentExercise={isCurrentExercise}
