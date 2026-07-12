@@ -15,10 +15,12 @@ const makeUser = () => ({
   email: "test@example.com",
   username: "testuser",
   fullName: "Test User",
-  timerSettings: { presets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 } },
-  gyms: ["Gym A"],
-  exerciseNames: [],
-  exerciseEquipment: [],
+  timer: { settings: { presets: { 0: 30, 1: 60, 2: 90, 3: 120, 4: 180 } } },
+  options: {
+    gyms: ["Gym A"],
+    exerciseNames: [],
+    equipment: [],
+  },
   programs: [],
 });
 
@@ -36,8 +38,8 @@ const makeProgram = () => ({
             name: "Bench Press",
             equipment: "Barbell",
             gym: "Gym A",
-            sets: [{ reps: 10, weight: 100, note: "", completed: false }],
-            weightType: "lbs",
+            workingSets: [{ reps: 10, weight: 100, note: "", completed: false }],
+            unit: "lbs",
           },
         ],
         completedDate: undefined,
@@ -52,7 +54,7 @@ beforeAll(startDb);
 afterAll(stopDb);
 afterEach(clearDb);
 
-describe("POST /users/:id/startProgram", () => {
+describe("POST /users/:id/programs", () => {
   it("returns the updated user with curProgram set and the program in programs", async () => {
     const user = await UserModel.create(makeUser());
     const uid = user._id.toString();
@@ -60,7 +62,7 @@ describe("POST /users/:id/startProgram", () => {
 
     const res = await app.inject({
       method: "POST",
-      url: `/users/${uid}/startProgram`,
+      url: `/users/${uid}/programs`,
       payload: { program: makeProgram() },
     });
     const data = res.json();
@@ -83,7 +85,7 @@ describe("POST /users/:id/startProgram", () => {
 
     const res = await app.inject({
       method: "POST",
-      url: `/users/${uid}/startProgram`,
+      url: `/users/${uid}/programs`,
       payload: { program: makeProgram() },
     });
     const data = res.json();
@@ -102,7 +104,7 @@ describe("POST /users/:id/startProgram", () => {
 
     const res = await app.inject({
       method: "POST",
-      url: `/users/${uid}/startProgram`,
+      url: `/users/${uid}/programs`,
       payload: { program: makeProgram() },
     });
     const data = res.json();

@@ -1,11 +1,10 @@
 import {
-  getNewSetsFromLatest,
   useProgram,
   useCompletedExercises,
   useMe,
-  useUpdateUser,
+  useAddGym,
 } from "@liftledger/api-client";
-import { Session } from "@liftledger/shared";
+import { Session, getNewSetsFromLatest } from "@liftledger/shared";
 import { Fragment, useEffect, useState } from "react";
 import { View } from "react-native";
 import { SearchableSelect } from "../../../components/SearchableSelect";
@@ -19,9 +18,9 @@ import { DeleteSessionDialog } from "./DeleteSessionDialog";
 
 export const EditRotation = () => {
   const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { data: completedExercises } = useCompletedExercises(curUser?._id);
-  const { trigger: triggerUpdateUser } = useUpdateUser();
+  const { data: curProgram } = useProgram();
+  const { data: completedExercises } = useCompletedExercises();
+  const { send: addGym } = useAddGym();
   const {
     templateProgram,
     setTemplateProgram,
@@ -37,25 +36,33 @@ export const EditRotation = () => {
   // Seed the primary gym (and propagate it to the editing rotation's sessions +
   // exercises) from the user's first saved gym when none is set yet.
   useEffect(() => {
-    if (templateProgram.primaryGym === undefined && curUser?.gyms?.length) {
+    if (
+      templateProgram.primaryGym === undefined &&
+      curUser?.options?.gyms?.length
+    ) {
       setTemplateProgram({
         ...templateProgram,
-        primaryGym: curUser.gyms[0],
+        primaryGym: curUser.options.gyms[0],
         rotations: templateProgram.rotations.map((w, wIdx) =>
           wIdx === editingRotationIdx
             ? w.map((session) => ({
                 ...session,
-                gym: curUser.gyms[0],
+                gym: curUser.options.gyms[0],
                 exercises: session.exercises.map((exercise) => ({
                   ...exercise,
-                  gym: curUser.gyms[0],
+                  gym: curUser.options.gyms[0],
                 })),
               }))
             : w,
         ),
       });
     }
-  }, [templateProgram, curUser?.gyms, editingRotationIdx, setTemplateProgram]);
+  }, [
+    templateProgram,
+    curUser?.options?.gyms,
+    editingRotationIdx,
+    setTemplateProgram,
+  ]);
 
   const setPrimaryGym = (gym: string) => {
     const curRotationIdx = curProgram?.curRotationIdx ?? 0;
@@ -71,7 +78,7 @@ export const EditRotation = () => {
           if (wIdx === curRotationIdx && dIdx < curSessionIdx) return session;
 
           const sessionHasCompletedSets = session.exercises.some((ex) =>
-            ex.sets.some((s) => s.completed || s.skipped),
+            ex.workingSets.some((s) => s.completed || s.skipped),
           );
           if (sessionHasCompletedSets) return session;
 
@@ -81,7 +88,7 @@ export const EditRotation = () => {
             exercises: session.exercises.map((exercise) => ({
               ...exercise,
               gym,
-              sets: getNewSetsFromLatest(completedExercises, {
+              workingSets: getNewSetsFromLatest(completedExercises, {
                 ...exercise,
                 gym,
               }),
@@ -93,13 +100,7 @@ export const EditRotation = () => {
   };
 
   const handleAddGym = async (gym: string) => {
-    if (!curUser) return;
-
-    triggerUpdateUser({
-      ...curUser,
-      gyms: [...(curUser?.gyms || []), gym],
-    });
-
+    addGym({ value: gym });
     setPrimaryGym(gym);
   };
 
@@ -112,8 +113,8 @@ export const EditRotation = () => {
           name: "",
           equipment: "",
           gym: templateProgram.primaryGym || "",
-          sets: [{ reps: null, weight: null, completed: false, note: "" }],
-          weightType: curUser?.defaultWeightType ?? "",
+          workingSets: [{ reps: null, weight: null, completed: false, note: "" }],
+          unit: curUser?.options?.defaultUnit ?? "",
         },
       ],
       completedDate: undefined,
@@ -165,7 +166,7 @@ export const EditRotation = () => {
           label="Primary Gym"
           error={templateErrors.program.primaryGym}
           value={templateProgram.primaryGym ?? ""}
-          options={curUser?.gyms || []}
+          options={curUser?.options?.gyms || []}
           onSelect={setPrimaryGym}
           onAddCustom={handleAddGym}
           canAddCustom

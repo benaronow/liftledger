@@ -2,7 +2,7 @@ appId: app.liftledger.mobile
 # Skip one set (doc "Skip"). Param: SET (0-based index within the exercise).
 ---
 - tapOn:
-    id: "set-row-${SET}"
+    id: "set-row-working-${SET}"
 - extendedWaitUntil:
     visible:
       id: "set-input-reps"

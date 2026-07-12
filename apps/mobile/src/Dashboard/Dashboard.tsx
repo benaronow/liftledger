@@ -12,10 +12,7 @@ export const Dashboard = () => {
   const { data: curUser } = useMe();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const { data: curProgram, isLoading: curProgramLoading } = useProgram(
-    curUser?._id,
-    curUser?.curProgram,
-  );
+  const { data: curProgram, isLoading: curProgramLoading } = useProgram();
 
   if (!curUser || curProgramLoading || (curUser.curProgram && !curProgram))
     return <LogoSpinner />;

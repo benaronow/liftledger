@@ -3,8 +3,6 @@ import { StyleSheet, TextInput as NativeTextInput, View } from "react-native";
 import { HelperText, Text, TextInput } from "react-native-paper";
 import { INPUT_HEIGHT, RADIUS } from "../../theme";
 
-// `error` is a validation message (string), not Paper's boolean — it both
-// reddens the outline and renders below the field.
 type Props = Omit<ComponentProps<typeof TextInput>, "error"> & {
   error?: string;
 };
@@ -19,8 +17,6 @@ export const AppTextInput = ({
   ...rest
 }: Props) => {
   const [focused, setFocused] = useState(false);
-  // Multiline inputs wrap rather than overflow, so leave them on Paper's
-  // default render.
   const truncating = !focused && !multiline && !!rest.value;
 
   return (
@@ -28,7 +24,11 @@ export const AppTextInput = ({
       <TextInput
         mode="outlined"
         style={{ height: INPUT_HEIGHT }}
-        outlineStyle={[{ borderRadius: RADIUS.md }, outlineStyle]}
+        outlineStyle={[
+          { borderRadius: RADIUS.md },
+          rest.disabled ? { borderColor: "transparent" } : null,
+          outlineStyle,
+        ]}
         error={!!error}
         multiline={multiline}
         onFocus={(e) => {

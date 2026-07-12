@@ -1,5 +1,3 @@
 export * from "./useCurrentSession";
-export * from "./useExerciseOptions";
+export * from "./useOptionAvailability";
 export * from "./useExerciseSelection";
-export * from "./useTimerSettings";
-export * from "./useWeightTypeOptions";

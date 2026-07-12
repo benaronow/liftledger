@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
 import { DEFAULT_EXERCISE_NAMES } from "../../exerciseNames";
 import { DEFAULT_EXERCISE_EQUIPMENT } from "../../exerciseEquipment";
-import { DEFAULT_WEIGHT_TYPES } from "../../weightTypes";
+import { DEFAULT_UNITS } from "../../units";
 
 const userSchema: Schema = new Schema(
   {
@@ -11,37 +11,41 @@ const userSchema: Schema = new Schema(
     fullName: { type: String, required: true },
     programs: { type: [{ type: Schema.Types.ObjectId, ref: "Program" }] },
     curProgram: { type: Schema.Types.ObjectId, ref: "Program" },
-    timerSettings: {
+    timer: {
       end: { type: Date },
-      presets: {
-        type: Map,
-        of: Number,
-        required: true,
+      settings: {
+        presets: {
+          type: Map,
+          of: Number,
+          required: true,
+        },
+        defaultEnabled: { type: Boolean, default: true },
+        defaultTime: { type: Number, default: 120 },
+        exerciseOverrides: {
+          type: Map,
+          of: Number,
+          default: () => ({}),
+        },
       },
-      defaultEnabled: { type: Boolean, default: true },
-      defaultTime: { type: Number, default: 120 },
-      exerciseOverrides: {
-        type: Map,
-        of: Number,
-        default: () => ({}),
+    },
+    options: {
+      gyms: { type: [String] },
+      exerciseNames: {
+        type: [String],
+        default: () => [...DEFAULT_EXERCISE_NAMES],
       },
-    },
-    gyms: { type: [String] },
-    exerciseNames: {
-      type: [String],
-      default: () => [...DEFAULT_EXERCISE_NAMES],
-    },
-    exerciseEquipment: {
-      type: [String],
-      default: () => [...DEFAULT_EXERCISE_EQUIPMENT],
-    },
-    weightTypes: {
-      type: [String],
-      default: () => [...DEFAULT_WEIGHT_TYPES],
-    },
-    defaultWeightType: {
-      type: String,
-      default: "lbs",
+      equipment: {
+        type: [String],
+        default: () => [...DEFAULT_EXERCISE_EQUIPMENT],
+      },
+      units: {
+        type: [String],
+        default: () => [...DEFAULT_UNITS],
+      },
+      defaultUnit: {
+        type: String,
+        default: "lbs",
+      },
     },
   },
   { collection: "User" },

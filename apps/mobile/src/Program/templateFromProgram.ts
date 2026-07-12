@@ -1,8 +1,8 @@
-import { Program } from "@liftledger/shared";
 import {
   CompletedExercisesResponse,
+  Program,
   getNewSetsFromLatest,
-} from "@liftledger/api-client";
+} from "@liftledger/shared";
 
 export const templateFromProgram = (
   program: Program,
@@ -21,11 +21,19 @@ export const templateFromProgram = (
           name: exercise.name,
           equipment: exercise.equipment,
           gym: program.primaryGym,
-          sets: getNewSetsFromLatest(completedExercises, {
+          workingSets: getNewSetsFromLatest(completedExercises, {
             ...exercise,
             gym: program.primaryGym,
           }),
-          weightType: exercise.weightType,
+          warmupSets: (exercise.warmupSets ?? [])
+            .filter((set) => !set.addedOn)
+            .map((set) => ({
+              ...set,
+              completed: false,
+              skipped: false,
+              note: "",
+            })),
+          unit: exercise.unit,
         })),
       completedDate: undefined,
     })),

@@ -30,12 +30,9 @@ export const Program = () => {
 
   const { data: curUser } = useMe();
   const { colors } = useTheme();
-  const { isLoading: curProgramLoading, data: curProgram } = useProgram(
-    curUser?._id,
-    curUser?.curProgram,
-  );
+  const { isLoading: curProgramLoading, data: curProgram } = useProgram();
   const { data: completedExercises, isLoading: completedExercisesLoading } =
-    useCompletedExercises(curUser?._id);
+    useCompletedExercises();
 
   const sourceProgram = useMemo(() => {
     if (!duplicateFromId || !curUser?.programs) return null;
@@ -59,7 +56,7 @@ export const Program = () => {
     ? curProgram!
     : duplicateFromId
       ? templateFromProgram(sourceProgram!, completedExercises!)
-      : emptyProgram(curUser.defaultWeightType);
+      : emptyProgram(curUser.options.defaultUnit);
   const initialRotationIdx = editingActiveProgram
     ? (curProgram!.curRotationIdx ?? 0)
     : 0;

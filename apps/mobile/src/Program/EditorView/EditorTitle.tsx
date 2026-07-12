@@ -1,4 +1,4 @@
-import { useProgram, useMe } from "@liftledger/api-client";
+import { useProgram } from "@liftledger/api-client";
 import { View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { FONT, SPACING } from "../../theme";
@@ -7,8 +7,7 @@ import { useTemplate } from "../TemplateProvider";
 
 export const EditorTitle = () => {
   const { colors } = useTheme();
-  const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
+  const { data: curProgram } = useProgram();
   const { editingSessionIdx } = useTemplate();
 
   const isEditingSession = editingSessionIdx !== -1;

@@ -56,8 +56,8 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { trigger: triggerUpdateUserProgram, isMutating: saving } =
+  const { data: curProgram } = useProgram();
+  const { send: triggerUpdateUserProgram, isLoading: saving } =
     useUpdateUserProgram();
   const { exercises } = useCurrentSession();
   const { showSnackbar } = useSnackbar();
@@ -81,11 +81,11 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
       name: "",
       equipment: "",
       gym: curGym,
-      weightType: curUser?.defaultWeightType ?? "",
-      sets: [],
+      unit: curUser?.options?.defaultUnit ?? "",
+      workingSets: [],
       addedOn: true,
     }),
-    [curGym, curUser?.defaultWeightType],
+    [curGym, curUser?.options?.defaultUnit],
   );
   const [newExercise, setNewExercise] = useState<Exercise>(defaultNewExercise);
 
@@ -141,7 +141,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
   };
 
   const saveExercises = async (updated: Exercise[]) => {
-    if (!curUser?._id || !curProgram) return;
+    if (!curProgram) return;
     const newSessions: Session[] = curProgram.rotations[
       curProgram.curRotationIdx
     ].toSpliced(curProgram.curSessionIdx, 1, {
@@ -159,7 +159,6 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
       ),
     };
     await triggerUpdateUserProgram({
-      userId: curUser._id,
       program: newProgram,
     });
   };
@@ -195,7 +194,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
   const exerciseIncomplete =
     newExercise.name === "" ||
     newExercise.equipment === "" ||
-    newExercise.weightType === "";
+    newExercise.unit === "";
 
   const translateY = progress.interpolate({
     inputRange: [0, 1],
@@ -269,7 +268,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
               }}
             >
               {exercises.map((exercise, idx) => {
-                const started = exercise.sets.some(
+                const started = exercise.workingSets.some(
                   (set) => set.completed || set.skipped,
                 );
                 return (

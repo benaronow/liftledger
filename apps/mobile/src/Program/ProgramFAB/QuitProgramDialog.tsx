@@ -1,4 +1,4 @@
-import { useMe, useQuitProgram } from "@liftledger/api-client";
+import { useQuitProgram } from "@liftledger/api-client";
 import { useNavigation } from "@react-navigation/native";
 import { ConfirmationDialog } from "../../components/ConfirmationDialog";
 import type { TabNav } from "../../RootNavigator/types";
@@ -13,19 +13,16 @@ interface Props {
 
 export const QuitProgramDialog = ({ open, onClose }: Props) => {
   const navigation = useNavigation<TabNav<"Program">>();
-  const { data: curUser } = useMe();
-  const { trigger: triggerQuitProgram, isMutating: quitting } =
-    useQuitProgram();
+  const { send: triggerQuitProgram, isLoading: quitting } = useQuitProgram();
   const { unsetTemplateProgram, setEditingRotationIdx } = useTemplate();
   const { setTransitioning } = useProgramTransition();
   const { showSnackbar } = useSnackbar();
 
   const handleQuit = async () => {
-    if (!curUser?._id) return;
     setTransitioning(true);
 
     try {
-      await triggerQuitProgram(curUser._id);
+      await triggerQuitProgram();
       unsetTemplateProgram();
       setEditingRotationIdx(0);
 

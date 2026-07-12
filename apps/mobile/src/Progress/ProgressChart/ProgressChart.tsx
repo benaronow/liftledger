@@ -37,9 +37,9 @@ export const ProgressChart = ({
   gym,
   loading: externalLoading,
 }: Props) => {
-  const { data: curUser, isLoading: isUserLoading } = useMe();
+  const { isLoading: isUserLoading } = useMe();
   const { data: completedExercises, isLoading: completedExercisesLoading } =
-    useCompletedExercises(curUser?._id);
+    useCompletedExercises();
   const [size, setSize] = useState({ width: 0, height: 0 });
   // The chart re-plots every point from the measured container size. When
   // CompleteSession pushes in, the container is measured more than once as the
@@ -75,7 +75,7 @@ export const ProgressChart = ({
             e.equipment === selectedEquipment &&
             (!gym || (e.gym ?? "Gym Unknown") === gym) &&
             e.completedDate &&
-            e.sets.some((s) => s.completed),
+            e.workingSets.some((s) => s.completed),
         )
         .reverse(),
     [selectedName, selectedEquipment, gym, completedExercises],
@@ -90,7 +90,7 @@ export const ProgressChart = ({
   const dataSet = useMemo(() => {
     const maxWeight = (e: CompletedExercise) =>
       Math.max(
-        ...e.sets.filter((s: Set) => s.completed).map((s) => s.weight ?? 0),
+        ...e.workingSets.filter((s: Set) => s.completed).map((s) => s.weight ?? 0),
       );
 
     const gymLines = gyms.map((lineGym, gymIdx) => {
@@ -162,7 +162,7 @@ export const ProgressChart = ({
 
   const { yAxisOffset, maxValue } = useMemo(() => {
     const values = chartExercises.flatMap((e) =>
-      e.sets.filter((s) => s.completed).map((s) => s.weight ?? 0),
+      e.workingSets.filter((s) => s.completed).map((s) => s.weight ?? 0),
     );
     if (!values.length) return { yAxisOffset: 0, maxValue: 0 };
     const min = Math.min(...values);

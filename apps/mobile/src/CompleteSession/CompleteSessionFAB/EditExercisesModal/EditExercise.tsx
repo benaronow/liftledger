@@ -1,18 +1,17 @@
-import { Exercise } from "@liftledger/shared";
-import { Dispatch, SetStateAction, useCallback } from "react";
+import { Exercise, getUpdatedExercise } from "@liftledger/shared";
+import { Dispatch, SetStateAction, useCallback, useMemo } from "react";
 import { View } from "react-native";
 import {
-  getUpdatedExercise,
+  CurrentExercisesState,
   useCompletedExercises,
   useCurrentSession,
-  useMe,
 } from "@liftledger/api-client";
-import { ExerciseEquipmentSelect } from "../../../components/ExerciseEquipmentSelect";
+import { EquipmentSelect } from "../../../components/EquipmentSelect";
 import { ExerciseNameSelect } from "../../../components/ExerciseNameSelect";
-import { WeightTypeSelect } from "../../../components/WeightTypeSelect";
+import { UnitSelect } from "../../../components/UnitSelect";
 import { SPACING } from "../../../theme";
 
-type ExerciseInfoName = "name" | "equipment" | "weightType";
+type ExerciseInfoName = "name" | "equipment" | "unit";
 
 interface Props {
   newExercise: Exercise;
@@ -21,8 +20,7 @@ interface Props {
 
 export const EditExercise = ({ newExercise, setNewExercise }: Props) => {
   const { exercises } = useCurrentSession();
-  const { data: curUser } = useMe();
-  const { data: completedExercises } = useCompletedExercises(curUser?._id);
+  const { data: completedExercises } = useCompletedExercises();
 
   const switchExercise = useCallback(
     (value: string, type: ExerciseInfoName) => {
@@ -33,26 +31,35 @@ export const EditExercise = ({ newExercise, setNewExercise }: Props) => {
     [completedExercises, newExercise, setNewExercise],
   );
 
+  const currentExercisesState = useMemo<CurrentExercisesState>(
+    () => ({
+      curExercise: newExercise,
+      allReservedExercises: exercises,
+    }),
+    [exercises, newExercise],
+  );
+
   return (
     <View style={{ width: "100%", gap: SPACING.sm }}>
       <ExerciseNameSelect
+        value={newExercise.name}
         label="Exercise"
-        curExercise={newExercise}
-        reservedExercises={exercises}
+        currentExercisesState={currentExercisesState}
         onSelect={(value) => switchExercise(value, "name")}
+        canAddCustom
       />
-      <ExerciseEquipmentSelect
+      <EquipmentSelect
+        value={newExercise.equipment}
         label="Equipment"
-        curExercise={newExercise}
-        reservedExercises={exercises}
+        currentExercisesState={currentExercisesState}
         onSelect={(value) => switchExercise(value, "equipment")}
+        canAddCustom
       />
-      <WeightTypeSelect
-        label="Weight Type"
-        value={newExercise.weightType}
-        onSelect={(value) => switchExercise(value, "weightType")}
+      <UnitSelect
+        label="Unit"
+        value={newExercise.unit}
+        onSelect={(value) => switchExercise(value, "unit")}
       />
     </View>
   );
 };
-

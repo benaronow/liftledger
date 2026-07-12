@@ -33,10 +33,12 @@ appId: app.liftledger.mobile
     commands:
       - eraseText: 8
       - inputText: "${WEIGHT}"
-# Tap the (non-input) title to dismiss the number-pad and reveal Confirm.
-- tapOn: "Submit Set"
+# Tap the (non-input) title to dismiss the number-pad and reveal Confirm. When
+# adding a set the dialog title is "Add Working Set" (not "Submit Set", which is
+# only shown when editing an existing set).
+- tapOn: "Add Working Set"
 - tapOn: "Confirm"
 - extendedWaitUntil:
     notVisible:
-      text: "Submit Set"
+      text: "Add Working Set"
     timeout: 5000

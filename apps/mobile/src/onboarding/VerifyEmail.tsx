@@ -17,7 +17,7 @@ export const VerifyEmail = ({ onRefresh }: Props) => {
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
   const logout = useLogout();
-  const { trigger: resend, isMutating: resending } = useResendVerification();
+  const { send: resend, isLoading: resending } = useResendVerification();
   const [refreshing, setRefreshing] = useState(false);
 
   const handleResend = useCallback(async () => {

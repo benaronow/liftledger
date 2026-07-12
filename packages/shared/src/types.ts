@@ -5,6 +5,7 @@ export interface Set {
   completed: boolean;
   skipped?: boolean;
   addedOn?: boolean;
+  dropSets?: Set[];
 }
 
 export interface Exercise {
@@ -12,8 +13,9 @@ export interface Exercise {
   name: string;
   equipment: string;
   gym?: string;
-  sets: Set[];
-  weightType: string;
+  workingSets: Set[];
+  warmupSets?: Set[];
+  unit: string;
   addedOn?: boolean;
 }
 
@@ -21,8 +23,9 @@ export interface CompletedExercise {
   name: string;
   equipment: string;
   gym?: string;
-  sets: Set[];
-  weightType: string;
+  workingSets: Set[];
+  warmupSets?: Set[];
+  unit: string;
   completedDate?: Date;
 }
 
@@ -55,12 +58,19 @@ export interface TimerPresets {
 }
 
 export interface TimerSettings {
-  end?: Date;
   presets: TimerPresets;
   defaultEnabled: boolean;
   defaultTime: number;
   exerciseOverrides: Record<string, number>;
 }
+
+export interface Timer {
+  end?: Date;
+  settings: TimerSettings;
+}
+
+// Scope of an option rename: the list only, the current program, or all programs.
+export type RenameScope = "list" | "current" | "all";
 
 export interface User {
   _id?: string;
@@ -70,10 +80,14 @@ export interface User {
   fullName: string;
   programs: Program[];
   curProgram?: string;
-  timerSettings: TimerSettings;
+  timer: Timer;
+  options: UserOptions;
+}
+
+export interface UserOptions {
   gyms: string[];
   exerciseNames: string[];
-  exerciseEquipment: string[];
-  weightTypes: string[];
-  defaultWeightType: string;
+  equipment: string[];
+  units: string[];
+  defaultUnit: string;
 }

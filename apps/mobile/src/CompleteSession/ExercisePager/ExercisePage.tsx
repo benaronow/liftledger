@@ -1,8 +1,8 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { isExerciseComplete } from "@liftledger/api-client";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { Exercise } from "@liftledger/shared";
+import { isExerciseComplete } from "@liftledger/api-client";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { Badge } from "../../components/Badge";
@@ -17,17 +17,13 @@ import { Text, useTheme } from "react-native-paper";
 import { ProgressChart } from "../../Progress/ProgressChart";
 import type { RootStackParamList } from "../../RootNavigator/types";
 import { FONT, SPACING } from "../../theme";
-import { SetList } from "./SetList/SetList";
+import { SetKind, SetList } from "./SetList/SetList";
 import { SubmitSetDialog } from "./SetList/SubmitSetDialog/SubmitSetDialog";
 
 interface Props {
   exercise: Exercise;
   isCurrentExercise: boolean;
-  // Whether a rest timer is running — the FAB then morphs into a wider pill, so
-  // the title reserves more right-side space.
   timerRunning: boolean;
-  // Let the pager suspend swiping while the progress chart is being touched, so
-  // its tooltip pan gesture doesn't fight the horizontal page swipe.
   onChartTouchStart?: () => void;
   onChartTouchEnd?: () => void;
 }
@@ -42,10 +38,35 @@ export const ExercisePage = ({
   const { colors } = useTheme();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [editingSetIdx, setEditingSetIdx] = useState<number>();
-  // Off by default: the chart tracks the current gym. "Show all" drops the gym
-  // filter so progress across every gym is plotted (with the legend).
+  const [editingSet, setEditingSet] = useState<{
+    kind: SetKind;
+    idx: number;
+  }>();
   const [showAll, setShowAll] = useState(false);
+
+  // Add-set enable logic (spec C3). Two non-overlapping cases: add a warmup
+  // while none are logged yet and no working set has been started, or add a
+  // working set once all working sets are done. "started" = completed or
+  // skipped, so warmup-add doesn't re-enable after a working set is skipped.
+  const warmups = exercise.warmupSets ?? [];
+  const allWarmupsDone = warmups.every((s) => s.completed || s.skipped);
+  const anyWorkingStarted = exercise.workingSets.some(
+    (s) => s.completed || s.skipped,
+  );
+  const noWarmupSkipped = !warmups.some((s) => s.skipped);
+  const noWorkingSkipped = !exercise.workingSets.some((s) => s.skipped);
+  const allWorkingDone = isExerciseComplete(exercise);
+
+  const canAddWarmup = allWarmupsDone && !anyWorkingStarted && noWarmupSkipped;
+  const canAddWorking = allWorkingDone && noWorkingSkipped;
+  const canAdd = canAddWarmup || canAddWorking;
+  const addKind: SetKind = canAddWarmup ? "warmup" : "working";
+
+  const handleAddSet = () =>
+    setEditingSet({
+      kind: addKind,
+      idx: addKind === "warmup" ? warmups.length : exercise.workingSets.length,
+    });
 
   const openFullProgress = () =>
     navigation.navigate(
@@ -56,8 +77,6 @@ export const ExercisePage = ({
       },
       { pop: true },
     );
-
-  const isComplete = isExerciseComplete(exercise);
 
   return (
     <View
@@ -105,11 +124,29 @@ export const ExercisePage = ({
           {exercise.equipment}
         </Text>
       </View>
-      <Info title="Sets" fill background={isComplete ? colors.tertiary : undefined}>
+      <Info
+        title="Sets"
+        fill
+        headerRight={
+          <Pressable
+            onPress={handleAddSet}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel="Add set"
+            disabled={!canAdd}
+          >
+            <MaterialCommunityIcons
+              name="plus"
+              size={20}
+              color={canAdd ? colors.primary : colors.onSurfaceDisabled}
+            />
+          </Pressable>
+        }
+      >
         <SetList
           exercise={exercise}
           isCurrentExercise={isCurrentExercise}
-          onEditSet={setEditingSetIdx}
+          onEditSet={(kind, idx) => setEditingSet({ kind, idx })}
         />
       </Info>
       <Info
@@ -172,8 +209,8 @@ export const ExercisePage = ({
       </Info>
       <SubmitSetDialog
         exercise={exercise}
-        setIdx={editingSetIdx}
-        onClose={() => setEditingSetIdx(undefined)}
+        editingSet={editingSet}
+        onClose={() => setEditingSet(undefined)}
       />
     </View>
   );

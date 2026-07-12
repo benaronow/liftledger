@@ -19,10 +19,9 @@ interface Props {
 export const SaveProgramDialog = ({ open, onClose }: Props) => {
   const navigation = useNavigation<TabNav<"Program">>();
   const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { trigger: triggerStartProgram, isMutating: starting } =
-    useStartProgram();
-  const { trigger: triggerUpdateUserProgram, isMutating: updating } =
+  const { data: curProgram } = useProgram();
+  const { send: triggerStartProgram, isLoading: starting } = useStartProgram();
+  const { send: triggerUpdateUserProgram, isLoading: updating } =
     useUpdateUserProgram();
   const saving = starting || updating;
   const { showSnackbar } = useSnackbar();
@@ -30,7 +29,7 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
 
   const {
     templateProgram,
-    commitBaseline,
+    rebaseTemplate,
     unsetTemplateProgram,
     setEditingRotationIdx,
   } = useTemplate();
@@ -42,16 +41,14 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
     try {
       if (curProgram) {
         const res = await triggerUpdateUserProgram({
-          userId: curUser._id,
           program: templateProgram,
         });
         if (res?.program) {
-          commitBaseline(res.program);
+          rebaseTemplate(res.program);
           setEditingRotationIdx(res.program.curRotationIdx ?? 0);
         }
       } else {
         await triggerStartProgram({
-          userId: curUser._id,
           program: templateProgram,
         });
         unsetTemplateProgram();

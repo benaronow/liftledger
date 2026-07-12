@@ -14,6 +14,8 @@ declare module "fastify" {
   }
 }
 
+export type AuthedUser = InstanceType<typeof UserModel>;
+
 type AuthOk<T> = { ok: true; me: T };
 type AuthErr = { ok: false };
 

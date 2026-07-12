@@ -65,7 +65,7 @@ export const Appearance = () => {
               left: 0,
               width: segmentWidth,
               borderRadius: RADIUS.md,
-              backgroundColor: colors.surfaceVariant,
+              backgroundColor: colors.primary,
               transform: [{ translateX: thumbX }],
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 1 },
@@ -94,12 +94,12 @@ export const Appearance = () => {
               <MaterialCommunityIcons
                 name={opt.icon}
                 size={24}
-                color={selected ? colors.primary : colors.onSurfaceDisabled}
+                color={selected ? "white" : colors.onSurfaceDisabled}
               />
               <Text
                 style={{
                   fontSize: FONT.sm,
-                  color: selected ? colors.primary : colors.onSurface,
+                  color: selected ? "white" : colors.onSurface,
                   fontWeight: selected ? "700" : "400",
                 }}
               >

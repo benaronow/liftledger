@@ -11,7 +11,7 @@ import {
   useTheme,
 } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../../theme";
-import { useTimerCountdown } from "../../components/Timer";
+import { useTimerCountdown } from "../../components/timer";
 import { EditExercisesModal } from "./EditExercisesModal/EditExercisesModal";
 import { EditGymDialog } from "./EditGymDialog";
 import { TimerSettingsDialog } from "./TimerSettingsDialog";
@@ -115,40 +115,41 @@ export const CompleteSessionFAB = ({ isFinishing }: Props) => {
             elevation={3}
             style={{
               borderRadius: RADIUS.lg,
-              overflow: "hidden",
               backgroundColor: colors.primary,
             }}
           >
-            <TouchableRipple
-              accessibilityLabel={open ? "Close actions" : "More actions"}
-              testID="fab-more-actions"
-              onPress={() => setOpen((o) => !o)}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: SPACING.xs,
-                height: FAB_SIZE,
-                paddingHorizontal: SPACING.md,
-              }}
-            >
-              <>
-                <MaterialCommunityIcons
-                  name="timer-outline"
-                  size={20}
-                  color="white"
-                />
-                <Text
-                  style={{
-                    color: "white",
-                    fontWeight: "700",
-                    fontSize: FONT.base,
-                    fontVariant: ["tabular-nums"],
-                  }}
-                >
-                  {timeString}
-                </Text>
-              </>
-            </TouchableRipple>
+            <View style={{ borderRadius: RADIUS.lg, overflow: "hidden" }}>
+              <TouchableRipple
+                accessibilityLabel={open ? "Close actions" : "More actions"}
+                testID="fab-more-actions"
+                onPress={() => setOpen((o) => !o)}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: SPACING.xs,
+                  height: FAB_SIZE,
+                  paddingHorizontal: SPACING.md,
+                }}
+              >
+                <>
+                  <MaterialCommunityIcons
+                    name="timer-outline"
+                    size={20}
+                    color="white"
+                  />
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: "700",
+                      fontSize: FONT.base,
+                      fontVariant: ["tabular-nums"],
+                    }}
+                  >
+                    {timeString}
+                  </Text>
+                </>
+              </TouchableRipple>
+            </View>
           </Surface>
         ) : (
           <FAB

@@ -4,7 +4,7 @@ appId: app.liftledger.mobile
 # actual values). Params: SET (0-based index within the exercise), WEIGHT, REPS.
 ---
 - tapOn:
-    id: "set-row-${SET}"
+    id: "set-row-working-${SET}"
 # Wait for the dialog's reps field before interacting. The dialog no longer
 # animates under E2E (TopSheet duration 0), so no settle wait is needed here.
 # Keep the wait AFTER tapping the field though: the native keyboard slide-in

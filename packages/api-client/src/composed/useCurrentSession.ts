@@ -1,20 +1,22 @@
 import { useMemo } from "react";
 import type { Exercise, Set } from "@liftledger/shared";
-import { useMe } from "../api/useMe";
-import { useProgram } from "../api/useProgram";
+import { useProgram } from "../api/programs";
 
 export const isExerciseComplete = (exercise: Exercise) =>
-  exercise.sets.length !== 0 &&
-  exercise.sets.every((set: Set) => set.completed || (set.skipped ?? false));
+  exercise.workingSets.length !== 0 &&
+  exercise.workingSets.every(
+    (set: Set) => set.completed || (set.skipped ?? false),
+  );
 
 export const useCurrentSession = () => {
-  const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
+  const { data: curProgram, isLoading } = useProgram();
 
   const exercises = useMemo<Exercise[]>(
     () =>
       curProgram
-        ? curProgram.rotations[curProgram.curRotationIdx][curProgram.curSessionIdx].exercises
+        ? curProgram.rotations[curProgram.curRotationIdx][
+            curProgram.curSessionIdx
+          ].exercises
         : [],
     [curProgram],
   );
@@ -27,7 +29,7 @@ export const useCurrentSession = () => {
   const isSessionStarted = useMemo(
     () =>
       exercises.some((exercise) =>
-        exercise.sets.some((set) => set.completed || set.skipped),
+        exercise.workingSets.some((set) => set.completed || set.skipped),
       ),
     [exercises],
   );
@@ -37,5 +39,11 @@ export const useCurrentSession = () => {
     [exercises],
   );
 
-  return { exercises, currentExIdx, isSessionStarted, isSessionComplete };
+  return {
+    exercises,
+    currentExIdx,
+    isSessionStarted,
+    isSessionComplete,
+    isLoading,
+  };
 };

@@ -10,7 +10,7 @@ import { AvatarButton } from "./AvatarButton";
 import { ConnectionError } from "./ConnectionError";
 import { LogoutButton } from "./LogoutButton";
 import { LogoSpinner } from "../../components/LogoSpinner";
-import { HeaderTimer } from "../../components/Timer";
+import { HeaderTimer } from "./HeaderTimer";
 import { TimerFinishedOverlay } from "./TimerFinishedOverlay";
 import { Account } from "../../Account";
 import { useThemePreference } from "../../providers/ThemeProvider";
@@ -40,7 +40,7 @@ export const AuthenticatedRouter = () => {
   const { scheme } = useThemePreference();
 
   const tokenVerified = user?.email_verified === true;
-  const { data: profile, mutate: refreshProfile } =
+  const { data: profile, refresh: refreshProfile } =
     useAuth0Profile(!tokenVerified);
   const emailVerified = tokenVerified || !!profile?.emailVerified;
 
@@ -48,10 +48,10 @@ export const AuthenticatedRouter = () => {
     data: curUser,
     isLoading: userLoading,
     error: userError,
-    mutate: refreshMe,
+    refresh: refreshMe,
   } = useMe(emailVerified);
 
-  const { data: timerEndData } = useTimerEnd(curUser?._id);
+  const { data: timerEndData } = useTimerEnd();
   const timerRunning = !!timerEndData?.timerEnd;
 
   const status = (userError as { response?: { status?: number } } | undefined)

@@ -1,4 +1,4 @@
-import { useProgram, useMe } from "@liftledger/api-client";
+import { useProgram } from "@liftledger/api-client";
 import { Session } from "@liftledger/shared";
 import { Text, useTheme } from "react-native-paper";
 import { FONT } from "../../../theme";
@@ -15,8 +15,7 @@ interface Props {
 
 export const SessionInfo = ({ session, dIdx, errors, onRequestDelete }: Props) => {
   const { colors } = useTheme();
-  const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
+  const { data: curProgram } = useProgram();
   const {
     templateProgram,
     setTemplateProgram,
@@ -96,7 +95,7 @@ export const SessionInfo = ({ session, dIdx, errors, onRequestDelete }: Props) =
   ];
 
   const hasListedExercises = session.exercises.some(
-    (e) => e.name && e.equipment && e.sets.length,
+    (e) => e.name && e.equipment && e.workingSets.length,
   );
 
   const errorLines = [
@@ -115,7 +114,7 @@ export const SessionInfo = ({ session, dIdx, errors, onRequestDelete }: Props) =
           .filter((ex) => !ex.addedOn)
           .map((ex, i) => (
             <Text style={lineStyle(colors.onSurface)} key={ex._id ?? i}>
-              {`${i + 1}. ${ex.name} [${ex.sets.filter((s) => !s.addedOn).length}]`}
+              {`${i + 1}. ${ex.name} [${ex.workingSets.filter((s) => !s.addedOn).length}]`}
             </Text>
           ))}
       {errorLines.map((line, i) => (

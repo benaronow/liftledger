@@ -1,6 +1,6 @@
-import { useExerciseOptions } from "@liftledger/api-client";
 import { View } from "react-native";
-import { SearchableSelect } from "../components/SearchableSelect";
+import { EquipmentSelect } from "../components/EquipmentSelect";
+import { ExerciseNameSelect } from "../components/ExerciseNameSelect";
 import { SPACING } from "../theme";
 
 interface Props {
@@ -16,9 +16,6 @@ export const ExerciseSelector = ({
   setSelectedName,
   setSelectedEquipment,
 }: Props) => {
-  const { allExerciseNameOptions, allExerciseEquipmentOptions } =
-    useExerciseOptions();
-
   return (
     <View
       style={{
@@ -29,21 +26,17 @@ export const ExerciseSelector = ({
       }}
     >
       <View style={{ flex: 1 }}>
-        <SearchableSelect
+        <ExerciseNameSelect
           label="Exercise"
           value={selectedName}
-          options={allExerciseNameOptions}
           onSelect={setSelectedName}
-          placeholder="Search exercise..."
         />
       </View>
       <View style={{ flex: 1 }}>
-        <SearchableSelect
+        <EquipmentSelect
           label="Equipment"
           value={selectedEquipment}
-          options={allExerciseEquipmentOptions}
           onSelect={setSelectedEquipment}
-          placeholder="Search equipment..."
         />
       </View>
     </View>

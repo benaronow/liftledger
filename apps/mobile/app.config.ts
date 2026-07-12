@@ -83,6 +83,13 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ],
       "@react-native-community/datetimepicker",
       "expo-apple-authentication",
+      "expo-audio",
+      [
+        "expo-notifications",
+        {
+          sounds: ["./assets/alarm.wav"],
+        },
+      ],
       [
         "expo-splash-screen",
         {

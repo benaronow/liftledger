@@ -29,10 +29,10 @@ export const FinishSessionDialog = ({
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data: curUser } = useMe();
-  const { data: curProgram } = useProgram(curUser?._id, curUser?.curProgram);
-  const { trigger: triggerUpdateUserProgram } = useUpdateUserProgram();
-  const { data: timerEndData } = useTimerEnd(curUser?._id);
-  const { trigger: triggerClearTimerEnd } = useClearTimerEnd();
+  const { data: curProgram } = useProgram();
+  const { send: triggerUpdateUserProgram } = useUpdateUserProgram();
+  const { data: timerEndData } = useTimerEnd();
+  const { send: triggerClearTimerEnd } = useClearTimerEnd();
   const { showSnackbar } = useSnackbar();
 
   const handleFinishSession = useCallback(async () => {
@@ -59,11 +59,9 @@ export const FinishSessionDialog = ({
     setFinishing(true);
     try {
       await triggerUpdateUserProgram({
-        userId: curUser._id,
         program: newProgram,
       });
-      if (timerEndData?.timerEnd)
-        triggerClearTimerEnd(curUser._id).catch(() => {});
+      if (timerEndData?.timerEnd) triggerClearTimerEnd().catch(() => {});
       onClose();
       navigation.navigate("Tabs", { screen: "Dashboard" }, { pop: true });
     } catch {

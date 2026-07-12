@@ -39,7 +39,7 @@ export const CreateAccount = () => {
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
   const logout = useLogout();
-  const { trigger: createUser, isMutating: creating } = useCreateUser();
+  const { send: createUser, isLoading: creating } = useCreateUser();
   const { scheme } = useThemePreference();
 
   const isNonConnectionUser = useMemo(
@@ -73,7 +73,7 @@ export const CreateAccount = () => {
         email,
         username: username.trim(),
         fullName: fullName.trim(),
-        timerSettings: DEFAULT_TIMER_SETTINGS,
+        timer: { settings: DEFAULT_TIMER_SETTINGS },
       });
     } catch (e: unknown) {
       const msg = errorMessage(e, "Failed to create account");

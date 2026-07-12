@@ -56,12 +56,12 @@ export const ExerciseTooltip = ({
             >
               {item.gym}
             </Text>
-            {exercise.sets.map((set, setIdx) => (
+            {exercise.workingSets.map((set, setIdx) => (
               <Text
                 key={setIdx}
                 style={{ color: colors.onSurface, fontSize: FONT.xs }}
               >
-                Set {setIdx + 1}: {set.weight ?? 0} {exercise.weightType} ×{" "}
+                Set {setIdx + 1}: {set.weight ?? 0} {exercise.unit} ×{" "}
                 {set.reps ?? 0} reps
               </Text>
             ))}

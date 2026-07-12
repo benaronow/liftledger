@@ -43,7 +43,6 @@ interface Props {
   unavailableOptions?: string[];
   renderItemLeft?: (item: string) => ReactNode;
   renderItemRight?: (item: string) => ReactNode;
-  extraData?: unknown;
 }
 
 const DURATION = env.e2e ? 0 : 250;
@@ -65,7 +64,6 @@ export const SelectSheet = ({
   unavailableOptions,
   renderItemLeft,
   renderItemRight,
-  extraData,
 }: Props) => {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -247,7 +245,6 @@ export const SelectSheet = ({
             <FlatList
               style={{ flex: 1 }}
               data={filteredOptions}
-              extraData={extraData}
               keyboardShouldPersistTaps="handled"
               keyExtractor={(item) => item}
               contentContainerStyle={{
