@@ -18,7 +18,8 @@ import { SkipDayDialog } from "./SkipDayDialog";
 export const CompleteSession = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { exercises, currentExIdx, isSessionComplete } = useCurrentSession();
+  const { exercises, currentExIdx, isSessionComplete, isLoading } =
+    useCurrentSession();
   const { colors } = useTheme();
   const { scheme } = useThemePreference();
   const [isFinishing, setIsFinishing] = useState(false);
@@ -51,11 +52,14 @@ export const CompleteSession = () => {
   );
 
   useEffect(() => {
-    if (!exercises.length)
+    // Only bounce back once the program has actually loaded and the session is
+    // genuinely empty — otherwise a cold launch (program still fetching) would
+    // redirect away before the exercises arrive.
+    if (!isLoading && !exercises.length)
       navigation.navigate("Tabs", { screen: "Dashboard" }, { pop: true });
-  }, [exercises, navigation]);
+  }, [isLoading, exercises, navigation]);
 
-  if (!exercises.length) return <LogoSpinner />;
+  if (isLoading || !exercises.length) return <LogoSpinner />;
 
   const clampedPageIdx = Math.min(pageIdx, exercises.length - 1);
 

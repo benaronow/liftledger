@@ -10,7 +10,7 @@ import { AvatarButton } from "./AvatarButton";
 import { ConnectionError } from "./ConnectionError";
 import { LogoutButton } from "./LogoutButton";
 import { LogoSpinner } from "../../components/LogoSpinner";
-import { HeaderTimer } from "../../components/Timer";
+import { HeaderTimer } from "./HeaderTimer";
 import { TimerFinishedOverlay } from "./TimerFinishedOverlay";
 import { Account } from "../../Account";
 import { useThemePreference } from "../../providers/ThemeProvider";

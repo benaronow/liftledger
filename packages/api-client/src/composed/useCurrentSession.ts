@@ -9,7 +9,7 @@ export const isExerciseComplete = (exercise: Exercise) =>
   );
 
 export const useCurrentSession = () => {
-  const { data: curProgram } = useProgram();
+  const { data: curProgram, isLoading } = useProgram();
 
   const exercises = useMemo<Exercise[]>(
     () =>
@@ -39,5 +39,11 @@ export const useCurrentSession = () => {
     [exercises],
   );
 
-  return { exercises, currentExIdx, isSessionStarted, isSessionComplete };
+  return {
+    exercises,
+    currentExIdx,
+    isSessionStarted,
+    isSessionComplete,
+    isLoading,
+  };
 };

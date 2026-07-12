@@ -1,9 +1,14 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useEffect, useRef, useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { AppState, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, Text, useTheme } from "react-native-paper";
-import { useTimerCountdown } from "../../components/Timer";
+import {
+  ensureTimerNotificationSetup,
+  useRestTimerNotification,
+  useTimerAlarm,
+  useTimerCountdown,
+} from "../../components/timer";
 import { navigationRef } from "../navigationRef";
 import { FONT, SPACING } from "../../theme";
 
@@ -11,29 +16,73 @@ export const TimerFinishedOverlay = () => {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const { isDone, timerEnd, clearTimer } = useTimerCountdown();
+  const [overlayVisible, setOverlayVisible] = useState(false);
+  const [backgroundedDuringTimer, setBackgroundedDuringTimer] = useState(false);
+  const mountedAtTime = useMemo(() => Date.now(), []);
 
-  const mountedAt = useRef(Date.now());
-  const [visible, setVisible] = useState(false);
-  const prevDone = useRef(isDone);
-  useEffect(() => {
-    const finishedLive = !!timerEnd && timerEnd.getTime() > mountedAt.current;
-    if (isDone && !prevDone.current && finishedLive) {
-      setVisible(true);
-      clearTimer();
-    }
-    prevDone.current = isDone;
-  }, [isDone, timerEnd, clearTimer]);
-
-  if (!visible) return null;
+  const goToCompleteSession = () => {
+    if (navigationRef.isReady()) navigationRef.navigate("CompleteSession");
+  };
 
   const onCompleteDay =
     navigationRef.isReady() &&
     navigationRef.getCurrentRoute()?.name === "CompleteSession";
 
-  const goToWorkout = () => {
-    setVisible(false);
-    navigationRef.navigate("CompleteSession");
-  };
+  const dismiss = useCallback(() => {
+    setOverlayVisible(false);
+    clearTimer();
+  }, [clearTimer]);
+
+  const goToWorkout = useCallback(() => {
+    dismiss();
+    goToCompleteSession();
+  }, [dismiss]);
+
+  useTimerAlarm(overlayVisible);
+  useRestTimerNotification();
+
+  useEffect(() => {
+    ensureTimerNotificationSetup();
+  }, []);
+
+  useEffect(() => {
+    if (timerEnd && timerEnd.getTime() > Date.now()) {
+      setBackgroundedDuringTimer(false);
+    }
+  }, [timerEnd]);
+
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (next) => {
+      if (next === "background") {
+        setBackgroundedDuringTimer(true);
+      } else if (
+        next === "active" &&
+        timerEnd &&
+        timerEnd.getTime() > Date.now()
+      ) {
+        setBackgroundedDuringTimer(false);
+      }
+    });
+
+    return () => sub.remove();
+  }, [timerEnd]);
+
+  useEffect(() => {
+    if (!isDone || !timerEnd) return;
+
+    const finishedWhileAway =
+      timerEnd.getTime() < mountedAtTime || backgroundedDuringTimer;
+
+    if (!finishedWhileAway) {
+      setOverlayVisible(true);
+    } else {
+      setOverlayVisible(false);
+      clearTimer();
+      goToCompleteSession();
+    }
+  }, [isDone, timerEnd, clearTimer, mountedAtTime, backgroundedDuringTimer]);
+
+  if (!overlayVisible) return null;
 
   return (
     <View
@@ -53,7 +102,7 @@ export const TimerFinishedOverlay = () => {
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Dismiss"
-        onPress={() => setVisible(false)}
+        onPress={dismiss}
         hitSlop={16}
         style={{
           position: "absolute",
