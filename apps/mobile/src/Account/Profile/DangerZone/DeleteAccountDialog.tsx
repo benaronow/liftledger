@@ -27,8 +27,8 @@ export const DeleteAccountDialog = ({ open, onClose }: Props) => {
     try {
       await triggerDeleteMe();
       await clearSession();
-    } catch (e: unknown) {
-      setError((e as Error).message ?? "Failed to delete account");
+    } catch {
+      setError("Failed to delete account.");
     }
   };
 

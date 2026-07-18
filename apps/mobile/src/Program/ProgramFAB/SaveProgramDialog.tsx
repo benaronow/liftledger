@@ -60,7 +60,7 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
       navigation.navigate("Dashboard");
     } catch {
       setTransitioning(false);
-      showSnackbar("Error saving program. Please try again.");
+      showSnackbar("Error saving program. Please try again.", "error");
     }
   };
 

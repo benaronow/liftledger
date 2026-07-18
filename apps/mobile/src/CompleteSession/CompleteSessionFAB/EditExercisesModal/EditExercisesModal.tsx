@@ -177,6 +177,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
         editor.type === "add"
           ? "Failed to add exercise. Please try again."
           : "Failed to edit exercise. Please try again.",
+        "error",
       );
     }
   };
@@ -187,7 +188,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
       await saveExercises(exercises.toSpliced(deletingIdx, 1));
       setDeletingIdx(undefined);
     } catch {
-      showSnackbar("Failed to delete exercise. Please try again.");
+      showSnackbar("Failed to delete exercise. Please try again.", "error");
     }
   };
 

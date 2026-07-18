@@ -31,12 +31,6 @@ const DEFAULT_TIMER_SETTINGS: TimerSettings = {
   alarm: "alarm_1",
 };
 
-const errorMessage = (e: unknown, fallback: string): string => {
-  const data = (e as { response?: { data?: { error?: string } } })?.response
-    ?.data;
-  return data?.error ?? (e as Error)?.message ?? fallback;
-};
-
 export const CreateAccount = () => {
   const { user } = useAuth0();
   const { colors } = useTheme();
@@ -55,7 +49,6 @@ export const CreateAccount = () => {
   const email = user?.email ?? "";
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
-  const [error, setError] = useState("");
 
   useEffect(() => {
     if (isNonConnectionUser && profile?.username) setUsername(profile.username);
@@ -69,7 +62,6 @@ export const CreateAccount = () => {
 
   const handleCreate = useCallback(async () => {
     if (!user?.sub) return;
-    setError("");
     try {
       await createUser({
         auth0Id: user.sub,
@@ -78,10 +70,8 @@ export const CreateAccount = () => {
         fullName: fullName.trim(),
         timer: { settings: DEFAULT_TIMER_SETTINGS },
       });
-    } catch (e: unknown) {
-      const msg = errorMessage(e, "Failed to create account");
-      setError(msg);
-      showSnackbar(msg, "error");
+    } catch {
+      showSnackbar("Failed to create account.", "error");
     }
   }, [user?.sub, email, username, fullName, createUser, showSnackbar]);
 
@@ -144,11 +134,6 @@ export const CreateAccount = () => {
                 },
               }}
             />
-            {error !== "" && (
-              <Text style={{ color: colors.error, textAlign: "center" }}>
-                {error}
-              </Text>
-            )}
             <View style={{ gap: SPACING.sm, marginTop: SPACING.sm }}>
               <Button
                 mode="contained"

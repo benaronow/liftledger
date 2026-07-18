@@ -1,5 +1,4 @@
 import { useRequestPasswordReset } from "@liftledger/api-client";
-import { AxiosError } from "axios";
 import { View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { ConfirmationDialog } from "../../../../components/ConfirmationDialog";
@@ -21,10 +20,8 @@ export const ResetPasswordDialog = ({ open, onClose }: Props) => {
     try {
       await requestPasswordReset();
       showSnackbar("Password reset email sent", "success");
-    } catch (e: unknown) {
-      const message = (e as AxiosError<{ error?: string }>)?.response?.data
-        ?.error;
-      showSnackbar(message ?? "Failed to send reset email", "error");
+    } catch {
+      showSnackbar("Failed to send reset email.", "error");
     } finally {
       onClose();
     }

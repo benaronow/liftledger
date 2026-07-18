@@ -29,9 +29,9 @@ export const QuitProgramDialog = ({ open, onClose }: Props) => {
       onClose();
       navigation.setParams({ duplicateFrom: undefined });
       navigation.navigate("Dashboard");
-    } catch (e: unknown) {
+    } catch {
       setTransitioning(false);
-      showSnackbar((e as Error).message || "Failed to quit program");
+      showSnackbar("Failed to quit program.", "error");
     }
   };
 
