@@ -1,4 +1,9 @@
-import { useClearTimerEnd, useTimerEnd } from "@liftledger/api-client";
+import {
+  useClearTimerEnd,
+  useTimerEnd,
+  useTimerSettings,
+} from "@liftledger/api-client";
+import type { TimerAlarm } from "@liftledger/shared";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
@@ -19,10 +24,22 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const REST_TIMER_CHANNEL_ID = "rest-timer";
 const REST_TIMER_NOTIFICATION_TYPE = "rest-timer";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const ALARM_SOUND = require("../../assets/alarm.wav");
+
+const ALARM_SOUNDS: Record<Exclude<TimerAlarm, "none">, number> = {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  alarm_1: require("../../assets/alarm_1.wav"),
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  alarm_2: require("../../assets/alarm_2.wav"),
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  alarm_3: require("../../assets/alarm_3.wav"),
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  alarm_4: require("../../assets/alarm_4.wav"),
+};
+
+const channelIdForAlarm = (alarm: TimerAlarm) => `rest-timer-${alarm}`;
+const soundFileForAlarm = (alarm: TimerAlarm) =>
+  alarm === "none" ? null : `${alarm}.wav`;
 
 export const ensureTimerNotificationSetup = async () => {
   try {
@@ -35,12 +52,23 @@ export const ensureTimerNotificationSetup = async () => {
       });
     }
     if (Platform.OS === "android") {
-      await Notifications.setNotificationChannelAsync(REST_TIMER_CHANNEL_ID, {
-        name: "Rest timer",
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 500, 250, 500, 250, 500, 250, 500],
-        sound: "alarm.wav",
-      });
+      const alarms: TimerAlarm[] = [
+        "alarm_1",
+        "alarm_2",
+        "alarm_3",
+        "alarm_4",
+        "none",
+      ];
+      await Promise.all(
+        alarms.map((alarm) =>
+          Notifications.setNotificationChannelAsync(channelIdForAlarm(alarm), {
+            name: alarm === "none" ? "Rest timer (silent)" : "Rest timer",
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 500, 250, 500, 250, 500, 250, 500],
+            sound: soundFileForAlarm(alarm),
+          }),
+        ),
+      );
     }
   } catch {
     // Notifications are best-effort; the in-app overlay is the fallback.
@@ -52,7 +80,12 @@ export const clearTimerNotifications = () =>
 
 export const useRestTimerNotification = () => {
   const { data: timerEndData } = useTimerEnd();
+  const { data: timerSettingsData } = useTimerSettings();
   const scheduledIdRef = useRef<string | null>(null);
+
+  const settings = timerSettingsData?.timerSettings;
+  const notify = settings?.notify ?? true;
+  const alarm = settings?.alarm ?? "alarm_1";
 
   const timerEnd = useMemo(() => {
     const raw = timerEndData?.timerEnd;
@@ -67,20 +100,22 @@ export const useRestTimerNotification = () => {
       scheduledIdRef.current = null;
     }
 
-    if (!timerEnd || timerEnd.getTime() <= Date.now()) return;
+    if (!notify || !timerEnd || timerEnd.getTime() <= Date.now()) return;
+
+    const soundFile = soundFileForAlarm(alarm);
 
     let cancelled = false;
     Notifications.scheduleNotificationAsync({
       content: {
         title: "Rest complete",
         body: "Time for your next set.",
-        sound: "alarm.wav",
+        sound: soundFile ?? false,
         data: { type: REST_TIMER_NOTIFICATION_TYPE },
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,
         date: timerEnd,
-        channelId: REST_TIMER_CHANNEL_ID,
+        channelId: channelIdForAlarm(alarm),
       },
     })
       .then((id) => {
@@ -95,15 +130,21 @@ export const useRestTimerNotification = () => {
     return () => {
       cancelled = true;
     };
-  }, [timerEnd]);
+  }, [timerEnd, notify, alarm]);
 };
 
 export const useTimerAlarm = (active: boolean) => {
-  const player = useAudioPlayer(active ? ALARM_SOUND : null);
+  const { data: timerSettingsData } = useTimerSettings();
+  const alarm = timerSettingsData?.timerSettings?.alarm ?? "alarm_1";
+  const soundActive = active && alarm !== "none";
+
+  const player = useAudioPlayer(
+    active && alarm !== "none" ? ALARM_SOUNDS[alarm] : null,
+  );
   const { isLoaded } = useAudioPlayerStatus(player);
 
   useEffect(() => {
-    if (!active || !isLoaded) return;
+    if (!soundActive || !isLoaded) return;
 
     setAudioModeAsync({
       playsInSilentMode: true,
@@ -115,6 +156,18 @@ export const useTimerAlarm = (active: boolean) => {
     player.seekTo(0).catch(() => {});
     player.play();
 
+    return () => {
+      player.pause();
+      setAudioModeAsync({
+        playsInSilentMode: false,
+        interruptionMode: "mixWithOthers",
+      }).catch(() => {});
+    };
+  }, [soundActive, isLoaded, player]);
+
+  useEffect(() => {
+    if (!active) return;
+
     const buzz = () =>
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(
         () => {},
@@ -122,15 +175,8 @@ export const useTimerAlarm = (active: boolean) => {
     buzz();
     const hapticInterval = setInterval(buzz, 800);
 
-    return () => {
-      clearInterval(hapticInterval);
-      player.pause();
-      setAudioModeAsync({
-        playsInSilentMode: false,
-        interruptionMode: "mixWithOthers",
-      }).catch(() => {});
-    };
-  }, [active, isLoaded, player]);
+    return () => clearInterval(hapticInterval);
+  }, [active]);
 };
 
 export const useTimerCountdown = () => {

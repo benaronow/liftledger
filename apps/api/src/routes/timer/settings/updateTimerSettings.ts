@@ -3,13 +3,13 @@ import UserModel from "@liftledger/shared/models/user";
 import ProgramModel from "@liftledger/shared/models/program";
 import type { TimerSettings } from "@liftledger/shared";
 
-// Fields a client may patch. `end` is deliberately excluded — it's owned by the
-// timer/end routes.
 const PATCHABLE_FIELDS = [
   "presets",
   "defaultEnabled",
   "defaultTime",
   "exerciseOverrides",
+  "notify",
+  "alarm",
 ] as const;
 
 export const updateTimerSettings = async ({

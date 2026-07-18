@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { useAuth0 } from "react-native-auth0";
 import { useAuth0Profile, useCreateUser } from "@liftledger/api-client";
+import type { TimerSettings } from "@liftledger/shared";
 import {
   ActivityIndicator,
   Button,
@@ -21,11 +22,13 @@ import { useSnackbar } from "../providers/SnackbarProvider";
 import { useLogout } from "../RootNavigator/AuthenticatedRouter/useLogout";
 import { SectionCard } from "../components/SectionCard";
 
-const DEFAULT_TIMER_SETTINGS = {
+const DEFAULT_TIMER_SETTINGS: TimerSettings = {
   presets: { 0: 120, 1: 150, 2: 180, 3: 210, 4: 240 },
   defaultEnabled: true,
   defaultTime: 120,
   exerciseOverrides: {},
+  notify: true,
+  alarm: "alarm_1",
 };
 
 const errorMessage = (e: unknown, fallback: string): string => {
