@@ -99,22 +99,16 @@ export const useRestTimerNotification = () => {
 };
 
 export const useTimerAlarm = (active: boolean) => {
-  const player = useAudioPlayer(ALARM_SOUND);
+  const player = useAudioPlayer(active ? ALARM_SOUND : null);
   const { isLoaded } = useAudioPlayerStatus(player);
 
   useEffect(() => {
+    if (!active || !isLoaded) return;
+
     setAudioModeAsync({
       playsInSilentMode: true,
       interruptionMode: "doNotMix",
     }).catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    // The asset loads asynchronously; calling play() before it's ready is a
-    // silent no-op (the cause of the alarm sometimes not sounding). Gating on
-    // isLoaded means this re-runs and starts playback once it's ready, even if
-    // `active` arrived first.
-    if (!active || !isLoaded) return;
 
     player.loop = true;
     player.volume = 1;
@@ -131,6 +125,10 @@ export const useTimerAlarm = (active: boolean) => {
     return () => {
       clearInterval(hapticInterval);
       player.pause();
+      setAudioModeAsync({
+        playsInSilentMode: false,
+        interruptionMode: "mixWithOthers",
+      }).catch(() => {});
     };
   }, [active, isLoaded, player]);
 };
