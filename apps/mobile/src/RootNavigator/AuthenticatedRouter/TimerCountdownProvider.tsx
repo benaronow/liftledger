@@ -46,9 +46,7 @@ const ALARM_SOUNDS: Record<Exclude<TimerAlarm, "none">, number> = {
   alarm_4: require("../../../assets/alarm_4.wav"),
 };
 
-const channelIdForAlarm = (alarm: TimerAlarm) => `rest-timer-${alarm}`;
-const soundFileForAlarm = (alarm: TimerAlarm) =>
-  alarm === "none" ? null : `${alarm}.wav`;
+const CHANNEL_ID = "rest-timer";
 
 export const ensureTimerNotificationSetup = async () => {
   try {
@@ -61,23 +59,10 @@ export const ensureTimerNotificationSetup = async () => {
       });
     }
     if (Platform.OS === "android") {
-      const alarms: TimerAlarm[] = [
-        "alarm_1",
-        "alarm_2",
-        "alarm_3",
-        "alarm_4",
-        "none",
-      ];
-      await Promise.all(
-        alarms.map((alarm) =>
-          Notifications.setNotificationChannelAsync(channelIdForAlarm(alarm), {
-            name: alarm === "none" ? "Rest timer (silent)" : "Rest timer",
-            importance: Notifications.AndroidImportance.MAX,
-            vibrationPattern: [0, 500, 250, 500, 250, 500, 250, 500],
-            sound: soundFileForAlarm(alarm),
-          }),
-        ),
-      );
+      await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
+        name: "Rest timer",
+        importance: Notifications.AndroidImportance.MAX,
+      });
     }
   } catch {
     // Notifications are best-effort; the in-app overlay is the fallback.
@@ -94,7 +79,6 @@ export const useRestTimerNotification = () => {
 
   const settings = timerSettingsData?.timerSettings;
   const notify = settings?.notify ?? true;
-  const alarm = settings?.alarm ?? "alarm_1";
 
   const timerEnd = useMemo(() => {
     const raw = timerEndData?.timerEnd;
@@ -111,20 +95,18 @@ export const useRestTimerNotification = () => {
 
     if (!notify || !timerEnd || timerEnd.getTime() <= Date.now()) return;
 
-    const soundFile = soundFileForAlarm(alarm);
-
     let cancelled = false;
     Notifications.scheduleNotificationAsync({
       content: {
         title: "Rest complete",
         body: "Time for your next set.",
-        sound: soundFile ?? false,
+        sound: "default",
         data: { type: REST_TIMER_NOTIFICATION_TYPE },
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,
         date: timerEnd,
-        channelId: channelIdForAlarm(alarm),
+        channelId: CHANNEL_ID,
       },
     })
       .then((id) => {
@@ -139,7 +121,7 @@ export const useRestTimerNotification = () => {
     return () => {
       cancelled = true;
     };
-  }, [timerEnd, notify, alarm]);
+  }, [timerEnd, notify]);
 };
 
 export const useTimerAlarm = (active: boolean) => {
