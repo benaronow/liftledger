@@ -4,7 +4,16 @@ import {
   useTimerSettings,
 } from "@liftledger/api-client";
 import type { TimerAlarm } from "@liftledger/shared";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import * as Haptics from "expo-haptics";
@@ -13,7 +22,8 @@ import {
   useAudioPlayer,
   useAudioPlayerStatus,
 } from "expo-audio";
-import { useSnackbar } from "../providers/SnackbarProvider";
+import { useSnackbar } from "../../providers/SnackbarProvider";
+import { TimerFinishedOverlay } from "./TimerFinishedOverlay";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -28,13 +38,13 @@ const REST_TIMER_NOTIFICATION_TYPE = "rest-timer";
 
 const ALARM_SOUNDS: Record<Exclude<TimerAlarm, "none">, number> = {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  alarm_1: require("../../assets/alarm_1.wav"),
+  alarm_1: require("../../../assets/alarm_1.wav"),
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  alarm_2: require("../../assets/alarm_2.wav"),
+  alarm_2: require("../../../assets/alarm_2.wav"),
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  alarm_3: require("../../assets/alarm_3.wav"),
+  alarm_3: require("../../../assets/alarm_3.wav"),
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  alarm_4: require("../../assets/alarm_4.wav"),
+  alarm_4: require("../../../assets/alarm_4.wav"),
 };
 
 const channelIdForAlarm = (alarm: TimerAlarm) => `rest-timer-${alarm}`;
@@ -179,7 +189,25 @@ export const useTimerAlarm = (active: boolean) => {
   }, [active]);
 };
 
-export const useTimerCountdown = () => {
+type TimerCountdown = {
+  timerEnd: Date | undefined;
+  isActive: boolean;
+  isDone: boolean;
+  timeString: string;
+  clearTimer: () => Promise<void>;
+};
+
+const TimerCountdownContext = createContext<TimerCountdown | null>(null);
+
+// A single countdown shared by every timer surface (header pill, workout FAB,
+// finished overlay). Each of those previously ran its own 1s setInterval; this
+// runs exactly one, and stops it the moment the timer reaches zero rather than
+// ticking every second forever until the timer is cleared.
+export const TimerCountdownProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
   const { data: timerEndData } = useTimerEnd();
   const { send: triggerClearTimerEnd } = useClearTimerEnd();
   const { showSnackbar } = useSnackbar();
@@ -190,11 +218,19 @@ export const useTimerCountdown = () => {
     return raw instanceof Date ? raw : new Date(raw);
   }, [timerEndData?.timerEnd]);
 
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(() => new Date());
   useEffect(() => {
     if (!timerEnd) return;
-    setCurrentTime(new Date());
-    const intervalId = setInterval(() => setCurrentTime(new Date()), 1000);
+    const now = new Date();
+    setCurrentTime(now);
+    // Already done — no reason to spin up a per-second interval for a timer
+    // that has nothing left to count down.
+    if (timerEnd.getTime() <= now.getTime()) return;
+    const intervalId = setInterval(() => {
+      const tick = new Date();
+      setCurrentTime(tick);
+      if (tick.getTime() >= timerEnd.getTime()) clearInterval(intervalId);
+    }, 1000);
     return () => clearInterval(intervalId);
   }, [timerEnd]);
 
@@ -221,11 +257,30 @@ export const useTimerCountdown = () => {
     }
   }, [triggerClearTimerEnd, showSnackbar]);
 
-  return {
-    timerEnd,
-    isActive: !!timerEnd,
-    isDone: !!timerEnd && secondsLeft === 0,
-    timeString,
-    clearTimer,
-  };
+  const value = useMemo<TimerCountdown>(
+    () => ({
+      timerEnd,
+      isActive: !!timerEnd,
+      isDone: !!timerEnd && secondsLeft === 0,
+      timeString,
+      clearTimer,
+    }),
+    [timerEnd, secondsLeft, timeString, clearTimer],
+  );
+
+  return (
+    <TimerCountdownContext.Provider value={value}>
+      {children}
+      <TimerFinishedOverlay />
+    </TimerCountdownContext.Provider>
+  );
+};
+
+export const useTimerCountdown = (): TimerCountdown => {
+  const ctx = useContext(TimerCountdownContext);
+  if (!ctx)
+    throw new Error(
+      "useTimerCountdown must be used within a TimerCountdownProvider",
+    );
+  return ctx;
 };

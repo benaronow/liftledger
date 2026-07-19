@@ -11,7 +11,7 @@ import {
   useTheme,
 } from "react-native-paper";
 import { FONT, RADIUS, SPACING } from "../../theme";
-import { useTimerCountdown } from "../../components/timer";
+import { useTimerCountdown } from "../../RootNavigator/AuthenticatedRouter/TimerCountdownProvider";
 import { EditExercisesModal } from "./EditExercisesModal/EditExercisesModal";
 import { EditGymDialog } from "./EditGymDialog";
 import { TimerSettingsDialog } from "./TimerSettingsDialog";

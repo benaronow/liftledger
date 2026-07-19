@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { View } from "react-native";
 import { Text, TouchableRipple, useTheme } from "react-native-paper";
-import { useTimerCountdown } from "../../components/timer";
+import { useTimerCountdown } from "./TimerCountdownProvider";
 import type { RootStackParamList } from "../types";
 import { FONT, RADIUS, SPACING } from "../../theme";
 

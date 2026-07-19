@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useAuth0 } from "react-native-auth0";
 import { useSWRConfig } from "swr";
-import { clearTimerNotifications } from "../../components/timer";
+import { clearTimerNotifications } from "./TimerCountdownProvider";
 
 export const useLogout = () => {
   const { clearSession } = useAuth0();

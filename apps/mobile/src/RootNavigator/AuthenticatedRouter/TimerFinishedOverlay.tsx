@@ -8,7 +8,7 @@ import {
   useRestTimerNotification,
   useTimerAlarm,
   useTimerCountdown,
-} from "../../components/timer";
+} from "./TimerCountdownProvider";
 import { navigationRef } from "../navigationRef";
 import { FONT, SPACING } from "../../theme";
 

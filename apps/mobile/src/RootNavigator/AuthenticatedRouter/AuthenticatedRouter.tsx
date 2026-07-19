@@ -11,7 +11,7 @@ import { ConnectionError } from "./ConnectionError";
 import { LogoutButton } from "./LogoutButton";
 import { LogoSpinner } from "../../components/LogoSpinner";
 import { HeaderTimer } from "./HeaderTimer";
-import { TimerFinishedOverlay } from "./TimerFinishedOverlay";
+import { TimerCountdownProvider } from "./TimerCountdownProvider";
 import { Account } from "../../Account";
 import { useThemePreference } from "../../providers/ThemeProvider";
 import { CompleteSession } from "../../CompleteSession";
@@ -76,7 +76,7 @@ export const AuthenticatedRouter = () => {
 
   // Verified Auth0 profile and db user both loaded
   return (
-    <>
+    <TimerCountdownProvider>
       <Stack.Navigator
         screenOptions={{
           headerStyle: { backgroundColor: colors.primaryContainer },
@@ -99,9 +99,6 @@ export const AuthenticatedRouter = () => {
         <Stack.Screen
           name="CompleteSession"
           component={CompleteSession}
-          // Disable swipe-to-go-back: a horizontal drag on the progress chart
-          // (gifted-charts pointer) otherwise gets grabbed by the pop gesture and
-          // slides back to the dashboard. The header back button still works.
           options={{ title: "Workout", gestureEnabled: false }}
         />
         <Stack.Screen
@@ -113,7 +110,6 @@ export const AuthenticatedRouter = () => {
           }}
         />
       </Stack.Navigator>
-      <TimerFinishedOverlay />
-    </>
+    </TimerCountdownProvider>
   );
 };

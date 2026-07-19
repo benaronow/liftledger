@@ -3,20 +3,35 @@ import {
   useContext,
   useEffect,
   useRef,
+  useState,
   type ReactNode,
 } from "react";
-import { Animated, Easing } from "react-native";
+import { Animated, AppState, Easing } from "react-native";
 import { env } from "../../../config/env";
 
 export const PULSE_PERIOD = 2000;
+
+export const useAppActive = () => {
+  const [active, setActive] = useState(
+    () => AppState.currentState === "active",
+  );
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (next) =>
+      setActive(next === "active"),
+    );
+    return () => sub.remove();
+  }, []);
+  return active;
+};
 
 const PulseContext = createContext<Animated.Value | null>(null);
 
 export const PulseProvider = ({ children }: { children: ReactNode }) => {
   const phase = useRef(new Animated.Value(0)).current;
+  const appActive = useAppActive();
 
   useEffect(() => {
-    if (env.e2e) return;
+    if (env.e2e || !appActive) return;
     const loop = Animated.loop(
       Animated.timing(phase, {
         toValue: 1,
@@ -27,7 +42,7 @@ export const PulseProvider = ({ children }: { children: ReactNode }) => {
     );
     loop.start();
     return () => loop.stop();
-  }, [phase]);
+  }, [phase, appActive]);
 
   return (
     <PulseContext.Provider value={phase}>{children}</PulseContext.Provider>

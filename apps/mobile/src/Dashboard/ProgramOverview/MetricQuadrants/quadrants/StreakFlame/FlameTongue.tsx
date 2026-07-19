@@ -11,10 +11,11 @@ type Props = {
   index: number;
   centerX: number;
   baseColor: string;
+  paused: boolean;
 };
 
-export const FlameTongue = ({ index, centerX, baseColor }: Props) => {
-  const tongueAnimation = useTongueAnimation();
+export const FlameTongue = ({ index, centerX, baseColor, paused }: Props) => {
+  const tongueAnimation = useTongueAnimation(paused);
 
   const heightMultiplier = 0.65 + Math.random() * 0.4;
   const tongueHeight = MAX_TONGUE_HEIGHT * heightMultiplier + BASE_SINK;

@@ -4,6 +4,7 @@ import { SPACING } from "../../../../../theme";
 import { STREAK_TARGET, STREAK_COLOR } from "../StreakQuadrant";
 import { FlameTongue, MAX_TONGUE_HEIGHT, TONGUE_WIDTH } from "./FlameTongue";
 import { getStreak } from "../getStreak";
+import { useAppActive } from "../../PulseProvider";
 
 const GAP = SPACING.lg;
 const BAR_INSET = SPACING.sm;
@@ -23,6 +24,7 @@ export const StreakFlame = ({
   barHeight,
   keepOutRadius: R,
 }: Props) => {
+  const appActive = useAppActive();
   const streak = getStreak(program);
   const fill = streak / STREAK_TARGET;
 
@@ -59,6 +61,7 @@ export const StreakFlame = ({
           index={i}
           centerX={HALF_TONGUE + (span / (count - 1)) * i}
           baseColor={STREAK_COLOR}
+          paused={!appActive}
         />
       ))}
     </View>
