@@ -41,7 +41,7 @@ const ALARM_OPTIONS: { id: TimerAlarm; label: string }[] = [
 const labelForAlarm = (alarm: TimerAlarm) =>
   ALARM_OPTIONS.find((o) => o.id === alarm)?.label ?? "Alarm 1";
 
-export const AlarmSoundSelect = ({ disabled }: { disabled?: boolean }) => {
+export const AlarmSoundSelect = () => {
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
   const { data: timerSettingsData } = useTimerSettings();
@@ -110,13 +110,9 @@ export const AlarmSoundSelect = ({ disabled }: { disabled?: boolean }) => {
             label="Timer sound"
             value={labelForAlarm(alarm)}
             editable={false}
-            disabled={disabled}
           />
         </View>
-        <Pressable
-          style={StyleSheet.absoluteFill}
-          onPress={disabled ? undefined : openModal}
-        />
+        <Pressable style={StyleSheet.absoluteFill} onPress={openModal} />
       </View>
       <ConfirmationDialog
         open={open}

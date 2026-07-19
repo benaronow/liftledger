@@ -23,7 +23,6 @@ import {
   useAudioPlayerStatus,
 } from "expo-audio";
 import { useSnackbar } from "../../providers/SnackbarProvider";
-import { TimerFinishedOverlay } from "./TimerFinishedOverlay";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -271,7 +270,6 @@ export const TimerCountdownProvider = ({
   return (
     <TimerCountdownContext.Provider value={value}>
       {children}
-      <TimerFinishedOverlay />
     </TimerCountdownContext.Provider>
   );
 };

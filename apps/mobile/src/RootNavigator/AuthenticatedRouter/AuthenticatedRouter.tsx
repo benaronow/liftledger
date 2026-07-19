@@ -12,6 +12,7 @@ import { LogoutButton } from "./LogoutButton";
 import { LogoSpinner } from "../../components/LogoSpinner";
 import { HeaderTimer } from "./HeaderTimer";
 import { TimerCountdownProvider } from "./TimerCountdownProvider";
+import { TimerFinishedOverlay } from "./TimerFinishedOverlay";
 import { Account } from "../../Account";
 import { useThemePreference } from "../../providers/ThemeProvider";
 import { CompleteSession } from "../../CompleteSession";
@@ -110,6 +111,7 @@ export const AuthenticatedRouter = () => {
           }}
         />
       </Stack.Navigator>
+      <TimerFinishedOverlay />
     </TimerCountdownProvider>
   );
 };

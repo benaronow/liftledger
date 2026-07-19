@@ -4,72 +4,22 @@ import {
   useTimerSettings,
   useUpdateTimerSettings,
 } from "@liftledger/api-client";
-import { Switch, Text, useTheme } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import { ConfirmationDialog } from "../../../components/ConfirmationDialog";
 import { AppTextInput } from "../../../components/inputs";
 import { SectionCard } from "../../../components/SectionCard";
 import { TimePicker } from "../../../components/TimePicker";
 import { useSnackbar } from "../../../providers/SnackbarProvider";
-import { FONT, SPACING } from "../../../theme";
+import { SPACING } from "../../../theme";
 import { AlarmSoundSelect } from "./AlarmSoundSelect";
 import {
   ExerciseTimerOverridesModal,
   formatTime,
 } from "./ExerciseTimerOverridesModal";
-
-const ToggleSetting = ({
-  label,
-  value,
-  onChange,
-  disabled,
-}: {
-  label: string;
-  value: boolean;
-  onChange: (next: boolean) => Promise<unknown>;
-  disabled?: boolean;
-}) => {
-  const { colors } = useTheme();
-  const { showSnackbar } = useSnackbar();
-  const [optimistic, setOptimistic] = useState<boolean | null>(null);
-  const shown = optimistic ?? value;
-
-  const toggle = async () => {
-    const next = !shown;
-    setOptimistic(next);
-    try {
-      await onChange(next);
-    } catch {
-      showSnackbar("Failed to update timer setting.", "error");
-    } finally {
-      setOptimistic(null);
-    }
-  };
-
-  return (
-    <View
-      style={{ flexDirection: "row", alignItems: "center", gap: SPACING.sm }}
-    >
-      <Switch
-        value={shown}
-        onValueChange={toggle}
-        disabled={disabled}
-        color={colors.primary}
-        style={{ transform: [{ scale: 0.85 }] }}
-      />
-      <Text
-        style={{
-          flexShrink: 1,
-          color: disabled ? colors.onSurfaceDisabled : colors.onSurface,
-          fontSize: FONT.base,
-        }}
-      >
-        {label}
-      </Text>
-    </View>
-  );
-};
+import { ToggleSetting } from "./ToggleSetting";
 
 export const TimerManagement = () => {
+  const { colors } = useTheme();
   const { data: timerSettingsData } = useTimerSettings();
   const { send: triggerUpdateTimerSettings } = useUpdateTimerSettings();
   const { showSnackbar } = useSnackbar();
@@ -103,18 +53,28 @@ export const TimerManagement = () => {
   return (
     <SectionCard title="Rest Timer">
       <ToggleSetting
-        label="Start timer automatically"
+        label="Notifications"
+        description="Notification sent on timer completion"
+        value={notify}
+        onChange={(enabled) =>
+          triggerUpdateTimerSettings({ patch: { notify: enabled } })
+        }
+      />
+      <AlarmSoundSelect />
+      <View style={{ paddingVertical: SPACING.md }}>
+        <View
+          style={{
+            height: StyleSheet.hairlineWidth,
+            backgroundColor: colors.outlineVariant,
+          }}
+        />
+      </View>
+      <ToggleSetting
+        label="Start automatically"
+        description="Timer starts on set completion"
         value={defaultEnabled}
         onChange={(enabled) =>
           triggerUpdateTimerSettings({ patch: { defaultEnabled: enabled } })
-        }
-      />
-      <ToggleSetting
-        label="Timer notifications"
-        value={notify}
-        disabled={!defaultEnabled}
-        onChange={(enabled) =>
-          triggerUpdateTimerSettings({ patch: { notify: enabled } })
         }
       />
       <View>
@@ -131,7 +91,6 @@ export const TimerManagement = () => {
           onPress={defaultEnabled ? openEdit : undefined}
         />
       </View>
-      <AlarmSoundSelect disabled={!defaultEnabled} />
       <ExerciseTimerOverridesModal />
       <ConfirmationDialog
         open={editOpen}
