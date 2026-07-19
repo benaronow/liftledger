@@ -10,11 +10,18 @@ const BASE_SINK = 2;
 type Props = {
   index: number;
   centerX: number;
-  baseColor: string;
+  coreColor: string;
+  tipColor: string;
   paused: boolean;
 };
 
-export const FlameTongue = ({ index, centerX, baseColor, paused }: Props) => {
+export const FlameTongue = ({
+  index,
+  centerX,
+  coreColor,
+  tipColor,
+  paused,
+}: Props) => {
   const tongueAnimation = useTongueAnimation(paused);
 
   const heightMultiplier = 0.65 + Math.random() * 0.4;
@@ -51,7 +58,7 @@ export const FlameTongue = ({ index, centerX, baseColor, paused }: Props) => {
             }),
           },
         ],
-        shadowColor: "#ff7a00",
+        shadowColor: coreColor,
         shadowOpacity: 0.6,
         shadowRadius: 4,
         shadowOffset: { width: 0, height: 0 },
@@ -60,9 +67,9 @@ export const FlameTongue = ({ index, centerX, baseColor, paused }: Props) => {
       <Svg width={TONGUE_WIDTH} height={tongueHeight}>
         <Defs>
           <LinearGradient id={`tongue${index}`} x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#ff5a1f" stopOpacity={0.12} />
-            <Stop offset="0.55" stopColor="#ff7a1f" stopOpacity={1} />
-            <Stop offset="1" stopColor={baseColor} stopOpacity={1} />
+            <Stop offset="0" stopColor={tipColor} stopOpacity={0.15} />
+            <Stop offset="0.55" stopColor={tipColor} stopOpacity={1} />
+            <Stop offset="1" stopColor={coreColor} stopOpacity={1} />
           </LinearGradient>
         </Defs>
         <Path d={tonguePath} fill={`url(#tongue${index})`} />

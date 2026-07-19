@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { View, type LayoutChangeEvent } from "react-native";
+import { StyleSheet, View, type LayoutChangeEvent } from "react-native";
 import { useTheme } from "react-native-paper";
 import { BarPulse } from "./BarPulse";
 
 type Props = {
   fillPercent: number;
   color?: string;
+  baseColor?: string | null;
   pulse?: boolean;
   onLayout?: (e: LayoutChangeEvent) => void;
 };
@@ -13,6 +14,7 @@ type Props = {
 export const ContinuousBar = ({
   fillPercent,
   color,
+  baseColor,
   pulse,
   onLayout,
 }: Props) => {
@@ -29,6 +31,11 @@ export const ContinuousBar = ({
         overflow: "hidden",
       }}
     >
+      {baseColor && (
+        <View
+          style={[StyleSheet.absoluteFill, { backgroundColor: baseColor }]}
+        />
+      )}
       <View
         onLayout={(e) => setFillHeight(e.nativeEvent.layout.height)}
         style={{
