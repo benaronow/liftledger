@@ -46,8 +46,8 @@ export const ConfirmationDialog = ({
 
   return (
     <TopSheet open={open} onClose={onClose} dismissable={!confirming}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View>
+      <View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View style={{ paddingHorizontal: SPACING.lg }}>
             <View
               style={{
@@ -95,7 +95,8 @@ export const ConfirmationDialog = ({
               </View>
             )}
           </View>
-          <View
+        </TouchableWithoutFeedback>
+        <View
             style={{
               flexDirection: "row",
               justifyContent: "flex-end",
@@ -146,7 +147,6 @@ export const ConfirmationDialog = ({
             </Button>
           </View>
         </View>
-      </TouchableWithoutFeedback>
     </TopSheet>
   );
 };
