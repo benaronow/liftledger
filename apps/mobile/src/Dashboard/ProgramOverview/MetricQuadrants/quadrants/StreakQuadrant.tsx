@@ -6,7 +6,11 @@ import { useMe } from "@liftledger/api-client";
 import { useTheme } from "react-native-paper";
 import { ContinuousBar } from "../ContinuousBar";
 import { Quadrant } from "./Quadrant";
-import { getRestDaysRemaining, getStreak, withCurrentBlock } from "./getStreak";
+import {
+  getRestDaysRemaining,
+  getStreak,
+  withCurrentProgram,
+} from "./getStreak";
 import { StreakInfoDialog } from "./StreakInfoDialog";
 
 export const STREAK_TARGET = 10;
@@ -52,7 +56,7 @@ export const StreakQuadrant = ({ program, onLayout }: Props) => {
   const { data: curUser } = useMe();
   const [infoOpen, setInfoOpen] = useState(false);
 
-  const streak = getStreak(withCurrentBlock(curUser?.programs, program));
+  const streak = getStreak(withCurrentProgram(curUser?.programs, program));
   const heat = getStreakHeat(streak);
   const restDaysRemaining = getRestDaysRemaining(program);
   const restDays = program.restDays ?? 0;

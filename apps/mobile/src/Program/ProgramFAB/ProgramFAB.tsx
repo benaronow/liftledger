@@ -1,22 +1,25 @@
 import { useProgram } from "@liftledger/api-client";
+import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { View } from "react-native";
 import { FAB, useTheme } from "react-native-paper";
 import { RADIUS, SPACING } from "../../theme";
 import { FAB_EDGE, FAB_GAP, FAB_SIZE, FAB_TOP } from "../../layout";
+import type { ProgramStackNav } from "../../RootNavigator/types";
 import { useTemplate } from "../TemplateProvider";
 import { hasAnyError } from "../validateTemplate";
 import { QuitProgramDialog } from "./QuitProgramDialog";
 import { SaveProgramDialog } from "./SaveProgramDialog";
 
-export const ProgramFAB = () => {
+export const ProgramFAB = ({ mode }: { mode: "rotation" | "session" }) => {
   const { colors } = useTheme();
+  const navigation = useNavigation<ProgramStackNav<"Session">>();
   const { data: curProgram } = useProgram();
-  const { editingSessionIdx, setEditingSessionIdx, templateErrors } = useTemplate();
+  const { templateErrors } = useTemplate();
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [quitDialogOpen, setQuitDialogOpen] = useState(false);
 
-  const isEditingSession = editingSessionIdx !== -1;
+  const isEditingSession = mode === "session";
   const saveDisabled = !isEditingSession && hasAnyError(templateErrors);
 
   return (
@@ -61,7 +64,7 @@ export const ProgramFAB = () => {
             borderRadius: RADIUS.lg,
           }}
           onPress={() =>
-            isEditingSession ? setEditingSessionIdx(-1) : setSaveDialogOpen(true)
+            isEditingSession ? navigation.goBack() : setSaveDialogOpen(true)
           }
         />
       </View>

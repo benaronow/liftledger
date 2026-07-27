@@ -47,7 +47,10 @@ const programRoutes = async (app: FastifyInstance) => {
     },
   );
 
-  app.put<{ Params: ProgramParams; Body: { program: Program } }>(
+  app.put<{
+    Params: ProgramParams;
+    Body: { program: Program; historical?: boolean };
+  }>(
     "/users/:id/programs/:programId",
     { preHandler: app.authenticate },
     async (req, reply) => {
@@ -55,8 +58,8 @@ const programRoutes = async (app: FastifyInstance) => {
       const auth = await authorizeCaller(req, reply, id);
       if (!auth.ok) return;
 
-      const { program } = req.body;
-      return updateProgram({ reply, id, programId, program });
+      const { program, historical } = req.body;
+      return updateProgram({ reply, id, programId, program, historical });
     },
   );
 };

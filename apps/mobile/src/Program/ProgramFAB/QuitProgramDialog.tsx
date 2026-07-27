@@ -3,7 +3,6 @@ import { useNavigation } from "@react-navigation/native";
 import { ConfirmationDialog } from "../../components/ConfirmationDialog";
 import type { TabNav } from "../../RootNavigator/types";
 import { useSnackbar } from "../../providers/SnackbarProvider";
-import { useProgramTransition } from "../ProgramTransition";
 import { useTemplate } from "../TemplateProvider";
 
 interface Props {
@@ -15,12 +14,9 @@ export const QuitProgramDialog = ({ open, onClose }: Props) => {
   const navigation = useNavigation<TabNav<"Program">>();
   const { send: triggerQuitProgram, isLoading: quitting } = useQuitProgram();
   const { unsetTemplateProgram, setEditingRotationIdx } = useTemplate();
-  const { setTransitioning } = useProgramTransition();
   const { showSnackbar } = useSnackbar();
 
   const handleQuit = async () => {
-    setTransitioning(true);
-
     try {
       await triggerQuitProgram();
       unsetTemplateProgram();
@@ -30,7 +26,6 @@ export const QuitProgramDialog = ({ open, onClose }: Props) => {
       navigation.setParams({ duplicateFrom: undefined });
       navigation.navigate("Dashboard");
     } catch {
-      setTransitioning(false);
       showSnackbar("Failed to quit program.", "error");
     }
   };

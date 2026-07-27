@@ -43,6 +43,31 @@ export const useQuitProgram = () => {
   });
 };
 
+export const useUpdateHistoricalProgram = (programId: string) => {
+  const basePath = useProgramBasePath();
+  const { data: { curProgram } = {} } = useMe();
+  const refreshCompletedExercises = useRefreshCompletedExercises();
+  const put = usePut<
+    { program: Program; historical: true },
+    { program: Program }
+  >(`${basePath}/${programId}`, {
+    onSuccess: async (res) => {
+      if (programId === curProgram) {
+        await mutate(`${basePath}/${curProgram}`, res.program, {
+          revalidate: false,
+        });
+      }
+      await refreshMe();
+      await refreshCompletedExercises();
+    },
+  });
+
+  return {
+    ...put,
+    send: (arg: { program: Program }) => put.send({ ...arg, historical: true }),
+  };
+};
+
 export const useUpdateUserProgram = () => {
   const basePath = useProgramBasePath();
   const { data: { curProgram } = {} } = useMe();

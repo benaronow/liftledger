@@ -13,7 +13,7 @@ export const isFullySkipped = (session: Session): boolean =>
     exercise.workingSets.every((set) => !set.completed),
   );
 
-const blockTime = (program: Program): number => {
+const programTime = (program: Program): number => {
   let latest = 0;
   program.rotations.forEach((rotation) =>
     rotation.forEach((session) => {
@@ -29,7 +29,7 @@ const blockTime = (program: Program): number => {
 type DayInfo = { segment: string; restDays: number };
 
 const completedDayMap = (programs: Program[]): Map<number, DayInfo> => {
-  const ordered = [...programs].sort((a, b) => blockTime(a) - blockTime(b));
+  const ordered = [...programs].sort((a, b) => programTime(a) - programTime(b));
 
   const days = new Map<
     number,
@@ -62,11 +62,11 @@ const completedDayMap = (programs: Program[]): Map<number, DayInfo> => {
   return result;
 };
 
-export const withCurrentBlock = (
-  blocks: Program[] | undefined,
+export const withCurrentProgram = (
+  programs: Program[] | undefined,
   current: Program,
 ): Program[] => [
-  ...(blocks ?? []).filter((p) => p._id !== current._id),
+  ...(programs ?? []).filter((p) => p._id !== current._id),
   current,
 ];
 
@@ -96,6 +96,75 @@ export const getStreak = (programs: Program[]): number => {
   }
 
   return streak;
+};
+
+export const getMaxProgramStreak = (program: Program): number => {
+  const restDays = program.restDays ?? 0;
+
+  const days = new Map<number, number>();
+  program.rotations.forEach((rotation, rotationIdx) =>
+    rotation.forEach((session) => {
+      if (!session.completedDate || isFullySkipped(session)) return;
+      const day = startOfDay(new Date(session.completedDate));
+      days.set(day, Math.max(days.get(day) ?? rotationIdx, rotationIdx));
+    }),
+  );
+  if (days.size === 0) return 0;
+
+  const sorted = [...days.keys()].sort((a, b) => a - b);
+  let best = 1;
+  let run = 1;
+  let restUsed = 0;
+  let prevSegment = days.get(sorted[0])!;
+
+  for (let i = 1; i < sorted.length; i++) {
+    const segment = days.get(sorted[i])!;
+    restUsed += (sorted[i] - sorted[i - 1]) / DAY_MS - 1;
+
+    if (restUsed > restDays) {
+      run = 1;
+      restUsed = 0;
+      prevSegment = segment;
+      continue;
+    }
+
+    if (segment !== prevSegment) {
+      prevSegment = segment;
+      restUsed = 0;
+    }
+    run += 1;
+    best = Math.max(best, run);
+  }
+
+  return best;
+};
+
+export const programVolume = (program: Program): number => {
+  let total = 0;
+  const addSet = (set: {
+    weight: number | null;
+    reps: number | null;
+    completed: boolean;
+    dropSets?: {
+      weight: number | null;
+      reps: number | null;
+      completed: boolean;
+    }[];
+  }) => {
+    if (set.completed) total += (set.weight ?? 0) * (set.reps ?? 0);
+    set.dropSets?.forEach((drop) => {
+      if (drop.completed) total += (drop.weight ?? 0) * (drop.reps ?? 0);
+    });
+  };
+
+  program.rotations.forEach((rotation) =>
+    rotation.forEach((session) =>
+      session.exercises.forEach((exercise) =>
+        exercise.workingSets.forEach(addSet),
+      ),
+    ),
+  );
+  return total;
 };
 
 export const getRestDaysRemaining = (program: Program): number => {

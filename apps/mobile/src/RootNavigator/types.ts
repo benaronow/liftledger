@@ -5,10 +5,19 @@ import type {
 } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
+export type ProgressStackParamList = {
+  Chart: { name?: string; equipment?: string } | undefined;
+  ProgramList: undefined;
+  ProgramDetail: { programId: string };
+};
+
+export type ProgramStackParamList = {
+  Rotation: undefined;
+  Session: undefined;
+};
+
 export type TabParamList = {
-  // CompleteSession's "full progress" button deep-links here with a preset
-  // exercise/equipment.
-  Progress: { name?: string; equipment?: string } | undefined;
+  Progress: NavigatorScreenParams<ProgressStackParamList> | undefined;
   Dashboard: undefined;
   Program: { duplicateFrom?: string } | undefined;
 };
@@ -19,10 +28,19 @@ export type RootStackParamList = {
   Account: undefined;
 };
 
-// Navigation prop for a tab screen that also needs to reach the parent stack
-// (e.g. Dashboard → CompleteSession). Composing the two lets `navigate` accept both
-// sibling-tab and parent-stack destinations with full typing.
 export type TabNav<T extends keyof TabParamList> = CompositeNavigationProp<
   BottomTabNavigationProp<TabParamList, T>,
   NativeStackNavigationProp<RootStackParamList>
 >;
+
+export type ProgressStackNav<T extends keyof ProgressStackParamList> =
+  CompositeNavigationProp<
+    NativeStackNavigationProp<ProgressStackParamList, T>,
+    TabNav<"Progress">
+  >;
+
+export type ProgramStackNav<T extends keyof ProgramStackParamList> =
+  CompositeNavigationProp<
+    NativeStackNavigationProp<ProgramStackParamList, T>,
+    TabNav<"Program">
+  >;

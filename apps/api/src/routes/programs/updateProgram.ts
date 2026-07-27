@@ -9,12 +9,33 @@ export const updateProgram = async ({
   id,
   programId,
   program,
+  historical,
 }: {
   reply: FastifyReply;
   id: string;
   programId: string;
   program: Program;
+  historical?: boolean;
 }) => {
+  if (historical) {
+    let updated;
+
+    try {
+      updated = await ProgramModel.findOneAndUpdate(
+        { _id: programId },
+        { $set: program },
+        { new: true },
+      );
+    } catch (error) {
+      console.error("Failed to update program:", error);
+      return reply.code(500).send({ error: "Failed to update program" });
+    }
+
+    if (!updated) return reply.code(404).send({ error: "Program not found" });
+
+    return { program: updated };
+  }
+
   const curSession: Session =
     program.rotations[program.curRotationIdx][program.curSessionIdx];
 
@@ -63,10 +84,8 @@ export const updateProgram = async ({
               .filter((set) => !set.addedOn)
               .map((set: Set, idx: number) => {
                 const latestSet =
-                  getLatestSet(
-                    { ...exercise, gym: program.primaryGym },
-                    idx,
-                  ) ?? set;
+                  getLatestSet({ ...exercise, gym: program.primaryGym }, idx) ??
+                  set;
                 return {
                   ...latestSet,
                   completed: false,

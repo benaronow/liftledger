@@ -1,8 +1,10 @@
 import { useProgram } from "@liftledger/api-client";
 import { Session } from "@liftledger/shared";
+import { useNavigation } from "@react-navigation/native";
 import { Text, useTheme } from "react-native-paper";
 import { FONT } from "../../../theme";
 import { Info, InfoAction } from "../../../components/Info";
+import type { ProgramStackNav } from "../../../RootNavigator/types";
 import { SessionErrors } from "../../validateTemplate";
 import { useTemplate } from "../../TemplateProvider";
 
@@ -13,8 +15,14 @@ interface Props {
   onRequestDelete: (dIdx: number) => void;
 }
 
-export const SessionInfo = ({ session, dIdx, errors, onRequestDelete }: Props) => {
+export const SessionInfo = ({
+  session,
+  dIdx,
+  errors,
+  onRequestDelete,
+}: Props) => {
   const { colors } = useTheme();
+  const navigation = useNavigation<ProgramStackNav<"Rotation">>();
   const { data: curProgram } = useProgram();
   const {
     templateProgram,
@@ -30,14 +38,21 @@ export const SessionInfo = ({ session, dIdx, errors, onRequestDelete }: Props) =
     sessionIdx: number,
     type: "up" | "down",
   ) => {
-    if ((sessionIdx !== 0 || type !== "up") && (sessionIdx !== 6 || type !== "down")) {
+    if (
+      (sessionIdx !== 0 || type !== "up") &&
+      (sessionIdx !== 6 || type !== "down")
+    ) {
       setTemplateProgram({
         ...templateProgram,
         rotations: templateProgram.rotations.map((w, idx) =>
           idx === editingRotationIdx
             ? w
                 .toSpliced(sessionIdx, 1)
-                .toSpliced(type === "up" ? sessionIdx - 1 : sessionIdx + 1, 0, movedSession)
+                .toSpliced(
+                  type === "up" ? sessionIdx - 1 : sessionIdx + 1,
+                  0,
+                  movedSession,
+                )
             : w,
         ),
       });
@@ -46,7 +61,9 @@ export const SessionInfo = ({ session, dIdx, errors, onRequestDelete }: Props) =
 
   const handleDuplicateSession = (sessionIdx: number) => {
     const copy: Session = {
-      ...templateProgram.rotations[templateProgram.rotations.length - 1][sessionIdx],
+      ...templateProgram.rotations[templateProgram.rotations.length - 1][
+        sessionIdx
+      ],
       name: `${templateProgram.rotations[0][sessionIdx].name} (copy)`,
       completedDate: undefined,
     };
@@ -77,7 +94,10 @@ export const SessionInfo = ({ session, dIdx, errors, onRequestDelete }: Props) =
     {
       icon: "pencil",
       disabled: isComplete,
-      onPress: () => setEditingSessionIdx(dIdx),
+      onPress: () => {
+        setEditingSessionIdx(dIdx);
+        navigation.navigate("Session");
+      },
       variant: "primary",
     },
     {

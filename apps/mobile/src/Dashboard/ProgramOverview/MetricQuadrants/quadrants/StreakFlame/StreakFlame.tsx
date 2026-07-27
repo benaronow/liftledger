@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { SPACING } from "../../../../../theme";
 import { getStreakHeat } from "../StreakQuadrant";
 import { FlameTongue, MAX_TONGUE_HEIGHT, TONGUE_WIDTH } from "./FlameTongue";
-import { getStreak, withCurrentBlock } from "../getStreak";
+import { getStreak, withCurrentProgram } from "../getStreak";
 import { useAppActive } from "../../PulseProvider";
 import { useMe } from "@liftledger/api-client";
 
@@ -27,7 +27,7 @@ export const StreakFlame = ({
 }: Props) => {
   const appActive = useAppActive();
   const { data: curUser } = useMe();
-  const streak = getStreak(withCurrentBlock(curUser?.programs, program));
+  const streak = getStreak(withCurrentProgram(curUser?.programs, program));
   const heat = getStreakHeat(streak);
   const flameProgress = heat.tierProgress === 0 ? 1 : heat.tierProgress;
 

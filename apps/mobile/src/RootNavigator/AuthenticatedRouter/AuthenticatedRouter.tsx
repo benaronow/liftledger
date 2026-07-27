@@ -20,6 +20,7 @@ import { VerifyEmail } from "../../onboarding/VerifyEmail";
 import { CreateAccount } from "../../onboarding/CreateAccount";
 import { TabNavigator } from "../TabNavigator";
 import type { RootStackParamList } from "../types";
+import { ProgressViewToggle } from "./ProgressViewToggle";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -91,7 +92,12 @@ export const AuthenticatedRouter = () => {
           component={TabNavigator}
           options={({ navigation, route }) => ({
             title: tabTitle(route),
-            headerLeft: timerRunning ? () => <HeaderTimer /> : undefined,
+            headerLeft:
+              getFocusedRouteNameFromRoute(route) === "Progress"
+                ? () => <ProgressViewToggle />
+                : timerRunning
+                  ? () => <HeaderTimer />
+                  : undefined,
             headerRight: () => (
               <AvatarButton onPress={() => navigation.navigate("Account")} />
             ),

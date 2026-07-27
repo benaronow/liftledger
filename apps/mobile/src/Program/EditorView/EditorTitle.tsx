@@ -5,12 +5,12 @@ import { FONT, SPACING } from "../../theme";
 import { FAB_SIZE, titleRightInset } from "../../layout";
 import { useTemplate } from "../TemplateProvider";
 
-export const EditorTitle = () => {
+export const EditorTitle = ({ mode }: { mode: "rotation" | "session" }) => {
   const { colors } = useTheme();
   const { data: curProgram } = useProgram();
   const { editingSessionIdx } = useTemplate();
 
-  const isEditingSession = editingSessionIdx !== -1;
+  const isEditingSession = mode === "session";
 
   const fabCount = isEditingSession ? 1 : curProgram ? 2 : 1;
 

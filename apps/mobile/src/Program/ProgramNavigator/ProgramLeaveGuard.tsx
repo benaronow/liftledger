@@ -1,10 +1,10 @@
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BackHandler } from "react-native";
-import { ConfirmationDialog } from "../components/ConfirmationDialog";
-import { useLeaveGuard } from "../RootNavigator/TabNavigator/LeaveGuardProvider";
-import type { TabNav } from "../RootNavigator/types";
-import { useTemplate } from "./TemplateProvider";
+import { ConfirmationDialog } from "../../components/ConfirmationDialog";
+import { useLeaveGuard } from "../../RootNavigator/TabNavigator/LeaveGuardProvider";
+import type { TabNav } from "../../RootNavigator/types";
+import { useTemplate } from "../TemplateProvider";
 
 export const ProgramLeaveGuard = () => {
   const navigation = useNavigation<TabNav<"Program">>();
@@ -16,21 +16,25 @@ export const ProgramLeaveGuard = () => {
 
   useEffect(() => {
     if (!dirty) return;
+
     registerGuard("Program", (proceed) => {
       proceedRef.current = proceed;
       setOpen(true);
       return true;
     });
+
     return () => registerGuard("Program", null);
   }, [dirty, registerGuard]);
 
   useEffect(() => {
     if (!isFocused || !dirty) return;
+
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
       proceedRef.current = () => navigation.navigate("Dashboard");
       setOpen(true);
       return true;
     });
+
     return () => sub.remove();
   }, [isFocused, dirty, navigation]);
 

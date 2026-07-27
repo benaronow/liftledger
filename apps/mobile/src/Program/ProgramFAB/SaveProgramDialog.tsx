@@ -8,7 +8,6 @@ import { useNavigation } from "@react-navigation/native";
 import { useSnackbar } from "../../providers/SnackbarProvider";
 import { ConfirmationDialog } from "../../components/ConfirmationDialog";
 import type { TabNav } from "../../RootNavigator/types";
-import { useProgramTransition } from "../ProgramTransition";
 import { useTemplate } from "../TemplateProvider";
 
 interface Props {
@@ -25,7 +24,6 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
     useUpdateUserProgram();
   const saving = starting || updating;
   const { showSnackbar } = useSnackbar();
-  const { setTransitioning } = useProgramTransition();
 
   const {
     templateProgram,
@@ -36,7 +34,6 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
 
   const handleSave = async () => {
     if (!curUser?._id) return;
-    setTransitioning(true);
 
     try {
       if (curProgram) {
@@ -59,7 +56,6 @@ export const SaveProgramDialog = ({ open, onClose }: Props) => {
       navigation.setParams({ duplicateFrom: undefined });
       navigation.navigate("Dashboard");
     } catch {
-      setTransitioning(false);
       showSnackbar("Error saving program. Please try again.", "error");
     }
   };
