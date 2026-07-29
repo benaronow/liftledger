@@ -216,7 +216,7 @@ describe("PUT /users/:id/programs/:programId — historical edit", () => {
     await app.close();
   });
 
-  it("does not unset curProgram on a historical edit of a finished-looking block", async () => {
+  it("does not unset curProgram on a historical edit of a finished-looking program", async () => {
     const program = await ProgramModel.create(
       makeProgram({ rotations: [[makeSession(new Date())]], curRotationIdx: 0, length: 1 }),
     );

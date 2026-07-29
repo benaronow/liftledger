@@ -1,6 +1,5 @@
 import type { FastifyReply } from "fastify";
 import UserModel from "@liftledger/shared/models/user";
-import ProgramModel from "@liftledger/shared/models/program";
 import type { AuthedUser } from "../../auth";
 import { getAuth0Token, RATE_LIMIT_MESSAGE } from "../../auth0Management";
 import { env } from "../../env";
@@ -85,7 +84,7 @@ export const updateEmail = async ({
       { auth0Id: sub },
       { $set: { email } },
       { new: true },
-    ).populate([{ path: "programs", model: ProgramModel }]);
+    );
   } catch (dbErr) {
     console.error(
       "Failed to update MongoDB email after Auth0 success — reverting Auth0:",

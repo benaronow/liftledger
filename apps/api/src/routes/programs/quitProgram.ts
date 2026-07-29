@@ -19,12 +19,11 @@ export const quitProgram = async ({
       .send({ error: "User does not have a current program" });
 
   const rotations = program.rotations.slice(0, program.curRotationIdx + 1);
-  const endDate = new Date();
 
   try {
     await ProgramModel.findOneAndUpdate(
       { _id: user.curProgram },
-      { $set: { rotations, endDate } },
+      { $set: { rotations } },
     );
   } catch (error) {
     return reply
@@ -36,7 +35,7 @@ export const quitProgram = async ({
     try {
       await ProgramModel.findOneAndUpdate(
         { _id: user.curProgram },
-        { $set: { rotations: program.rotations }, $unset: { endDate: "" } },
+        { $set: { rotations: program.rotations } },
       );
     } catch (revertErr) {
       console.error(
@@ -51,7 +50,7 @@ export const quitProgram = async ({
       { _id: id },
       { $unset: { curProgram: "" } },
       { new: true },
-    ).populate([{ path: "programs", model: ProgramModel }]);
+    );
     if (!updatedUser) {
       await revertProgram();
       return reply.code(404).send({ error: "User not found" });

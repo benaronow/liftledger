@@ -1,10 +1,10 @@
 import {
   useCompletedExercises,
+  useHistoricalProgram,
   useProgram,
   useMe,
 } from "@liftledger/api-client";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { useMemo } from "react";
 import { LogoSpinner } from "../components/LogoSpinner";
 import type { TabParamList } from "../RootNavigator/types";
 import { ProgramNavigator } from "./ProgramNavigator/ProgramNavigator";
@@ -19,11 +19,7 @@ export const Program = () => {
   const { isLoading: curProgramLoading, data: curProgram } = useProgram();
   const { data: completedExercises, isLoading: completedExercisesLoading } =
     useCompletedExercises();
-
-  const sourceProgram = useMemo(() => {
-    if (!duplicateFromId || !curUser?.programs) return null;
-    return curUser.programs.find((b) => b._id === duplicateFromId) ?? null;
-  }, [duplicateFromId, curUser?.programs]);
+  const { data: sourceProgram } = useHistoricalProgram(duplicateFromId);
 
   if (!curUser) return <LogoSpinner />;
 

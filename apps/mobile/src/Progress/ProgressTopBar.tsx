@@ -8,11 +8,12 @@ import { RADIUS, SPACING } from "../theme";
 interface SaveAction {
   saving: boolean;
   onPress: () => void;
+  /** Renders the Save FAB in a non-interactive state (e.g. while loading). */
+  disabled?: boolean;
 }
 
 interface Props {
   showBack?: boolean;
-  /** When present, a Save FAB is pinned rightmost. */
   save?: SaveAction;
 }
 
@@ -46,7 +47,7 @@ export const ProgressActions = ({ showBack, save }: Props) => {
             onPress: save.onPress,
             accessibilityLabel: "Save",
             loading: save.saving,
-            disabled: save.saving,
+            disabled: save.saving || save.disabled,
           },
         ]
       : []),

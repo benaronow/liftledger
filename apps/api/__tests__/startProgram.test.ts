@@ -1,11 +1,4 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeAll,
-  afterAll,
-  afterEach,
-} from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import UserModel from "@liftledger/shared/models/user";
 import ProgramModel from "@liftledger/shared/models/program";
 import { startDb, stopDb, clearDb, buildTestApp } from "./helpers";
@@ -38,7 +31,9 @@ const makeProgram = () => ({
             name: "Bench Press",
             equipment: "Barbell",
             gym: "Gym A",
-            workingSets: [{ reps: 10, weight: 100, note: "", completed: false }],
+            workingSets: [
+              { reps: 10, weight: 100, note: "", completed: false },
+            ],
             unit: "lbs",
           },
         ],
@@ -70,8 +65,7 @@ describe("POST /users/:id/programs", () => {
     expect(res.statusCode).toBe(200);
     expect(data._id.toString()).toBe(uid);
     expect(data.curProgram).toBeDefined();
-    // `programs` is populated post-startProgram; assert via _id on each entry.
-    expect(data.programs.map((b: { _id: string }) => b._id.toString())).toContain(
+    expect(data.programs.map((p: string) => p.toString())).toContain(
       data.curProgram.toString(),
     );
 

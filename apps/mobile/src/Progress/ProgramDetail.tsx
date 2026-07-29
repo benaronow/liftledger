@@ -1,4 +1,7 @@
-import { useMe } from "@liftledger/api-client";
+import {
+  useHistoricalProgram,
+  useProgramSummaries,
+} from "@liftledger/api-client";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
@@ -13,17 +16,21 @@ export const ProgramDetail = () => {
   const { colors } = useTheme();
   const { params } =
     useRoute<RouteProp<ProgressStackParamList, "ProgramDetail">>();
-  const { data: me, isLoading } = useMe();
+  const { data: program, isLoading } = useHistoricalProgram(params.programId);
+  const { data: summaries } = useProgramSummaries();
 
-  const program = me?.programs.find((p) => p._id === params.programId);
+  const summaryName = summaries?.find((s) => s._id === params.programId)?.name;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       {isLoading ? (
         <>
-          <ProgressTitle title="Program" reserveButtons={1} />
+          <ProgressTitle title={summaryName ?? "Program"} reserveButtons={2} />
           <LogoSpinner />
-          <ProgressActions showBack />
+          <ProgressActions
+            showBack
+            save={{ saving: false, onPress: () => {}, disabled: true }}
+          />
         </>
       ) : program ? (
         <ProgramView serverProgram={program} title={program.name} showBack />

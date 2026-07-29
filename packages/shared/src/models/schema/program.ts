@@ -41,7 +41,6 @@ const programSchema: Schema = new Schema(
     ],
     curSessionIdx: { type: Number, required: true },
     curRotationIdx: { type: Number, required: true },
-    endDate: { type: Date },
     restDays: { type: Number, default: 0 },
   },
   { collection: "Program" },

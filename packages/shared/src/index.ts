@@ -1,5 +1,6 @@
 export * from "./types";
 export * from "./programUtils";
+export * from "./programStats";
 export * from "./completedExerciseUtils";
 export * from "./colors";
 export * from "./exerciseEquipment";

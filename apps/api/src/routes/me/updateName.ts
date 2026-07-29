@@ -1,6 +1,5 @@
 import type { FastifyReply } from "fastify";
 import UserModel from "@liftledger/shared/models/user";
-import ProgramModel from "@liftledger/shared/models/program";
 import type { AuthedUser } from "../../auth";
 import { getAuth0Token, RATE_LIMIT_MESSAGE } from "../../auth0Management";
 import { env } from "../../env";
@@ -60,7 +59,7 @@ export const updateName = async ({
       { auth0Id: sub },
       { $set: { fullName: trimmedName } },
       { new: true },
-    ).populate([{ path: "programs", model: ProgramModel }]);
+    );
   } catch (dbErr) {
     console.error(
       "Failed to update MongoDB name after Auth0 success — reverting Auth0:",
@@ -85,9 +84,7 @@ export const updateName = async ({
       );
     }
 
-    return reply
-      .code(500)
-      .send({ error: "Failed to update name in database" });
+    return reply.code(500).send({ error: "Failed to update name in database" });
   }
 
   return updatedUser;

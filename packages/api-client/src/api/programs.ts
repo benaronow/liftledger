@@ -1,5 +1,5 @@
 import { mutate } from "swr";
-import type { Program, User } from "@liftledger/shared";
+import type { Program, ProgramSummary, User } from "@liftledger/shared";
 import { useGet, usePost, usePut, useDelete } from "../fetcher";
 import { useMe, useCurrentUserId, refreshMe } from "./me";
 import { propagateUserToCaches } from "./users";
@@ -21,12 +21,27 @@ export const useProgram = () => {
   return useGet<Program>(curProgram ? `${basePath}/${curProgram}` : null);
 };
 
+export const useProgramSummaries = () => {
+  const basePath = useProgramBasePath();
+  const userId = useCurrentUserId();
+  return useGet<ProgramSummary[]>(userId ? basePath : null);
+};
+
+export const useHistoricalProgram = (programId: string | undefined) => {
+  const basePath = useProgramBasePath();
+  const userId = useCurrentUserId();
+  return useGet<Program>(
+    userId && programId ? `${basePath}/${programId}` : null,
+  );
+};
+
 export const useStartProgram = () => {
   const basePath = useProgramBasePath();
   const refreshCompletedExercises = useRefreshCompletedExercises();
   return usePost<{ program: Program }, User>(basePath, {
     onSuccess: async (user) => {
       await propagateUserToCaches(user);
+      await mutate(basePath);
       await refreshCompletedExercises();
     },
   });
@@ -38,6 +53,7 @@ export const useQuitProgram = () => {
   return useDelete<void, User>(basePath, {
     onSuccess: async (user) => {
       await propagateUserToCaches(user);
+      await mutate(basePath);
       await refreshCompletedExercises();
     },
   });
@@ -45,19 +61,16 @@ export const useQuitProgram = () => {
 
 export const useUpdateHistoricalProgram = (programId: string) => {
   const basePath = useProgramBasePath();
-  const { data: { curProgram } = {} } = useMe();
   const refreshCompletedExercises = useRefreshCompletedExercises();
   const put = usePut<
     { program: Program; historical: true },
     { program: Program }
   >(`${basePath}/${programId}`, {
     onSuccess: async (res) => {
-      if (programId === curProgram) {
-        await mutate(`${basePath}/${curProgram}`, res.program, {
-          revalidate: false,
-        });
-      }
-      await refreshMe();
+      await mutate(`${basePath}/${programId}`, res.program, {
+        revalidate: false,
+      });
+      await mutate(basePath);
       await refreshCompletedExercises();
     },
   });
@@ -83,6 +96,7 @@ export const useUpdateUserProgram = () => {
       await refreshCompletedExercises();
       if (res.done) {
         await refreshMe();
+        await mutate(basePath);
       }
     },
   });

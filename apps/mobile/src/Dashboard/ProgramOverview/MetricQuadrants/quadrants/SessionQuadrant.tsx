@@ -1,7 +1,6 @@
-import { Program } from "@liftledger/shared";
+import { Program, isFullySkipped } from "@liftledger/shared";
 import { SegmentedBar } from "../SegmentedBar";
 import { Quadrant } from "./Quadrant";
-import { isFullySkipped } from "./getStreak";
 
 type Props = {
   program: Program;

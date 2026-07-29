@@ -1,4 +1,4 @@
-import { Program } from "@liftledger/shared";
+import { ProgramSummary } from "@liftledger/shared";
 import dayjs from "dayjs";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -15,55 +15,20 @@ import { Button, Text, useTheme } from "react-native-paper";
 import { SPACING, RADIUS, FONT } from "../../theme";
 
 const EXPAND_MS = 200;
-import {
-  programVolume,
-  getMaxProgramStreak,
-} from "../../Dashboard/ProgramOverview/MetricQuadrants/quadrants/getStreak";
+import { getMaxProgramStreak } from "../../Dashboard/ProgramOverview/MetricQuadrants/quadrants/getStreak";
 import { RootStackParamList } from "../../RootNavigator/types";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 interface Props {
-  program: Program;
+  summary: ProgramSummary;
   disabled?: boolean;
   expanded: boolean;
   onToggle: () => void;
 }
 
-const getStartDate = (program: Program): Date | undefined => {
-  const times = program.rotations
-    .flat()
-    .map((session) => session.completedDate)
-    .filter((date): date is Date => !!date)
-    .map((date) => new Date(date).getTime());
-  return times.length ? new Date(Math.min(...times)) : undefined;
-};
-
-// Most-frequent unit across completed working sets, used to label total volume.
-const dominantUnit = (program: Program): string => {
-  const counts = new Map<string, number>();
-  program.rotations.forEach((rotation) =>
-    rotation.forEach((session) =>
-      session.exercises.forEach((exercise) => {
-        if (exercise.workingSets.some((set) => set.completed)) {
-          counts.set(exercise.unit, (counts.get(exercise.unit) ?? 0) + 1);
-        }
-      }),
-    ),
-  );
-  let best = "";
-  let bestCount = 0;
-  counts.forEach((count, unit) => {
-    if (count > bestCount) {
-      best = unit;
-      bestCount = count;
-    }
-  });
-  return best;
-};
-
 export const CompletedProgram = ({
-  program,
+  summary,
   disabled,
   expanded,
   onToggle,
@@ -80,34 +45,26 @@ export const CompletedProgram = ({
     transform: [{ rotate: `${rotation.value * 180}deg` }],
   }));
 
-  const startDate = getStartDate(program);
-
-  const endDate = () => {
-    if (program.endDate) return program.endDate;
-    const finalRotation = program.rotations[program.rotations.length - 1];
-    const finalSession = finalRotation[finalRotation.length - 1];
-    return finalSession.completedDate;
-  };
-
-  const completedSessions = program.rotations
-    .flat()
-    .filter((session) => session.completedDate).length;
-
   const stats = expanded
     ? [
         {
           label: "Dates",
-          value: `${startDate ? dayjs(startDate).format("M/DD/YY") : "N/A"} - ${
-            endDate() ? dayjs(endDate()).format("M/DD/YY") : "N/A"
+          value: `${summary.startDate ? dayjs(summary.startDate).format("M/DD/YY") : "N/A"} - ${
+            summary.endDate ? dayjs(summary.endDate).format("M/DD/YY") : "N/A"
           }`,
         },
-        { label: "Rotations", value: String(program.rotations.length) },
-        { label: "Sessions", value: String(completedSessions) },
-        { label: "Rest days", value: String(program.restDays ?? 0) },
-        { label: "Max streak", value: String(getMaxProgramStreak(program)) },
+        { label: "Rotations", value: String(summary.rotationCount) },
+        { label: "Sessions", value: String(summary.sessionCount) },
+        { label: "Rest days", value: String(summary.restDays) },
+        {
+          label: "Max streak",
+          value: String(
+            getMaxProgramStreak(summary.workoutDays, summary.restDays),
+          ),
+        },
         {
           label: "Total lifted",
-          value: `${programVolume(program).toLocaleString()}${dominantUnit(program)}`,
+          value: `${summary.volume.toLocaleString()}${summary.unit}`,
         },
       ]
     : [];
@@ -115,7 +72,7 @@ export const CompletedProgram = ({
   const duplicate = () =>
     navigation.navigate(
       "Tabs",
-      { screen: "Program", params: { duplicateFrom: program._id } },
+      { screen: "Program", params: { duplicateFrom: summary._id } },
       { pop: true },
     );
 
@@ -124,7 +81,7 @@ export const CompletedProgram = ({
       "Tabs",
       {
         screen: "Progress",
-        params: { screen: "ProgramDetail", params: { programId: program._id! } },
+        params: { screen: "ProgramDetail", params: { programId: summary._id } },
       },
       { pop: true },
     );
@@ -163,7 +120,7 @@ export const CompletedProgram = ({
           }}
           numberOfLines={1}
         >
-          {program.name}
+          {summary.name}
         </Text>
         <Animated.View style={chevronStyle}>
           <MaterialCommunityIcons

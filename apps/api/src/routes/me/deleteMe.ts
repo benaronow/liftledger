@@ -40,7 +40,7 @@ export const deleteMe = async ({
 
   try {
     await ProgramModel.deleteMany({
-      _id: { $in: me.programs as unknown as string[] },
+      _id: { $in: me.programs },
     });
     await UserModel.findOneAndDelete({ _id: me._id });
   } catch (dbErr) {

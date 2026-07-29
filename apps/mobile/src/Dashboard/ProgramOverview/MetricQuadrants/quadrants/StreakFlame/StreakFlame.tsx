@@ -5,7 +5,7 @@ import { getStreakHeat } from "../StreakQuadrant";
 import { FlameTongue, MAX_TONGUE_HEIGHT, TONGUE_WIDTH } from "./FlameTongue";
 import { getStreak, withCurrentProgram } from "../getStreak";
 import { useAppActive } from "../../PulseProvider";
-import { useMe } from "@liftledger/api-client";
+import { useProgramSummaries } from "@liftledger/api-client";
 
 const GAP = SPACING.lg;
 const BAR_INSET = SPACING.sm;
@@ -26,8 +26,8 @@ export const StreakFlame = ({
   keepOutRadius: R,
 }: Props) => {
   const appActive = useAppActive();
-  const { data: curUser } = useMe();
-  const streak = getStreak(withCurrentProgram(curUser?.programs, program));
+  const { data: summaries } = useProgramSummaries();
+  const streak = getStreak(withCurrentProgram(summaries, program));
   const heat = getStreakHeat(streak);
   const flameProgress = heat.tierProgress === 0 ? 1 : heat.tierProgress;
 

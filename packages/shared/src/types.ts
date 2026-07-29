@@ -45,8 +45,21 @@ export interface Program {
   rotations: Session[][];
   curRotationIdx: number;
   curSessionIdx: number;
-  endDate?: Date;
   restDays?: number;
+}
+
+export interface ProgramSummary {
+  _id: string;
+  name: string;
+  startDate?: Date;
+  endDate?: Date;
+  rotationCount: number;
+  sessionCount: number;
+  restDays: number;
+  curRotationIdx: number;
+  volume: number;
+  unit: string;
+  workoutDays: { day: number; rotationIdx: number }[];
 }
 
 export interface TimerPresets {
@@ -81,7 +94,7 @@ export interface User {
   auth0Id: string;
   username: string;
   fullName: string;
-  programs: Program[];
+  programs: string[];
   curProgram?: string;
   timer: Timer;
   options: UserOptions;

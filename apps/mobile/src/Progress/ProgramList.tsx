@@ -1,5 +1,4 @@
-import { useMe } from "@liftledger/api-client";
-import { Program } from "@liftledger/shared";
+import { useMe, useProgramSummaries } from "@liftledger/api-client";
 import { useNavigation } from "@react-navigation/native";
 import dayjs from "dayjs";
 import { useMemo } from "react";
@@ -13,38 +12,23 @@ import type { ProgressStackNav } from "../RootNavigator/types";
 import { FONT, RADIUS, SPACING } from "../theme";
 import { ProgressTitle } from "./ProgressTitle";
 
-const completedDates = (program: Program): number[] =>
-  program.rotations
-    .flat()
-    .map((session) => session.completedDate)
-    .filter((date): date is Date => !!date)
-    .map((date) => new Date(date).getTime());
+const time = (date?: Date): number => (date ? new Date(date).getTime() : 0);
 
-const startTime = (program: Program): number | undefined => {
-  const times = completedDates(program);
-  return times.length ? Math.min(...times) : undefined;
-};
-
-const endTime = (program: Program): number | undefined => {
-  if (program.endDate) return new Date(program.endDate).getTime();
-  const times = completedDates(program);
-  return times.length ? Math.max(...times) : undefined;
-};
-
-const fmt = (time?: number) => (time ? dayjs(time).format("M/DD/YY") : "N/A");
+const fmt = (date?: Date) => (date ? dayjs(date).format("M/DD/YY") : "N/A");
 
 export const ProgramList = () => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<ProgressStackNav<"ProgramList">>();
-  const { data: me, isLoading } = useMe();
+  const { data: me } = useMe();
+  const { data: summaries, isLoading } = useProgramSummaries();
 
   const programs = useMemo(
     () =>
-      (me?.programs ?? [])
+      (summaries ?? [])
         .slice()
-        .sort((a, b) => (endTime(b) ?? 0) - (endTime(a) ?? 0)),
-    [me?.programs],
+        .sort((a, b) => time(b.endDate) - time(a.endDate)),
+    [summaries],
   );
 
   return (
@@ -108,7 +92,7 @@ export const ProgramList = () => {
                     >
                       {program._id === me?.curProgram
                         ? "Current"
-                        : `${fmt(startTime(program))} - ${fmt(endTime(program))}`}
+                        : `${fmt(program.startDate)} - ${fmt(program.endDate)}`}
                     </Text>
                   </View>
                   <MaterialCommunityIcons

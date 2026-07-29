@@ -2,7 +2,7 @@ import { Program } from "@liftledger/shared";
 import { useState } from "react";
 import { LayoutChangeEvent, Pressable } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useMe } from "@liftledger/api-client";
+import { useProgramSummaries } from "@liftledger/api-client";
 import { useTheme } from "react-native-paper";
 import { ContinuousBar } from "../ContinuousBar";
 import { Quadrant } from "./Quadrant";
@@ -53,10 +53,10 @@ type Props = {
 
 export const StreakQuadrant = ({ program, onLayout }: Props) => {
   const { colors } = useTheme();
-  const { data: curUser } = useMe();
+  const { data: summaries } = useProgramSummaries();
   const [infoOpen, setInfoOpen] = useState(false);
 
-  const streak = getStreak(withCurrentProgram(curUser?.programs, program));
+  const streak = getStreak(withCurrentProgram(summaries, program));
   const heat = getStreakHeat(streak);
   const restDaysRemaining = getRestDaysRemaining(program);
   const restDays = program.restDays ?? 0;
