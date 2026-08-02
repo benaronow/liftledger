@@ -1,49 +1,37 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import { useTimerSettings, useUpdateTimerSettings } from "@liftledger/api-client";
-import { Text, TouchableRipple, useTheme } from "react-native-paper";
+import {
+  useTimerSettings,
+  useUpdateTimerSettings,
+} from "@liftledger/api-client";
+import { useTheme } from "react-native-paper";
 import { ConfirmationDialog } from "../../../components/ConfirmationDialog";
 import { AppTextInput } from "../../../components/inputs";
-import { LoadingCheckbox } from "../../../components/LoadingCheckbox";
 import { SectionCard } from "../../../components/SectionCard";
 import { TimePicker } from "../../../components/TimePicker";
 import { useSnackbar } from "../../../providers/SnackbarProvider";
-import { FONT, SPACING } from "../../../theme";
+import { SPACING } from "../../../theme";
+import { AlarmSoundSelect } from "./AlarmSoundSelect";
 import {
   ExerciseTimerOverridesModal,
   formatTime,
 } from "./ExerciseTimerOverridesModal";
+import { ToggleSetting } from "./ToggleSetting";
 
 export const TimerManagement = () => {
   const { colors } = useTheme();
-  const { showSnackbar } = useSnackbar();
   const { data: timerSettingsData } = useTimerSettings();
   const { send: triggerUpdateTimerSettings } = useUpdateTimerSettings();
+  const { showSnackbar } = useSnackbar();
 
   const settings = timerSettingsData?.timerSettings;
   const defaultEnabled = settings?.defaultEnabled ?? true;
   const defaultTime = settings?.defaultTime ?? 120;
-
-  const setDefaultEnabled = (enabled: boolean) =>
-    triggerUpdateTimerSettings({ patch: { defaultEnabled: enabled } });
-  const setDefaultTime = (seconds: number) =>
-    triggerUpdateTimerSettings({ patch: { defaultTime: seconds } });
+  const notify = settings?.notify ?? true;
 
   const [editOpen, setEditOpen] = useState(false);
   const [draftTime, setDraftTime] = useState(defaultTime);
   const [saving, setSaving] = useState(false);
-  const [togglingEnabled, setTogglingEnabled] = useState(false);
-
-  const toggleEnabled = async () => {
-    setTogglingEnabled(true);
-    try {
-      await setDefaultEnabled(!defaultEnabled);
-    } catch {
-      showSnackbar("Failed to update timer setting.", "error");
-    } finally {
-      setTogglingEnabled(false);
-    }
-  };
 
   const openEdit = () => {
     setDraftTime(defaultTime);
@@ -53,7 +41,7 @@ export const TimerManagement = () => {
   const saveDefaultTime = async () => {
     setSaving(true);
     try {
-      await setDefaultTime(draftTime);
+      await triggerUpdateTimerSettings({ patch: { defaultTime: draftTime } });
       setEditOpen(false);
     } catch {
       showSnackbar("Failed to update default time.", "error");
@@ -64,28 +52,31 @@ export const TimerManagement = () => {
 
   return (
     <SectionCard title="Rest Timer">
-      <TouchableRipple
-        onPress={togglingEnabled ? undefined : toggleEnabled}
-        borderless
-      >
+      <ToggleSetting
+        label="Notifications"
+        description="Notification sent on timer completion"
+        value={notify}
+        onChange={(enabled) =>
+          triggerUpdateTimerSettings({ patch: { notify: enabled } })
+        }
+      />
+      <AlarmSoundSelect />
+      <View style={{ paddingVertical: SPACING.md }}>
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: SPACING.xs,
-            marginLeft: -6,
-            marginVertical: -6,
+            height: StyleSheet.hairlineWidth,
+            backgroundColor: colors.outlineVariant,
           }}
-        >
-          <LoadingCheckbox
-            status={defaultEnabled ? "checked" : "unchecked"}
-            loading={togglingEnabled}
-          />
-          <Text style={{ color: colors.onSurface, fontSize: FONT.base }}>
-            Start timer automatically after sets
-          </Text>
-        </View>
-      </TouchableRipple>
+        />
+      </View>
+      <ToggleSetting
+        label="Start automatically"
+        description="Timer starts on set completion"
+        value={defaultEnabled}
+        onChange={(enabled) =>
+          triggerUpdateTimerSettings({ patch: { defaultEnabled: enabled } })
+        }
+      />
       <View>
         <View pointerEvents="none">
           <AppTextInput

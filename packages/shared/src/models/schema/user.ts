@@ -26,6 +26,8 @@ const userSchema: Schema = new Schema(
           of: Number,
           default: () => ({}),
         },
+        notify: { type: Boolean, default: true },
+        alarm: { type: String, default: "alarm_1" },
       },
     },
     options: {

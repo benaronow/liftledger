@@ -72,6 +72,7 @@ export const EditSession = () => {
       <SectionCard title="Session Details" style={{ marginBottom: SPACING.lg }}>
         <AppTextInput
           label="Session Name"
+          testID="session-name-input"
           value={session.name}
           error={templateErrors.sessions[editingSessionIdx]?.name}
           onChangeText={handleSessionNameInput}
@@ -86,6 +87,7 @@ export const EditSession = () => {
             onPress={() =>
               handleAddExercise(fullExerciseIndex(session.exercises, idx))
             }
+            accessibilityLabel={`add-exercise-${idx}`}
           />
           <ExerciseInfo
             exercise={exercise}
@@ -94,7 +96,10 @@ export const EditSession = () => {
           />
         </View>
       ))}
-      <AddRow onPress={() => handleAddExercise(session.exercises.length)} />
+      <AddRow
+        onPress={() => handleAddExercise(session.exercises.length)}
+        accessibilityLabel={`add-exercise-${visibleExercises.length}`}
+      />
 
       <DeleteExerciseDialog
         deletingExerciseIdx={deletingExerciseIdx}

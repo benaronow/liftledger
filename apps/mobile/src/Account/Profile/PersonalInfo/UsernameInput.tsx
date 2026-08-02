@@ -1,4 +1,5 @@
 import { useMe, useUpdateMyUsername } from "@liftledger/api-client";
+import { isAxiosError } from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ProfileTextInput } from "../profileInputs";
 
@@ -23,8 +24,12 @@ export const UsernameInput = () => {
     setError("");
     try {
       await triggerUpdateUsername({ username: value });
-    } catch (e: unknown) {
-      setError((e as Error).message);
+    } catch (e) {
+      setError(
+        isAxiosError(e) && e.response?.status === 409
+          ? "That username is already taken."
+          : "Failed to update username.",
+      );
     }
   }, [curUser, value, triggerUpdateUsername]);
 

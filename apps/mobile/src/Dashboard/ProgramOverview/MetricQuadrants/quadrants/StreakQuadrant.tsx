@@ -2,14 +2,49 @@ import { Program } from "@liftledger/shared";
 import { useState } from "react";
 import { LayoutChangeEvent, Pressable } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useProgramSummaries } from "@liftledger/api-client";
 import { useTheme } from "react-native-paper";
 import { ContinuousBar } from "../ContinuousBar";
 import { Quadrant } from "./Quadrant";
-import { getRestDaysRemaining, getStreak } from "./getStreak";
+import {
+  getRestDaysRemaining,
+  getStreak,
+  withCurrentProgram,
+} from "./getStreak";
 import { StreakInfoDialog } from "./StreakInfoDialog";
 
 export const STREAK_TARGET = 10;
-export const STREAK_COLOR = "#FFAA00";
+
+export const STREAK_HEAT = [
+  "#FFAA00",
+  "#FFD767",
+  "#FEEFCA",
+  "#E1EAFF",
+  "#B6C9FF",
+  "#8FA7FF",
+  "#A57DFF",
+  "#DB73DF",
+  "#F6709F",
+  "#FF7A54",
+];
+
+export const STREAK_COLOR = STREAK_HEAT[0];
+
+const heatColor = (tier: number) =>
+  STREAK_HEAT[
+    ((tier % STREAK_HEAT.length) + STREAK_HEAT.length) % STREAK_HEAT.length
+  ];
+
+export const getStreakHeat = (streak: number) => {
+  const tier = Math.floor(streak / STREAK_TARGET);
+  return {
+    tier,
+    tierProgress: (streak % STREAK_TARGET) / STREAK_TARGET,
+    baseColor: tier === 0 ? null : heatColor(tier - 1),
+    frontColor: heatColor(tier),
+    nextColor: heatColor(tier + 1),
+  };
+};
 
 type Props = {
   program: Program;
@@ -18,10 +53,11 @@ type Props = {
 
 export const StreakQuadrant = ({ program, onLayout }: Props) => {
   const { colors } = useTheme();
+  const { data: summaries } = useProgramSummaries();
   const [infoOpen, setInfoOpen] = useState(false);
 
-  const streak = getStreak(program);
-  const fillPercent = streak / STREAK_TARGET;
+  const streak = getStreak(withCurrentProgram(summaries, program));
+  const heat = getStreakHeat(streak);
   const restDaysRemaining = getRestDaysRemaining(program);
   const restDays = program.restDays ?? 0;
 
@@ -53,8 +89,9 @@ export const StreakQuadrant = ({ program, onLayout }: Props) => {
         }
         bar={
           <ContinuousBar
-            fillPercent={fillPercent}
-            color={STREAK_COLOR}
+            fillPercent={heat.tierProgress}
+            color={heat.frontColor}
+            baseColor={heat.baseColor}
             onLayout={onLayout}
           />
         }

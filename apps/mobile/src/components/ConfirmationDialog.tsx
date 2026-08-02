@@ -46,8 +46,8 @@ export const ConfirmationDialog = ({
 
   return (
     <TopSheet open={open} onClose={onClose} dismissable={!confirming}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View>
+      <View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View style={{ paddingHorizontal: SPACING.lg }}>
             <View
               style={{
@@ -95,7 +95,8 @@ export const ConfirmationDialog = ({
               </View>
             )}
           </View>
-          <View
+        </TouchableWithoutFeedback>
+        <View
             style={{
               flexDirection: "row",
               justifyContent: "flex-end",
@@ -119,10 +120,14 @@ export const ConfirmationDialog = ({
               <Button
                 mode="contained"
                 buttonColor={
-                  secondaryActionDisabled ? SKIP_GRAY_DISABLED : SKIP_GRAY
+                  secondaryActionDisabled || confirming
+                    ? SKIP_GRAY_DISABLED
+                    : SKIP_GRAY
                 }
                 textColor={
-                  secondaryActionDisabled ? colors.onSurfaceDisabled : "white"
+                  secondaryActionDisabled || confirming
+                    ? colors.onSurfaceDisabled
+                    : "white"
                 }
                 loading={secondaryActionLoading}
                 onPress={
@@ -140,13 +145,12 @@ export const ConfirmationDialog = ({
               textColor={destructive ? colors.onError : colors.onPrimary}
               loading={confirming && !secondaryActionLoading}
               onPress={confirming ? undefined : onConfirm}
-              disabled={confirmationDisabled}
+              disabled={confirmationDisabled || confirming}
             >
               {action ?? "Confirm"}
             </Button>
           </View>
         </View>
-      </TouchableWithoutFeedback>
     </TopSheet>
   );
 };

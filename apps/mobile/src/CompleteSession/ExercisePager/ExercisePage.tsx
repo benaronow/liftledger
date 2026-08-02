@@ -73,7 +73,10 @@ export const ExercisePage = ({
       "Tabs",
       {
         screen: "Progress",
-        params: { name: exercise.name, equipment: exercise.equipment },
+        params: {
+          screen: "Chart",
+          params: { name: exercise.name, equipment: exercise.equipment },
+        },
       },
       { pop: true },
     );

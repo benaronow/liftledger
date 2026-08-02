@@ -1,7 +1,7 @@
 import { isExerciseComplete, useCurrentSession } from "@liftledger/api-client";
 import type { Exercise } from "@liftledger/shared";
-import { useEffect, useRef, type ReactNode } from "react";
-import { Animated, Easing, View } from "react-native";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Animated, AppState, Easing, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { IconButton, useTheme } from "react-native-paper";
 import { env } from "../../config/env";
@@ -19,8 +19,19 @@ const Pulse = ({
 }) => {
   const phase = useRef(new Animated.Value(0)).current;
 
+  const [appActive, setAppActive] = useState(
+    () => AppState.currentState === "active",
+  );
   useEffect(() => {
-    if (!active || env.e2e) {
+    const sub = AppState.addEventListener("change", (next) =>
+      setAppActive(next === "active"),
+    );
+    return () => sub.remove();
+  }, []);
+  const shouldPulse = active && appActive;
+
+  useEffect(() => {
+    if (!shouldPulse || env.e2e) {
       phase.setValue(0);
       return;
     }
@@ -34,7 +45,7 @@ const Pulse = ({
     );
     loop.start();
     return () => loop.stop();
-  }, [active, phase]);
+  }, [shouldPulse, phase]);
 
   const opacity = phase.interpolate({
     inputRange: [0, 0.5, 1],

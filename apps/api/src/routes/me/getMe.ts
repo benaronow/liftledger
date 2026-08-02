@@ -1,6 +1,5 @@
 import type { FastifyReply } from "fastify";
 import UserModel from "@liftledger/shared/models/user";
-import ProgramModel from "@liftledger/shared/models/program";
 import type { AuthedUser } from "../../auth";
 
 export const getMe = async ({
@@ -11,9 +10,7 @@ export const getMe = async ({
   me: AuthedUser;
 }) => {
   try {
-    const user = await UserModel.findOne({ _id: me._id }).populate([
-      { path: "programs", model: ProgramModel },
-    ]);
+    const user = await UserModel.findOne({ _id: me._id });
     if (!user) return reply.code(404).send({ error: "User not found" });
 
     return user;

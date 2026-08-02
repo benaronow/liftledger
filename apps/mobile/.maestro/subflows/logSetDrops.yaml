@@ -1,0 +1,91 @@
+appId: app.liftledger.mobile
+# Log one working set with an optional note and up to two dropsets, then
+# complete it. Same dialog as logSet.yaml plus the "+ Add dropset" rows. Empty
+# string params skip that piece. The number pad covers the dialog's action row,
+# so the (non-input) title is tapped to dismiss the keyboard before reaching
+# "+ Add dropset" / Confirm. Params: SET, WEIGHT, REPS, NOTE, D1_WEIGHT,
+# D1_REPS, D2_WEIGHT, D2_REPS.
+---
+- tapOn:
+    id: "set-row-working-${SET}"
+- extendedWaitUntil:
+    visible:
+      id: "set-input-reps"
+    timeout: 5000
+- tapOn:
+    id: "set-input-reps"
+- waitForAnimationToEnd:
+    timeout: 300
+- copyTextFrom:
+    id: "set-input-reps"
+- runFlow:
+    when:
+      true: ${maestro.copiedText != REPS}
+    commands:
+      - eraseText: 8
+      - inputText: "${REPS}"
+- tapOn:
+    id: "set-input-weight"
+- copyTextFrom:
+    id: "set-input-weight"
+- runFlow:
+    when:
+      true: ${maestro.copiedText != WEIGHT}
+    commands:
+      - eraseText: 8
+      - inputText: "${WEIGHT}"
+# Optional note (text keyboard).
+- runFlow:
+    when:
+      true: ${NOTE != ''}
+    commands:
+      - tapOn:
+          id: "set-input-note"
+      - waitForAnimationToEnd:
+          timeout: 300
+      - inputText: "${NOTE}"
+# First dropset: dismiss the keyboard via the title so the "+ Add dropset"
+# pressable is reachable, add the row, then fill it.
+- runFlow:
+    when:
+      true: ${D1_WEIGHT != ''}
+    commands:
+      - tapOn: "Submit Set"
+      - tapOn: "Add dropset"
+      - extendedWaitUntil:
+          visible:
+            id: "dropset-input-weight-0"
+          timeout: 5000
+      - tapOn:
+          id: "dropset-input-weight-0"
+      - waitForAnimationToEnd:
+          timeout: 300
+      - inputText: "${D1_WEIGHT}"
+      - tapOn:
+          id: "dropset-input-reps-0"
+      - inputText: "${D1_REPS}"
+# Optional second dropset.
+- runFlow:
+    when:
+      true: ${D2_WEIGHT != ''}
+    commands:
+      - tapOn: "Submit Set"
+      - tapOn: "Add dropset"
+      - extendedWaitUntil:
+          visible:
+            id: "dropset-input-weight-1"
+          timeout: 5000
+      - tapOn:
+          id: "dropset-input-weight-1"
+      - waitForAnimationToEnd:
+          timeout: 300
+      - inputText: "${D2_WEIGHT}"
+      - tapOn:
+          id: "dropset-input-reps-1"
+      - inputText: "${D2_REPS}"
+- tapOn: "Submit Set"
+- tapOn: "Confirm"
+- extendedWaitUntil:
+    notVisible:
+      text: "Submit Set"
+    timeout: 5000

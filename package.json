@@ -26,7 +26,10 @@
     "mobile:build:ios": "yarn workspace @liftledger/mobile build:ios",
     "mobile:build:ios:preview": "yarn workspace @liftledger/mobile build:ios:preview",
     "mobile:typecheck": "yarn workspace @liftledger/mobile typecheck",
-    "mobile:e2e:program-completion": "yarn workspace @liftledger/mobile e2e:program-completion"
+    "mobile:e2e:program-completion": "yarn workspace @liftledger/mobile e2e:program-completion",
+    "mobile:e2e:program-completion-2": "yarn workspace @liftledger/mobile e2e:program-completion-2",
+    "mobile:e2e:program-creation": "yarn workspace @liftledger/mobile e2e:program-creation",
+    "mobile:e2e:option-updates": "yarn workspace @liftledger/mobile e2e:option-updates"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

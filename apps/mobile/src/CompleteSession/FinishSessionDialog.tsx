@@ -65,7 +65,7 @@ export const FinishSessionDialog = ({
       onClose();
       navigation.navigate("Tabs", { screen: "Dashboard" }, { pop: true });
     } catch {
-      showSnackbar("Failed to finish session. Please try again.");
+      showSnackbar("Failed to finish session. Please try again.", "error");
     } finally {
       setFinishing(false);
     }

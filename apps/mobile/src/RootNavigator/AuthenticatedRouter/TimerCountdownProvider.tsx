@@ -1,5 +1,19 @@
-import { useClearTimerEnd, useTimerEnd } from "@liftledger/api-client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useClearTimerEnd,
+  useTimerEnd,
+  useTimerSettings,
+} from "@liftledger/api-client";
+import type { TimerAlarm } from "@liftledger/shared";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import * as Haptics from "expo-haptics";
@@ -8,7 +22,7 @@ import {
   useAudioPlayer,
   useAudioPlayerStatus,
 } from "expo-audio";
-import { useSnackbar } from "../providers/SnackbarProvider";
+import { useSnackbar } from "../../providers/SnackbarProvider";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -19,10 +33,20 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const REST_TIMER_CHANNEL_ID = "rest-timer";
 const REST_TIMER_NOTIFICATION_TYPE = "rest-timer";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const ALARM_SOUND = require("../../assets/alarm.wav");
+
+const ALARM_SOUNDS: Record<Exclude<TimerAlarm, "none">, number> = {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  alarm_1: require("../../../assets/alarm_1.wav"),
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  alarm_2: require("../../../assets/alarm_2.wav"),
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  alarm_3: require("../../../assets/alarm_3.wav"),
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  alarm_4: require("../../../assets/alarm_4.wav"),
+};
+
+const CHANNEL_ID = "rest-timer";
 
 export const ensureTimerNotificationSetup = async () => {
   try {
@@ -35,11 +59,9 @@ export const ensureTimerNotificationSetup = async () => {
       });
     }
     if (Platform.OS === "android") {
-      await Notifications.setNotificationChannelAsync(REST_TIMER_CHANNEL_ID, {
+      await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
         name: "Rest timer",
         importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 500, 250, 500, 250, 500, 250, 500],
-        sound: "alarm.wav",
       });
     }
   } catch {
@@ -52,7 +74,11 @@ export const clearTimerNotifications = () =>
 
 export const useRestTimerNotification = () => {
   const { data: timerEndData } = useTimerEnd();
+  const { data: timerSettingsData } = useTimerSettings();
   const scheduledIdRef = useRef<string | null>(null);
+
+  const settings = timerSettingsData?.timerSettings;
+  const notify = settings?.notify ?? true;
 
   const timerEnd = useMemo(() => {
     const raw = timerEndData?.timerEnd;
@@ -67,20 +93,20 @@ export const useRestTimerNotification = () => {
       scheduledIdRef.current = null;
     }
 
-    if (!timerEnd || timerEnd.getTime() <= Date.now()) return;
+    if (!notify || !timerEnd || timerEnd.getTime() <= Date.now()) return;
 
     let cancelled = false;
     Notifications.scheduleNotificationAsync({
       content: {
         title: "Rest complete",
         body: "Time for your next set.",
-        sound: "alarm.wav",
+        sound: "default",
         data: { type: REST_TIMER_NOTIFICATION_TYPE },
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,
         date: timerEnd,
-        channelId: REST_TIMER_CHANNEL_ID,
+        channelId: CHANNEL_ID,
       },
     })
       .then((id) => {
@@ -95,31 +121,43 @@ export const useRestTimerNotification = () => {
     return () => {
       cancelled = true;
     };
-  }, [timerEnd]);
+  }, [timerEnd, notify]);
 };
 
 export const useTimerAlarm = (active: boolean) => {
-  const player = useAudioPlayer(ALARM_SOUND);
+  const { data: timerSettingsData } = useTimerSettings();
+  const alarm = timerSettingsData?.timerSettings?.alarm ?? "alarm_1";
+  const soundActive = active && alarm !== "none";
+
+  const player = useAudioPlayer(
+    active && alarm !== "none" ? ALARM_SOUNDS[alarm] : null,
+  );
   const { isLoaded } = useAudioPlayerStatus(player);
 
   useEffect(() => {
+    if (!soundActive || !isLoaded) return;
+
     setAudioModeAsync({
       playsInSilentMode: true,
       interruptionMode: "doNotMix",
     }).catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    // The asset loads asynchronously; calling play() before it's ready is a
-    // silent no-op (the cause of the alarm sometimes not sounding). Gating on
-    // isLoaded means this re-runs and starts playback once it's ready, even if
-    // `active` arrived first.
-    if (!active || !isLoaded) return;
 
     player.loop = true;
     player.volume = 1;
     player.seekTo(0).catch(() => {});
     player.play();
+
+    return () => {
+      player.pause();
+      setAudioModeAsync({
+        playsInSilentMode: false,
+        interruptionMode: "mixWithOthers",
+      }).catch(() => {});
+    };
+  }, [soundActive, isLoaded, player]);
+
+  useEffect(() => {
+    if (!active) return;
 
     const buzz = () =>
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(
@@ -128,14 +166,29 @@ export const useTimerAlarm = (active: boolean) => {
     buzz();
     const hapticInterval = setInterval(buzz, 800);
 
-    return () => {
-      clearInterval(hapticInterval);
-      player.pause();
-    };
-  }, [active, isLoaded, player]);
+    return () => clearInterval(hapticInterval);
+  }, [active]);
 };
 
-export const useTimerCountdown = () => {
+type TimerCountdown = {
+  timerEnd: Date | undefined;
+  isActive: boolean;
+  isDone: boolean;
+  timeString: string;
+  clearTimer: () => Promise<void>;
+};
+
+const TimerCountdownContext = createContext<TimerCountdown | null>(null);
+
+// A single countdown shared by every timer surface (header pill, workout FAB,
+// finished overlay). Each of those previously ran its own 1s setInterval; this
+// runs exactly one, and stops it the moment the timer reaches zero rather than
+// ticking every second forever until the timer is cleared.
+export const TimerCountdownProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
   const { data: timerEndData } = useTimerEnd();
   const { send: triggerClearTimerEnd } = useClearTimerEnd();
   const { showSnackbar } = useSnackbar();
@@ -146,11 +199,19 @@ export const useTimerCountdown = () => {
     return raw instanceof Date ? raw : new Date(raw);
   }, [timerEndData?.timerEnd]);
 
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(() => new Date());
   useEffect(() => {
     if (!timerEnd) return;
-    setCurrentTime(new Date());
-    const intervalId = setInterval(() => setCurrentTime(new Date()), 1000);
+    const now = new Date();
+    setCurrentTime(now);
+    // Already done — no reason to spin up a per-second interval for a timer
+    // that has nothing left to count down.
+    if (timerEnd.getTime() <= now.getTime()) return;
+    const intervalId = setInterval(() => {
+      const tick = new Date();
+      setCurrentTime(tick);
+      if (tick.getTime() >= timerEnd.getTime()) clearInterval(intervalId);
+    }, 1000);
     return () => clearInterval(intervalId);
   }, [timerEnd]);
 
@@ -177,11 +238,29 @@ export const useTimerCountdown = () => {
     }
   }, [triggerClearTimerEnd, showSnackbar]);
 
-  return {
-    timerEnd,
-    isActive: !!timerEnd,
-    isDone: !!timerEnd && secondsLeft === 0,
-    timeString,
-    clearTimer,
-  };
+  const value = useMemo<TimerCountdown>(
+    () => ({
+      timerEnd,
+      isActive: !!timerEnd,
+      isDone: !!timerEnd && secondsLeft === 0,
+      timeString,
+      clearTimer,
+    }),
+    [timerEnd, secondsLeft, timeString, clearTimer],
+  );
+
+  return (
+    <TimerCountdownContext.Provider value={value}>
+      {children}
+    </TimerCountdownContext.Provider>
+  );
+};
+
+export const useTimerCountdown = (): TimerCountdown => {
+  const ctx = useContext(TimerCountdownContext);
+  if (!ctx)
+    throw new Error(
+      "useTimerCountdown must be used within a TimerCountdownProvider",
+    );
+  return ctx;
 };

@@ -45,8 +45,21 @@ export interface Program {
   rotations: Session[][];
   curRotationIdx: number;
   curSessionIdx: number;
-  endDate?: Date;
   restDays?: number;
+}
+
+export interface ProgramSummary {
+  _id: string;
+  name: string;
+  startDate?: Date;
+  endDate?: Date;
+  rotationCount: number;
+  sessionCount: number;
+  restDays: number;
+  curRotationIdx: number;
+  volume: number;
+  unit: string;
+  workoutDays: { time: number; rotationIdx: number }[];
 }
 
 export interface TimerPresets {
@@ -57,11 +70,15 @@ export interface TimerPresets {
   4: number;
 }
 
+export type TimerAlarm = "alarm_1" | "alarm_2" | "alarm_3" | "alarm_4" | "none";
+
 export interface TimerSettings {
   presets: TimerPresets;
   defaultEnabled: boolean;
   defaultTime: number;
   exerciseOverrides: Record<string, number>;
+  notify: boolean;
+  alarm: TimerAlarm;
 }
 
 export interface Timer {
@@ -69,7 +86,6 @@ export interface Timer {
   settings: TimerSettings;
 }
 
-// Scope of an option rename: the list only, the current program, or all programs.
 export type RenameScope = "list" | "current" | "all";
 
 export interface User {
@@ -78,7 +94,7 @@ export interface User {
   auth0Id: string;
   username: string;
   fullName: string;
-  programs: Program[];
+  programs: string[];
   curProgram?: string;
   timer: Timer;
   options: UserOptions;

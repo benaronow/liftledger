@@ -186,6 +186,59 @@ describe("PUT /users/:id/programs/:programId — rotation progression", () => {
   });
 });
 
+describe("PUT /users/:id/programs/:programId — historical edit", () => {
+  it("persists only the changed field without running the state machine", async () => {
+    // A completed single-rotation/single-session program would normally advance
+    // (append a rotation / mark done). With historical:true it must not.
+    const program = await ProgramModel.create(
+      makeProgram({ rotations: [[makeSession(new Date())]], curRotationIdx: 0, length: 1 }),
+    );
+    const user = await UserModel.create({
+      ...makeUser(),
+      curProgram: program._id,
+    });
+    const app = await buildTestApp();
+
+    const programObj = program.toObject();
+    programObj.rotations[0][0].exercises[0].workingSets[0].weight = 225;
+
+    const res = await app.inject({
+      method: "PUT",
+      url: `/users/${user._id.toString()}/programs/${program._id.toString()}`,
+      payload: { program: programObj, historical: true },
+    });
+    const { program: updated, done } = res.json();
+
+    expect(done).toBeUndefined();
+    expect(updated.rotations.length).toBe(1);
+    expect(updated.rotations[0][0].exercises[0].workingSets[0].weight).toBe(225);
+
+    await app.close();
+  });
+
+  it("does not unset curProgram on a historical edit of a finished-looking program", async () => {
+    const program = await ProgramModel.create(
+      makeProgram({ rotations: [[makeSession(new Date())]], curRotationIdx: 0, length: 1 }),
+    );
+    const user = await UserModel.create({
+      ...makeUser(),
+      curProgram: program._id,
+    });
+    const app = await buildTestApp();
+
+    await app.inject({
+      method: "PUT",
+      url: `/users/${user._id.toString()}/programs/${program._id.toString()}`,
+      payload: { program: program.toObject(), historical: true },
+    });
+
+    const updated = await UserModel.findById(user._id);
+    expect(updated!.curProgram?.toString()).toBe(program._id.toString());
+
+    await app.close();
+  });
+});
+
 describe("PUT /users/:id/programs/:programId — program completion", () => {
   it("returns done=true when last rotation's last session is complete", async () => {
     const program = await ProgramModel.create(

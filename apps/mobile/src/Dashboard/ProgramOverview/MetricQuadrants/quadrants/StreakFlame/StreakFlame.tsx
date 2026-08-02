@@ -1,9 +1,11 @@
 import { Program } from "@liftledger/shared";
 import { View } from "react-native";
 import { SPACING } from "../../../../../theme";
-import { STREAK_TARGET, STREAK_COLOR } from "../StreakQuadrant";
+import { getStreakHeat } from "../StreakQuadrant";
 import { FlameTongue, MAX_TONGUE_HEIGHT, TONGUE_WIDTH } from "./FlameTongue";
-import { getStreak } from "../getStreak";
+import { getStreak, withCurrentProgram } from "../getStreak";
+import { useAppActive } from "../../PulseProvider";
+import { useProgramSummaries } from "@liftledger/api-client";
 
 const GAP = SPACING.lg;
 const BAR_INSET = SPACING.sm;
@@ -23,12 +25,15 @@ export const StreakFlame = ({
   barHeight,
   keepOutRadius: R,
 }: Props) => {
-  const streak = getStreak(program);
-  const fill = streak / STREAK_TARGET;
+  const appActive = useAppActive();
+  const { data: summaries } = useProgramSummaries();
+  const streak = getStreak(withCurrentProgram(summaries, program));
+  const heat = getStreakHeat(streak);
+  const flameProgress = heat.tierProgress === 0 ? 1 : heat.tierProgress;
 
   const barEdgeOffset = GAP / 2 + BAR_INSET;
   const barRightOffset = barEdgeOffset + (grid.width - GAP) / 2 - BAR_INSET * 2;
-  const fillTopOffset = barEdgeOffset + (1 - fill) * barHeight;
+  const fillTopOffset = barEdgeOffset + (1 - flameProgress) * barHeight;
 
   const junctionX =
     fillTopOffset < R ? Math.sqrt(R * R - fillTopOffset * fillTopOffset) : 0;
@@ -38,7 +43,7 @@ export const StreakFlame = ({
   const span = Math.max(0, width - TONGUE_WIDTH);
   const count = Math.max(2, Math.ceil(span / TONGUE_STEP) + 1);
 
-  if (fill === 0 || barHeight === 0) return null;
+  if (streak === 0 || barHeight === 0) return null;
 
   return (
     <View
@@ -58,7 +63,9 @@ export const StreakFlame = ({
           key={i}
           index={i}
           centerX={HALF_TONGUE + (span / (count - 1)) * i}
-          baseColor={STREAK_COLOR}
+          coreColor={heat.frontColor}
+          tipColor={heat.nextColor}
+          paused={!appActive}
         />
       ))}
     </View>

@@ -118,7 +118,10 @@ export const SkipDayDialog = ({
       onClose();
       navigation.navigate("Tabs", { screen: "Dashboard" }, { pop: true });
     } catch {
-      showSnackbar("Failed to skip the rest of the day. Please try again.");
+      showSnackbar(
+        "Failed to skip the rest of the day. Please try again.",
+        "error",
+      );
     } finally {
       setFinishing(false);
     }

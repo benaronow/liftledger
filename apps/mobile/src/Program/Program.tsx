@@ -1,43 +1,25 @@
 import {
   useCompletedExercises,
+  useHistoricalProgram,
   useProgram,
   useMe,
 } from "@liftledger/api-client";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import { useEffect, useMemo, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import { LogoSpinner } from "../components/LogoSpinner";
 import type { TabParamList } from "../RootNavigator/types";
-import { useTheme } from "react-native-paper";
-import { ProgramFAB } from "./ProgramFAB";
-import { ProgramLeaveGuard } from "./ProgramLeaveGuard";
-import { EditorView } from "./EditorView";
+import { ProgramNavigator } from "./ProgramNavigator/ProgramNavigator";
 import { emptyProgram } from "./emptyProgram";
-import { ProgramTransitionProvider } from "./ProgramTransition";
 import { TemplateProvider } from "./TemplateProvider";
 import { templateFromProgram } from "./templateFromProgram";
 
 export const Program = () => {
   const { params } = useRoute<RouteProp<TabParamList, "Program">>();
-  const navigation = useNavigation();
   const duplicateFromId = params?.duplicateFrom;
-
-  const [transitioning, setTransitioning] = useState(false);
-  useEffect(
-    () => navigation.addListener("blur", () => setTransitioning(false)),
-    [navigation],
-  );
-
   const { data: curUser } = useMe();
-  const { colors } = useTheme();
   const { isLoading: curProgramLoading, data: curProgram } = useProgram();
   const { data: completedExercises, isLoading: completedExercisesLoading } =
     useCompletedExercises();
-
-  const sourceProgram = useMemo(() => {
-    if (!duplicateFromId || !curUser?.programs) return null;
-    return curUser.programs.find((b) => b._id === duplicateFromId) ?? null;
-  }, [duplicateFromId, curUser?.programs]);
+  const { data: sourceProgram } = useHistoricalProgram(duplicateFromId);
 
   if (!curUser) return <LogoSpinner />;
 
@@ -62,25 +44,12 @@ export const Program = () => {
     : 0;
 
   return (
-    <ProgramTransitionProvider value={{ transitioning, setTransitioning }}>
-      <View style={{ flex: 1 }}>
-        <TemplateProvider
-          key={`${curUser.curProgram ?? "none"}:${duplicateFromId ?? "default"}`}
-          initialTemplate={initialTemplate}
-          initialRotationIdx={initialRotationIdx}
-        >
-          <View style={{ flex: 1, backgroundColor: colors.background }}>
-            <EditorView />
-            <ProgramFAB />
-          </View>
-          <ProgramLeaveGuard />
-        </TemplateProvider>
-        {transitioning && (
-          <View style={[StyleSheet.absoluteFill, { zIndex: 20 }]}>
-            <LogoSpinner />
-          </View>
-        )}
-      </View>
-    </ProgramTransitionProvider>
+    <TemplateProvider
+      key={`${curUser.curProgram ?? "none"}:${duplicateFromId ?? "default"}`}
+      initialTemplate={initialTemplate}
+      initialRotationIdx={initialRotationIdx}
+    >
+      <ProgramNavigator />
+    </TemplateProvider>
   );
 };

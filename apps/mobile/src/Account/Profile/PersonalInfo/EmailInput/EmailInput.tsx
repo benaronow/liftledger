@@ -1,10 +1,10 @@
 import { useMe, useUpdateMyEmail } from "@liftledger/api-client";
+import { isAxiosError } from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { VerifyEmailSentDialog } from "./VerifyEmailSentDialog";
 import { ProfileTextInput } from "../../profileInputs";
 
 interface Props {
-  // Only database-connection users can change their email; social logins can't.
   isConnectionUser: boolean;
 }
 
@@ -30,8 +30,12 @@ export const EmailInput = ({ isConnectionUser }: Props) => {
     try {
       await triggerUpdateEmail({ email });
       setVerifySentFor(email);
-    } catch (e: unknown) {
-      setError((e as Error).message);
+    } catch (e) {
+      setError(
+        isAxiosError(e) && e.response?.status === 409
+          ? "That email is already in use."
+          : "Failed to update email.",
+      );
     }
   }, [curUser, email, triggerUpdateEmail]);
 

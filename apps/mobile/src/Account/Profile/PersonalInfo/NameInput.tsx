@@ -22,8 +22,8 @@ export const NameInput = () => {
     setError("");
     try {
       await triggerUpdateName({ fullName: value });
-    } catch (e: unknown) {
-      setError((e as Error).message);
+    } catch {
+      setError("Failed to update name.");
     }
   }, [curUser, value, triggerUpdateName]);
 

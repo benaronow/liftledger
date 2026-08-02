@@ -22,17 +22,20 @@ const REST_DURATION_MAX = 380;
 const randBetween = (min: number, max: number) =>
   min + Math.random() * (max - min);
 
-export const useTongueAnimation = () => {
+export const useTongueAnimation = (paused: boolean) => {
   const tongueAnimation = useMemo(() => new Animated.Value(Math.random()), []);
 
-  const speed = randBetween(SPEED_MULT_MIN, SPEED_MULT_MAX);
-  const breakTime = randBetween(BREAK_TIME_MIN, BREAK_TIME_MAX);
-  const breakProbability = randBetween(BREAK_PROB_MIN, BREAK_PROB_MAX);
+  const { speed, breakTime, breakProbability } = useMemo(
+    () => ({
+      speed: randBetween(SPEED_MULT_MIN, SPEED_MULT_MAX),
+      breakTime: randBetween(BREAK_TIME_MIN, BREAK_TIME_MAX),
+      breakProbability: randBetween(BREAK_PROB_MIN, BREAK_PROB_MAX),
+    }),
+    [],
+  );
 
   useEffect(() => {
-    // Skip the perpetual flame flicker under E2E so the dashboard settles for
-    // Maestro (see BarPulse). The tongue rests at its initial static level.
-    if (env.e2e) return;
+    if (env.e2e || paused) return;
     let active = true;
 
     const tick = () => {
@@ -68,7 +71,7 @@ export const useTongueAnimation = () => {
       active = false;
       tongueAnimation.stopAnimation();
     };
-  }, [tongueAnimation, speed, breakTime, breakProbability]);
+  }, [tongueAnimation, speed, breakTime, breakProbability, paused]);
 
   return tongueAnimation;
 };

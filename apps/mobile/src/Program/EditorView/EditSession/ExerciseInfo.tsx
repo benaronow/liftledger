@@ -7,6 +7,7 @@ import {
   Exercise,
   getNewSetsFromLatest,
   getNewWarmupSetsFromLatest,
+  getUnitLabel,
   getUpdatedExercise,
 } from "@liftledger/shared";
 import { useCallback, useMemo } from "react";
@@ -177,18 +178,21 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
       disabled: eIdx === 0,
       onPress: () => handleMoveExercise("up"),
       variant: "primary",
+      accessibilityLabel: `exercise-${eIdx}-up`,
     },
     {
       icon: "chevron-down",
       disabled: eIdx === visibleExerciseCount - 1,
       onPress: () => handleMoveExercise("down"),
       variant: "primary",
+      accessibilityLabel: `exercise-${eIdx}-down`,
     },
     {
       icon: "delete",
       disabled: curSessionExercises.length === 1,
       onPress: () => onRequestDelete(eIdx),
       variant: "danger",
+      accessibilityLabel: `exercise-${eIdx}-delete`,
     },
   ];
 
@@ -241,12 +245,14 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
             <NumberInput
               style={{ flex: 1 }}
               label="Sets"
+              testID={`exercise-${eIdx}-warmup-count`}
               value={warmupCount}
               onChangeValue={handleWarmupSetsCount}
             />
             <NumberInput
               style={{ flex: 1 }}
-              label="Weight"
+              label={getUnitLabel(exercise.unit)}
+              testID={`exercise-${eIdx}-warmup-weight`}
               value={exercise.warmupSets?.[0]?.weight ?? null}
               decimal
               disabled={warmupEditDisabled}
@@ -255,6 +261,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
             <NumberInput
               style={{ flex: 1 }}
               label="Reps"
+              testID={`exercise-${eIdx}-warmup-reps`}
               value={exercise.warmupSets?.[0]?.reps ?? null}
               disabled={warmupEditDisabled}
               onChangeValue={(reps) => updateWarmupField("reps", reps)}
@@ -265,13 +272,15 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
             <NumberInput
               style={{ flex: 1 }}
               label="Sets"
+              testID={`exercise-${eIdx}-working-count`}
               value={setCount}
               error={errors.workingSets}
               onChangeValue={handleSetsCount}
             />
             <NumberInput
               style={{ flex: 1 }}
-              label="Weight"
+              label={getUnitLabel(exercise.unit)}
+              testID={`exercise-${eIdx}-working-weight`}
               value={exercise.workingSets[0]?.weight ?? null}
               decimal
               disabled={editDisabled}
@@ -280,6 +289,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
             <NumberInput
               style={{ flex: 1 }}
               label="Reps"
+              testID={`exercise-${eIdx}-working-reps`}
               value={exercise.workingSets[0]?.reps ?? null}
               disabled={editDisabled}
               onChangeValue={(reps) => updateSetsField("reps", reps)}
@@ -291,12 +301,14 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
           <NumberInput
             style={{ flex: 1 }}
             label="Warmup sets"
+            testID={`exercise-${eIdx}-warmup-count`}
             value={warmupCount}
             onChangeValue={handleWarmupSetsCount}
           />
           <NumberInput
             style={{ flex: 1 }}
             label="Working sets"
+            testID={`exercise-${eIdx}-working-count`}
             value={setCount}
             error={errors.workingSets}
             onChangeValue={handleSetsCount}

@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EditSession } from "./EditSession/EditSession";
 import { EditRotation } from "./EditRotation/EditRotation";
-import { useTemplate } from "../TemplateProvider";
 import {
   Keyboard,
   ScrollView,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { floatingTabBarClearance } from "../../RootNavigator/TabNavigator/FloatingTabBar";
 import { useTheme } from "react-native-paper";
@@ -15,11 +15,19 @@ import { SPACING } from "../../theme";
 import { SelectModalContext } from "../../components/SearchableSelect";
 import { EditorTitle } from "./EditorTitle";
 
-export const EditorView = () => {
-  const { editingSessionIdx } = useTemplate();
+export const EditorView = ({ mode }: { mode: "rotation" | "session" }) => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
   const scrollRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    if (mode !== "rotation") return;
+    const unsub = navigation.getParent()?.addListener("blur", () => {
+      scrollRef.current?.scrollTo({ y: 0, animated: false });
+    });
+    return unsub;
+  }, [mode, navigation]);
 
   const [openSelectCount, setOpenSelectCount] = useState(0);
   const registerOpenSelect = useCallback(() => {
@@ -30,10 +38,6 @@ export const EditorView = () => {
     () => ({ register: registerOpenSelect }),
     [registerOpenSelect],
   );
-
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ y: 0, animated: false });
-  }, [editingSessionIdx]);
 
   return (
     <SelectModalContext.Provider value={selectModalValue}>
@@ -48,7 +52,7 @@ export const EditorView = () => {
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View>
-            <EditorTitle />
+            <EditorTitle mode={mode} />
             <View
               style={{
                 paddingHorizontal: SPACING.lg,
@@ -57,7 +61,7 @@ export const EditorView = () => {
                 alignItems: "center",
               }}
             >
-              {editingSessionIdx === -1 ? <EditRotation /> : <EditSession />}
+              {mode === "session" ? <EditSession /> : <EditRotation />}
             </View>
           </View>
         </TouchableWithoutFeedback>

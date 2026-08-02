@@ -1,0 +1,42 @@
+appId: app.liftledger.mobile
+# Add an add-on WARMUP set at WEIGHT x REPS via the Sets header "+". The "+"
+# adds a warmup (not a working set) whenever every existing warmup is logged,
+# none was skipped, and no working set has been started — including when the
+# exercise has no warmups at all. The dialog title is "Add Warmup Set".
+# Params: WEIGHT, REPS.
+---
+- tapOn: "Add set"
+- extendedWaitUntil:
+    visible:
+      id: "set-input-reps"
+    timeout: 5000
+- tapOn:
+    id: "set-input-reps"
+- waitForAnimationToEnd:
+    timeout: 300
+# Pre-fills from the previous warmup (blank when the exercise had none); only
+# erase+retype when the pre-fill differs from the target.
+- copyTextFrom:
+    id: "set-input-reps"
+- runFlow:
+    when:
+      true: ${maestro.copiedText != REPS}
+    commands:
+      - eraseText: 8
+      - inputText: "${REPS}"
+- tapOn:
+    id: "set-input-weight"
+- copyTextFrom:
+    id: "set-input-weight"
+- runFlow:
+    when:
+      true: ${maestro.copiedText != WEIGHT}
+    commands:
+      - eraseText: 8
+      - inputText: "${WEIGHT}"
+- tapOn: "Add Warmup Set"
+- tapOn: "Confirm"
+- extendedWaitUntil:
+    notVisible:
+      text: "Add Warmup Set"
+    timeout: 5000

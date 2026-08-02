@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { useAuth0 } from "react-native-auth0";
 import { useAuth0Profile, useCreateUser } from "@liftledger/api-client";
+import type { TimerSettings } from "@liftledger/shared";
 import {
   ActivityIndicator,
   Button,
@@ -21,17 +22,13 @@ import { useSnackbar } from "../providers/SnackbarProvider";
 import { useLogout } from "../RootNavigator/AuthenticatedRouter/useLogout";
 import { SectionCard } from "../components/SectionCard";
 
-const DEFAULT_TIMER_SETTINGS = {
+const DEFAULT_TIMER_SETTINGS: TimerSettings = {
   presets: { 0: 120, 1: 150, 2: 180, 3: 210, 4: 240 },
   defaultEnabled: true,
   defaultTime: 120,
   exerciseOverrides: {},
-};
-
-const errorMessage = (e: unknown, fallback: string): string => {
-  const data = (e as { response?: { data?: { error?: string } } })?.response
-    ?.data;
-  return data?.error ?? (e as Error)?.message ?? fallback;
+  notify: true,
+  alarm: "alarm_1",
 };
 
 export const CreateAccount = () => {
@@ -52,7 +49,6 @@ export const CreateAccount = () => {
   const email = user?.email ?? "";
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
-  const [error, setError] = useState("");
 
   useEffect(() => {
     if (isNonConnectionUser && profile?.username) setUsername(profile.username);
@@ -66,7 +62,6 @@ export const CreateAccount = () => {
 
   const handleCreate = useCallback(async () => {
     if (!user?.sub) return;
-    setError("");
     try {
       await createUser({
         auth0Id: user.sub,
@@ -75,10 +70,8 @@ export const CreateAccount = () => {
         fullName: fullName.trim(),
         timer: { settings: DEFAULT_TIMER_SETTINGS },
       });
-    } catch (e: unknown) {
-      const msg = errorMessage(e, "Failed to create account");
-      setError(msg);
-      showSnackbar(msg, "error");
+    } catch {
+      showSnackbar("Failed to create account.", "error");
     }
   }, [user?.sub, email, username, fullName, createUser, showSnackbar]);
 
@@ -141,11 +134,6 @@ export const CreateAccount = () => {
                 },
               }}
             />
-            {error !== "" && (
-              <Text style={{ color: colors.error, textAlign: "center" }}>
-                {error}
-              </Text>
-            )}
             <View style={{ gap: SPACING.sm, marginTop: SPACING.sm }}>
               <Button
                 mode="contained"

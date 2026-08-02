@@ -9,7 +9,11 @@ export const AvatarButton = ({ onPress }: Props) => {
   const { user } = useAuth0();
 
   return (
-    <TouchableRipple onPress={onPress}>
+    <TouchableRipple
+      onPress={onPress}
+      accessibilityLabel="Account"
+      testID="avatar-button"
+    >
       {user?.picture ? (
         <Avatar.Image
           size={36}

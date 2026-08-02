@@ -7,6 +7,13 @@ export interface CompletedExercisesResponse {
 
 const EMPTY: CompletedExercisesResponse = { current: [], previous: [] };
 
+const BLANK_SET: Set = {
+  reps: null,
+  weight: null,
+  note: "",
+  completed: false,
+};
+
 export const findLatestOccurrence = (
   completedExercises: CompletedExercisesResponse | undefined,
   checkerFunc: (e: Exercise) => boolean,
@@ -53,18 +60,15 @@ export const getNewSetsFromLatest = (
 
   const sets: Set[] =
     latestOccurrenceSameGymSets ??
-    Array(latestOccurrenceAllGymsSetNum).fill({
-      reps: null,
-      weight: null,
-      note: "",
-      completed: false,
-    });
+    Array(latestOccurrenceAllGymsSetNum).fill(BLANK_SET);
 
   if (numSets !== undefined)
     return numSets < sets.length
       ? sets.slice(0, numSets)
       : sets.concat(
-          Array<Set>(numSets - sets.length).fill(sets[sets.length - 1]),
+          Array<Set>(numSets - sets.length).fill(
+            sets[sets.length - 1] ?? BLANK_SET,
+          ),
         );
 
   return sets;
@@ -95,19 +99,15 @@ export const getNewWarmupSetsFromLatest = (
   // fall back to a fixed count. When numSets is passed (the editor count input)
   // it governs, so this only applies on name/equipment change.
   const sets: Set[] =
-    latestOccurrenceSameGymSets ??
-    Array<Set>(numSets ?? 0).fill({
-      reps: null,
-      weight: null,
-      note: "",
-      completed: false,
-    });
+    latestOccurrenceSameGymSets ?? Array<Set>(numSets ?? 0).fill(BLANK_SET);
 
   if (numSets !== undefined)
     return numSets < sets.length
       ? sets.slice(0, numSets)
       : sets.concat(
-          Array<Set>(numSets - sets.length).fill(sets[sets.length - 1]),
+          Array<Set>(numSets - sets.length).fill(
+            sets[sets.length - 1] ?? BLANK_SET,
+          ),
         );
 
   return sets;

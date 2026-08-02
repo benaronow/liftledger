@@ -1,4 +1,4 @@
-import { useProgram, useMe } from "@liftledger/api-client";
+import { useMe, useProgramSummaries } from "@liftledger/api-client";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
@@ -8,17 +8,17 @@ import { CompletedProgram } from "./CompletedProgram";
 
 export const History = () => {
   const { data: curUser, isLoading: isUserLoading } = useMe();
-  const { data: curProgram, isLoading: isProgramLoading } = useProgram();
+  const { data: summaries, isLoading: isSummariesLoading } =
+    useProgramSummaries();
   const { colors } = useTheme();
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
-  if (isUserLoading || isProgramLoading) return <LogoSpinner />;
+  if (isUserLoading || isSummariesLoading) return <LogoSpinner />;
 
   const hasActiveProgram = !!curUser?.curProgram;
 
   const completedPrograms =
-    curUser?.programs.filter((program) => program._id !== curProgram?._id) ??
-    [];
+    summaries?.filter((program) => program._id !== curUser?.curProgram) ?? [];
 
   return (
     <ScrollView
@@ -32,10 +32,10 @@ export const History = () => {
       }}
     >
       {completedPrograms.length > 0 ? (
-        completedPrograms.map((program, idx) => (
+        completedPrograms.map((summary, idx) => (
           <CompletedProgram
-            key={program._id}
-            program={program}
+            key={summary._id}
+            summary={summary}
             disabled={hasActiveProgram}
             expanded={openIdx === idx}
             onToggle={() => setOpenIdx((prev) => (prev === idx ? null : idx))}

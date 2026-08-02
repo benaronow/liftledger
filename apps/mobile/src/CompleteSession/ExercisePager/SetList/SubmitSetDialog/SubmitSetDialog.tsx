@@ -154,7 +154,7 @@ export const SubmitSetDialog = ({ exercise, editingSet, onClose }: Props) => {
     );
 
     if (exerciseIdx === -1) {
-      showSnackbar("Error submitting set. Please try again.");
+      showSnackbar("Error submitting set. Please try again.", "error");
       setSkippingSet(false);
       setSubmittingSet(false);
       return;
@@ -170,7 +170,7 @@ export const SubmitSetDialog = ({ exercise, editingSet, onClose }: Props) => {
       await saveExercises(updatedExercises);
       onClose();
     } catch {
-      showSnackbar("Error submitting set. Please try again.");
+      showSnackbar("Error submitting set. Please try again.", "error");
       setSkippingSet(false);
       setSubmittingSet(false);
       return;

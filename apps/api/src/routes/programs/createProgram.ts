@@ -39,7 +39,7 @@ export const createProgram = async ({
         $addToSet: { programs: newProgram },
       },
       { new: true },
-    ).populate([{ path: "programs", model: ProgramModel }]);
+    );
     if (!updatedUser) {
       await deleteOrphanedProgram();
       return reply.code(404).send({ error: "User not found" });

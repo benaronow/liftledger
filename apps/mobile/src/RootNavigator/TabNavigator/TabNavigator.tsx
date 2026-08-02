@@ -31,6 +31,7 @@ export const TabNavigator = () => {
           component={Progress}
           options={{
             title: "Progress",
+            popToTopOnBlur: true,
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons
                 name="trending-up"
