@@ -120,10 +120,14 @@ export const ConfirmationDialog = ({
               <Button
                 mode="contained"
                 buttonColor={
-                  secondaryActionDisabled ? SKIP_GRAY_DISABLED : SKIP_GRAY
+                  secondaryActionDisabled || confirming
+                    ? SKIP_GRAY_DISABLED
+                    : SKIP_GRAY
                 }
                 textColor={
-                  secondaryActionDisabled ? colors.onSurfaceDisabled : "white"
+                  secondaryActionDisabled || confirming
+                    ? colors.onSurfaceDisabled
+                    : "white"
                 }
                 loading={secondaryActionLoading}
                 onPress={
@@ -141,7 +145,7 @@ export const ConfirmationDialog = ({
               textColor={destructive ? colors.onError : colors.onPrimary}
               loading={confirming && !secondaryActionLoading}
               onPress={confirming ? undefined : onConfirm}
-              disabled={confirmationDisabled}
+              disabled={confirmationDisabled || confirming}
             >
               {action ?? "Confirm"}
             </Button>
