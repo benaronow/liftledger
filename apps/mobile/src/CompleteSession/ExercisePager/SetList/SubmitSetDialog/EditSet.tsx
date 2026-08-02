@@ -1,4 +1,9 @@
-import { Exercise, Set, findLatestOccurrence } from "@liftledger/shared";
+import {
+  Exercise,
+  Set,
+  findLatestOccurrence,
+  getUnitLabel,
+} from "@liftledger/shared";
 import { Dispatch, SetStateAction, useMemo } from "react";
 import { Pressable, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
@@ -29,6 +34,7 @@ export const EditSet = ({
     ? exerciseState?.warmupSets?.[setIdx]
     : exerciseState?.workingSets[setIdx];
   const dropSets = curSet?.dropSets ?? [];
+  const unitLabel = getUnitLabel(exerciseState?.unit);
 
   const latestPreviousSetNote = useMemo(() => {
     const occurrence = findLatestOccurrence(
@@ -111,7 +117,7 @@ export const EditSet = ({
         <Text style={{ color: "white", fontSize: FONT.sm }}>{`Previous note: ${latestPreviousSetNote}`}</Text>
       )}
       <NumberInput
-        label="Weight"
+        label={unitLabel}
         testID="set-input-weight"
         value={curSet?.weight ?? null}
         decimal
@@ -142,7 +148,7 @@ export const EditSet = ({
             >
               <NumberInput
                 style={{ flex: 1 }}
-                label="Weight"
+                label={unitLabel}
                 testID={`dropset-input-weight-${dropIdx}`}
                 value={drop.weight ?? null}
                 decimal

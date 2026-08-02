@@ -52,6 +52,7 @@ export const ExerciseRow = ({ exercise, onChange }: Props) => {
           key={idx}
           set={set}
           label={`Set ${idx + 1}`}
+          unit={exercise.unit}
           onChange={(next) => setWorkingSet(idx, next)}
         />
       ))}

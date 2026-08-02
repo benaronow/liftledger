@@ -1,4 +1,4 @@
-import { Set } from "@liftledger/shared";
+import { Set, getUnitLabel } from "@liftledger/shared";
 import { Pressable, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Text, useTheme } from "react-native-paper";
@@ -8,12 +8,14 @@ import { FONT, SPACING } from "../../theme";
 interface Props {
   set: Set;
   label: string;
+  unit: string;
   onChange: (set: Set) => void;
 }
 
-export const SetRow = ({ set, label, onChange }: Props) => {
+export const SetRow = ({ set, label, unit, onChange }: Props) => {
   const { colors } = useTheme();
   const dropSets = set.dropSets ?? [];
+  const unitLabel = getUnitLabel(unit);
 
   const update = (partial: Partial<Set>) => onChange({ ...set, ...partial });
 
@@ -43,7 +45,7 @@ export const SetRow = ({ set, label, onChange }: Props) => {
       <View style={{ flexDirection: "row", gap: SPACING.sm }}>
         <NumberInput
           style={{ flex: 1 }}
-          label="Weight"
+          label={unitLabel}
           value={set.weight}
           decimal
           onChangeValue={(weight) => update({ weight })}
@@ -71,7 +73,7 @@ export const SetRow = ({ set, label, onChange }: Props) => {
         >
           <NumberInput
             style={{ flex: 1 }}
-            label="Drop weight"
+            label={`Drop ${unitLabel.toLowerCase()}`}
             value={drop.weight}
             decimal
             onChangeValue={(weight) => updateDrop(idx, "weight", weight)}

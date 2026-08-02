@@ -7,6 +7,7 @@ import {
   Exercise,
   getNewSetsFromLatest,
   getNewWarmupSetsFromLatest,
+  getUnitLabel,
   getUpdatedExercise,
 } from "@liftledger/shared";
 import { useCallback, useMemo } from "react";
@@ -250,7 +251,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
             />
             <NumberInput
               style={{ flex: 1 }}
-              label="Weight"
+              label={getUnitLabel(exercise.unit)}
               testID={`exercise-${eIdx}-warmup-weight`}
               value={exercise.warmupSets?.[0]?.weight ?? null}
               decimal
@@ -278,7 +279,7 @@ export const ExerciseInfo = ({ exercise, eIdx, onRequestDelete }: Props) => {
             />
             <NumberInput
               style={{ flex: 1 }}
-              label="Weight"
+              label={getUnitLabel(exercise.unit)}
               testID={`exercise-${eIdx}-working-weight`}
               value={exercise.workingSets[0]?.weight ?? null}
               decimal
