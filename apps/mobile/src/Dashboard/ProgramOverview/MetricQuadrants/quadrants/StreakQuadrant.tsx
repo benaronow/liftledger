@@ -17,14 +17,14 @@ export const STREAK_TARGET = 10;
 
 export const STREAK_HEAT = [
   "#FFAA00",
-  "#FFC01A",
-  "#FFD84D",
-  "#FBEFA0",
-  "#EAF2FF",
-  "#93C5FD",
-  "#7C93FF",
-  "#B57BFF",
-  "#EC6DC9",
+  "#FFD767",
+  "#FEEFCA",
+  "#E1EAFF",
+  "#B6C9FF",
+  "#8FA7FF",
+  "#A57DFF",
+  "#DB73DF",
+  "#F6709F",
   "#FF7A54",
 ];
 

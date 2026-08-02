@@ -9,13 +9,18 @@ import {
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+// Local midnights are not always exactly 24h apart (DST), so round the
+// quotient to whole days instead of trusting it to be integral.
+const daysBetween = (later: number, earlier: number): number =>
+  Math.round((later - earlier) / DAY_MS);
+
 interface StreakProgram {
   workoutDays: WorkoutDay[];
   restDays: number;
 }
 
 const programTime = (program: StreakProgram): number =>
-  program.workoutDays.reduce((max, w) => Math.max(max, w.day), 0);
+  program.workoutDays.reduce((max, w) => Math.max(max, w.time), 0);
 
 type DayInfo = { segment: string; restDays: number };
 
@@ -28,7 +33,8 @@ const completedDayMap = (programs: StreakProgram[]): Map<number, DayInfo> => {
   >();
   ordered.forEach((program, order) => {
     const restDays = program.restDays ?? 0;
-    program.workoutDays.forEach(({ day, rotationIdx }) => {
+    program.workoutDays.forEach(({ time, rotationIdx }) => {
+      const day = startOfDay(time);
       const prev = days.get(day);
 
       if (
@@ -58,32 +64,41 @@ export const withCurrentProgram = (
   { workoutDays: programWorkoutDays(current), restDays: current.restDays ?? 0 },
 ];
 
+// Walks workout days chronologically, charging the rest days inside each gap
+// against the allowance of the segment (program rotation) being entered.
+// Exceeding the allowance kills the streak at that gap: the count restarts
+// from the next workout with a fresh allowance. The still-open gap between the
+// last workout and today can only kill the streak, never shrink it — the
+// displayed value must hold steady through allowed rest days and drop straight
+// to zero once the allowance is truly spent.
 export const getStreak = (programs: StreakProgram[]): number => {
   const days = completedDayMap(programs);
   if (days.size === 0) return 0;
 
-  const sorted = [...days.keys()].sort((a, b) => b - a);
+  const sorted = [...days.keys()].sort((a, b) => a - b);
   const today = startOfDay(new Date());
 
-  const recent = days.get(sorted[0])!;
-  let restUsed = Math.max(0, (today - sorted[0]) / DAY_MS - 1);
-  if (restUsed > recent.restDays) return 0;
-
   let streak = 1;
-  let curSegment = recent.segment;
+  let restUsed = 0;
+  let curSegment = days.get(sorted[0])!.segment;
   for (let i = 1; i < sorted.length; i++) {
     const info = days.get(sorted[i])!;
-    restUsed += (sorted[i - 1] - sorted[i]) / DAY_MS - 1;
-    if (restUsed > info.restDays) break;
-
     if (info.segment !== curSegment) {
       curSegment = info.segment;
       restUsed = 0;
     }
-    streak += 1;
+    restUsed += daysBetween(sorted[i], sorted[i - 1]) - 1;
+    if (restUsed > info.restDays) {
+      streak = 1;
+      restUsed = 0;
+    } else {
+      streak += 1;
+    }
   }
 
-  return streak;
+  const last = sorted[sorted.length - 1];
+  restUsed += Math.max(0, daysBetween(today, last) - 1);
+  return restUsed > days.get(last)!.restDays ? 0 : streak;
 };
 
 export const getMaxProgramStreak = (
@@ -91,7 +106,8 @@ export const getMaxProgramStreak = (
   restDays: number,
 ): number => {
   const days = new Map<number, number>();
-  workoutDays.forEach(({ day, rotationIdx }) => {
+  workoutDays.forEach(({ time, rotationIdx }) => {
+    const day = startOfDay(time);
     days.set(day, Math.max(days.get(day) ?? rotationIdx, rotationIdx));
   });
   if (days.size === 0) return 0;
@@ -104,18 +120,16 @@ export const getMaxProgramStreak = (
 
   for (let i = 1; i < sorted.length; i++) {
     const segment = days.get(sorted[i])!;
-    restUsed += (sorted[i] - sorted[i - 1]) / DAY_MS - 1;
+    if (segment !== prevSegment) {
+      prevSegment = segment;
+      restUsed = 0;
+    }
+    restUsed += daysBetween(sorted[i], sorted[i - 1]) - 1;
 
     if (restUsed > restDays) {
       run = 1;
       restUsed = 0;
-      prevSegment = segment;
       continue;
-    }
-
-    if (segment !== prevSegment) {
-      prevSegment = segment;
-      restUsed = 0;
     }
     run += 1;
     best = Math.max(best, run);
@@ -155,7 +169,7 @@ export const getRestDaysRemaining = (program: Program): number => {
   const workedSinceAnchor = [...days.keys()].filter(
     (day) => day > anchor && day < today,
   ).length;
-  const idle = Math.max(0, (today - anchor) / DAY_MS - 1 - workedSinceAnchor);
+  const idle = Math.max(0, daysBetween(today, anchor) - 1 - workedSinceAnchor);
 
   return Math.max(0, restDays - idle);
 };

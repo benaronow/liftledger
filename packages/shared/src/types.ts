@@ -59,7 +59,7 @@ export interface ProgramSummary {
   curRotationIdx: number;
   volume: number;
   unit: string;
-  workoutDays: { day: number; rotationIdx: number }[];
+  workoutDays: { time: number; rotationIdx: number }[];
 }
 
 export interface TimerPresets {

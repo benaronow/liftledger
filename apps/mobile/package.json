@@ -12,6 +12,8 @@
     "build:ios": "eas build --platform ios --profile production",
     "build:ios:preview": "eas build --platform ios --profile preview",
     "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
     "e2e:program-completion": ".maestro/run.sh .maestro/flows/programCompletionTest.yaml",
     "e2e:program-completion-2": ".maestro/run.sh .maestro/flows/programCompletionTest2.yaml",
     "e2e:program-creation": ".maestro/run.sh .maestro/flows/programCreationTest.yaml",
@@ -57,6 +59,7 @@
   "devDependencies": {
     "@types/react": "~19.2.2",
     "eas-cli": "^20.3.0",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.10"
   }
 }

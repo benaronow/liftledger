@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import UserModel from "@liftledger/shared/models/user";
 import ProgramModel from "@liftledger/shared/models/program";
-import { startOfDay, type Program } from "@liftledger/shared";
+import { type Program } from "@liftledger/shared";
 import { startDb, stopDb, clearDb, buildTestApp } from "./helpers";
 
 const makeUser = (programs: { toString(): string }[] = []) => ({
@@ -82,7 +82,7 @@ describe("GET /users/:id/programs — summaries", () => {
     expect(summary.volume).toBe(2000); // 2 sets * 10 reps * 100 weight
     expect(summary.unit).toBe("lbs");
     expect(summary.workoutDays).toEqual([
-      { day: startOfDay(completedDate), rotationIdx: 0 },
+      { time: completedDate.getTime(), rotationIdx: 0 },
     ]);
 
     await app.close();

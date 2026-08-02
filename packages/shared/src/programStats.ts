@@ -12,7 +12,10 @@ export const isFullySkipped = (session: Session): boolean =>
   );
 
 export interface WorkoutDay {
-  day: number;
+  // Raw completion time in epoch ms. Callers collapse this to a calendar day
+  // with startOfDay so the grouping happens in the viewer's timezone, not the
+  // timezone of whichever machine built the summary.
+  time: number;
   rotationIdx: number;
 }
 
@@ -22,7 +25,7 @@ export const programWorkoutDays = (program: Program): WorkoutDay[] => {
     rotation.forEach((session) => {
       if (!session.completedDate || isFullySkipped(session)) return;
       days.push({
-        day: startOfDay(new Date(session.completedDate)),
+        time: new Date(session.completedDate).getTime(),
         rotationIdx,
       });
     }),
