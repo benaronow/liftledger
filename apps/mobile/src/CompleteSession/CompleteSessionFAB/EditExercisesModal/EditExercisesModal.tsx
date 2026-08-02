@@ -369,6 +369,7 @@ export const EditExercisesModal = ({ open, onClose }: Props) => {
                             }
                             disabled={started}
                             onPress={() => startEdit(idx)}
+                            accessibilityLabel={`edit-exercise-${idx}`}
                           />
                         </View>
                       </View>

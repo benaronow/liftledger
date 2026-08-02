@@ -1,0 +1,464 @@
+appId: app.liftledger.mobile
+# Program creation regression: drives the Program tab's Create Program editor
+# from a clean account (no programs, no gyms) through every creation-time
+# behavior:
+#   - validation errors show up front (name, rotations, primary gym, incomplete
+#     exercise), block the Save FAB, and clear one by one as fields are fixed
+#   - custom gym added inline from the Primary Gym select
+#   - the unsaved-changes leave guard fires on tab-away and Cancel stays put
+#   - session editing: name error + fix, exercise name/equipment selects,
+#     warmup + working set counts/weight/reps, zero-set error + fix
+#   - session-level error line for an incomplete second exercise, then deleting
+#     that exercise clears it
+#   - session ops on the rotation screen: duplicate and delete a session, add a
+#     second session and fill it in
+#   - saving starts the program (dashboard flips to the Workout CTA) and the
+#     workout screen shows the authored warmup/working sets
+#   - quitting archives the program to history (dashboard back to Create
+#     program; Progress list shows it as a past program with an empty rotation)
+#
+# No seed — the flow needs the clean baseline, so setup AND teardown are both
+# the reset script:
+#   maestro test ... -e INTERNAL_SECRET=...
+env:
+  API_URL: https://localhost:4000
+onFlowStart:
+  - runScript: ../scripts/reset.js
+onFlowComplete:
+  - runScript: ../scripts/reset.js
+---
+- clearKeychain
+- launchApp:
+    clearState: true
+- runFlow: ../subflows/login.yaml
+# Clean account -> no-program placeholder.
+- assertVisible: "Create program"
+
+# ============================ Initial validation state ============================
+- tapOn: "Program"
+- extendedWaitUntil:
+    visible:
+      text: "Create Program"
+    timeout: 5000
+# Every program-level error is visible up front; the empty first exercise
+# surfaces as a session error line; Save is disabled.
+- assertVisible: "Enter a program name"
+- assertVisible: "Must be at least 1 rotation"
+- assertVisible: "Select a primary gym"
+- assertVisible: "Exercise 1: Not complete"
+- assertVisible:
+    id: "program-primary-fab"
+    enabled: false
+
+# ============================ Program details ============================
+- tapOn:
+    id: "program-name-input"
+- waitForAnimationToEnd:
+    timeout: 300
+- copyTextFrom:
+    id: "program-name-input"
+- repeat:
+    while:
+      true: ${maestro.copiedText != 'e2e created program'}
+    commands:
+      - eraseText: 40
+      - inputText: "e2e created program"
+      - copyTextFrom:
+          id: "program-name-input"
+- assertNotVisible: "Enter a program name"
+# Rotations 0 -> 2 clears the length error.
+- tapOn:
+    id: "program-rotations-input"
+- eraseText: 4
+- inputText: "2"
+- assertNotVisible: "Must be at least 1 rotation"
+# One rest day.
+- tapOn:
+    id: "program-rest-days-input"
+- eraseText: 4
+- inputText: "1"
+# Dismiss the number pad so the gym select (and later the session cards) are
+# reachable — the editor's background tap dismisses the keyboard.
+- tapOn: "Program Details"
+
+# ============================ Leave guard (dirty template) ============================
+- tapOn: "Progress"
+- extendedWaitUntil:
+    visible:
+      text: "Unsaved Changes"
+    timeout: 5000
+- tapOn: "Cancel"
+- assertNotVisible: "Unsaved Changes"
+# Still on the editor.
+- assertVisible: "Create Program"
+
+# ============================ Primary gym (custom add) ============================
+- tapOn: "Primary Gym"
+- extendedWaitUntil:
+    visible:
+      id: "select-search"
+    timeout: 5000
+- tapOn:
+    id: "select-search"
+- waitForAnimationToEnd:
+    timeout: 300
+- copyTextFrom:
+    id: "select-search"
+- repeat:
+    while:
+      true: ${maestro.copiedText != 'Home Gym'}
+    commands:
+      - eraseText
+      - inputText: "Home Gym"
+      - copyTextFrom:
+          id: "select-search"
+# No gyms exist yet -> add as custom (also selects it and closes the sheet).
+- tapOn:
+    id: "select-add-custom"
+- extendedWaitUntil:
+    notVisible:
+      id: "select-search"
+    timeout: 5000
+- assertNotVisible: "Select a primary gym"
+
+# ============================ Session 1 (editor) ============================
+- tapOn: "session-0-edit"
+- extendedWaitUntil:
+    visible:
+      text: "Edit Session 1"
+    timeout: 5000
+# Clearing the prefilled session name surfaces its error; retyping clears it.
+- tapOn:
+    id: "session-name-input"
+- waitForAnimationToEnd:
+    timeout: 300
+- eraseText: 30
+- assertVisible: "Enter a session name"
+- inputText: "push day"
+- assertNotVisible: "Enter a session name"
+- tapOn: "Session Details"
+# Exercise 1: name + equipment errors show until selected.
+- assertVisible: "Select an exercise"
+- assertVisible: "Select equipment"
+- tapOn: "Exercise"
+- extendedWaitUntil:
+    visible:
+      id: "select-search"
+    timeout: 5000
+- tapOn:
+    id: "select-search"
+- waitForAnimationToEnd:
+    timeout: 300
+- copyTextFrom:
+    id: "select-search"
+- repeat:
+    while:
+      true: ${maestro.copiedText != 'Bench Press'}
+    commands:
+      - eraseText
+      - inputText: "Bench Press"
+      - copyTextFrom:
+          id: "select-search"
+- tapOn:
+    id: "select-option-Bench Press"
+- assertNotVisible: "Select an exercise"
+- tapOn: "Equipment"
+- extendedWaitUntil:
+    visible:
+      id: "select-search"
+    timeout: 5000
+- tapOn:
+    id: "select-search"
+- waitForAnimationToEnd:
+    timeout: 300
+- copyTextFrom:
+    id: "select-search"
+- repeat:
+    while:
+      true: ${maestro.copiedText != 'Barbell'}
+    commands:
+      - eraseText
+      - inputText: "Barbell"
+      - copyTextFrom:
+          id: "select-search"
+- tapOn:
+    id: "select-option-Barbell"
+- assertNotVisible: "Select equipment"
+# Working sets: 1 -> 0 surfaces the zero-set error, then 3 sets of 100x8.
+- tapOn:
+    id: "exercise-0-working-count"
+- waitForAnimationToEnd:
+    timeout: 300
+- eraseText: 4
+- inputText: "0"
+- assertVisible: "Add at least one set"
+- eraseText: 4
+- inputText: "3"
+- assertNotVisible: "Add at least one set"
+- tapOn:
+    id: "exercise-0-working-weight"
+- eraseText: 6
+- inputText: "100"
+- tapOn:
+    id: "exercise-0-working-reps"
+- eraseText: 4
+- inputText: "8"
+# One warmup set of 45x10.
+- tapOn:
+    id: "exercise-0-warmup-count"
+- eraseText: 4
+- inputText: "1"
+- tapOn:
+    id: "exercise-0-warmup-weight"
+- eraseText: 6
+- inputText: "45"
+- tapOn:
+    id: "exercise-0-warmup-reps"
+- eraseText: 4
+- inputText: "10"
+# Dismiss the number pad via a background tap on the "Warmup sets" label — it
+# sits right above the focused input so it's always on-screen (the screen title
+# is not, once the keyboard shifts the view). Then bring the append row into
+# view — tapping it at a stale, keyboard-shifted position lands on an input.
+- tapOn: "Warmup sets"
+- waitForAnimationToEnd:
+    timeout: 500
+- scrollUntilVisible:
+    element:
+      text: "add-exercise-1"
+    direction: DOWN
+# Add a second exercise but leave it empty — its error should surface on the
+# rotation screen as a session error line.
+- tapOn: "add-exercise-1"
+- extendedWaitUntil:
+    visible:
+      text: "Exercise 2"
+    timeout: 5000
+# Back to the rotation screen (the session-mode FAB is the back arrow).
+- tapOn:
+    id: "program-primary-fab"
+- extendedWaitUntil:
+    visible:
+      text: "Create Program"
+    timeout: 5000
+# Escaped: Maestro matches by regex, and [] would otherwise be a char class.
+- assertVisible: "1\\. Bench Press \\[3\\]"
+- assertVisible: "Exercise 2: Not complete"
+# Save still disabled while the empty exercise lingers.
+- assertVisible:
+    id: "program-primary-fab"
+    enabled: false
+# Delete the empty exercise; the error line clears.
+- tapOn: "session-0-edit"
+- extendedWaitUntil:
+    visible:
+      text: "Edit Session 1"
+    timeout: 5000
+# Scroll to the delete button itself — the card title comes into view well
+# before its bottom action row does.
+- scrollUntilVisible:
+    element:
+      text: "exercise-1-delete"
+    direction: DOWN
+- tapOn: "exercise-1-delete"
+- extendedWaitUntil:
+    visible:
+      text: "Delete Exercise"
+    timeout: 5000
+- tapOn: "Confirm"
+- extendedWaitUntil:
+    notVisible:
+      text: "Delete Exercise"
+    timeout: 5000
+- tapOn:
+    id: "program-primary-fab"
+- extendedWaitUntil:
+    visible:
+      text: "Create Program"
+    timeout: 5000
+- assertNotVisible: "Exercise 2: Not complete"
+
+# ============================ Session ops on the rotation screen ============================
+# Duplicate session 1, then delete the copy.
+- tapOn: "session-0-copy"
+- assertVisible: "push day \\(copy\\)"
+- tapOn: "session-1-delete"
+- extendedWaitUntil:
+    visible:
+      text: "Delete Session"
+    timeout: 5000
+- tapOn: "Confirm"
+- extendedWaitUntil:
+    notVisible:
+      text: "Delete Session"
+    timeout: 5000
+- assertNotVisible: "push day \\(copy\\)"
+# Add a real second session and fill it in.
+- tapOn: "add-session-1"
+- assertVisible: "Session 2"
+- tapOn: "session-1-edit"
+- extendedWaitUntil:
+    visible:
+      text: "Edit Session 2"
+    timeout: 5000
+- tapOn:
+    id: "session-name-input"
+- waitForAnimationToEnd:
+    timeout: 300
+- eraseText: 30
+- inputText: "pull day"
+- tapOn: "Session Details"
+- tapOn: "Exercise"
+- extendedWaitUntil:
+    visible:
+      id: "select-search"
+    timeout: 5000
+- tapOn:
+    id: "select-search"
+- waitForAnimationToEnd:
+    timeout: 300
+- copyTextFrom:
+    id: "select-search"
+- repeat:
+    while:
+      true: ${maestro.copiedText != 'Bicep Curl'}
+    commands:
+      - eraseText
+      - inputText: "Bicep Curl"
+      - copyTextFrom:
+          id: "select-search"
+- tapOn:
+    id: "select-option-Bicep Curl"
+- tapOn: "Equipment"
+- extendedWaitUntil:
+    visible:
+      id: "select-search"
+    timeout: 5000
+- tapOn:
+    id: "select-search"
+- waitForAnimationToEnd:
+    timeout: 300
+- copyTextFrom:
+    id: "select-search"
+- repeat:
+    while:
+      true: ${maestro.copiedText != 'Dumbbell'}
+    commands:
+      - eraseText
+      - inputText: "Dumbbell"
+      - copyTextFrom:
+          id: "select-search"
+- tapOn:
+    id: "select-option-Dumbbell"
+- tapOn:
+    id: "exercise-0-working-count"
+- waitForAnimationToEnd:
+    timeout: 300
+- eraseText: 4
+- inputText: "2"
+- tapOn:
+    id: "exercise-0-working-weight"
+- eraseText: 6
+- inputText: "25"
+- tapOn:
+    id: "exercise-0-working-reps"
+- eraseText: 4
+- inputText: "10"
+# Background-tap the row label to dismiss the number pad (always on-screen,
+# unlike the scrolled-away titles), then leave via the back FAB.
+- tapOn: "Working sets"
+- waitForAnimationToEnd:
+    timeout: 500
+- tapOn:
+    id: "program-primary-fab"
+- extendedWaitUntil:
+    visible:
+      text: "Create Program"
+    timeout: 5000
+- assertVisible: "1\\. Bicep Curl \\[2\\]"
+
+# ============================ Save ============================
+- assertVisible:
+    id: "program-primary-fab"
+    enabled: true
+- tapOn:
+    id: "program-primary-fab"
+- extendedWaitUntil:
+    visible:
+      text: "Save Program"
+    timeout: 5000
+- tapOn: "Confirm"
+# Saving navigates to the dashboard, which now shows the Workout CTA.
+- extendedWaitUntil:
+    visible:
+      text: ".*Workout.*"
+    timeout: 10000
+
+# ============================ Verify the created program ============================
+# The workout screen shows session 1's authored exercise with its warmup and
+# working sets.
+- tapOn: ".*Workout.*"
+- assertVisible: "Bench Press"
+- assertVisible: ".*Warmup.*"
+- assertVisible: ".*45lbs.*"
+- assertVisible: ".*10 reps.*"
+- assertVisible: ".*100lbs.*"
+- assertVisible: ".*8 reps.*"
+# The minimal header back chevron is labeled with the previous screen's title.
+- tapOn: "Home"
+- extendedWaitUntil:
+    visible:
+      text: ".*Workout.*"
+    timeout: 5000
+# Progress list shows it as the current program.
+- tapOn: "Progress"
+- extendedWaitUntil:
+    visible:
+      text: "View programs"
+    timeout: 5000
+- tapOn: "View programs"
+- extendedWaitUntil:
+    visible:
+      text: ".*e2e created program.*"
+    timeout: 5000
+- assertVisible: ".*Current.*"
+
+# ============================ Quit (delete) ============================
+# The Program tab is now the Edit Program editor with the quit FAB.
+- tapOn: "Program"
+- extendedWaitUntil:
+    visible:
+      text: "Edit Program"
+    timeout: 5000
+- tapOn:
+    id: "program-quit-fab"
+- extendedWaitUntil:
+    visible:
+      text: "Quit Program"
+    timeout: 5000
+- tapOn: "Confirm"
+# Quitting returns to the no-program dashboard.
+- extendedWaitUntil:
+    visible:
+      text: "Create program"
+    timeout: 10000
+# The quit program is archived to history: still listed, no longer "Current",
+# with no completed sessions in its single kept rotation.
+- tapOn: "Progress"
+- extendedWaitUntil:
+    visible:
+      text: "View programs"
+    timeout: 5000
+- tapOn: "View programs"
+- extendedWaitUntil:
+    visible:
+      text: ".*e2e created program.*"
+    timeout: 5000
+- assertNotVisible: ".*Current.*"
+- tapOn: ".*e2e created program.*"
+# The rotation accordion header coalesces title + subtitle into one label.
+- extendedWaitUntil:
+    visible:
+      text: ".*Rotation 1.*"
+    timeout: 10000
+- assertVisible: ".*0/2 sessions completed.*"

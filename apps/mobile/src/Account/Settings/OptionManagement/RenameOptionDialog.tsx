@@ -129,7 +129,12 @@ export const RenameOptionDialog = ({
           label={label}
           value={value}
           onChangeText={setValue}
+          testID="rename-option-input"
           autoFocus
+          autoCapitalize="none"
+          autoCorrect={false}
+          spellCheck={false}
+          autoComplete="off"
           error={
             !committed && duplicate
               ? `"${trimmed}" already exists`
@@ -144,6 +149,7 @@ export const RenameOptionDialog = ({
           return (
             <Pressable
               key={opt.value}
+              testID={`rename-scope-${opt.value}`}
               onPress={() => setScope(opt.value)}
               style={{
                 flexDirection: "row",

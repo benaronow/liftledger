@@ -1,0 +1,42 @@
+appId: app.liftledger.mobile
+# Log one WARMUP set as completed at the given WEIGHT x REPS. Identical dialog
+# dance to logSet.yaml, but targets the warmup chip row. Params: SET (0-based
+# index within the exercise's warmups), WEIGHT, REPS.
+---
+- tapOn:
+    id: "set-row-warmup-${SET}"
+- extendedWaitUntil:
+    visible:
+      id: "set-input-reps"
+    timeout: 5000
+- tapOn:
+    id: "set-input-reps"
+- waitForAnimationToEnd:
+    timeout: 300
+# The field pre-fills with the planned/carried value; only erase+retype when it
+# differs from the target.
+- copyTextFrom:
+    id: "set-input-reps"
+- runFlow:
+    when:
+      true: ${maestro.copiedText != REPS}
+    commands:
+      - eraseText: 8
+      - inputText: "${REPS}"
+- tapOn:
+    id: "set-input-weight"
+- copyTextFrom:
+    id: "set-input-weight"
+- runFlow:
+    when:
+      true: ${maestro.copiedText != WEIGHT}
+    commands:
+      - eraseText: 8
+      - inputText: "${WEIGHT}"
+# Tap the (non-input) title to dismiss the number-pad, revealing Confirm.
+- tapOn: "Submit Set"
+- tapOn: "Confirm"
+- extendedWaitUntil:
+    notVisible:
+      text: "Submit Set"
+    timeout: 5000

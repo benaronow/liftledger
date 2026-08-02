@@ -64,6 +64,7 @@ export const ManageOptions = ({
                 marginRight: SPACING.sm,
                 borderRadius: RADIUS.sm,
               }}
+              accessibilityLabel={`rename-option-${item}`}
               onPress={() => setRenaming(item)}
             />
             <IconButton
@@ -73,6 +74,7 @@ export const ManageOptions = ({
               containerColor={colors.error}
               iconColor={colors.onError}
               style={{ margin: 0, borderRadius: RADIUS.sm }}
+              accessibilityLabel={`delete-option-${item}`}
               onPress={() => setPendingDelete(item)}
             />
           </View>

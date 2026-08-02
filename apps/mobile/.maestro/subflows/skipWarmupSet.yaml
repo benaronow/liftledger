@@ -1,0 +1,15 @@
+appId: app.liftledger.mobile
+# Skip one WARMUP set. Same dialog as skipSet.yaml, but targets the warmup
+# chip row. Param: SET (0-based index within the exercise's warmups).
+---
+- tapOn:
+    id: "set-row-warmup-${SET}"
+- extendedWaitUntil:
+    visible:
+      id: "set-input-reps"
+    timeout: 5000
+- tapOn: "Skip Set"
+- extendedWaitUntil:
+    notVisible:
+      text: "Submit Set"
+    timeout: 5000

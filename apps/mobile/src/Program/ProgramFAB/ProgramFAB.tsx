@@ -45,6 +45,7 @@ export const ProgramFAB = ({ mode }: { mode: "rotation" | "session" }) => {
             color="white"
             style={{ backgroundColor: colors.error, borderRadius: RADIUS.lg }}
             onPress={() => setQuitDialogOpen(true)}
+            testID="program-quit-fab"
           />
         )}
         {/* A single stable FAB whose icon swaps between save and back. Keeping
@@ -66,6 +67,7 @@ export const ProgramFAB = ({ mode }: { mode: "rotation" | "session" }) => {
           onPress={() =>
             isEditingSession ? navigation.goBack() : setSaveDialogOpen(true)
           }
+          testID="program-primary-fab"
         />
       </View>
       <SaveProgramDialog

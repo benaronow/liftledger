@@ -1,0 +1,120 @@
+appId: app.liftledger.mobile
+# Edit an EXISTING exercise on the fly via FAB -> Edit Exercises -> pencil on
+# row IDX (only enabled while that exercise has no completed/skipped set).
+# NAME / EQUIPMENT / UNIT are each optional — pass '' to leave that field
+# unchanged. Changing name or equipment repopulates the exercise's sets from
+# that combo's latest history (blank when there is none); changing unit keeps
+# the sets. NAME_EXISTING mirrors addExercise's EXISTING: 'true' picks the
+# option, 'false' custom-adds it (pass anything when NAME is '').
+# Params: IDX, NAME, NAME_EXISTING, EQUIPMENT, UNIT.
+---
+- tapOn:
+    id: "fab-more-actions"
+- extendedWaitUntil:
+    visible:
+      id: "fab-edit-exercises"
+    timeout: 5000
+- tapOn:
+    id: "fab-edit-exercises"
+- extendedWaitUntil:
+    visible:
+      text: "edit-exercise-${IDX}"
+    timeout: 5000
+- tapOn: "edit-exercise-${IDX}"
+- extendedWaitUntil:
+    visible:
+      text: "Edit Exercise"
+    timeout: 5000
+- waitForAnimationToEnd:
+    timeout: 300
+
+# --- Name (optional): same type-and-verify retry as addExercise, because the
+# Fuse-filtered list re-render can drop fast-typed characters. ---
+- runFlow:
+    when:
+      true: ${NAME != ''}
+    commands:
+      - tapOn: "Exercise"
+      - extendedWaitUntil:
+          visible:
+            id: "select-search"
+          timeout: 5000
+      - tapOn:
+          id: "select-search"
+      - waitForAnimationToEnd:
+          timeout: 300
+      - copyTextFrom:
+          id: "select-search"
+      - repeat:
+          while:
+            true: ${maestro.copiedText != NAME}
+          commands:
+            - eraseText
+            - inputText: "${NAME}"
+            - copyTextFrom:
+                id: "select-search"
+      - runFlow:
+          when:
+            true: ${NAME_EXISTING == 'true'}
+          commands:
+            - tapOn:
+                id: "select-option-${NAME}"
+      - runFlow:
+          when:
+            true: ${NAME_EXISTING == 'false'}
+          commands:
+            - tapOn:
+                id: "select-add-custom"
+
+# --- Equipment (optional, always an existing option here) ---
+- runFlow:
+    when:
+      true: ${EQUIPMENT != ''}
+    commands:
+      - tapOn: "Equipment"
+      - extendedWaitUntil:
+          visible:
+            id: "select-search"
+          timeout: 5000
+      - tapOn:
+          id: "select-search"
+      - waitForAnimationToEnd:
+          timeout: 300
+      - copyTextFrom:
+          id: "select-search"
+      - repeat:
+          while:
+            true: ${maestro.copiedText != EQUIPMENT}
+          commands:
+            - eraseText
+            - inputText: "${EQUIPMENT}"
+            - copyTextFrom:
+                id: "select-search"
+      - tapOn:
+          id: "select-option-${EQUIPMENT}"
+
+# --- Unit (optional, fixed options) ---
+- runFlow:
+    when:
+      true: ${UNIT != ''}
+    commands:
+      - tapOn: "Unit"
+      - extendedWaitUntil:
+          visible:
+            id: "select-option-${UNIT}"
+          timeout: 5000
+      - tapOn:
+          id: "select-option-${UNIT}"
+
+# Save the edit, then close the Edit Exercises sheet. ("Edit Exercise" vs "Edit
+# Exercises" is safe — Maestro matches the full string.)
+- tapOn: "Save"
+- extendedWaitUntil:
+    notVisible:
+      text: "Edit Exercise"
+    timeout: 5000
+- tapOn: "Done"
+- extendedWaitUntil:
+    notVisible:
+      text: "Edit Exercises"
+    timeout: 5000

@@ -1,0 +1,65 @@
+appId: app.liftledger.mobile
+# Rename one option from the Account > Settings > Exercise Options managers.
+# Assumes the Settings tab of the Account screen is already on screen. Opens
+# the MANAGER sheet ("Exercises" | "Equipment" | "Gyms" | "Units"), filters to
+# FROM, taps its row (which opens the rename dialog), replaces the value with
+# TO, picks the SCOPE radio ("list" | "current" | "all"), saves, and closes the
+# sheet again. Params: MANAGER, FROM, TO, SCOPE.
+---
+- tapOn: "${MANAGER}"
+- extendedWaitUntil:
+    visible:
+      id: "select-search"
+    timeout: 5000
+# Filter the (long) option list down to the target. Type-and-verify retry: the
+# Fuse-filtered list re-render can drop fast-typed characters.
+- tapOn:
+    id: "select-search"
+- waitForAnimationToEnd:
+    timeout: 300
+- copyTextFrom:
+    id: "select-search"
+- repeat:
+    while:
+      true: ${maestro.copiedText != FROM}
+    commands:
+      - eraseText
+      - inputText: "${FROM}"
+      - copyTextFrom:
+          id: "select-search"
+# Tapping the option row opens the rename dialog (management mode).
+- tapOn:
+    id: "select-option-${FROM}"
+- extendedWaitUntil:
+    visible:
+      id: "rename-option-input"
+    timeout: 5000
+- tapOn:
+    id: "rename-option-input"
+- waitForAnimationToEnd:
+    timeout: 300
+# Replace the pre-filled original with the new value (verify like the search).
+- copyTextFrom:
+    id: "rename-option-input"
+- repeat:
+    while:
+      true: ${maestro.copiedText != TO}
+    commands:
+      - eraseText: 50
+      - inputText: "${TO}"
+      - copyTextFrom:
+          id: "rename-option-input"
+- tapOn:
+    id: "rename-scope-${SCOPE}"
+# Save closes the dialog only after the PATCH succeeds (an error keeps it
+# open), so the notVisible wait doubles as the success check.
+- tapOn: "Save"
+- extendedWaitUntil:
+    notVisible:
+      id: "rename-option-input"
+    timeout: 10000
+- tapOn: "Done"
+- extendedWaitUntil:
+    notVisible:
+      id: "select-search"
+    timeout: 5000

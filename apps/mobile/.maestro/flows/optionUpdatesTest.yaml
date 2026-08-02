@@ -1,0 +1,517 @@
+appId: app.liftledger.mobile
+# Exercise-options rename regression: all 12 cases of {Exercises, Equipment,
+# Gyms, Units} x {"Just the list" | "This program too" | "All history too"},
+# against the seeded "options" fixture — one fully-completed historical program
+# ("Past Program") plus a current program mid-flight ("Current Program": first
+# session completed, second session current and untouched).
+#
+# Rename targets are chosen so each scope has a distinct witness in the data:
+#                    list-scope         current-scope        all-scope
+#   Exercises        BB Bench           DB Curl              BB Squat
+#   Equipment        Cable              Dumbbell             Machine
+#   Gyms             Gym Two            Gym One              Gym Three
+#   Units            kgs                stone                lbs
+# Each current-scope witness also appears in the current session's NOT-yet-
+# completed exercises — the original regression (renames only reaching
+# completed exercises, and a later stale save reverting them in the DB). After
+# the name renames the flow logs a set, which PUTs the whole program back and
+# would resurrect the old names if the client cache were stale.
+#
+# Also covers: the duplicate-name inline error in the rename dialog, and
+# deleting an option from the list (which must NOT touch saved workouts).
+#
+# Seeds the "options" fixture before the run and wipes the user after:
+#   maestro test ... -e INTERNAL_SECRET=...
+env:
+  API_URL: https://localhost:4000
+  SEED_VARIANT: options
+onFlowStart:
+  - runScript: ../scripts/seed.js
+onFlowComplete:
+  - runScript: ../scripts/reset.js
+---
+- clearKeychain
+- launchApp:
+    clearState: true
+- runFlow: ../subflows/login.yaml
+- assertVisible: ".*Workout.*"
+
+# ============================ Block A: Exercises ============================
+- tapOn:
+    id: "avatar-button"
+- extendedWaitUntil:
+    visible:
+      text: "Settings"
+    timeout: 5000
+- tapOn: "Settings"
+- scrollUntilVisible:
+    element:
+      text: "Exercises"
+    direction: DOWN
+# --- A1 (list) inline, with the duplicate-name error check on the way ---
+- tapOn: "Exercises"
+- extendedWaitUntil:
+    visible:
+      id: "select-search"
+    timeout: 5000
+- tapOn:
+    id: "select-search"
+- waitForAnimationToEnd:
+    timeout: 300
+- copyTextFrom:
+    id: "select-search"
+- repeat:
+    while:
+      true: ${maestro.copiedText != 'BB Bench'}
+    commands:
+      - eraseText
+      - inputText: "BB Bench"
+      - copyTextFrom:
+          id: "select-search"
+- tapOn:
+    id: "select-option-BB Bench"
+- extendedWaitUntil:
+    visible:
+      id: "rename-option-input"
+    timeout: 5000
+- tapOn:
+    id: "rename-option-input"
+- waitForAnimationToEnd:
+    timeout: 300
+# Typing another existing option must surface the inline duplicate error.
+- copyTextFrom:
+    id: "rename-option-input"
+- repeat:
+    while:
+      true: ${maestro.copiedText != 'DB Curl'}
+    commands:
+      - eraseText: 50
+      - inputText: "DB Curl"
+      - copyTextFrom:
+          id: "rename-option-input"
+- assertVisible: "\"DB Curl\" already exists"
+# Fix to the real target and save with "Just the list".
+- copyTextFrom:
+    id: "rename-option-input"
+- repeat:
+    while:
+      true: ${maestro.copiedText != 'Flat BB Bench'}
+    commands:
+      - eraseText: 50
+      - inputText: "Flat BB Bench"
+      - copyTextFrom:
+          id: "rename-option-input"
+- assertNotVisible: ".*already exists.*"
+- tapOn:
+    id: "rename-scope-list"
+- tapOn: "Save"
+- extendedWaitUntil:
+    notVisible:
+      id: "rename-option-input"
+    timeout: 10000
+- tapOn: "Done"
+- extendedWaitUntil:
+    notVisible:
+      id: "select-search"
+    timeout: 5000
+# --- A2 (current) and A3 (all) ---
+- runFlow:
+    file: ../subflows/renameOption.yaml
+    env:
+      MANAGER: "Exercises"
+      FROM: "DB Curl"
+      TO: "Standing DB Curl"
+      SCOPE: "current"
+- runFlow:
+    file: ../subflows/renameOption.yaml
+    env:
+      MANAGER: "Exercises"
+      FROM: "BB Squat"
+      TO: "Low Bar Squat"
+      SCOPE: "all"
+# The minimal header back chevron is labeled with the previous screen's title.
+- tapOn: "Home"
+- assertVisible: ".*Workout.*"
+
+# --- Verify A on the workout screen (current session, NOT completed) ---
+# The current-scope and all-scope renames must reach the untouched session —
+# the original 3a bug left these stale.
+- tapOn: ".*Workout.*"
+- assertVisible: "Low Bar Squat"
+- assertVisible: ".*11stone.*"
+# Log the set: this PUTs the full program back — with a stale cache this is
+# what used to permanently revert the renames server-side.
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "11", REPS: "5" }
+- tapOn: "Next exercise"
+- assertVisible: "Standing DB Curl"
+- assertVisible: ".*15kgs.*"
+- tapOn: "Home"
+- assertVisible: ".*Workout.*"
+
+# --- Verify A in the current program's detail (completed session too) ---
+- tapOn: "Progress"
+- extendedWaitUntil:
+    visible:
+      text: "View programs"
+    timeout: 5000
+- tapOn: "View programs"
+- extendedWaitUntil:
+    visible:
+      text: "Current Program"
+    timeout: 5000
+- tapOn: "Current Program"
+# Accordion headers coalesce into one "Title, Subtitle" label on iOS: rows are
+# tapped with .* wrappers, and exercise rows are asserted via their exact
+# "Name, Equipment" coalesced label (which fails if either was renamed).
+- extendedWaitUntil:
+    visible:
+      text: ".*Rotation 1.*"
+    timeout: 10000
+- tapOn: ".*Rotation 1.*"
+- tapOn: ".*Done Day.*"
+# List-scope left the program data alone; current-scope renamed it everywhere
+# in this program (completed session included).
+- assertVisible: "BB Bench, Barbell, .*"
+- assertVisible: "Standing DB Curl, Dumbbell, .*"
+# Collapse Done Day again so Today is back in reach.
+- tapOn: ".*Done Day.*"
+- tapOn: ".*Today.*"
+- assertVisible: "Low Bar Squat, Barbell, .*"
+- tapOn: "Back"
+# --- Verify A in the historical program (only the all-scope rename lands) ---
+- extendedWaitUntil:
+    visible:
+      text: ".*Past Program.*"
+    timeout: 5000
+- tapOn: ".*Past Program.*"
+- extendedWaitUntil:
+    visible:
+      text: ".*Rotation 1.*"
+    timeout: 10000
+- tapOn: ".*Rotation 1.*"
+- tapOn: ".*Old Push.*"
+- assertVisible: "BB Bench, Barbell, .*"
+- assertVisible: "DB Curl, Dumbbell, .*"
+- tapOn: ".*Old Push.*"
+- tapOn: ".*Old Legs.*"
+- assertVisible: "Low Bar Squat, Barbell, .*"
+- assertVisible: "Cable Row, Cable, .*"
+- tapOn: "Back"
+- tapOn: "Home"
+
+# ============================ Block B: Equipment ============================
+- tapOn:
+    id: "avatar-button"
+- extendedWaitUntil:
+    visible:
+      text: "Settings"
+    timeout: 5000
+- tapOn: "Settings"
+- scrollUntilVisible:
+    element:
+      text: "Equipment"
+    direction: DOWN
+- runFlow:
+    file: ../subflows/renameOption.yaml
+    env:
+      MANAGER: "Equipment"
+      FROM: "Cable"
+      TO: "Cable Stack"
+      SCOPE: "list"
+- runFlow:
+    file: ../subflows/renameOption.yaml
+    env:
+      MANAGER: "Equipment"
+      FROM: "Dumbbell"
+      TO: "Dumbbells"
+      SCOPE: "current"
+- runFlow:
+    file: ../subflows/renameOption.yaml
+    env:
+      MANAGER: "Equipment"
+      FROM: "Machine"
+      TO: "Machines"
+      SCOPE: "all"
+- tapOn: "Home"
+- assertVisible: ".*Workout.*"
+# --- Verify B on the workout screen (uncompleted exercises) ---
+- tapOn: ".*Workout.*"
+# Pager opens on the first incomplete exercise: Standing DB Curl.
+- assertVisible: "Standing DB Curl"
+- assertVisible: "Dumbbells"
+- tapOn: "Next exercise"
+- assertVisible: "Leg Press"
+- assertVisible: "Machines"
+- tapOn: "Home"
+# --- Verify B in program details ---
+- tapOn: "Progress"
+- extendedWaitUntil:
+    visible:
+      text: "View programs"
+    timeout: 5000
+- tapOn: "View programs"
+- extendedWaitUntil:
+    visible:
+      text: "Current Program"
+    timeout: 5000
+- tapOn: "Current Program"
+- extendedWaitUntil:
+    visible:
+      text: ".*Rotation 1.*"
+    timeout: 10000
+- tapOn: ".*Rotation 1.*"
+- tapOn: ".*Done Day.*"
+# Current-scope reached the completed session; Barbell was never renamed.
+- assertVisible: "Standing DB Curl, Dumbbells, .*"
+- assertVisible: "BB Bench, Barbell, .*"
+- tapOn: "Back"
+- extendedWaitUntil:
+    visible:
+      text: ".*Past Program.*"
+    timeout: 5000
+- tapOn: ".*Past Program.*"
+- extendedWaitUntil:
+    visible:
+      text: ".*Rotation 1.*"
+    timeout: 10000
+- tapOn: ".*Rotation 1.*"
+- tapOn: ".*Old Push.*"
+# History untouched by list- and current-scope...
+- assertVisible: "DB Curl, Dumbbell, .*"
+- tapOn: ".*Old Push.*"
+- tapOn: ".*Old Legs.*"
+# ...but rewritten by all-scope; the list-scope "Cable" stays as-is.
+- assertVisible: "Cable Row, Cable, .*"
+- assertVisible: "Leg Press, Machines, .*"
+- tapOn: "Back"
+- tapOn: "Home"
+
+# ============================ Block C: Gyms ============================
+- tapOn:
+    id: "avatar-button"
+- extendedWaitUntil:
+    visible:
+      text: "Settings"
+    timeout: 5000
+- tapOn: "Settings"
+- scrollUntilVisible:
+    element:
+      text: "Gyms"
+    direction: DOWN
+- runFlow:
+    file: ../subflows/renameOption.yaml
+    env:
+      MANAGER: "Gyms"
+      FROM: "Gym Two"
+      TO: "Second Gym"
+      SCOPE: "list"
+- runFlow:
+    file: ../subflows/renameOption.yaml
+    env:
+      MANAGER: "Gyms"
+      FROM: "Gym One"
+      TO: "Main Gym"
+      SCOPE: "current"
+- runFlow:
+    file: ../subflows/renameOption.yaml
+    env:
+      MANAGER: "Gyms"
+      FROM: "Gym Three"
+      TO: "Third Gym"
+      SCOPE: "all"
+- tapOn: "Home"
+# --- Verify C in program details (session gym fields) ---
+- tapOn: "Progress"
+- extendedWaitUntil:
+    visible:
+      text: "View programs"
+    timeout: 5000
+- tapOn: "View programs"
+- extendedWaitUntil:
+    visible:
+      text: "Current Program"
+    timeout: 5000
+- tapOn: "Current Program"
+- extendedWaitUntil:
+    visible:
+      text: ".*Rotation 1.*"
+    timeout: 10000
+- tapOn: ".*Rotation 1.*"
+- tapOn: ".*Done Day.*"
+# The expanded session's gym field is a standalone input value — exact match.
+- assertVisible: "Main Gym"
+- tapOn: ".*Done Day.*"
+- tapOn: ".*Today.*"
+# List-scope: the session still points at the old gym name.
+- assertVisible: "Gym Two"
+- tapOn: "Back"
+- extendedWaitUntil:
+    visible:
+      text: ".*Past Program.*"
+    timeout: 5000
+- tapOn: ".*Past Program.*"
+- extendedWaitUntil:
+    visible:
+      text: ".*Rotation 1.*"
+    timeout: 10000
+- tapOn: ".*Rotation 1.*"
+- tapOn: ".*Old Push.*"
+# Current-scope never reached history: still Gym One.
+- assertVisible: "Gym One"
+- tapOn: ".*Old Push.*"
+- tapOn: ".*Old Legs.*"
+- assertVisible: "Third Gym"
+- tapOn: "Back"
+- tapOn: "Home"
+
+# ============================ Block D: Units ============================
+- tapOn:
+    id: "avatar-button"
+- extendedWaitUntil:
+    visible:
+      text: "Settings"
+    timeout: 5000
+- tapOn: "Settings"
+- scrollUntilVisible:
+    element:
+      text: "Units"
+    direction: DOWN
+- runFlow:
+    file: ../subflows/renameOption.yaml
+    env:
+      MANAGER: "Units"
+      FROM: "kgs"
+      TO: "kilos"
+      SCOPE: "list"
+- runFlow:
+    file: ../subflows/renameOption.yaml
+    env:
+      MANAGER: "Units"
+      FROM: "stone"
+      TO: "st"
+      SCOPE: "current"
+- runFlow:
+    file: ../subflows/renameOption.yaml
+    env:
+      MANAGER: "Units"
+      FROM: "lbs"
+      TO: "lb"
+      SCOPE: "all"
+- tapOn: "Home"
+- assertVisible: ".*Workout.*"
+# --- Verify D on the workout screen ---
+- tapOn: ".*Workout.*"
+# Standing DB Curl kept kgs (list-scope only renamed the option list).
+- assertVisible: "Standing DB Curl"
+- assertVisible: ".*15kgs.*"
+# Low Bar Squat: stone -> st ("11stone" must be gone; "11st" remains).
+- tapOn: "Previous exercise"
+- assertNotVisible: ".*11stone.*"
+- assertVisible: ".*11st.*"
+# Leg Press: lbs -> lb everywhere.
+- tapOn: "Next exercise"
+- tapOn: "Next exercise"
+- assertNotVisible: ".*60lbs.*"
+- assertVisible: ".*60lb.*"
+- tapOn: "Home"
+# --- Verify D in the historical program (unit fields) ---
+- tapOn: "Progress"
+- extendedWaitUntil:
+    visible:
+      text: "View programs"
+    timeout: 5000
+- tapOn: "View programs"
+- extendedWaitUntil:
+    visible:
+      text: "Past Program"
+    timeout: 5000
+- tapOn: ".*Past Program.*"
+- extendedWaitUntil:
+    visible:
+      text: ".*Rotation 1.*"
+    timeout: 10000
+- tapOn: ".*Rotation 1.*"
+- tapOn: ".*Old Legs.*"
+# Current-scope "st" never reached history: the unit field (a standalone input
+# value once the exercise row is expanded) still reads "stone".
+- tapOn: ".*Low Bar Squat.*"
+- assertVisible: "stone"
+# Collapse it again so Cable Row is back within reach, then check its unit
+# became "lb" (all-scope).
+- tapOn: ".*Low Bar Squat.*"
+- tapOn: ".*Cable Row.*"
+- assertVisible: "lb"
+- tapOn: "Back"
+- tapOn: "Home"
+
+# ============================ Option deletion ============================
+# Deleting an option only removes it from the list; saved workouts keep it.
+- tapOn:
+    id: "avatar-button"
+- extendedWaitUntil:
+    visible:
+      text: "Settings"
+    timeout: 5000
+- tapOn: "Settings"
+- scrollUntilVisible:
+    element:
+      text: "Exercises"
+    direction: DOWN
+- tapOn: "Exercises"
+- extendedWaitUntil:
+    visible:
+      id: "select-search"
+    timeout: 5000
+- tapOn:
+    id: "select-search"
+- waitForAnimationToEnd:
+    timeout: 300
+- copyTextFrom:
+    id: "select-search"
+- repeat:
+    while:
+      true: ${maestro.copiedText != 'Flat BB Bench'}
+    commands:
+      - eraseText
+      - inputText: "Flat BB Bench"
+      - copyTextFrom:
+          id: "select-search"
+- tapOn: "delete-option-Flat BB Bench"
+- extendedWaitUntil:
+    visible:
+      text: "Delete exercise\\?"
+    timeout: 5000
+- tapOn: "Delete"
+- extendedWaitUntil:
+    notVisible:
+      text: "Delete exercise\\?"
+    timeout: 10000
+- assertNotVisible:
+    id: "select-option-Flat BB Bench"
+- tapOn: "Done"
+- extendedWaitUntil:
+    notVisible:
+      id: "select-search"
+    timeout: 5000
+- tapOn: "Home"
+# The program data still shows the (differently-cased) original name.
+- tapOn: "Progress"
+- extendedWaitUntil:
+    visible:
+      text: "View programs"
+    timeout: 5000
+- tapOn: "View programs"
+- extendedWaitUntil:
+    visible:
+      text: "Current Program"
+    timeout: 5000
+- tapOn: "Current Program"
+- extendedWaitUntil:
+    visible:
+      text: ".*Rotation 1.*"
+    timeout: 10000
+- tapOn: ".*Rotation 1.*"
+- tapOn: ".*Done Day.*"
+- assertVisible: "BB Bench, Barbell, .*"

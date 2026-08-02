@@ -45,6 +45,9 @@ export const resetE2EUser = async ({ reply }: { reply: FastifyReply }) => {
           "options.defaultUnit": LBS,
           "options.gyms": [],
           "timer.settings.exerciseOverrides": {},
+          // Restore the schema default; the part2/options seed variants turn
+          // the auto rest-timer off for their runs.
+          "timer.settings.defaultEnabled": true,
         },
         $unset: { curProgram: "", "timer.end": "" },
       },

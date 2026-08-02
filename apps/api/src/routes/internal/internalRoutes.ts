@@ -49,7 +49,8 @@ const internalRoutes = async (app: FastifyInstance) => {
     if (!isAuthorized(req))
       return reply.code(401).send({ error: "Unauthorized" });
 
-    return seedProgram({ reply });
+    const { variant } = (req.body ?? {}) as { variant?: string };
+    return seedProgram({ reply, variant });
   });
 };
 

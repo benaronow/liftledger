@@ -84,12 +84,14 @@ export const SessionInfo = ({
       disabled: isComplete || dIdx === curProgram?.curSessionIdx || dIdx === 0,
       onPress: () => handleMoveSession(session, dIdx, "up"),
       variant: "primary",
+      accessibilityLabel: `session-${dIdx}-up`,
     },
     {
       icon: "chevron-down",
       disabled: isComplete || dIdx === rotation.length - 1,
       onPress: () => handleMoveSession(session, dIdx, "down"),
       variant: "primary",
+      accessibilityLabel: `session-${dIdx}-down`,
     },
     {
       icon: "pencil",
@@ -99,18 +101,21 @@ export const SessionInfo = ({
         navigation.navigate("Session");
       },
       variant: "primary",
+      accessibilityLabel: `session-${dIdx}-edit`,
     },
     {
       icon: "content-copy",
       disabled: isComplete || rotation.length > 6,
       onPress: () => handleDuplicateSession(dIdx),
       variant: "primary",
+      accessibilityLabel: `session-${dIdx}-copy`,
     },
     {
       icon: "delete",
       disabled: isComplete || rotation.length === 1,
       onPress: () => onRequestDelete(dIdx),
       variant: "danger",
+      accessibilityLabel: `session-${dIdx}-delete`,
     },
   ];
 

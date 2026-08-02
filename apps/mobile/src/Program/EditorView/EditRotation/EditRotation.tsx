@@ -143,6 +143,7 @@ export const EditRotation = () => {
       <SectionCard title="Program Details" style={{ marginBottom: SPACING.lg }}>
         <AppTextInput
           label="Name"
+          testID="program-name-input"
           value={templateProgram.name}
           error={templateErrors.program.name}
           onChangeText={(text) =>
@@ -153,12 +154,14 @@ export const EditRotation = () => {
         />
         <NumberInput
           label="Rotations"
+          testID="program-rotations-input"
           value={templateProgram.length}
           error={templateErrors.program.length}
           onChangeValue={handleLengthInput}
         />
         <NumberInput
           label="Rest Days"
+          testID="program-rest-days-input"
           value={templateProgram.restDays ?? 0}
           onChangeValue={handleRestDaysInput}
         />
@@ -181,6 +184,7 @@ export const EditRotation = () => {
               <AddRow
                 onPress={() => handleAddSession(idx)}
                 disabled={!!curProgram && curProgram.curSessionIdx > idx}
+                accessibilityLabel={`add-session-${idx}`}
               />
             )}
             <SessionInfo
@@ -192,7 +196,10 @@ export const EditRotation = () => {
           </Fragment>
         ))}
         {rotation.length < 7 && (
-          <AddRow onPress={() => handleAddSession(rotation.length)} />
+          <AddRow
+            onPress={() => handleAddSession(rotation.length)}
+            accessibilityLabel={`add-session-${rotation.length}`}
+          />
         )}
       </View>
 

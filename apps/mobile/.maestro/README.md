@@ -138,12 +138,35 @@ maestro test apps/mobile/.maestro/subflows/reset.yaml \
   -e API_URL=https://localhost:4000 -e INTERNAL_SECRET=<secret>
 ```
 
-## Regression flows (from LiftLedger Test.pdf)
+## Regression flows
 
-`flows/programCompletionTest.yaml` is the first real regression flow: it seeds the Test-1
-Week-1 program (`POST /internal/e2e/seed-program`) and logs the "W1-A" actuals —
-completing sets with edited weight/reps and skipping sets — across all three
-days. It needs the same `-e` vars as reset (seed + teardown both use them):
+There are four regression flows, each with a yarn wrapper (all need the same
+`-e INTERNAL_SECRET=...`; setup/teardown scripts use it):
+
+| flow | yarn script | seed variant |
+| --- | --- | --- |
+| `programCompletionTest.yaml` | `mobile:e2e:program-completion` | `test1` (default) |
+| `programCompletionTest2.yaml` | `mobile:e2e:program-completion-2` | `part2` |
+| `programCreationTest.yaml` | `mobile:e2e:program-creation` | none (reset only) |
+| `optionUpdatesTest.yaml` | `mobile:e2e:option-updates` | `options` |
+
+The seed variant is chosen via `SEED_VARIANT` in each flow's `env:` block and
+passed by `scripts/seed.js` to `POST /internal/e2e/seed-program`:
+
+- `test1` — the Test-1 doc program (5 rotations x 3 sessions, no warmups).
+- `part2` — 2 rotations x 2 sessions seeded WITH warmup sets; also disables the
+  auto rest-timer for the run (the flow pauses minutes between set logs, which
+  would otherwise trigger the fullscreen "Timer finished" overlay).
+- `options` — a completed historical program plus a current program mid-flight
+  (session 1 done, session 2 current/untouched), for the option-rename scopes.
+  Also disables the auto rest-timer.
+
+`reset` restores the rest-timer default, so variants can't leak between runs.
+
+### programCompletionTest (from LiftLedger Test.pdf)
+
+Seeds the Test-1 Week-1 program and logs the "W1-A" actuals — completing sets
+with edited weight/reps and skipping sets — across all three days:
 
 ```
 maestro test apps/mobile/.maestro/flows/programCompletionTest.yaml \
@@ -173,18 +196,71 @@ behavior — both are called out in the flow's header comment):
 2. The doc's add-on **"Skip"** sets are omitted — the app disables Skip for a
    freshly-added set, and add-on sets never carry forward.
 
-### Selectors most likely to need a tweak on first run
+### programCompletionTest2
 
-W2 was authored without a simulator in the loop, so expect to adjust:
-- `addExercise.yaml` is the least-validated — the three `SearchableSelect`
-  modals (name custom-add, equipment/weight-type pick) and the insert-row
-  targeting (`insert-exercise-<n>`) are the likeliest to need tuning.
-- Progression assertions match the set-row text (`"10 reps"`, `"100lbs"`); if the
-  rendered format differs, adjust those `assertVisible`s.
+Session-screen behaviors the Test-1 flow does not touch, on the short `part2`
+program: warmup logging and add-on warmups (including on an exercise with
+none), dropsets (mirrored complete on submit, stripped on carry-forward),
+"Previous note" surfacing, the Skip Day button (mid-session and untouched —
+the latter also finishing the program), on-the-fly exercise edits via FAB →
+Edit Exercises (equipment change → blank sets, change back → repopulated from
+history, unit change → sets kept), add-on exercise delete, and a history
+spot-check of the note/dropset in the Progress program detail.
+
+### programCreationTest
+
+Drives Create Program from a clean account: every validation error up front
+and clearing as fixed, Save FAB gating, custom gym add, the unsaved-changes
+leave guard, session editing (warmup + working set fields, zero-set error),
+session duplicate/delete/add, saving (dashboard flips to Workout, workout
+screen shows the authored sets), and quitting (dashboard back to Create
+program; the program archived to Progress history).
+
+### optionUpdatesTest
+
+All 12 cases of {Exercises, Equipment, Gyms, Units} x {Just the list / This
+program too / All history too} against the `options` fixture, with distinct
+rename targets per scope so each has a witness: list-scope must leave both
+programs alone, current-scope must rewrite the current program INCLUDING the
+not-yet-completed session (the original stale-cache bug) but not history, and
+all-scope must rewrite both. Logs one set after the name renames to prove a
+subsequent program save doesn't revert them (the stale-PUT half of that bug).
+Also covers the duplicate-name rename error and list-only option deletion.
+
+### Selector lessons (learned the hard way — apply to new flows)
+
+- **Coalesced labels**: any `Pressable`/button container merges its child text
+  into ONE label joined by ", " and ending with icon glyphs — set chips
+  ("Warmup, 45lbs, ✕, 10 reps"), AccordionRows ("Rotation 1, 2/2 sessions
+  completed, 󰅀"), ProgramView exercise rows ("BB Bench, Barbell, 󰅀"). Match
+  with `.*value.*`, or `"Title, Subtitle, .*"` when exactness matters (e.g.
+  distinguishing "Dumbbell" from "Dumbbells").
+- **Header back button**: `headerBackButtonDisplayMode: "minimal"` labels the
+  chevron with the PREVIOUS screen's title — tap `"Home"`, not `"Back"`. (The
+  Progress detail's back FAB really is labeled "Back".)
+- **Input values** are standalone text elements (AppTextInput renders the value
+  as a Text overlay when unfocused) — exact matches work there.
+- **Number pad**: it covers the bottom of the screen, has no dismiss key, and
+  Maestro will happily "tap" an element at stale, keyboard-shifted coordinates.
+  Dismiss by tapping a nearby non-input label (dialog title, "Warmup sets"),
+  then `scrollUntilVisible` before tapping anything below the fold.
+- **Autocorrect** mangles typed text in any input that doesn't disable it
+  (type-and-verify loops then spin forever) — app inputs that E2E types into
+  set `autoCorrect={false}` (Searchbar, rename dialog).
+- **LogBox** toasts cover the tab bar in dev and swallow its taps — E2E mode
+  silences them (`LogBox.ignoreAllLogs()` in App.tsx).
+- **iOS system alerts** (e.g. "Apple Account Verification") can interrupt long
+  runs and block every tap; sign the simulator out of the Apple Account, or
+  dismiss manually and re-run.
+- Progression assertions match the set-row text (`"10 reps"`, `"100lbs"`); if
+  the rendered format differs, adjust those `assertVisible`s.
 
 ## Layout
 
-- `flows/` — top-level flows (`basic.yaml` harness check, `programCompletionTest.yaml`)
-- `subflows/` — reusable pieces (`login`, `reset`, `logSet`, `skipSet`,
-  `addSet`, `addExercise`, `switchGym`)
-- `scripts/` — host-side JS (`reset.js`, `seed.js`)
+- `flows/` — top-level flows (`basic.yaml` harness check,
+  `programCompletionTest.yaml`, `programCompletionTest2.yaml`,
+  `programCreationTest.yaml`, `optionUpdatesTest.yaml`)
+- `subflows/` — reusable pieces (`login`, `reset`, `logSet`, `logWarmupSet`,
+  `logSetDrops`, `skipSet`, `addSet`, `addWarmupSet`, `addExercise`,
+  `editExercise`, `switchGym`, `renameOption`)
+- `scripts/` — host-side JS (`reset.js`, `seed.js` — variant via `SEED_VARIANT`)

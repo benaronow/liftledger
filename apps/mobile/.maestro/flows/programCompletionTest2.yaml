@@ -1,0 +1,313 @@
+appId: app.liftledger.mobile
+# Program completion, part 2: the session-screen behaviors the Test-1 flow
+# (programCompletionTest.yaml) does not touch. Runs the seeded 2-rotation
+# "part2" program (2 sessions x 2 exercises, BB Bench/BB Squat seeded WITH
+# warmup sets) end to end, covering:
+#   - warmup sets: logging (edited + as-planned), adding an add-on warmup to an
+#     exercise that has warmups AND to one that has none, warmup carry-forward
+#     into rotation 2 (submitted values carry; add-on warmups drop)
+#   - dropsets: one and two per set, with a note; mirrored complete on submit;
+#     stripped from the next rotation's carried sets; "Previous note" surfaced
+#     in the next rotation's set dialog
+#   - skip day: mid-session (some sets logged) and untouched (nothing logged,
+#     which also finishes the program on the last session); skipped sets keep
+#     planned values in R1 and latest-previous values in R2
+#   - on-the-fly exercise edits via FAB -> Edit Exercises: equipment change
+#     (no history -> single blank set), change back (repopulates from history),
+#     unit change (sets preserved, relabeled); add-on exercise deleted again
+#     before logging
+#   - history: the completed program's Progress detail retains the note and
+#     dropset rows
+#
+# Seeds the "part2" program before the run and wipes the user after:
+#   maestro test ... -e INTERNAL_SECRET=...
+env:
+  API_URL: https://localhost:4000
+  SEED_VARIANT: part2
+onFlowStart:
+  - runScript: ../scripts/seed.js
+onFlowComplete:
+  - runScript: ../scripts/reset.js
+---
+# NOTE on set-value assertions: iOS coalesces each set chip into ONE
+# accessibility label ("Warmup, 45lbs, ✕, 10 reps"); Maestro matches the label
+# by FULL regex, so chip value checks are wrapped as ".*<value>.*".
+- clearKeychain
+- launchApp:
+    clearState: true
+- runFlow: ../subflows/login.yaml
+- assertVisible: ".*Workout.*"
+
+# ============================ R1 Push ============================
+- tapOn: ".*Workout.*"
+# BB Bench seeded with two warmups (45x10, 65x5) + two workings (100x8).
+- assertVisible: ".*Warmup.*"
+- assertVisible: ".*45lbs.*"
+- assertVisible: ".*65lbs.*"
+# Warmup 0 logged EDITED to 50x12 (the edit is what carries to R2), warmup 1 as
+# planned.
+- runFlow:
+    file: ../subflows/logWarmupSet.yaml
+    env: { SET: "0", WEIGHT: "50", REPS: "12" }
+- runFlow:
+    file: ../subflows/logWarmupSet.yaml
+    env: { SET: "1", WEIGHT: "65", REPS: "5" }
+# All warmups done + no working started -> "+" adds an add-on WARMUP (75x3).
+- runFlow:
+    file: ../subflows/addWarmupSet.yaml
+    env: { WEIGHT: "75", REPS: "3" }
+- assertVisible: ".*75lbs.*"
+# Working set 0: 100x8 with a note and one dropset (80x6). Working set 1:
+# 100x8 with TWO dropsets (80x6, 60x8).
+- runFlow:
+    file: ../subflows/logSetDrops.yaml
+    env:
+      SET: "0"
+      WEIGHT: "100"
+      REPS: "8"
+      NOTE: "solid"
+      D1_WEIGHT: "80"
+      D1_REPS: "6"
+      D2_WEIGHT: ""
+      D2_REPS: ""
+- runFlow:
+    file: ../subflows/logSetDrops.yaml
+    env:
+      SET: "1"
+      WEIGHT: "100"
+      REPS: "8"
+      NOTE: ""
+      D1_WEIGHT: "80"
+      D1_REPS: "6"
+      D2_WEIGHT: "60"
+      D2_REPS: "8"
+- tapOn: "Next exercise"
+# DB OHP has no warmups -> the "+" still offers a warmup first; add 20x8.
+- assertNotVisible: ".*Warmup.*"
+- runFlow:
+    file: ../subflows/addWarmupSet.yaml
+    env: { WEIGHT: "20", REPS: "8" }
+- assertVisible: ".*20lbs.*"
+# Working sets: skip set 0 (keeps planned 40x10), complete set 1 at 45x11.
+- runFlow:
+    file: ../subflows/skipSet.yaml
+    env: { SET: "0" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "45", REPS: "11" }
+- tapOn: "Finish session"
+- tapOn: "Confirm"
+- assertVisible: ".*Workout.*"
+
+# ============================ R1 Legs (mid-session skip day) ============================
+- tapOn: ".*Workout.*"
+# BB Squat seeded with one warmup (95x5) + two workings (185x5).
+- assertVisible: ".*95lbs.*"
+# SKIP the warmup (don't complete it): a skipped warmup must unlock the
+# working-set rows just like a completed one, and it carries its planned 95x5
+# into R2 (asserted there).
+- runFlow:
+    file: ../subflows/skipWarmupSet.yaml
+    env: { SET: "0" }
+# Working set 0 completed with a dropset before skipping the rest of the day —
+# tappable only because the skipped warmup counts as logged.
+- runFlow:
+    file: ../subflows/logSetDrops.yaml
+    env:
+      SET: "0"
+      WEIGHT: "185"
+      REPS: "5"
+      NOTE: ""
+      D1_WEIGHT: "135"
+      D1_REPS: "8"
+      D2_WEIGHT: ""
+      D2_REPS: ""
+# Skip the rest of the day: BB Squat set 1 and the untouched Leg Extension are
+# marked skipped (keeping planned values — no previous occurrence exists yet)
+# and the session finishes, completing rotation 1.
+- tapOn: "Skip the rest of the day"
+- assertVisible: "Skip Day"
+- tapOn: "Confirm"
+- extendedWaitUntil:
+    visible:
+      text: ".*Workout.*"
+    timeout: 10000
+
+# ============================ R2 Push (carry-forward + on-the-fly edits) ============================
+- tapOn: ".*Workout.*"
+# R2 BB Bench warmups carry R1's SUBMITTED values (50x12 edited, 65x5); the
+# add-on 75x3 warmup is dropped; workings carry 100x8 with dropsets stripped.
+- assertVisible: ".*50lbs.*"
+- assertVisible: ".*12 reps.*"
+- assertVisible: ".*65lbs.*"
+- assertVisible: ".*100lbs.*"
+- assertNotVisible: ".*75lbs.*"
+# Log the warmups first — a working set's row only becomes tappable once every
+# chip before it is logged, so the dialog inspection below needs these done.
+- runFlow:
+    file: ../subflows/logWarmupSet.yaml
+    env: { SET: "0", WEIGHT: "50", REPS: "12" }
+- runFlow:
+    file: ../subflows/logWarmupSet.yaml
+    env: { SET: "1", WEIGHT: "65", REPS: "5" }
+# Open working set 0's dialog: the R1 note surfaces as "Previous note" and the
+# carried set has NO dropset rows (stripped by rotation generation).
+- tapOn:
+    id: "set-row-working-0"
+- extendedWaitUntil:
+    visible:
+      id: "set-input-reps"
+    timeout: 5000
+# [Ss]: the note field may auto-capitalize the typed text on iOS.
+- assertVisible: "Previous note: [Ss]olid"
+- assertNotVisible:
+    id: "dropset-input-weight-0"
+- tapOn: "Cancel"
+- extendedWaitUntil:
+    notVisible:
+      text: "Submit Set"
+    timeout: 5000
+# Complete BB Bench's working sets at 105x8.
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "105", REPS: "8" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "105", REPS: "8" }
+# Hop to DB OHP for the on-the-fly edit checks (not started -> editable).
+- tapOn: "Next exercise"
+# R2 DB OHP: add-on warmup dropped; set 0 carries the skipped 40x10, set 1 45x11.
+- assertNotVisible: ".*Warmup.*"
+- assertVisible: ".*40lbs.*"
+- assertVisible: ".*45lbs.*"
+# Edit 1 — equipment Dumbbell -> Barbell: no (DB OHP, Barbell) history, so the
+# sets repopulate as a single blank set.
+- runFlow:
+    file: ../subflows/editExercise.yaml
+    env:
+      IDX: "1"
+      NAME: ""
+      NAME_EXISTING: "true"
+      EQUIPMENT: "Barbell"
+      UNIT: ""
+- assertVisible: ".*0lbs.*"
+- assertVisible: ".*0 reps.*"
+# Edit 2 — back to Dumbbell: repopulates from R1's history (40x10, 45x11).
+- runFlow:
+    file: ../subflows/editExercise.yaml
+    env:
+      IDX: "1"
+      NAME: ""
+      NAME_EXISTING: "true"
+      EQUIPMENT: "Dumbbell"
+      UNIT: ""
+- assertVisible: ".*40lbs.*"
+- assertVisible: ".*45lbs.*"
+- assertVisible: ".*11 reps.*"
+# Edit 3 — unit lbs -> kgs: sets preserved, only the label changes.
+- runFlow:
+    file: ../subflows/editExercise.yaml
+    env:
+      IDX: "1"
+      NAME: ""
+      NAME_EXISTING: "true"
+      EQUIPMENT: ""
+      UNIT: "kgs"
+- assertVisible: ".*40kgs.*"
+- assertVisible: ".*45kgs.*"
+# Log DB OHP at the repopulated values.
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "0", WEIGHT: "40", REPS: "10" }
+- runFlow:
+    file: ../subflows/logSet.yaml
+    env: { SET: "1", WEIGHT: "45", REPS: "11" }
+# Add-on exercise added then deleted again before logging anything (delete is
+# only enabled for a not-started add-on).
+- runFlow:
+    file: ../subflows/addExercise.yaml
+    env:
+      POS: "2"
+      NAME: "Face Pull"
+      EQUIPMENT: "Cable Machine"
+      UNIT: "lbs"
+      EXISTING: "true"
+- tapOn: "Next exercise"
+- assertVisible: "Face Pull"
+- tapOn:
+    id: "fab-more-actions"
+- extendedWaitUntil:
+    visible:
+      id: "fab-edit-exercises"
+    timeout: 5000
+- tapOn:
+    id: "fab-edit-exercises"
+- extendedWaitUntil:
+    visible:
+      text: "delete-exercise-2"
+    timeout: 5000
+- tapOn: "delete-exercise-2"
+- extendedWaitUntil:
+    visible:
+      text: "Delete Exercise"
+    timeout: 5000
+- tapOn: "Confirm"
+- extendedWaitUntil:
+    notVisible:
+      text: "Delete Exercise"
+    timeout: 5000
+- tapOn: "Done"
+- extendedWaitUntil:
+    notVisible:
+      text: "Edit Exercises"
+    timeout: 5000
+- assertNotVisible: "Face Pull"
+# DB OHP (back on its page after the delete clamped the pager) is the last
+# page again — finish once its sets are logged.
+- tapOn: "Finish session"
+- tapOn: "Confirm"
+- assertVisible: ".*Workout.*"
+
+# ============================ R2 Legs (untouched skip day -> program done) ============================
+- tapOn: ".*Workout.*"
+# R2 BB Squat: warmup carried (95x5), workings carried (185x5 — R1's completed
+# set 0 and skipped-with-planned set 1 both land on 185x5).
+- assertVisible: ".*95lbs.*"
+- assertVisible: ".*185lbs.*"
+# Skip the whole day with nothing logged. Skipped sets fall back to their
+# latest previous occurrence's values (R1), the session completes, and — this
+# being the last session of the last rotation — the program finishes.
+- tapOn: "Skip the rest of the day"
+- assertVisible: "Skip Day"
+- tapOn: "Confirm"
+- extendedWaitUntil:
+    visible:
+      text: "Create program"
+    timeout: 10000
+
+# ============================ History spot-check ============================
+# The completed program's Progress detail retains R1's note and dropset rows.
+- tapOn: "Progress"
+- extendedWaitUntil:
+    visible:
+      text: "View programs"
+    timeout: 5000
+- tapOn: "View programs"
+- extendedWaitUntil:
+    visible:
+      text: "E2E Warmup Program"
+    timeout: 5000
+- tapOn: "E2E Warmup Program"
+# Accordion headers coalesce into one "Title, Subtitle" label on iOS, so they
+# are matched with .* wrappers.
+- extendedWaitUntil:
+    visible:
+      text: ".*Rotation 1.*"
+    timeout: 10000
+- tapOn: ".*Rotation 1.*"
+- tapOn: ".*Push.*"
+- tapOn: ".*BB Bench.*"
+# Set 1's note ([Ss]: may have been auto-capitalized when typed) and its
+# dropset weight both persisted into history.
+- assertVisible: "[Ss]olid"
+- assertVisible: "80"

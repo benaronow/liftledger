@@ -31,6 +31,7 @@ export const useAddOption = (segment: OptionSegment) => {
 };
 
 export const useRenameOption = (segment: OptionSegment) => {
+  const userId = useCurrentUserId();
   const basePath = useOptionsBasePath(segment);
   const refreshCompletedExercises = useRefreshCompletedExercises();
   return usePatch<{ from: string; to: string; scope: RenameScope }, User>(
@@ -39,6 +40,11 @@ export const useRenameOption = (segment: OptionSegment) => {
       onSuccess: async (user) => {
         await syncCaches(basePath, user);
         await refreshCompletedExercises();
+        await mutate(
+          (key) =>
+            typeof key === "string" &&
+            key.startsWith(`/users/${userId}/programs`),
+        );
       },
     },
   );
