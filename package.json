@@ -18,6 +18,7 @@
     "api:start": "yarn workspace @liftledger/api start",
     "api:start:local": "yarn workspace @liftledger/api start:local",
     "api:start:e2e": "yarn workspace @liftledger/api start:e2e",
+    "api:start:e2e:screenshots": "yarn workspace @liftledger/api start:e2e:screenshots",
     "api:test": "yarn workspace @liftledger/api test",
     "api:deploy": "fly deploy",
     "mobile:start": "yarn workspace @liftledger/mobile start",

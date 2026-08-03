@@ -50,6 +50,21 @@ const main = async () => {
       ? { keyPath: env.SSL_KEY_FILE, certPath: env.SSL_CRT_FILE }
       : undefined;
 
+  // Optionally pre-install a seed variant so the in-memory DB comes up already
+  // populated — used by `api:start:e2e:screenshots` to boot straight into the
+  // "showcase" state for App Store captures, no Maestro seed step needed. The
+  // regression suite leaves this unset and each flow seeds/resets its own state.
+  const seedVariant = process.env.E2E_SEED_VARIANT;
+  if (seedVariant) {
+    const { applySeedVariant, isSeedVariant } = await import(
+      "../src/routes/internal/seedProgram"
+    );
+    if (!isSeedVariant(seedVariant))
+      throw new Error(`Unknown E2E_SEED_VARIANT "${seedVariant}"`);
+    await applySeedVariant(seedVariant);
+    console.log(`Seeded E2E user with "${seedVariant}" variant`);
+  }
+
   const app = await build({ logger: true, https });
   await app.listen({ port: env.PORT, host: "0.0.0.0" });
   console.log(`E2E API on :${env.PORT} — in-memory Mongo at ${mem.getUri()}`);

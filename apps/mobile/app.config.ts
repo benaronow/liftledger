@@ -59,6 +59,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ...config.ios,
       bundleIdentifier: BUNDLE_ID,
       supportsTablet: true,
+      // Declares ITSAppUsesNonExemptEncryption=false so App Store Connect stops
+      // asking the export-compliance question per build. Valid because the app
+      // uses only standard/exempt encryption (HTTPS/TLS to Auth0 + the API).
+      config: {
+        usesNonExemptEncryption: false,
+      },
     },
     android: {
       ...config.android,

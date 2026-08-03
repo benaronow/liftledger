@@ -160,8 +160,33 @@ passed by `scripts/seed.js` to `POST /internal/e2e/seed-program`:
 - `options` — a completed historical program plus a current program mid-flight
   (session 1 done, session 2 current/untouched), for the option-rename scopes.
   Also disables the auto rest-timer.
+- `showcase` — NOT a regression fixture. Two programs for App Store screenshots:
+  a current 6-rotation Push/Pull/Legs program (warm amber streak flame,
+  mid-program ring, fresh session for Complete Day) plus an archived
+  "Hypertrophy Block" that logs a branded machine across 3 gyms so the Progress
+  chart shows three contiguous, upward-stepping chunks. The archived program is
+  dated with a gap so it feeds the chart without touching the streak. See
+  "Screenshots" below.
 
 `reset` restores the rest-timer default, so variants can't leak between runs.
+
+## Screenshots
+
+To capture App Store screenshots against the rich `showcase` state, skip Maestro
+entirely and boot the in-memory API pre-seeded with it:
+
+```
+yarn api:start:e2e:screenshots   # = api:start:e2e with E2E_SEED_VARIANT=showcase
+yarn mobile:ios:e2e              # app in E2E mode, points at localhost:4000
+```
+
+Launch the app, tap **E2E Sign In**, and it lands on the seeded showcase. Grab
+Dashboard (Home), Progress (chart — pick an exercise), Program, and Complete Day
+("Start Workout"). Restart the API to reset to a clean showcase state.
+
+(`flows/screenshots.yaml` does the same seed via the internal endpoint if you'd
+rather drive it through Maestro against a persistent DB — e.g. `api:start:local`
+on the prod Atlas — but the in-memory path above needs no secret and no seed step.)
 
 ### programCompletionTest (from LiftLedger Test.pdf)
 
