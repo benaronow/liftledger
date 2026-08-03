@@ -9,6 +9,7 @@
     "start": "tsx src/index.ts",
     "start:local": "tsx --env-file=.env.local src/index.ts",
     "start:e2e": "tsx --env-file=.env.local scripts/start-e2e.ts",
+    "start:e2e:screenshots": "E2E_SEED_VARIANT=showcase tsx --env-file=.env.local scripts/start-e2e.ts",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "test": "vitest",

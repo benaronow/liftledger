@@ -1,0 +1,23 @@
+appId: app.liftledger.mobile
+# Not a test — a screenshot bootstrapper. Seeds the E2E user with the rich
+# "showcase" program (a deep Push/Pull/Legs run with climbing lifts, a long
+# streak, and a fresh current session) and signs in, then hands the app back to
+# you sitting on the authenticated Home tab. Navigate and grab App Store
+# screenshots of Progress (chart), Dashboard, Complete Day, and Program.
+#
+# Setup, same as the other E2E runs. To screenshot against real prod data, run
+# the local API server against the prod Atlas DB (`yarn api:start:local`, not the
+# in-memory `api:start:e2e`) so the seed persists to the prod E2E account, with
+# the app in E2E mode (EXPO_PUBLIC_E2E=1, so the "E2E Sign In" button exists)
+# pointed at that same local API (https://localhost:4000 per .env.local):
+#   apps/mobile/.maestro/run.sh apps/mobile/.maestro/flows/screenshots.yaml -e INTERNAL_SECRET=...
+#
+# The seed writes only to the E2E account and wipes its old programs first, so
+# it's safe to re-run to reset back to a clean showcase state.
+env:
+  API_URL: https://localhost:4000
+  SEED_VARIANT: showcase
+onFlowStart:
+  - runScript: ../scripts/seed.js
+---
+- runFlow: ../subflows/login.yaml
